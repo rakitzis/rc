@@ -37,13 +37,19 @@
 /* Define if you want rc to encode strange characters in the environment. */
 #undef PROTECT_ENV
 
-/* Define if you want echo as a builtin.*/
+/* Define if you have extra builtins. */
+#undef RC_ADDON
+
+/* Define if you want echo as a builtin. */
 #undef RC_ECHO
 
 /* Define if you want rc to support broken apps, like a job control shell. */
 #undef RC_JOB
 
-/* Define if you want to use readline. */
+/* Define if you want to use editline. */
+#undef EDITLINE
+
+/* Define if you want to use GNU readline. */
 #undef READLINE
 
 /* Define if RLIMIT_foo defines need _KERNEL. */
