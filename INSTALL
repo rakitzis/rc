@@ -34,17 +34,17 @@ descending order of usefulness.
   for details) to provide EMACS style command line editing and history.
   If the editline library is not installed in a standard place, you can
   tell configure where to find it by setting the environment variable
-  LIBS.  For example, the maintainer builds rc by copying libedit.a into
-  the rc build directory and then running this configure command.
+  LDFLAGS.  For example, the maintainer builds rc by copying libedit.a
+  into the rc build directory and then running this configure command.
 
-    LIBS=-L. sh ../rc-1.5b3/configure --with-editline
+    LDFLAGS=-L. sh ../rc-1.5b3/configure --with-editline
 
   --with-vrl
 
   This option tells rc to use the vrl package (see the README file for
   details) to provide EMACS style command line editing and history.  As
   for `--with-editline', you may need to set the environment variable
-  LIBS appropriately.
+  LDFLAGS appropriately.
 
   --with-readline
 
@@ -52,10 +52,10 @@ descending order of usefulness.
   to editline or vrl, but has many more features.  The readline package
   is over 6 times the size of editline (whether you count lines of code,
   or the library itself).  As for editline, you can set the environment
-  variable LIBS if your readline library is not installed in a standard
-  place.
+  variable LDFLAGS if your readline library is not installed in a
+  standard place.
 
-    LIBS=-L/usr/gnu/lib sh configure --with-readline
+    LDFLAGS=-L/usr/gnu/lib sh configure --with-readline
 
   --with-history
 
@@ -105,7 +105,7 @@ probably don't want to bother with `--with-history'.
   The default path is constructed at configure time, and consists
   of each of the following directories that exist, in order.
 
-      /usr/local/bin /usr/bin /usr/ucb /bin .
+      /usr/local/bin /usr/bin /usr/bsd /usr/ucb /bin .
 
   You can disable this, or specify a different default path.  Note that
   the quote marks (") must be seen by configure; unless you are already

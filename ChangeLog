@@ -646,4 +646,9 @@ Changes since rc-1.5b2
 
   Feature: make `version' a list.
 
+1999-11-11
+
+  Documentation: when running configure, you need to set LDFLAGS for
+  `-L' options, not LIBS.
+
   Release: rc-1.6b1.
