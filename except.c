@@ -1,6 +1,8 @@
+#include "rc.h"
+
 #include <setjmp.h>
 #include <signal.h>
-#include "rc.h"
+
 #include "jbwrap.h"
 
 /*

@@ -352,7 +352,7 @@ if (~ x [y])
 if (~ x x?)
 	fail too many characters in pattern
 
-test -f /////tmp//////a?c.$pid || fail glob with many slashes
+sh -c 'test -f /////tmp//////a?c.'^$pid || fail glob with many slashes
 if (!~ /////tmp//////a*.$pid /////tmp//////a?c.$pid)
 	fail glob with many slashes
 if (!~ ////tmp////di?.$pid////* ////tmp////dir.$pid////*b*)

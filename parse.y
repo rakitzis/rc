@@ -5,6 +5,8 @@
  */
 
 %{
+/* note that this actually needs to appear before any system header
+   files are included; byacc likes to throw in <stdlib.h> first. */
 #include "rc.h"
 
 static Node *star, *nolist;

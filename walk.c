@@ -1,8 +1,10 @@
 /* walk.c: walks the parse tree. */
 
+#include "rc.h"
+
 #include <signal.h>
 #include <setjmp.h>
-#include "rc.h"
+
 #include "jbwrap.h"
 
 /*

@@ -1,8 +1,10 @@
 /* utils.c: functions of general utility */
 
+#include "rc.h"
+
 #include <errno.h>
 #include <setjmp.h>
-#include "rc.h"
+
 #include "jbwrap.h"
 
 /* print error with line number on noninteractive shells (i.e., scripts) */

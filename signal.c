@@ -1,9 +1,10 @@
 /* signal.c: a Hugh-approved signal handler. */
 
+#include "rc.h"
+
 #include <signal.h>
 #include <setjmp.h>
 
-#include "rc.h"
 #include "sigmsgs.h"
 #include "jbwrap.h"
 

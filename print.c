@@ -69,9 +69,9 @@ static bool sconv(Format *format, int ignore) {
 	return FALSE;
 }
 
-static char *utoa(unsigned long u, char *t, unsigned int radix, const char *digit) {
+static char *rc_utoa(unsigned long u, char *t, unsigned int radix, const char *digit) {
 	if (u >= radix) {
-		t = utoa(u / radix, t, radix, digit);
+		t = rc_utoa(u / radix, t, radix, digit);
 		u %= radix;
 	}
 	*t++ = digit[u];
@@ -117,7 +117,7 @@ static void intconv(Format *format, unsigned int radix, int upper, const char *a
 		while (*altform != '\0')
 			prefix[pre++] = *altform++;
 
-	len = utoa(u, number, radix, table[upper]) - number;
+	len = rc_utoa(u, number, radix, table[upper]) - number;
 	if ((flags & FMT_f2set) && (size_t) format->f2 > len)
 		zeroes = format->f2 - len;
 	else
