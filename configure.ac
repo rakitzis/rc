@@ -196,8 +196,9 @@ esac
 AM_CONDITIONAL(N_H_B, test "$ac_cv_sys_interpreter" = no)
 
 
-dnl What do we do for command arguments?  We want /dev/fd, Linux's
-dnl /proc/self/fd, or failing that, FIFOs.
+dnl What do we do for command arguments?  We want /dev/fd or Linux's
+dnl /proc/self/fd.  Failing that, we'll try for POSIX mkfifo(), or a
+dnl mknod() that makes FIFOs.
 AC_CACHE_CHECK(for /dev/fd, rc_cv_sys_dev_fd,
 	if test -d /dev/fd && test -r /dev/fd/0; then
 		rc_cv_sys_dev_fd=yes
@@ -210,7 +211,12 @@ AC_CACHE_CHECK(for /dev/fd, rc_cv_sys_dev_fd,
 case "$rc_cv_sys_dev_fd" in
 yes)	AC_DEFINE(HAVE_DEV_FD) ;;
 odd)	AC_DEFINE(HAVE_PROC_SELF_FD) ;;
-no)	AC_CACHE_CHECK(for named pipes, rc_cv_sys_fifo,
+no)	AC_CHECK_FUNCS(mkfifo) ;;
+esac
+
+case "$ac_cv_func_mkfifo" in
+yes)	AC_DEFINE(HAVE_FIFO) ;;
+no)	AC_CACHE_CHECK(for mknod FIFOs, rc_cv_sys_fifo,
 		AC_TRY_RUN([
 #include <sys/types.h>
 #include <sys/stat.h>
