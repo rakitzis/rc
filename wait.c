@@ -1,23 +1,27 @@
+#include "rc.h"
+
 #include <errno.h>
 #include <setjmp.h>
-#include "rc.h"
+#include <sys/wait.h>
+
 #include "jbwrap.h"
 
 bool forked = FALSE;
 
-static int rc_wait(int *);
+static pid_t rc_wait(int *);
 
 typedef struct Pid Pid;
 
 static struct Pid {
-	int pid, stat;
+	pid_t pid;
+	int stat;
 	bool alive;
 	Pid *n;
 } *plist = NULL;
 
-extern int rc_fork() {
+extern pid_t rc_fork() {
 	Pid *new;
-	int pid = fork();
+	pid_t pid = fork();
 	switch (pid) {
 	case -1:
 		uerror("fork");
@@ -37,7 +41,7 @@ extern int rc_fork() {
 	}
 }
 
-extern int rc_wait4(int pid, int *stat, bool nointr) {
+extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
 	Pid *r, *prev;
 	int ret;
 	/* first look for a child which may already have exited */
@@ -109,7 +113,7 @@ extern void waitforall() {
    may want to resume the wait() without delivering any signals.
 */
 
-static int rc_wait(int *stat) {
+static pid_t rc_wait(int *stat) {
 	int r;
 	interrupt_happened = FALSE;
 	if (!setjmp(slowbuf.j)) {

@@ -4,7 +4,7 @@
 
 bool dashdee, dashee, dashvee, dashex, dashell, dasheye,
 	dashen, dashpee, dashess, interactive;
-int rc_pid;
+pid_t rc_pid;
 
 static bool dashoh;
 

@@ -275,7 +275,7 @@ extern char **makeenv() {
 		env[ep++] = fnlookup_string(fp[i].name);
 	}
 	env[ep] = NULL;
-	qsort(env, (SIZE_T) ep, sizeof(char *), starstrcmp);
+	qsort(env, (size_t) ep, sizeof(char *), starstrcmp);
 	return env;
 }
 
@@ -294,7 +294,7 @@ extern void whatare_all_vars(bool showfn, bool showvar) {
 
 /* fake getenv() for readline() follows: */
 
-#ifdef READLINE
+#if READLINE
 extern char *getenv(const char *name) {
 	List *s;
 	if (name == NULL || vp == NULL || (s = varlookup((char *) name)) == NULL)

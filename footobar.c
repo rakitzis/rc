@@ -7,7 +7,7 @@
 
 /* protect an exported name from brain-dead shells */
 
-#ifdef PROTECT_ENV
+#if PROTECT_ENV
 static bool Fconv(Format *f, int ignore) {
 	unsigned const char *s = va_arg(f->args, unsigned const char *);
 	int c;
@@ -192,7 +192,7 @@ extern char *get_name(char *s) {
 		case '=':
 			*r++ = '\0';
 			return result;
-#ifdef PROTECT_ENV
+#if PROTECT_ENV
 		case '_':
 			if (*s == '_') {
 				static const char hexchar[] = "0123456789abcdef";
@@ -329,7 +329,7 @@ void initprint(void) {
 	fmtinstall('S', Sconv);
 	fmtinstall('T', Tconv);
 	fmtinstall('D', Dconv);
-#ifdef PROTECT_ENV
+#if PROTECT_ENV
 	fmtinstall('F', Fconv);
 #else
 	fmtinstall('F', fmtinstall('s', NULL));

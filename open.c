@@ -3,10 +3,6 @@
 #include <fcntl.h>
 #include "rc.h"
 
-/* prototype for open() follows. comment out if necessary */
-
-/*extern int open(const char *, int,...);*/
-
 /*
    Opens a file with the necessary flags. Assumes the following
    declaration for redirtype:

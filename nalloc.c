@@ -2,18 +2,18 @@
 #include "rc.h"
 
 static struct Block {
-	SIZE_T used, size;
+	size_t used, size;
 	char *mem;
 	Block *n;
 } *fl, *ul;
 
 /* alignto() works only with power of 2 blocks and assumes 2's complement arithmetic */
 #define alignto(m, n)   ((m + n - 1) & ~(n - 1))
-#define BLOCKSIZE ((SIZE_T) 4096)
+#define BLOCKSIZE ((size_t) 4096)
 
 /* Allocate a block from the free list or malloc one if none in the fl fit */
 
-static void getblock(SIZE_T n) {
+static void getblock(size_t n) {
 	Block *r, *p;
 	for (r = fl, p = NULL; r != NULL; p = r, r = r->n)
 		if (n <= r->size)
@@ -41,10 +41,10 @@ static void getblock(SIZE_T n) {
    address of a global in a register)
 */
 
-extern void *nalloc(SIZE_T n) {
-	SIZE_T base;
+extern void *nalloc(size_t n) {
+	size_t base;
 	Block *ulp;
-        n = alignto(n, sizeof (ALIGN_T));
+        n = alignto(n, sizeof(align_t));
 	ulp = ul;
 	if (ulp != NULL && n + (base = ulp->used) < ulp->size) {
 		ulp->used = base + n;
@@ -65,7 +65,7 @@ extern void *nalloc(SIZE_T n) {
 #define MAXMEM 500000
 
 extern void nfree() {
-	SIZE_T count;
+	size_t count;
 	Block *r;
 	if (ul == NULL)
 		return;
@@ -110,8 +110,8 @@ extern void restoreblock(Block *old) {
 
 /* generic memory allocation functions */
 
-extern void *ealloc(SIZE_T n) {
-	extern void *malloc(SIZE_T);
+extern void *ealloc(size_t n) {
+	extern void *malloc(size_t);
 	void *p = malloc(n);
 	if (p == NULL) {
 		uerror("malloc");
@@ -120,8 +120,8 @@ extern void *ealloc(SIZE_T n) {
 	return p;
 }
 
-extern void *erealloc(void *p, SIZE_T n) {
-	extern void *realloc(void *, SIZE_T);
+extern void *erealloc(void *p, size_t n) {
+	extern void *realloc(void *, size_t);
 	if (p == NULL)		/* convenience feature */
 		return ealloc(n);
 	if ((p = realloc(p, n)) == NULL) {

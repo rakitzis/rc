@@ -18,9 +18,9 @@ typedef struct Input {
 	bool saved, eofread;
 } Input;
 
-#define BUFSIZE ((SIZE_T) 256)
+#define BUFSIZE ((size_t) 256)
 
-#ifdef READLINE
+#if READLINE
 extern char *readline(char *);
 extern void add_history(char *);
 static char *rlinebuf;
@@ -37,7 +37,7 @@ static void ugdead(int);
 static void pushcommon(void);
 
 static char *inbuf;
-static SIZE_T istacksize, chars_out, chars_in;
+static size_t istacksize, chars_out, chars_in;
 static bool eofread = FALSE, save_lineno = TRUE;
 static Input *istack, *itop;
 
@@ -87,8 +87,8 @@ static int stringgchar() {
 
 /* signal-safe readline wrapper */
 
-#ifdef READLINE
-#ifndef SVSIGS
+#if READLINE
+#ifndef HAVE_RESTARTABLE_SYSCALLS
 static char *rc_readline(char *prompt) {
 	char *r;
 	interrupt_happened = FALSE;
@@ -108,7 +108,7 @@ static char *rc_readline(char *prompt) {
 }
 #else
 #define rc_readline readline
-#endif /* SVSIGS */
+#endif /* HAVE_RESTARTABLE_SYSCALLS */
 #endif /* READLINE */
 
 /*
@@ -119,9 +119,9 @@ static char *rc_readline(char *prompt) {
 static int fdgchar() {
 	if (chars_out >= chars_in + 2) { /* has the buffer been exhausted? if so, replenish it */
 		while (1) {
-#ifdef READLINE
+#if READLINE
 			if (interactive && istack->fd == 0) {
-				rlinebuf = readline(prompt);
+				rlinebuf = rc_readline(prompt);
 				if (rlinebuf == NULL) {
 					chars_in = 0;
 				} else {
@@ -143,7 +143,7 @@ static int fdgchar() {
 					uerror("read");
 					rc_exit(1);
 				}
-				chars_in = (SIZE_T) r;
+				chars_in = (size_t) r;
 			}
 			break;
 		}
@@ -169,7 +169,7 @@ extern void initinput() {
 /* push an input source onto the stack. set up a new input buffer, and set gchar() */
 
 static void pushcommon() {
-	SIZE_T idiff;
+	size_t idiff;
 	istack->index = chars_out;
 	istack->read = chars_in;
 	istack->ibuf = inbuf;
@@ -253,6 +253,7 @@ extern Node *doit(bool execit) {
 	Jbwrap j;
 	Estack e1, e2;
 	Edata jerror;
+
 	if (dashen)
 		execit = FALSE;
 	setjmp(j.j);
@@ -278,7 +279,7 @@ extern Node *doit(bool execit) {
 				funcall(arglist);
 			}
 			if ((s = varlookup("prompt")) != NULL) {
-#ifdef READLINE
+#if READLINE
 				prompt = s->w;
 #else
 				fprint(2, "%s", s->w);
@@ -322,7 +323,7 @@ extern Node *parseline(char *extdef) {
 
 static void history() {
 	List *hist;
-	SIZE_T a;
+	size_t a;
 
 	if (!interactive || (hist = varlookup("history")) == NULL)
 		return;

@@ -52,7 +52,7 @@ extern void setpipestatus(int stats[], int num) {
 
 /* set a simple status, as opposed to a pipeline */
 
-extern void setstatus(int pid, int i) {
+extern void setstatus(pid_t pid, int i) {
 	pipelength = 1;
 	statuses[0] = i;
 	statprint(pid, i);
@@ -60,11 +60,11 @@ extern void setstatus(int pid, int i) {
 
 /* print a message if termination was with a signal, and if the child dumped core. exit on error if -e is set */
 
-extern void statprint(int pid, int i) {
+extern void statprint(pid_t pid, int i) {
 	if (i & 0xff) {
 		char *msg = ((i & 0x7f) < NUMOFSIGNALS ? signals[i & 0x7f].msg : "");
 		if (pid != -1)
-			fprint(2, "%d: ", pid);
+			fprint(2, "%ld: ", (long)pid);
 		if (i & 0x80) {
 			if (*msg == '\0')
 				fprint(2, "core dumped\n");
@@ -129,7 +129,7 @@ extern void ssetstatus(char **av) {
 				break;
 			} 
 			else {
-				SIZE_T len = strlen(signals[k].name);
+				size_t len = strlen(signals[k].name);
 				if (strncmp(signals[k].name, av[i], len) == 0 && streq(av[i] + len, "+core")) {
 					statuses[l - i] = k + 0x80;
 					found = TRUE;

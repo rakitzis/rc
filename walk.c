@@ -43,12 +43,12 @@ top:	sigchk();
 	case nNowait: {
 		int pid;
 		if ((pid = rc_fork()) == 0) {
-#if !defined(NOJOB) && defined(SIGTTOU) && defined(SIGTTIN) && defined(SIGTSTP)
+#if defined(RC_JOB) && defined(SIGTTOU) && defined(SIGTTIN) && defined(SIGTSTP)
 			setsigdefaults(FALSE);
 			rc_signal(SIGTTOU, SIG_IGN);	/* Berkeleyized version: put it in a new pgroup. */
 			rc_signal(SIGTTIN, SIG_IGN);
 			rc_signal(SIGTSTP, SIG_IGN);
-			setpgrp(0, getpid());
+			setpgid(0, getpid());
 #else
 			setsigdefaults(TRUE);		/* ignore SIGINT, SIGQUIT, SIGTERM */
 #endif

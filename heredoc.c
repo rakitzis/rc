@@ -26,7 +26,7 @@ static char *readheredoc(char *eof) {
 	int c;
 	char *t, *buf, *bufend;
 	unsigned char *s;
-	SIZE_T bufsize;
+	size_t bufsize;
 	t = buf = nalloc(bufsize = 512);
 	bufend = &buf[bufsize];
 	dead = FALSE;
@@ -34,7 +34,7 @@ static char *readheredoc(char *eof) {
 		char *nbuf; \
 		bufsize = bufsize * 2 + extra; \
 		nbuf = nalloc(bufsize); \
-		memcpy(nbuf, buf, (SIZE_T) (t - buf)); \
+		memcpy(nbuf, buf, (size_t) (t - buf)); \
 		t = nbuf + (t - buf); \
 		buf = nbuf; \
 		bufend = &buf[bufsize]; \
@@ -48,7 +48,7 @@ static char *readheredoc(char *eof) {
 			return buf;
 		}
 		if (s != (unsigned char *) eof) {
-			SIZE_T len = s - (unsigned char *) eof;
+			size_t len = s - (unsigned char *) eof;
 			if (t + len >= bufend)
 				RESIZE(len);
 			memcpy(t, eof, len);
@@ -92,7 +92,7 @@ static Node *parseheredoc(char *s) {
 				node = mk(nQword, "$", NULL);
 				c = *s;
 			} else {
-				SIZE_T len = 0;
+				size_t len = 0;
 				do
 					len++;
 				while (!dnw[c = *(unsigned char *) s++]);

@@ -261,3 +261,18 @@ wait.c:		Got rid of memory leak in rc_fork, renamed SIGCHK to sigchk.
 
 walk.c:		Fixed pre-redirection bug, removed spurious setsigdefaults(),
 		renamed SIGCHK to sigchk.
+
+
+Changes since rc-1.5beta1
+
+	Configuration: rc now uses GNU autoconf.
+
+	Portability: mksignal works on HPUX 10.
+
+	Portability: resources can be (quad_t).
+
+	Bug: if rc was started with SIGCLD == SIG_IGN (e.g. by Solaris's
+	rshd) it would loop.  Fixed by resetting SIGCLD to SIG_DFL if it
+	was SIG_IGN when rc was started.
+
+	Portability: POSIXish systems don't have NGROUPS.
