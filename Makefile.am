@@ -42,7 +42,7 @@ sigmsgs.c sigmsgs.h: mksignal
 
 # Newer automake's buildtime dependency tracking can't seem to figure
 # this one out.
-status.c: statval.h
+status.o: statval.h
 
 statval.h: mkstatval
 	./mkstatval > statval.h
