@@ -723,3 +723,7 @@ Changes since rc-1.5b2
 2001-10-12
 
   Release: rc-1.6b3.
+
+2001-10-25
+
+  Feature: large file support.
