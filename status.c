@@ -2,6 +2,7 @@
 
 #include "rc.h"
 #include "sigmsgs.h"
+#include "statval.h"
 #include "wait.h"
 
 /* status == the wait() value of the last command in the pipeline, or the last command */
@@ -40,7 +41,7 @@ extern int getstatus() {
 }
 
 extern void set(bool code) {
-	setstatus(-1, (!code) << 8); /* exit status 1 == 0x100 */
+	setstatus(-1, code ? STATUS0 : STATUS1);
 }
 
 /* take a pipeline and store the exit statuses. Check to see whether any of the children dumped core */

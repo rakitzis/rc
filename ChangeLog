@@ -612,3 +612,8 @@ Changes since rc-1.5b2
 
   Bug: absolute globs don't need special case in doglob().  Avoids
   creating path names like `//tmp', which is a UNC path under CygWin.
+
+1999-10-12
+
+  Portability: status.c assumes traditional Unix layout of 0 and 1 exit
+  statuses in the parent, which is not shared by BeOS.  Add mkstatval.c.
