@@ -117,10 +117,18 @@ static int fdgchar() {
 				do {
 					r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
 					sigchk();
-					if (errno == EAGAIN) {
+					switch (errno) {
+					case EAGAIN:
 						if (!makeblocking(istack->fd))
 							panic("not O_NONBLOCK");
 						errno = EINTR;
+						break;
+					case EIO:
+						if (makesamepgrp(istack->fd))
+							errno = EINTR;
+						else
+							errno = EIO;
+						break;
 					}
 				} while (r < 0 && errno == EINTR);
 				if (r < 0) {

@@ -674,3 +674,8 @@ Changes since rc-1.5b2
   Bug: fn sigexit wasn't always cleared in child shells.
 
   Bug: `~ () '*'' dumped core.
+
+2000-05-25
+
+  Portability: need special runes for read() returning EIO under job
+  control systems.

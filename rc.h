@@ -305,6 +305,7 @@ extern void restoreblock(Block *);
 /* open.c */
 extern int rc_open(const char *, redirtype);
 extern bool makeblocking(int);
+extern bool makesamepgrp(int);
 
 /* print.c */
 /*
