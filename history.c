@@ -56,7 +56,7 @@ static char *newstr() {
 	return ealloc((size_t)1024);
 }
 
-static char *basename(char *s) {
+static char *basename(const char *s) {
 	char *t = strrchr(s, '/');
 	return (t == NULL) ? s : t + 1;
 }
