@@ -1,7 +1,7 @@
 /* lex.c: rc's lexical analyzer */
 
 #include "rc.h"
-#include "y.tab.h"
+#include "parse.h"
 
 /*
 	Special characters (i.e., "non-word") in rc:
