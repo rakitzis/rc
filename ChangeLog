@@ -628,4 +628,4 @@ Changes since rc-1.5b2
   Portability: use POSIX strerror() where it's available; fake it with
   sys_errlist[] where not.
 
-  Feature: replace `-V' with `version' builtin.
+  Feature: replace `-V' with `version' variable.

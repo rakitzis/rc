@@ -21,7 +21,7 @@
 
 static void b_break(char **), b_cd(char **), b_eval(char **), b_exit(char **),
 	b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
-	b_version(char **), b_wait(char **), b_whatis(char **);
+	b_wait(char **), b_whatis(char **);
 
 #if HAVE_SETRLIMIT
 static void b_limit(char **);
@@ -51,7 +51,6 @@ static struct {
 	{ b_return,	"return" },
 	{ b_shift,	"shift" },
 	{ b_umask,	"umask" },
-	{ b_version,	"version" },
 	{ b_wait,	"wait" },
 	{ b_whatis,	"whatis" },
 	{ b_dot,	"." },
@@ -247,13 +246,6 @@ static void b_shift(char **av) {
 /* dud function */
 
 extern void b_builtin(char **ignore) {
-}
-
-static void b_version(char **ignore) {
-	static const char id[] = "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $";
-
-	fprint(1, "%s\n", id);
-	set(TRUE);
 }
 
 /* wait for a given process, or all outstanding processes */
