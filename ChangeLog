@@ -624,3 +624,6 @@ Changes since rc-1.5b2
   rc_exit().  This bug is easily tickled on systems (like Linux) which
   allow you to open(2) but not read(2) directories: `. /tmp'.  In all
   previous versions of rc, this caused the shell to exit.
+
+  Portability: use POSIX strerror() where it's available; fake it with
+  sys_errlist[] where not.

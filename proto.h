@@ -59,6 +59,15 @@ extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 
 #endif /* STDC_HEADERS */
 
+#if HAVE_STRERROR
+/* Smells like POSIX. */
+#else
+/* Assume BSD-style sys_errlist[]. */
+extern int sys_nerr;
+extern char *sys_errlist[];
+#define strerror(x) ((0 <= (x)) && (errno < (x)) ? sys_errlist[x] : (char *)0)
+#endif
+
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
