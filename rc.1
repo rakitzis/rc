@@ -1894,12 +1894,6 @@ The design of this shell was copied from the
 .I rc
 that Tom Duff wrote at Bell Labs.
 .SH BUGS
-Environment variables that contain the ASCII character SOH (also known
-as '\\001', or CTRL-A) will be split into lists at that character in
-descendant
-.IR rc
-processes.
-.PP
 There is a compile-time limit on the number of
 .Cr ;
 separated commands in a line: usually 500.
