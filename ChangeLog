@@ -820,3 +820,9 @@ Changes since rc-1.5b2
   command; history writes and reads outside allocated memory.
 
   Configuration: upgrade to autoconf-2.56 and automake-1.7.1.
+
+2003-07-17
+
+  Testing: remove test for large file support, as it causes
+  indigestion on file systems that don't support sparse files (thanks
+  Scott Schwartz).

@@ -594,15 +594,3 @@ x=$tmp.qux/foo*
 ~ $x $tmp.qux/foo || { rm -rf $tmp.qux; fail broken symlink globbing }
 x=$tmp.qux*/foo
 ~ $x $tmp.qux/foo || { rm -rf $tmp.qux; fail broken symlink globbing }
-
-# large file support
-
-# this is, by no means, an exhaustive test.  since particular file
-# systems do, or do not, support large files, we try it both in the
-# build directory and /tmp.
-
-if (./tripping l > big.$pid >[2] /dev/null ||
-	./tripping l > /tmp/big.$pid >[2] /dev/null) {
-		echo large file support seems to work
-} else echo large file support seems NOT to work - see INSTALL file
-rm -f big.$pid /tmp/big.$pid
