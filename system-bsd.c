@@ -8,7 +8,7 @@ allows partial writes */
 #include "jbwrap.h"
 
 Jbwrap slowbuf;
-volatile sig_atomic_t slow, interrupt_happened;
+volatile sig_atomic_t slow;
 
 static char *safe_buf;
 static size_t safe_remain;
