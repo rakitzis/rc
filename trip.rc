@@ -2,7 +2,7 @@
 # Invoke as "path-to-new-rc < trip.rc"
 
 rc=$0
-echo tripping $rc
+echo tripping $rc $version
 
 fn fail {
 	echo >[1=2] trip took a wrong turn: $*

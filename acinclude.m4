@@ -14,20 +14,6 @@ int main(void) {
 ])
 
 
-dnl Check for va_copy() in <stdarg.h>.  This is new in C 9x.
-AC_DEFUN(RC_HAVE_VA_COPY, [
-	AC_CACHE_CHECK(for va_copy(), rc_cv_have_va_copy, AC_EGREP_CPP(yes, [
-#include <stdarg.h>
-#ifdef va_copy
-yes
-#endif
-], rc_cv_have_va_copy=yes, rc_cv_have_va_copy=no))
-	case "$rc_cv_have_va_copy" in
-	yes) AC_DEFINE(HAVE_VA_COPY) ;;
-	esac
-])
-
-
 dnl We can't use AC_CHECK_FUNCS for sigsetjmp(), since it's a macro in
 dnl some places.
 AC_DEFUN(RC_FUNC_SIGSETJMP, [

@@ -26,7 +26,7 @@ SYSTEM = system.o
 endif
 
 bin_PROGRAMS = rc
-noinst_PROGRAMS = mksignal tripping $(HISTORY)
+noinst_PROGRAMS = mksignal mkstatval tripping $(HISTORY)
 
 rc_SOURCES = builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c parse.c print.c redir.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c
 
@@ -44,9 +44,12 @@ EXTRA_DIST = EXAMPLES RELDATE addon.c addon.h history.1 parse.y rc.1 trip.rc
 sigmsgs.c sigmsgs.h: mksignal
 	./mksignal
 
+statval.h: mkstatval
+	./mkstatval > statval.h
+
 CONFIGURE_DEPENDENCIES = RELDATE
 
-DISTCLEANFILES = sigmsgs.c sigmsgs.h
+DISTCLEANFILES = sigmsgs.c sigmsgs.h statval.h
 
 # Of course, parse.c and parse.h depend on parse.y.  However, unless
 # you're hacking on rc's grammar, it's not useful to have this

@@ -598,6 +598,57 @@ Changes since rc-1.5b2
 
   Tidiness: `make distclean' now removes sigmsgs.[ch].
 
-1995-05-28
+1999-05-28
 
   Release: rc-1.6.
+
+1999-08-19
+
+  Portability: the proposed C 9x __va_copy() macro is called that, not
+  va_copy(), as I thought.  Furthermore, it is defined to be a macro, so
+  we don't need to use autoconf to check for it.
+
+1999-10-11
+
+  Bug: absolute globs don't need special case in doglob().  Avoids
+  creating path names like `//tmp', which is a UNC path under CygWin.
+
+1999-10-12
+
+  Portability: status.c assumes traditional Unix layout of 0 and 1 exit
+  statuses in the parent, which is not shared by BeOS.  Add mkstatval.c.
+
+1999-10-13
+
+  Bug: a read(2) error in fdgchar() should call rc_raise(), not
+  rc_exit().  This bug is easily tickled on systems (like Linux) which
+  allow you to open(2) but not read(2) directories: `. /tmp'.  In all
+  previous versions of rc, this caused the shell to exit.
+
+  Portability: use POSIX strerror() where it's available; fake it with
+  sys_errlist[] where not.
+
+  Feature: replace `-V' with `version' variable.
+
+1999-10-14
+
+  Portability: exporting `path' causes indigestion in CygWin.  Since
+  it's virtually impossible for a child `rc' process to inherit `path'
+  (which I consider a bug, but it's not going to be fixed now), simply
+  don't export `path'.
+
+  Portability: add /usr/bsd to default default path.
+
+  Documentation: failing to search $path for a `.' command is at least
+  an incompatibility with Tenth Edition rc, and probably a bug.
+
+1999-11-10
+
+  Feature: make `version' a list.
+
+1999-11-11
+
+  Documentation: when running configure, you need to set LDFLAGS for
+  `-L' options, not LIBS.
+
+  Release: rc-1.6b1.

@@ -19,14 +19,15 @@ extern void pr_error(char *s, int offset) {
 /* our perror */
 
 extern void uerror(char *s) {
-	extern int sys_nerr;
-	extern char *sys_errlist[];
-	if (errno > sys_nerr)
-		return;
-	if (s != NULL)
-		fprint(2, "%s: %s\n", s, sys_errlist[errno]);
+	char *err;
+
+	err = strerror(errno);
+	if (!err) err = "unknown error";
+
+	if (s)
+		fprint(2, "%s: %s\n", s, err);
 	else
-		fprint(2, "%s\n", sys_errlist[errno]);
+		fprint(2, "%s\n", err);
 }
 
 /* Die horribly. This should never get called. Please let me know if it does. */

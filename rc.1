@@ -161,7 +161,7 @@
 .if !"\\$4"" .Xf \\$2 \\$1 "\\$3\\f\\$1\\$4\\*(Xi" "\\$5" "\\$6" "\\$7" "\\$8" "\\$9"
 .if "\\$4"" \\$3\fR\s10
 ..
-.TH RC 1 "1999-05-28"
+.TH RC 1 "1999-11-11"
 .SH NAME
 rc \- shell
 .SH SYNOPSIS
@@ -305,11 +305,6 @@ This flag causes
 to read from standard input.  Any arguments are
 placed in
 .Cr $* .
-.TP
-.Cr \-V
-This flag causes
-.I rc
-to print a version string to standard output, and exit immediately.
 .TP
 .Cr \-v
 This flag causes
@@ -1195,7 +1190,9 @@ as its value.
 .SH "SPECIAL VARIABLES"
 Several variables are known to
 .I rc
-and are treated specially.
+and are treated specially.  In the following list,
+``(read only)'' indicates that an attempt to set the
+variable will silently have no effect.
 .TP
 .Cr *
 The argument list of
@@ -1225,7 +1222,7 @@ command.
 .Cr apid
 The process ID of the last process started in the background.
 .TP
-.Cr apids
+.Cr apids " (read only)"
 The process IDs of any background processes which are outstanding
 or which have died and have not been waited for yet.
 .TP
@@ -1357,7 +1354,7 @@ If this function is set, then it gets executed every time
 is about to print
 .Cr "$prompt(1)" .
 .TP
-.Cr status
+.Cr status " (read only)"
 The exit status of the last command.
 If the command exited with a numeric value,
 that number is the status.
@@ -1380,6 +1377,11 @@ usually sets
 .Cr $status
 to
 .Cr "(0 0)" .
+.TP
+.Cr version " (read only)"
+This variable contains a string which identifies this
+version of
+.IR rc .
 .PP
 The values of
 .Cr "$path" ,
@@ -1950,6 +1952,25 @@ processes.
 .PP
 List definitions in exported functions are "noisier" than they need to be.
 .PP
+If both
+.Cr $PATH
+and
+.Cr $path
+are set,
+.I rc
+believes the former.  Arguably this is a bug:
+.I rc
+can quite happily deal with path elements that contain
+.Cr : ,
+but such elements will be split at the colon in descendant
+.I rc
+processes.
+.PP
+The
+.Cr .
+command should search
+.Cr $path .
+.PP
 Bug reports should be mailed to
 .Cr "<tjg@star.le.ac.uk>" .
 .SH INCOMPATIBILITIES
@@ -1957,7 +1978,7 @@ Here is a list of features which distinguish this incarnation of
 .I rc
 from the one described in the Bell Labs manual pages:
 .PP
-The v10
+The Tenth Edition
 .I rc
 does not have the
 .B else
@@ -1971,11 +1992,24 @@ if the preceding
 .B if
 test does not succeed.
 .PP
-Backquotes are slightly different in v10
+Backquotes are slightly different in Tenth Edition
 .IR rc :
 a backquote must always be followed by a left-brace.
 This restriction is not present for single-word commands in this
 .IR rc .
+.PP
+For
+.Cr . 
+.IR file ,
+the Tenth Edition
+.IR rc
+searches
+.Cr $path
+for
+.IR file .
+This
+.I rc
+does not; this is a bug.
 .PP
 The list flattening operator,
 .Cr $^foo ,

@@ -6,9 +6,9 @@ AC_DEFINE_UNQUOTED(RELDATE, "$RELDATE")
 
 dnl Automake stuff.
 dnl Use this one for snapshots...
-dnl AM_INIT_AUTOMAKE(rc, 1.5s`echo $RELDATE |sed 's/-//g'`)
+dnl AM_INIT_AUTOMAKE(rc, 1.6s`echo $RELDATE |sed 's/-//g'`)
 dnl ...and this one for releases
-AM_INIT_AUTOMAKE(rc, 1.6)
+AM_INIT_AUTOMAKE(rc, 1.6b1)
 
 AM_CONFIG_HEADER(config.h)
 
@@ -38,7 +38,7 @@ AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 AC_CHECK_TYPE(ssize_t, long)
 
-AC_CHECK_FUNCS(getgroups setpgrp setrlimit)
+AC_CHECK_FUNCS(getgroups setpgrp setrlimit strerror)
 RC_FUNC_GETGROUPS
 
 RC_FUNC_SIGSETJMP
@@ -51,9 +51,9 @@ RC_TYPE_RLIM_T
 
 RC_TYPE_SIG_ATOMIC_T
 
-dnl We prefer system calls that don't restart.  If we have sigaction() and
-dnl SA_INTERRUPT, we'll use 'em.  Otherwise, we check whether
-dnl good ol' signal() produces interruptible system calls.
+dnl We prefer system calls that don't restart.  If we have sigaction()
+dnl and SA_INTERRUPT, we'll use 'em.  Otherwise, we check whether good
+dnl ol' signal() produces interruptible system calls.
 RC_FUNC_SIGACTION
 case "$rc_cv_sa_int" in
 yes)	AC_DEFINE(HAVE_SA_INTERRUPT) ;;
@@ -85,8 +85,6 @@ case "$ac_cv_func_mkfifo" in
 yes)	AC_DEFINE(HAVE_FIFO) ;;
 no)	RC_SYS_MKNOD_FIFO ;;
 esac
-
-RC_HAVE_VA_COPY
 
 dnl Now handle arguments.
 AC_ARG_ENABLE(builtin-echo, [  --disable-builtin-echo  Don't include \`echo' as a builtin],
@@ -120,7 +118,7 @@ AC_ARG_ENABLE(def-interp,
 AC_ARG_ENABLE(def-path,
 [  --enable-def-path=\"/usr/local/bin/\",\"/usr/bin\"
                           Default path [All of these that exist
-                          (/usr/local/bin /usr/bin /usr/ucb /bin .)]],
+                          (/usr/local/bin /usr/bin /usr/bsd /usr/ucb /bin .)]],
 [
 	case "$enableval" in
 	no|yes)	;;
@@ -132,7 +130,7 @@ AC_ARG_ENABLE(def-path,
 case "$enable_def_path" in
 yes)	AC_CACHE_CHECK(extant directories for default path, rc_cv_def_path,[
 		rc_cv_def_path=''
-		for i in /usr/local/bin /usr/bin /usr/ucb /bin .; do
+		for i in /usr/local/bin /usr/bin /usr/bsd /usr/ucb /bin .; do
 			if test -d $i; then
 				case "$rc_cv_def_path" in
 				'')	rc_cv_def_path=\"$i\" ;;

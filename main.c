@@ -11,8 +11,6 @@ static bool dashoh;
 static void assigndefault(char *,...);
 static void checkfd(int, enum redirtype);
 
-static const char id[] = "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $";
-
 extern int main(int argc, char *argv[], char *envp[]) {
 	char *dashsee[2], *dollarzero, *null[1];
 	int c;
@@ -21,7 +19,7 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	dollarzero = argv[0];
 	rc_pid = getpid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
-	while ((c = rc_getopt(argc, argv, "c:deilnopsVvx")) != -1)
+	while ((c = rc_getopt(argc, argv, "c:deilnopsvx")) != -1)
 		switch (c) {
 		case 'c':
 			dashsee[0] = rc_optarg;
@@ -50,9 +48,6 @@ extern int main(int argc, char *argv[], char *envp[]) {
 		case 's':
 			dashess = TRUE;
 			break;
-		case 'V':
-			fprint(1, "%s\n", id);
-			exit(0);
 		case 'v':
 			dashvee = TRUE;
 			break;
