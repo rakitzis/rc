@@ -304,6 +304,7 @@ extern void restoreblock(Block *);
 
 /* open.c */
 extern int rc_open(const char *, redirtype);
+extern void makenonblock(int);
 
 /* print.c */
 /*
