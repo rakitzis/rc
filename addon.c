@@ -6,11 +6,20 @@
 #include "rc.h"
 #include "addon.h"
 
-void b_add(char **av) {
+void b_sum(char **av) {
 	long sum = 0;
 
 	while (*++av)
 		sum += atol(*av);
+	fprint(1, "%ld\n", sum);
+	set(TRUE);
+}
+
+void b_prod(char **av) {
+	long sum = 1;
+
+	while (*++av)
+		sum *= atol(*av);
 	fprint(1, "%ld\n", sum);
 	set(TRUE);
 }

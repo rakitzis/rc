@@ -16,13 +16,16 @@
    argument is followed by a NULL pointer.
 
    Builtins report their exit status using set(TRUE) or set(FALSE).
-  
+
 */
 
 #if RC_ADDON
 
-#define ADDONS	{ b_add,	"+" },
+#define ADDONS \
+	{ b_sum,	"+" }, \
+	{ b_prod, "x" },
 
-extern void b_add(char **av);
+extern void b_sum(char **av);
+extern void b_prod(char **av);
 
 #endif
