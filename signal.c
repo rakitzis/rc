@@ -99,8 +99,10 @@ extern void (*rc_signal(int s, void (*h)(int)))(int) {
 extern void initsignal() {
 	void (*h)(int);
 	int i;
+
 	for (i = 1; i < NUMOFSIGNALS; i++) {
-		if ((h = signal(i, SIG_DFL)) != SIG_DFL)
+		h = signal(i, SIG_DFL);
+		if (h != SIG_DFL && h != SIG_ERR)
 			signal(i, h);
 		sighandlers[i] = h;
 	}
@@ -108,7 +110,7 @@ extern void initsignal() {
 #if HAVE_SYSV_SIGCLD
 	/* Ensure that SIGCLD is not SIG_IGN.  Solaris's rshd does this.  :-( */
 	h = signal(SIGCLD, SIG_DFL);
-	if (h != SIG_IGN)
+	if (h != SIG_IGN && h != SIG_ERR)
 		signal(SIGCLD, h);
 #endif
 }
