@@ -1,6 +1,7 @@
 Since rc-1.5b2 was released, many fixes have been made to the
-autoconfiguration code, some of them critical.  One problem, which I introduced,
-I might never have found without ElectricFence.
+autoconfiguration code, some of them critical.  One problem (which I
+introduced) was found in minutes with ElectricFence: I had spent several
+hours failing to find it with other tools.
 
 A few bugs in the rc code itself have been fixed.  These were mostly
 obscure.  I could not have tracked them down so quickly without Source
@@ -41,4 +42,4 @@ trip.rc successfully, and does not appear to be very stable.
 See ChangeLog for more details.
 
 Tim Goodwin
-1998-07-21
+1998-07-27
