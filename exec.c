@@ -93,7 +93,7 @@ extern void exec(List *s, bool parent) {
 #if HASH_BANG
 		execve(path, (char * const *) av, (char * const *) ev);
 #else
-		my_execve(path, (char * const *) av, (char * const *) ev); /* bogus, huh? */
+		my_execve(path, av, ev); /* bogus, huh? */
 #endif
 
 #ifdef DEFAULTINTERP

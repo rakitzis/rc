@@ -228,6 +228,9 @@ extern void sigint(int);
 extern void exec(List *, bool);
 extern void doredirs(void);
 
+/* execve.c */
+extern int my_execve(char *, char **, char **);
+
 /* footobar.c */
 extern char **list2array(List *, bool);
 extern char *get_name(char *);
