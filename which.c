@@ -10,16 +10,12 @@
 
 #include "rc.h"
 #include <errno.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
 #define X_USR 0100
 #define X_GRP 0010
 #define X_OTH 0001
 #define X_ALL (X_USR|X_GRP|X_OTH)
-
-extern int stat(const char *, struct stat *);
 
 static bool initialized = FALSE;
 static uid_t uid;
