@@ -2,7 +2,7 @@ dnl Get things going...
 AC_INIT(rc.h)
 
 RELDATE=`cat $srcdir/RELDATE`
-AC_DEFINE_UNQUOTED(RELDATE, "$RELDATE")
+AC_DEFINE_UNQUOTED(RELDATE, "$RELDATE", [Release date])
 
 dnl Automake stuff.
 dnl Use this one for snapshots...
@@ -69,7 +69,7 @@ RC_SYS_V_SIGCLD
 dnl Does the kernel handle `#! /interpreter'?
 AC_SYS_INTERPRETER
 case "$ac_cv_sys_interpreter" in
-yes)  AC_DEFINE(HASH_BANG) ;;
+yes)  AC_DEFINE(HASH_BANG, 1, [Define to 1 if your kernel understands `#!' magic numbers]) ;;
 esac
 AM_CONDITIONAL(AMC_NO_HASHBANG, test "$ac_cv_sys_interpreter" = no)
 
@@ -79,27 +79,27 @@ dnl /proc/self/fd.  Failing that, we'll try for POSIX mkfifo(), or a
 dnl mknod() that makes FIFOs.
 RC_SYS_DEV_FD
 case "$rc_cv_sys_dev_fd" in
-yes)	AC_DEFINE(HAVE_DEV_FD) ;;
-odd)	AC_DEFINE(HAVE_PROC_SELF_FD) ;;
+yes)	AC_DEFINE(HAVE_DEV_FD, 1, [Has /dev/fd]) ;;
+odd)	AC_DEFINE(HAVE_PROC_SELF_FD, 1, [Has /proc/self/fd]) ;;
 no)	AC_CHECK_FUNCS(mkfifo) ;;
 esac
 
 case "$ac_cv_func_mkfifo" in
-yes)	AC_DEFINE(HAVE_FIFO) ;;
+yes)	AC_DEFINE(HAVE_FIFO, 1, [Has mkfifo()]) ;;
 no)	RC_SYS_MKNOD_FIFO ;;
 esac
 
 dnl Now handle arguments.
 AC_ARG_ENABLE(builtin-echo, [  --disable-builtin-echo  Don't include \`echo' as a builtin],
-	test "x$enableval" != "xno" && AC_DEFINE(RC_ECHO),
+	test "x$enableval" != "xno" && AC_DEFINE(RC_ECHO, 1, [Builtin echo]),
 	AC_DEFINE(RC_ECHO))
 
 AC_ARG_ENABLE(job, [  --disable-job           Don't do job-control-style backgrounding],
-	test "x$enableval" != "xno" && AC_DEFINE(RC_JOB),
+	test "x$enableval" != "xno" && AC_DEFINE(RC_JOB, 1, [Pretend job control]),
 	AC_DEFINE(RC_JOB))
 
 AC_ARG_ENABLE(protect-env, [  --disable-protect-env   Don't protect environment names],
-	test "x$enableval" != "xno" && AC_DEFINE(PROTECT_ENV),
+	test "x$enableval" != "xno" && AC_DEFINE(PROTECT_ENV, 1, [Protect environment]),
 	AC_DEFINE(PROTECT_ENV))
 
 AC_ARG_ENABLE(def-interp,
@@ -110,7 +110,7 @@ AC_ARG_ENABLE(def-interp,
 	no)
 		;;
 	yes)
-		AC_DEFINE(DEFAULTINTERP, "/bin/sh")
+		AC_DEFINE(DEFAULTINTERP, "/bin/sh", [The default interpreter])
 		;;
 	*)
 		AC_DEFINE_UNQUOTED(DEFAULTINTERP, "$enableval")
@@ -125,7 +125,7 @@ AC_ARG_ENABLE(def-path,
 [
 	case "$enableval" in
 	no|yes)	;;
-	*)	AC_DEFINE_UNQUOTED(DEFAULTPATH, $enableval) ;;
+	*)	AC_DEFINE_UNQUOTED(DEFAULTPATH, $enableval, [The default path]) ;;
 	esac
 ],
 	enable_def_path=yes)
@@ -165,14 +165,14 @@ AC_ARG_WITH(addon, [  --with-addon[=foo.c]    Extra builtins, from addon.c by de
 ])
 AM_CONDITIONAL(AMC_ADDON, test "$ADDON" != "")
 case "$ADDON" in
-?*) AC_DEFINE(RC_ADDON) ;;
+?*) AC_DEFINE(RC_ADDON, 1, [Use addon]) ;;
 esac
 AC_SUBST(ADDON)
 
 
 AC_ARG_WITH(editline, [  --with-editline         Simmule Turner's line editing],
 	AC_CHECK_LIB(edit, readline,
-		AC_DEFINE(EDITLINE) LIBS="$LIBS -ledit",
+		AC_DEFINE(EDITLINE, 1, [editline]) LIBS="$LIBS -ledit",
 		AC_MSG_ERROR(editline library not found)))
 
 if test "${with_vrl+set}" = set -o "${with_readline+set}" = set; then
@@ -188,9 +188,9 @@ dnl There are (at least) two incompatible versions of readline, and we
 dnl need to know which one we are using.  We don't support readline 2.0.
 AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing], [
 	AC_CHECK_LIB(readline, readline, [
-		AC_DEFINE(READLINE)
+		AC_DEFINE(READLINE, 1, [readline])
 		LIBS="$LIBS -lreadline $rc_lib_tgetent"
-		AC_CHECK_LIB(readline, _rl_clean_up_for_exit, , AC_DEFINE(READLINE_OLD), $rc_lib_tgetent)
+		AC_CHECK_LIB(readline, _rl_clean_up_for_exit, , AC_DEFINE(READLINE_OLD, 1, [Old readline]), $rc_lib_tgetent)
 	], AC_MSG_ERROR(readline library not found), $rc_lib_tgetent)
 ])
 AM_CONDITIONAL(AMC_READLINE, test "${with_readline+set}" = set)

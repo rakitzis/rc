@@ -1,9 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-if AMC_ADDON
-ADDON = @ADDON@
-endif
-
 if AMC_HISTORY
 man_MANS = rc.1 history.1
 HISTORY = history
@@ -43,6 +39,10 @@ EXTRA_DIST = EXAMPLES RELDATE addon.c addon.h history.1 parse.y rc.1 trip.rc
 
 sigmsgs.c sigmsgs.h: mksignal
 	./mksignal
+
+# Newer automake's buildtime dependency tracking can't seem to figure
+# this one out.
+status.c: statval.h
 
 statval.h: mkstatval
 	./mkstatval > statval.h
