@@ -61,7 +61,7 @@ You can't use `--with-editline' and `--with-readline' together, of course,
 and if you have either of those you probably don't want to bother with
 `--enable-history'.
 
-  --prefix=/path
+  --prefix /path
 
   By default, `prefix' is /usr/local, which means that `make install'
   installs rc (and possibly the history programs) in /usr/local/bin, and
@@ -75,7 +75,7 @@ and if you have either of those you probably don't want to bother with
   to omit it.
 
   --disable-def-interp
-  --enable-def-interp=/bin/foo
+  --enable-def-interp /bin/foo
 
   By default, a program that fails with "Exec format error" is handed to
   /bin/sh.  This does the Right Thing for scripts that start with `:' to
@@ -83,7 +83,7 @@ and if you have either of those you probably don't want to bother with
   entirely, or specify a different default interpreter.
 
   --disable-def-path
-  --enable-def-path="/usr/local/bin","/usr/bin"
+  --enable-def-path "/usr/local/bin","/usr/bin"
 
   By default, if rc is started with no PATH, it uses a default path.
   The default path is constructed at configure time, and consists
@@ -91,10 +91,9 @@ and if you have either of those you probably don't want to bother with
 
       /usr/local/bin /usr/bin /usr/ucb /bin .
 
-  You can disable this, or specify a different default path.  Note
-  that the quote marks (") must be seen by configure; you will
-  probably need to quote them to your shell.  (Not if it's already
-  rc, but then you will need to quote the `='.)
+  You can disable this, or specify a different default path.  Note that
+  the quote marks (") must be seen by configure; unless you are already
+  using rc, you will probably need to quote them to your shell.
 
   --disable-job
 
