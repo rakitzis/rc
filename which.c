@@ -32,7 +32,7 @@ static GETGROUPS_T *gidset;
 /* determine whether gid lies in gidset */
 
 static int ingidset(gid_t g) {
-	gid_t i;
+	int i;
 	for (i = 0; i < ngroups; ++i)
 		if (g == gidset[i])
 			return 1;
