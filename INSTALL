@@ -39,11 +39,16 @@ descending order of usefulness.
 
     LIBS=-L. sh ../rc-1.5b3/configure --with-editline
 
+  --with-vrl
+
+  This option tells rc to use the vrl package (see the README file for
+  details) to provide EMACS style command line editing and history.
+
   --with-readline
 
   This option tells rc to use the GNU readline package, which is similar
-  to editline, but has many more features.  The readline package is
-  over 6 times the size of editline (whether you count lines of code,
+  to editline or vrl, but has many more features.  The readline package
+  is over 6 times the size of editline (whether you count lines of code,
   or the library itself).  As for editline, you can set the environment
   variable LIBS if your readline library is not installed in a standard
   place.
@@ -55,9 +60,9 @@ descending order of usefulness.
   Use this option if you want to build and install the programs that
   support a crude history mechanism.
 
-You can't use `--with-editline' and `--with-readline' together, of course,
-and if you have either of those you probably don't want to bother with
-`--with-history'.
+You can't use more than one of `--with-editline', `--with-vrl', and
+`--with-readline' at the same time.  If you have any of these you
+probably don't want to bother with `--with-history'.
 
   --prefix /path
 
