@@ -3,8 +3,8 @@
 #include "rc.h"
 #include <setjmp.h>
 
-#define	PRINT_ALLOCSIZE	((SIZE_T)64)
-#define	SPRINT_BUFSIZ	((SIZE_T)1024)
+#define	PRINT_ALLOCSIZE	((size_t)64)
+#define	SPRINT_BUFSIZ	((size_t)1024)
 
 #define	MAXCONV 256
 
@@ -22,6 +22,11 @@ static bool name(Format *format, int c) { \
 Flag(uconv,	FMT_unsigned)
 Flag(hconv,	FMT_short)
 Flag(lconv,	FMT_long)
+
+#if HAVE_QUAD_T
+Flag(qconv,	FMT_quad)
+#endif
+
 Flag(altconv,	FMT_altform)
 Flag(leftconv,	FMT_leftside)
 Flag(dotconv,	FMT_f2set)
@@ -43,7 +48,7 @@ static bool zeroconv(Format *format, int c) {
 	return TRUE;
 }
 
-static void pad(Format *format, SIZE_T len, int c) {
+static void pad(Format *format, size_t len, int c) {
 	while (len-- != 0)
 		fmtputc(format, c);
 }
@@ -53,7 +58,7 @@ static bool sconv(Format *format, int c) {
 	if ((format->flags & FMT_f1set) == 0)
 		fmtcat(format, s);
 	else {
-		SIZE_T len = strlen(s), width = format->f1 - len;
+		size_t len = strlen(s), width = format->f1 - len;
 		if (format->flags & FMT_leftside) {
 			fmtappend(format, s, len);
 			pad(format, width, ' ');
@@ -80,7 +85,7 @@ static void intconv(Format *format, unsigned int radix, int upper, const char *a
 		"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 	};
 	char padchar;
-	SIZE_T len, pre, zeroes, padding, width;
+	size_t len, pre, zeroes, padding, width;
 	long n, flags;
 	unsigned long u;
 	char number[64], prefix[20];
@@ -89,6 +94,13 @@ static void intconv(Format *format, unsigned int radix, int upper, const char *a
 		return;
 
 	flags = format->flags;
+
+#if HAVE_QUAD_T
+	if (flags & FMT_quad)
+		n = va_arg(format->args, quad_t);
+	else
+#endif
+
 	if (flags & FMT_long)
 		n = va_arg(format->args, long);
 	else if (flags & FMT_short)
@@ -109,13 +121,13 @@ static void intconv(Format *format, unsigned int radix, int upper, const char *a
 			prefix[pre++] = *altform++;
 
 	len = utoa(u, number, radix, table[upper]) - number;
-	if ((flags & FMT_f2set) && (SIZE_T) format->f2 > len)
+	if ((flags & FMT_f2set) && (size_t) format->f2 > len)
 		zeroes = format->f2 - len;
 	else
 		zeroes = 0;
 
 	width = pre + zeroes + len;
-	if ((flags & FMT_f1set) && (SIZE_T) format->f1 > width) {
+	if ((flags & FMT_f1set) && (size_t) format->f1 > width) {
 		padding = format->f1 - width;
 	} else
 		padding = 0;
@@ -196,6 +208,10 @@ static void inittab(void) {
 	fmttab['-'] = leftconv;
 	fmttab['.'] = dotconv;
 
+#if HAVE_QUAD_T
+	fmttab['q'] = qconv;
+#endif
+
 	fmttab['0'] = zeroconv;
 	for (i = '1'; i <= '9'; i++)
 		fmttab[i] = digitconv;
@@ -218,9 +234,9 @@ extern bool (*fmtinstall(int c, bool (*f)(Format *, int)))(Format *, int) {
  * functions for inserting strings in the format buffer
  */
 
-extern void fmtappend(Format *format, const char *s, SIZE_T len) {
+extern void fmtappend(Format *format, const char *s, size_t len) {
 	while (format->buf + len > format->bufend) {
-		SIZE_T split = format->bufend - format->buf;
+		size_t split = format->bufend - format->buf;
 		memcpy(format->buf, s, split);
 		format->buf += split;
 		s += split;
@@ -282,8 +298,8 @@ extern int fmtprint(Format *format, const char *fmt,...) {
 	return n + format->flushed;
 }
 
-static void fprint_flush(Format *format, SIZE_T more) {
-	SIZE_T n = format->buf - format->bufbegin;
+static void fprint_flush(Format *format, size_t more) {
+	size_t n = format->buf - format->bufbegin;
 	char *buf = format->bufbegin;
 
 	format->flushed += n;
@@ -308,20 +324,20 @@ extern int fprint(int fd, const char *fmt,...) {
 	printfmt(&format, fmt);
 	va_end(format.args);
 
-	fprint_flush(&format, (SIZE_T) 0);
+	fprint_flush(&format, 0);
 	return format.flushed;
 }
 
-static void memprint_grow(Format *format, SIZE_T more) {
+static void memprint_grow(Format *format, size_t more) {
 	char *buf;
-	SIZE_T len = format->bufend - format->bufbegin + 1;
+	size_t len = format->bufend - format->bufbegin + 1;
 	len = (len >= more)
 		? len * 2
 		: ((len + more) + PRINT_ALLOCSIZE) &~ (PRINT_ALLOCSIZE - 1);
 	if (format->u.n)
 		buf = erealloc(format->bufbegin, len);
 	else {
-		SIZE_T used = format->buf - format->bufbegin;
+		size_t used = format->buf - format->bufbegin;
 		buf = nalloc(len);
 		memcpy(buf, format->bufbegin, used);
 	}
@@ -330,7 +346,7 @@ static void memprint_grow(Format *format, SIZE_T more) {
 	format->bufend	 = buf + len - 1;
 }
 
-static char *memprint(Format *format, const char *fmt, char *buf, SIZE_T len) {
+static char *memprint(Format *format, const char *fmt, char *buf, size_t len) {
 	format->buf	 = buf;
 	format->bufbegin = buf;
 	format->bufend	 = buf + len - 1;
@@ -410,7 +426,7 @@ extern int eprint(const char *fmt,...) {
 	return format.flushed;
 }
 
-static void snprint_grow(Format *format, SIZE_T more) {
+static void snprint_grow(Format *format, size_t more) {
 	longjmp(format->u.p, 1);
 }
 
