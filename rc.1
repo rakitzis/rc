@@ -35,7 +35,7 @@
 .\" troff will supply the correct intersentence spacing, but only if
 .\" the sentences end at the end of a line.  Explicit spaces, if given,
 .\" are apparently honored and the normal intersentence spacing is
-.\" supressed.
+.\" suppressed.
 .\"
 .\" DaviD W. Sanderson
 .\"-------
@@ -166,7 +166,7 @@
 rc \- shell
 .SH SYNOPSIS
 .B rc
-.RB [ \-eixvldnpo ]
+.RB [ \-eixvldnpoV ]
 .RB [ \-c
 .IR command ]
 .RI [ arguments ]
@@ -1793,8 +1793,10 @@ The design of this shell has been copied from the
 .I rc
 that Tom Duff wrote at Bell Labs.
 .SH BUGS
-On systems that support
-.Cr /dev/fd ,
+On modern systems that support
+.Cr /dev/fd
+or
+.Cr /proc/self/fd ,
 .Cr <{foo}
 style redirection is implemented that way.
 However, on other systems it is implemented with named pipes,
