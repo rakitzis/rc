@@ -90,11 +90,7 @@ extern void exec(List *s, bool parent) {
 				return;
 			rc_exit(getstatus());
 		}
-#if HASH_BANG
-		execve(path, (char * const *) av, (char * const *) ev);
-#else
-		my_execve(path, av, ev); /* bogus, huh? */
-#endif
+		rc_execve(path, (char * const *) av, (char * const *) ev);
 
 #ifdef DEFAULTINTERP
 		if (errno == ENOEXEC) {
@@ -103,6 +99,7 @@ extern void exec(List *s, bool parent) {
 			execve(*av, (char * const *) av, (char * const *) ev);
 		}
 #endif
+
 		uerror(*av);
 		rc_exit(1);
 		/* NOTREACHED */

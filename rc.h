@@ -220,8 +220,12 @@ extern void sigint(int);
 extern void exec(List *, bool);
 extern void doredirs(void);
 
+#if HASH_BANG
+#define rc_execve execve
+#else
 /* execve.c */
 extern int my_execve(char *, char **, char **);
+#endif
 
 /* footobar.c */
 extern char **list2array(List *, bool);

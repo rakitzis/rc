@@ -120,7 +120,7 @@ static int fdgchar() {
 	if (chars_out >= chars_in + 2) { /* has the buffer been exhausted? if so, replenish it */
 		while (1) {
 #if READLINE
-			if (interactive && istack->fd == 0) {
+			if (interactive && istack->fd == 0 && isatty(0)) {
 				rlinebuf = rc_readline(prompt);
 				if (rlinebuf == NULL) {
 					chars_in = 0;

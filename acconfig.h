@@ -4,6 +4,9 @@
 /* Define to the default path used if $PATH is empty when rc starts. */
 #undef DEFAULTPATH
 
+/* Define if your kernel has SysV special SIGCLD semantics. */
+#undef HAVE_SYSV_SIGCLD
+
 /* Define if your kernel supports `#!' magic numbers. */
 #undef HASH_BANG
 

@@ -35,7 +35,7 @@ AC_CACHE_CHECK(for signal names, rc_cv_signal_h,
 		fi
 	done
 )
-case "x$rc_cv_signal_h" in
+case "$rc_cv_signal_h" in
 '') AC_MSG_ERROR(Can't find signal names in $rc_cv_full_signal_h) ;;
 *) SIGNAL_H=$rc_cv_signal_h ;;
 esac
@@ -170,12 +170,9 @@ esac
 dnl Does the kernel handle `#! /interpreter'?
 AC_SYS_INTERPRETER
 case "$ac_cv_sys_interpreter" in
-yes)	AC_DEFINE(HASH_BANG)
-	EXECVE=''
-	;;
-no)	EXECVE=execve.o ;;
+yes)	AC_DEFINE(HASH_BANG) ;;
 esac
-AC_SUBST(EXECVE)
+AM_CONDITIONAL(N_H_B, test "$ac_cv_sys_interpreter" = no)
 
 
 dnl What do we do for command arguments?  We want /dev/fd, Linux's
@@ -271,7 +268,7 @@ AC_ARG_ENABLE(history,
         *) rc_history=no ;;
         esac
 	], rc_history=no)
-AM_CONDITIONAL(HISTORY, test x$rc_history = xyes)
+AM_CONDITIONAL(HISTORY, test "$rc_history" = yes)
 
 AC_ARG_WITH(addon, [  --with-addon            Extra builtins, from addon.c ],[
 	case "$withval" in
