@@ -127,6 +127,7 @@ sword	: comword
 	| keyword			{ $$ = mk(nWord,$1, NULL); }
 
 word	: sword
+	| word '=' sword		{ $$ = mk(nConcat,$1,mk(nConcat,mk(nWord,"=",NULL),$3)); }
 	| word '^' sword		{ $$ = mk(nConcat,$1,$3); }
 
 comword	: '$' sword			{ $$ = mk(nVar,$2); }
