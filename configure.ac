@@ -189,6 +189,7 @@ main() {
 	exit(mknod(TMPNAM, S_IFIFO | 0666, 0) != 0);
 }
 		], rc_cv_sys_fifo=yes, rc_cv_sys_fifo=no, rc_cv_sys_fifo=no))
+	rm -f /tmp/rc$$.0
 	case "x$rc_cv_sys_fifo" in
 	xyes)
 		AC_DEFINE(HAVE_FIFO)
@@ -254,8 +255,8 @@ xyes)
 				esac
 			fi
 		done
-		AC_DEFINE_UNQUOTED(DEFAULTPATH, $rc_cv_def_path)
 	])
+	AC_DEFINE_UNQUOTED(DEFAULTPATH, $rc_cv_def_path)
 	;;
 esac
 	
