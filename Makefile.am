@@ -1,35 +1,39 @@
 ## Process this file with automake to produce Makefile.in
 
-if HISTORY
+if AMC_ADDON
+ADDON = @ADDON@
+endif
+
+if AMC_HISTORY
 man_MANS = rc.1 history.1
-HIST = history
+HISTORY = history
 else
 man_MANS = rc.1
 endif
 
-if H_R_S
+if AMC_NO_HASHBANG
+EXECVE = execve.o
+endif
+
+if AMC_READLINE
+READLINE = readline.o
+endif
+
+if AMC_RESTART
 SYSTEM = system-bsd.o
 else
 SYSTEM = system.o
 endif
 
-if N_H_B
-EXECVE = execve.o
-endif
-
-if READLINE
-RLO = readline.o
-endif
-
 bin_PROGRAMS = rc
-noinst_PROGRAMS = mksignal $(HIST)
+noinst_PROGRAMS = mksignal $(HISTORY)
 
-rc_SOURCES = @ADDON@ builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c
+rc_SOURCES = builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c
 
-EXTRA_rc_SOURCES = execve.c readline.c system.c system-bsd.c
+EXTRA_rc_SOURCES = addon.c execve.c readline.c system.c system-bsd.c
 
-rc_DEPENDENCIES = $(SYSTEM) $(EXECVE) $(RLO)
-rc_LDADD = $(SYSTEM) $(EXECVE) $(RLO)
+rc_DEPENDENCIES = $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
+rc_LDADD = $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
 
 mksignal_SOURCES = mksignal.c
 
@@ -50,7 +54,7 @@ trip: rc
 	./rc -p < $(srcdir)/trip.rc
 
 install-exec-hook:
-if HISTORY
+if AMC_HISTORY
 	$(LN) history - ;\
 	$(INSTALL_PROGRAM) - $(bindir) ;\
 	rm -f $(bindir)/--;  $(LN) $(bindir)/- $(bindir)/-- ;\
