@@ -87,7 +87,7 @@ extern char *which(char *name, bool verbose) {
 		uid = geteuid();
 		gid = getegid();
 #if HAVE_GETGROUPS
-		ngroups = getgroups(0, (gid_t *)0);
+		ngroups = getgroups(0, (GETGROUPS_T *)0);
 		gidset = malloc(ngroups * sizeof(GETGROUPS_T));
 		if (!gidset)
 			uerror("malloc");
