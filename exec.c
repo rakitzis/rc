@@ -1,9 +1,7 @@
 /* exec.c */
 #include <signal.h>
 #include <errno.h>
-#include <setjmp.h>
 #include "rc.h"
-#include "jbwrap.h"
 
 /*
    Takes an argument list and does the appropriate thing (calls a
