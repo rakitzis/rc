@@ -12,10 +12,8 @@ need to configure, build, test, and install rc.
     $ make trip
     # make install
 
-This will build rc in the source directory.  You can also run these
-commands from any other directory, specifying the path to the configure
-script, and rc will be built in that directory.  This is particularly
-useful if you are building rc for multiple architectures.
+This will build rc in the source directory (see below for details on how
+to build rc in a different directory).  
 
 There are lots of options you can give to configure to modify rc's
 behaviour.  You can also select a command line history library to link
@@ -119,6 +117,14 @@ After you've built rc, you may wish to run it through a test script
 to see that everything is ok.  Type `make trip' for this.  This will
 produce some output, and end with "trip is complete".  If the trip ends
 with "trip took a wrong turn..." please contact the maintainer.
+
+BUILDING IN ANOTHER DIRECTORY
+
+If you have a suitable `make', you can build rc in a different directory
+from where the sources are held.  This is particularly useful if you
+are building rc for multiple architectures.  All you need do is specify
+the path to the configure script in the first step.  Suitable `make's
+include GNU, and SunOS, but not Irix.
 
 YACC
 
