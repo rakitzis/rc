@@ -39,7 +39,7 @@ mksignal_SOURCES = mksignal.c
 
 noinst_HEADERS = group.h jbwrap.h proto.h rc.h rlimit.h y.tab.h
 
-BUILT_SOURCES = sigmsgs.c y.tab.c
+BUILT_SOURCES = sigmsgs.c
 
 EXTRA_DIST = addon.c addon.h EXAMPLES history.1 parse.y rc.1 trip.rc
 
