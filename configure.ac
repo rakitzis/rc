@@ -45,7 +45,7 @@ AC_TYPE_GETGROUPS
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_UID_T
-AC_CHECK_TYPE(ssize_t, unsigned)
+AC_CHECK_TYPE(ssize_t, long)
 
 AC_CHECK_FUNCS(getgroups setpgrp setrlimit)
 
