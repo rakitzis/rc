@@ -4,6 +4,8 @@
 
 #if STDC_HEADERS
 #include <stdlib.h>
+#else
+extern void *malloc(size_t);
 #endif
 
 #if HAVE_SYS_TYPES_H
