@@ -20,7 +20,6 @@ static bool name(Format *format, int ignore) { \
 }
 
 Flag(uconv,	FMT_unsigned)
-Flag(hconv,	FMT_short)
 Flag(rc_lconv,	FMT_long)
 
 #if HAVE_QUAD_T
@@ -103,8 +102,6 @@ static void intconv(Format *format, unsigned int radix, int upper, const char *a
 
 	if (flags & FMT_long)
 		n = va_arg(format->args, long);
-	else if (flags & FMT_short)
-		n = va_arg(format->args, short);
 	else
 		n = va_arg(format->args, int);
 
@@ -202,7 +199,6 @@ static void inittab(void) {
 	fmttab['%'] = pctconv;
 
 	fmttab['u'] = uconv;
-	fmttab['h'] = hconv;
 	fmttab['l'] = rc_lconv;
 	fmttab['#'] = altconv;
 	fmttab['-'] = leftconv;

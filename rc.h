@@ -133,7 +133,6 @@ struct Format {
 enum {
 	FMT_quad	= 1,		/* %q */
 	FMT_long	= 2,		/* %l */
-	FMT_short	= 4,		/* %h */
 	FMT_unsigned	= 8,		/* %u */
 	FMT_zeropad	= 16,		/* %0 */
 	FMT_leftside	= 32,		/* %- */
