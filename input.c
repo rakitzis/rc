@@ -67,7 +67,7 @@ static int dead() {
 	return last = EOF;
 }
 
-static void ugdead(int c) {
+static void ugdead(int ignore) {
 	return;
 }
 
@@ -232,14 +232,16 @@ extern void flushu() {
 
 /* the wrapper loop in rc: prompt for commands until EOF, calling yyparse and walk() */
 
-extern Node *doit(bool execit) {
+extern Node *doit(bool clobberexecit) {
 	bool eof;
+	bool execit ;
 	Jbwrap j;
 	Estack e1, e2;
 	Edata jerror;
 
 	if (dashen)
-		execit = FALSE;
+		clobberexecit = FALSE;
+	execit = clobberexecit;
 	sigsetjmp(j.j, 1);
 	jerror.jb = &j;
 	except(eError, jerror, &e1);
