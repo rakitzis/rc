@@ -234,7 +234,7 @@ extern List *parse_var(char *extdef) {
 	int len;
 	List *first, *last, *new;
 
-	last = NULL;
+	first = last = NULL;
 	begin = strchr(extdef, '=');
 	while (*begin) {
 		++begin;
