@@ -78,6 +78,8 @@ static char *sub(char *s, char *old, char *new) {
 	char *t, *u;
 
 	t = isin(s, old);
+	if (!t)
+		return s;
 	u = newstr();
 
 	*t = '\0';
@@ -206,9 +208,9 @@ static char *readhistoryfile(char **last) {
 		exit(1);
 	}
 
-	size = 0;
-	count = 0;
-	buf = ealloc(size = CHUNKSIZE);
+	size = CHUNKSIZE;
+	buf = ealloc(size);
+	buf[0] = '\0'; count = 1; /* sentinel */
 	while ((nread = fread(buf + count, sizeof (char), size - count, histfile)) > 0) {
 		count += nread;
 		if (size - count == 0)
@@ -222,32 +224,30 @@ static char *readhistoryfile(char **last) {
 	return buf;
 }
 
-static char *getcommand() {
+static char *getcommand(void) {
 	char *s, *t;
 	static char *hist = NULL, *last;
 
 	if (hist == NULL) {
 		hist = readhistoryfile(&last);
-		*--last = '\0';		/* trim final newline */
+		*--last = '\0';		/* replaces final newline */
+		++hist; /* start beyond sentinel */
 	}
 
 again:	s = last;
 	if (s < hist)
 		return NULL;
-	while (*--s != '\n')
-		if (s <= hist) {
-			last = hist - 1;
-			return hist;
-		}
+	while (s >= hist && *s != '\n')
+		--s;
 	*s = '\0';
 	last = s++;
 
 	/*
 	 * if the command contains the "me" character at the start of the line
-	 * or after any of [`{|()@] then try again
+	 * or after any of [`{|()@/] then try again
 	 */
 
-	for (t = s; *t != '\0'; t++)
+	for (t = s; *t != '\0'; ++t)
 		if (*t == me) {
 			char *u = t - 1;
 			while (u >= s && (*u == ' ' || *u == '\t'))

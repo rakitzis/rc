@@ -9,7 +9,7 @@ int main(void) {
 }
 	], rc_cv_func_posix_getgroups=yes, rc_cv_func_posix_getgroups=no, rc_cv_func_posix_getgroups=yes))
 	case "$rc_cv_func_posix_getgroups" in
-	yes) AC_DEFINE(HAVE_POSIX_GETGROUPS) ;;
+	yes) AC_DEFINE(HAVE_POSIX_GETGROUPS, 1, [Define to 1 if you have the `getgroups' function with POSIX semantics.]) ;;
 	esac
 ])
 
@@ -25,7 +25,7 @@ sigjmp_buf e;
 sigsetjmp(e, 1);
 		], rc_cv_sigsetjmp=yes, rc_cv_sigsetjmp=no))
 	case "$rc_cv_sigsetjmp" in
-	yes)	AC_DEFINE(HAVE_SIGSETJMP) ;;
+	yes)	AC_DEFINE(HAVE_SIGSETJMP, 1, [Define to 1 if you have the `sigsetjmp' function or macro.]) ;;
 	esac
 ])
 
@@ -38,7 +38,7 @@ AC_DEFUN(RC_FUNC_STRERROR, [
 strerror(0);
 		], rc_cv_strerror=yes, rc_cv_strerror=no))
 	case "$rc_cv_strerror" in
-	yes)	AC_DEFINE(HAVE_STRERROR) ;;
+	yes)	AC_DEFINE(HAVE_STRERROR, 1, [Define to 1 if you have the `strerror' function or macro.]) ;;
 	esac
 ])
 
@@ -61,7 +61,7 @@ int f;
 f = RLIMIT_DATA;
 			], rc_cv_kernel_rlimit=yes, rc_cv_kernel_rlimit=no)]))
 	case "$rc_cv_kernel_rlimit" in
-	yes)	AC_DEFINE(RLIMIT_NEEDS_KERNEL) ;;
+	yes)	AC_DEFINE(RLIMIT_NEEDS_KERNEL, 1, [Define to 1 if `_KERNEL' must be defined for `RLIMIT_*' macros.]) ;;
 	esac
 ])
 
@@ -77,7 +77,7 @@ AC_DEFUN(RC_TYPE_RLIM_T, [
 		], rc_cv_have_rlim_t=yes, rc_cv_have_rlim_t=no))
 
 	case "$rc_cv_have_rlim_t" in
-	yes)	AC_DEFINE(HAVE_RLIM_T) ;;
+	yes)	AC_DEFINE(HAVE_RLIM_T, 1, [Define to 1 if you have the `rlim_t' type.]) ;;
 	no)	AC_CACHE_CHECK(for native quad_t, rc_cv_have_quad_t,
 			AC_TRY_COMPILE([
 #include <sys/types.h>
@@ -88,7 +88,7 @@ a = (quad_t)0;
 			], rc_cv_have_quad_t=yes, rc_cv_have_quad_t=no))
 
 		case "$rc_cv_have_quad_t" in
-		yes)	AC_DEFINE(HAVE_QUAD_T)
+		yes)	AC_DEFINE(HAVE_QUAD_T, 1, [Define to 1 if you have the `quad_t' type.])
 			AC_CACHE_CHECK(if rlimit values are quad_t, rc_cv_rlim_t_is_quad_t,
 				AC_TRY_RUN([
 #include <sys/types.h>
@@ -108,7 +108,7 @@ main(){
 				], rc_cv_rlim_t_is_quad_t=yes, rc_cv_rlim_t_is_quad_t=no, $ac_cv_type_quad_t))
 
 			case "$rc_cv_rlim_t_is_quad_t" in
-			yes)	AC_DEFINE(RLIM_T_IS_QUAD_T) ;;
+			yes)	AC_DEFINE(RLIM_T_IS_QUAD_T, 1, [Define to 1 if `rlim_t' is `quad_t'.]) ;;
 			esac
 			;;
 		esac
@@ -123,23 +123,8 @@ AC_DEFUN(RC_TYPE_SIG_ATOMIC_T, [
 		AC_EGREP_HEADER(sig_atomic_t, signal.h,
 			rc_cv_sig_atomic_t=yes, rc_cv_sig_atomic_t=no))
 	case "$rc_cv_sig_atomic_t" in
-	no)	AC_DEFINE(sig_atomic_t, int) ;;
+	no)	AC_DEFINE(sig_atomic_t, int, [Define to 1 if you have the `sig_atomic_t' type.]) ;;
 	esac
-])
-
-
-dnl Check for sigaction and SA_INTERRUPT
-AC_DEFUN(RC_FUNC_SIGACTION, [
-	AC_CACHE_CHECK(for sigaction and SA_INTERRUPT, rc_cv_sa_int,
-		AC_TRY_COMPILE([
-#include <signal.h>
-		], [
-struct sigaction foo;
-foo.sa_flags = SA_INTERRUPT;
-sigaction(SIGINT, 0, 0);
-		], rc_cv_sa_int=yes, rc_cv_sa_int=no
-		)
-	)
 ])
 
 
@@ -174,7 +159,7 @@ int main(void) {
 }
 		], rc_cv_sysv_sigcld=yes, rc_cv_sysv_sigcld=no, rc_cv_sysv_sigcld=yes))
 	case "$rc_cv_sysv_sigcld" in
-	yes)	AC_DEFINE(HAVE_SYSV_SIGCLD) ;;
+	yes)	AC_DEFINE(HAVE_SYSV_SIGCLD, 1, [Has SysV SIGCLD]) ;;
 	esac
 ])
 

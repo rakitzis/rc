@@ -788,3 +788,45 @@ Changes since rc-1.5b2
 2002-06-18
 
   Release: rc-1.7.
+
+2002-07-25
+
+  Bug: fix globbing of broken symlinks.
+
+2002-07-31
+
+  Bug: readline doesn't handle EIO either.
+
+2002-08-15
+
+  Bug: variables that are sometimes exported (i.e. $prompt and
+  $version) need to be made exportable if they are inherited from the
+  environment.
+
+  Portability: don't call sigaction() for SIGKILL or SIGSTOP; don't
+  hand a garbage signal mask to sigaction() (thanks Jeremy
+  Fitzhardinge).  Also, remove use of SA_INTERRUPT (SUSv3, BSD,
+  etc. have SA_RESTART with the inverted meaning).
+
+2002-08-20
+
+  Bug: don't call ealloc(0) on systems where getgroups() doesn't
+  return egid (thanks Chris Siebenmann).
+
+2002-11-27
+
+  Bug: history dumps core if more colons than substitutions (thanks
+  Callum Gibson); history fails to avoid itself if it's the only
+  command; history writes and reads outside allocated memory.
+
+  Configuration: upgrade to autoconf-2.56 and automake-1.7.1.
+
+2003-07-17
+
+  Testing: remove test for large file support, as it causes
+  indigestion on file systems that don't support sparse files (thanks
+  Scott Schwartz).
+
+2003-07-22
+
+  Release: rc-1.7.1.

@@ -1,7 +1,7 @@
 /* glob.c: rc's (ugly) globber. This code is not elegant, but it works */
 
 #include "rc.h"
-#include <sys/stat.h>
+#include "stat.h"
 
 /* Lifted from autoconf documentation.*/
 #if HAVE_DIRENT_H
@@ -86,7 +86,7 @@ extern List *glob(List *s) {
 /* Matches a pattern p against the contents of directory d */
 
 static List *dmatch(char *d, char *p, char *m) {
-	bool matched = FALSE;
+	bool matched;
 	List *top, *r;
 	static DIR *dirp;
 	static struct dirent *dp;
@@ -107,7 +107,7 @@ static List *dmatch(char *d, char *p, char *m) {
 
 	if (matched) {
 		char *path = nprint("%s/%s", d, p);
-		if (stat(path, &s) < 0)
+		if (lstat(path, &s) < 0)
 			return NULL;
 		r = nnew(List);
 		r->w = ncpy(p);

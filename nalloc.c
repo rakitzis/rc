@@ -112,8 +112,10 @@ extern void restoreblock(Block *old) {
 /* generic memory allocation functions */
 
 extern void *ealloc(size_t n) {
-	void *p = malloc(n);
+	void *p;
 
+	assert(n);
+	p = malloc(n);
 	if (p == NULL) {
 		uerror("malloc");
 		rc_exit(1);

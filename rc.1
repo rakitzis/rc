@@ -161,7 +161,7 @@
 .if !"\\$4"" .Xf \\$2 \\$1 "\\$3\\f\\$1\\$4\\*(Xi" "\\$5" "\\$6" "\\$7" "\\$8" "\\$9"
 .if "\\$4"" \\$3\fR\s10
 ..
-.TH RC 1 "2002-06-18"
+.TH RC 1 "2003-07-17"
 .SH NAME
 rc \- shell
 .SH SYNOPSIS
@@ -1435,9 +1435,11 @@ On startup, the first element of this list variable is initialized to
 a string which identifies this version of
 .IR rc .
 The second element is initialized to a string which can be found by
-.B ident
-and
-.BR "sccs what" .
+.IR ident (1)
+and the
+.I what
+command of 
+.IR sccs (1).
 .SH FUNCTIONS
 .I rc
 functions are identical to
@@ -1595,9 +1597,10 @@ For example:
 .TP
 \&
 is a reasonable way to pass a default set of arguments to
-.Cr ls (1).
+.Cr ls (1),
+whereas
 .Ds
-.Cr "fn ls { ls -FC $* }"
+.Cr "fn ls { ls -FC $* } # WRONG"
 .De
 .TP
 \&
@@ -2120,12 +2123,12 @@ builtin,
 the
 .Cr bqstatus
 and
-.Cr rc_version
+.Cr version
 variables,
 the support for the GNU
 .IR readline (3)
-library and
-the support for the
+library,
+and the support for the
 .Cr prompt
 function.
 This

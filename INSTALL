@@ -33,13 +33,13 @@ descending order of usefulness.
   --with-editline
 
   This option tells rc to use the editline package (see the web page
-  for details) to provide EMACS style command line editing and history.
-  If the editline library is not installed in a standard place, you can
-  tell configure where to find it by setting the environment variable
-  LDFLAGS.  For example, the maintainer builds rc by copying libedit.a
-  into the rc build directory and then running this configure command.
+  for details) to provide EMACS style command line editing and
+  history.  If the editline library is not installed in a standard
+  place, you can tell configure where to find it by setting the
+  environment variable LDFLAGS.  For example, you might copy libedit.a
+  into the rc source directory and then run this configure command.
 
-    LDFLAGS=-L. sh ../rc-1.5b3/configure --with-editline
+    LDFLAGS=-L. sh configure --with-editline
 
   --with-vrl
 
@@ -139,24 +139,6 @@ turn..."  please contact the maintainer.
 In this release, `make trip' will fail on a file system which does not
 implement Unix semantics (specifically permissions bits).  This means
 that `make trip' is not useful under CygWin, for instance.
-
-
-LARGE FILE SUPPORT
-
-This release of rc supports large files (i.e. with 64 bit offsets), on
-systems where the configure script can figure out how to enable this.
-When you run `make trip' (you always run `make trip', right?) the
-penultimate line of output (before "trip complete") reports whether
-large file support seems to be working or not.
-
-Large file support is a function of file systems, as well as
-applications.  For example, NFS and tmpfs file systems often do not
-support large files.  The test used by `make trip' is therefore
-subject to false negatives.  That is, a report that "large file
-support seems NOT to be working" may be erroneous.  To minimise this
-possibility, the test is performed both in the current directory
-(where you built rc) and /tmp.  (I don't think there's any scenario
-where a false positive can be reported.)
 
 
 BUILDING IN ANOTHER DIRECTORY

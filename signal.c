@@ -8,17 +8,18 @@
 #include "sigmsgs.h"
 #include "jbwrap.h"
 
-#if HAVE_SA_INTERRUPT
+#if HAVE_SIGACTION
 static void (*sys_signal(int signum, void (*handler)(int)))(int) {
 	struct sigaction new, old;
 
 	new.sa_handler = handler;
-	new.sa_flags = SA_INTERRUPT;
+	new.sa_flags = 0; /* clear SA_RESTART */
+	sigfillset(&new.sa_mask);
 	sigaction(signum, &new, &old);
 	return old.sa_handler;
 }
 #else
-#define sys_signal signal
+#define sys_signal(sig, func) (signal((sig), (func)))
 #endif
 
 void (*sighandlers[NUMOFSIGNALS])(int);
@@ -40,7 +41,7 @@ extern void catcher(int s) {
 #if HAVE_RESTARTABLE_SYSCALLS
 	if (slow) {
 		siglongjmp(slowbuf.j, s);
-}
+	}
 #endif
 }
 
@@ -96,6 +97,12 @@ extern void initsignal() {
 #endif
 
 	for (i = 1; i < NUMOFSIGNALS; i++) {
+#ifdef SIGKILL
+		if (i == SIGKILL) continue;
+#endif
+#ifdef SIGSTOP
+		if (i == SIGSTOP) continue;
+#endif
 		h = sys_signal(i, SIG_IGN);
 		if (h != SIG_IGN && h != SIG_ERR)
 			sys_signal(i, h);

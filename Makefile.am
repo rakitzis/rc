@@ -1,9 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-if AMC_ADDON
-ADDON = @ADDON@
-endif
-
 if AMC_HISTORY
 man_MANS = rc.1 history.1
 HISTORY = history
@@ -35,7 +31,7 @@ EXTRA_rc_SOURCES = addon.c execve.c readline.c system.c system-bsd.c
 rc_DEPENDENCIES = sigmsgs.o $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
 rc_LDADD = sigmsgs.o $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
 
-noinst_HEADERS = getgroups.h jbwrap.h parse.h proto.h rc.h rlimit.h wait.h
+noinst_HEADERS = getgroups.h jbwrap.h parse.h proto.h rc.h rlimit.h stat.h wait.h
 
 BUILT_SOURCES = sigmsgs.c
 
@@ -43,6 +39,10 @@ EXTRA_DIST = EXAMPLES RELDATE addon.c addon.h history.1 parse.y rc.1 trip.rc
 
 sigmsgs.c sigmsgs.h: mksignal
 	./mksignal
+
+# Newer automake's buildtime dependency tracking can't seem to figure
+# this one out.
+status.o: statval.h
 
 statval.h: mkstatval
 	./mkstatval > statval.h
