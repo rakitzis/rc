@@ -41,7 +41,7 @@ static void (*realugchar)(int);
 
 int last;
 
-#if READLINE
+#if EDITLINE || READLINE
 static char *rlinebuf, *prompt;
 #endif
 
@@ -94,7 +94,7 @@ static int fdgchar() {
 
 	if (chars_out >= chars_in + 2) { /* has the buffer been exhausted? if so, replenish it */
 		while (1) {
-#if READLINE
+#if EDITLINE || READLINE
 			if (interactive && istack->fd == 0 && isatty(0)) {
 				rlinebuf = rc_readline(prompt);
 				if (rlinebuf == NULL) {
@@ -263,7 +263,7 @@ extern Node *doit(bool execit) {
 				funcall(arglist);
 			}
 			if ((s = varlookup("prompt")) != NULL) {
-#if READLINE
+#if EDITLINE || READLINE
 				if (istack->t == iFd && istack->fd == 0 && isatty(0))
 					prompt = s->w;
 				else
@@ -350,7 +350,7 @@ extern void closefds() {
 extern void print_prompt2() {
 	lineno++;
 	if (interactive) {
-#if READLINE
+#if EDITLINE || READLINE
 		if (istack->t == iFd && istack->fd == 0 && isatty(0))
 			prompt = prompt2;
 		else
