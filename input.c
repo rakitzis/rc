@@ -125,7 +125,7 @@ static int fdgchar() {
 				} while (r < 0 && errno == EINTR);
 				if (r < 0) {
 					uerror("read");
-					rc_exit(1);
+					rc_raise(eError);
 				}
 				chars_in = (size_t) r;
 			}

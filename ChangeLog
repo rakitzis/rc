@@ -617,3 +617,10 @@ Changes since rc-1.5b2
 
   Portability: status.c assumes traditional Unix layout of 0 and 1 exit
   statuses in the parent, which is not shared by BeOS.  Add mkstatval.c.
+
+1999-10-13
+
+  Bug: a read(2) error in fdgchar() should call rc_raise(), not
+  rc_exit().  This bug is easily tickled on systems (like Linux) which
+  allow you to open(2) but not read(2) directories: `. /tmp'.  In all
+  previous versions of rc, this caused the shell to exit.
