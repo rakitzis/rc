@@ -5,6 +5,7 @@ allows partial writes */
 
 #include "rc.h"
 #include "jbwrap.h"
+#include "wait.h"
 
 Jbwrap slowbuf;
 volatile sig_atomic_t slow;
