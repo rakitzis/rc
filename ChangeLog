@@ -803,7 +803,7 @@ Changes since rc-1.5b2
   $version) need to be made exportable if they are inherited from the
   environment.
 
-  Portability: don't call sigaction() for SIGKILL or SIGCONT; don't
+  Portability: don't call sigaction() for SIGKILL or SIGSTOP; don't
   hand a garbage signal mask to sigaction() (thanks Jeremy
   Fitzhardinge).  Also, remove use of SA_INTERRUPT (SUSv3, BSD,
   etc. have SA_RESTART with the inverted meaning).

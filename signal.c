@@ -100,8 +100,8 @@ extern void initsignal() {
 #ifdef SIGKILL
 		if (i == SIGKILL) continue;
 #endif
-#ifdef SIGCONT
-		if (i == SIGCONT) continue;
+#ifdef SIGSTOP
+		if (i == SIGSTOP) continue;
 #endif
 		h = sys_signal(i, SIG_IGN);
 		if (h != SIG_IGN && h != SIG_ERR)
