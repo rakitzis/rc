@@ -579,7 +579,7 @@ x=`{./tripping a}
 
 # check for hilarious quoting bug introduced while fixing ctrl-a
 x=('#' '#' '#')
-eval z^`{whatis -v x} >[2]/dev/null
+eval z^`{whatis -v x}
 ~ $#zx 3 || fail hilarious quoting bug
 
 # parens bypass quote detector bug
