@@ -8,20 +8,31 @@ HISTBIN =
 HISTMAN =
 endif
 
+# Pick correct version of rdwr.c, depending on whether we have restartable
+# system calls or not.
+
+# Include execve.c only if kernel doesn't handle `#!' magic numbers.
+
 if H_R_S
-RDWR = rdwr-bsd.c
-ORDWR = rdwr.c
+if N_H_B
+OPT_SRC = execve.c rdwr-bsd.c
 else
-RDWR = rdwr.c
-ORDWR = rdwr-bsd.c
+OPT_SRC = rdwr-bsd.c
+endif
+else
+if N_H_B
+OPT_SRC = execve.c rdwr.c
+else
+OPT_SRC = rdwr.c
+endif
 endif
 
 bin_PROGRAMS = rc
 noinst_PROGRAMS = $(HISTBIN)
 
-rc_SOURCES = @ADDON@ builtins.c except.c exec.c execve.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c $(RDWR) redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c
+rc_SOURCES = @ADDON@ builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c $(OPT_SRC)
 
-EXTRA_rc_SOURCES = $(ORDWR)
+EXTRA_rc_SOURCES = execve.c rdwr.c rdwr-bsd.c
 
 history_SOURCES = history.c
 
