@@ -30,6 +30,7 @@ extern pid_t rc_fork() {
 		/* NOTREACHED */
 	case 0:
 		forked = TRUE;
+		plist = 0;
 		sigchk();
 		return 0;
 	default:
