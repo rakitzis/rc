@@ -1,10 +1,10 @@
 /* glom.c: builds an argument list out of words, variables, etc. */
 
-#include <sys/types.h>
+#include "rc.h"
+
 #include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
-#include "rc.h"
 
 static List *backq(Node *, Node *);
 static List *bqinput(List *, int);
