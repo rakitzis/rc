@@ -693,3 +693,9 @@ Changes since rc-1.5b2
 
   Portability: configure fails to detect strerror() on NetBSD; we need
   to include <string.h>.
+
+2001-06-18
+
+  Bug: you can't pass a short to a stdargs function!
+
+  
