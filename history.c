@@ -26,6 +26,7 @@ static const char id[] = "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $";
 
 static struct {
 	char *old, *new;
+	int reps;	/* no. of repetitions. i.e. 1 means sub twice. */
 } *replace;
 
 static char **search, *progname, *history;
@@ -296,8 +297,12 @@ int main(int argc, char **argv) {
 			search[nsearch++] = argv[i];
 		else {
 			*(char *)s = '\0';	/* do we confuse ps too much? */
+			replace[nreplace].reps = 0;
+			while(*(++s) == ':') {
+			      replace[nreplace].reps++;
+			}
 			replace[nreplace].old = argv[i];
-			replace[nreplace].new = s + 1;
+			replace[nreplace].new = s;
 			nreplace++;
 		}
 
@@ -312,8 +317,11 @@ next:	s = getcommand();
 	for (i = 0; i < nreplace; i++)
 		if (!isin(s, replace[i].old))
 			goto next;
-		else
-			s = sub(s, replace[i].old, replace[i].new);
+		else {
+		    	int j;
+			for (j = 0; j <= replace[i].reps; j++)
+			      s = sub(s, replace[i].old, replace[i].new);
+		}
 	if (editit) {
 		s = edit(s);
 		if (s == NULL)
