@@ -37,7 +37,7 @@ rc_LDADD = sigmsgs.o $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
 
 mksignal_SOURCES = mksignal.c
 
-noinst_HEADERS = group.h jbwrap.h parse.h proto.h rc.h rlimit.h
+noinst_HEADERS = getgroups.h jbwrap.h parse.h proto.h rc.h rlimit.h wait.h
 
 BUILT_SOURCES = sigmsgs.c
 
