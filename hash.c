@@ -279,15 +279,17 @@ extern char **makeenv() {
 	return env;
 }
 
-extern void whatare_all_vars() {
+extern void whatare_all_vars(bool showfn, bool showvar) {
 	int i;
 	List *s;
-	for (i = 0; i < vsize; i++)
-		if (vp[i].name != NULL && (s = varlookup(vp[i].name)) != NULL)
-			prettyprint_var(1, vp[i].name, s);
-	for (i = 0; i < fsize; i++)
-		if (fp[i].name != NULL && fp[i].name != dead)
-			prettyprint_fn(1, fp[i].name, fnlookup(fp[i].name));
+	if (showvar)
+		for (i = 0; i < vsize; i++)
+			if (vp[i].name != NULL && (s = varlookup(vp[i].name)) != NULL)
+				prettyprint_var(1, vp[i].name, s);
+	if (showfn)
+		for (i = 0; i < fsize; i++)
+			if (fp[i].name != NULL && fp[i].name != dead)
+				prettyprint_fn(1, fp[i].name, fnlookup(fp[i].name));
 }
 
 /* fake getenv() for readline() follows: */

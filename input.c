@@ -40,8 +40,6 @@ static char *inbuf;
 static SIZE_T istacksize, chars_out, chars_in;
 static bool eofread = FALSE, save_lineno = TRUE;
 static Input *istack, *itop;
-static char *histstr;
-static int histfd;
 
 static int (*realgchar)(void);
 static void (*realugchar)(int);
@@ -49,11 +47,17 @@ static void (*realugchar)(int);
 int last;
 
 extern int gchar() {
+	int c;
+
 	if (eofread) {
 		eofread = FALSE;
 		return last = EOF;
 	}
-	return (*realgchar)();
+
+	while ((c = (*realgchar)()) == '\0')
+		pr_error("warning: null character ignored");
+
+	return c;
 }
 
 extern void ugchar(int c) {
@@ -99,7 +103,7 @@ static char *rc_readline(char *prompt) {
 	slow = FALSE;
 	if (r == NULL)
 		errno = EINTR;
-	SIGCHK;
+	sigchk();
 	return r;
 }
 #else
@@ -128,14 +132,14 @@ static int fdgchar() {
 					inbuf = ealloc(chars_in + 3);
 					strcpy(inbuf+2, rlinebuf);
 					strcat(inbuf+2, "\n");
+					efree(rlinebuf);
 				}
 			} else
 #endif
 				{
 				long /*ssize_t*/ r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
+				sigchk();
 				if (r < 0) {
-					if (errno == EINTR)
-						continue; /* Suppose it was interrupted by a signal */
 					uerror("read");
 					rc_exit(1);
 				}
@@ -214,7 +218,7 @@ extern void popinput() {
 	efree(inbuf);
 	--istack;
 	realgchar = (istack->t == iString ? stringgchar : fdgchar);
-	if (istack->fd == -1) { /* top of input stack */
+	if (istack->t == iFd && istack->fd == -1) { /* top of input stack */
 		realgchar = dead;
 		realugchar = ugdead;
 	}
@@ -258,7 +262,7 @@ extern Node *doit(bool execit) {
 		Edata block;
 		block.b = newblock();
 		except(eArena, block, &e2);
-		SIGCHK;
+		sigchk();
 		if (dashell) {
 			char *fname[3];
 			fname[1] = concat(varlookup("home"), word("/.rcrc", NULL))->w;
@@ -314,57 +318,42 @@ extern Node *parseline(char *extdef) {
 	return fun;
 }
 
-/* write last command out to a file. Check to see if $history has changed, also */
+/* write last command out to a file if interactive && $history is set */
 
 static void history() {
-	List *histlist;
+	List *hist;
 	SIZE_T a;
-	if (!interactive)
+
+	if (!interactive || (hist = varlookup("history")) == NULL)
 		return;
-	if ((histlist = varlookup("history")) == NULL) {
-		if (histstr != NULL) {
-			efree(histstr);
-			close(histfd);
-			histstr = NULL;
-		}
-		return;
-	}
-	if (histstr == NULL || !streq(histstr, histlist->w)) { /* open new file */
-		if (histstr != NULL) {
-			efree(histstr);
-			close(histfd);
-		}
-		histstr = ecpy(histlist->w);
-		histfd = rc_open(histstr, rAppend);
-		if (histfd < 0) {
-			uerror(histstr);
-			efree(histstr);
-			histstr = NULL;
-			varrm("history", FALSE);
-		}
-	}
-	/*
-	   Small unix hack: since read() reads only up to a newline
-	   from a terminal, then presumably this write() will write at
-	   most only one input line at a time.
-	*/
-	for (a = 2; a < chars_in + 2; a++) { /* skip empty lines and comments in history. */
-		if (inbuf[a] == '#' || inbuf[a] == '\n')
-			return;
-		if (inbuf[a] != ' ' && inbuf[a] != '\t')
+
+	for (a = 0; a < chars_in; a++) {
+		char c = inbuf[a+2];
+
+		/* skip empty lines and comments */
+		if (c == '#' || c == '\n')
 			break;
+
+		/* line matches [ \t]*[^#\n] so it's ok to write out */
+		if (c != ' ' && c != '\t') {
+			char *name = hist->w;
+			int fd = rc_open(name, rAppend);
+			if (fd < 0) {
+				uerror(name);
+				varrm(name, TRUE);
+			} else {
+				writeall(fd, inbuf + 2, chars_in);
+				close(fd);
+			}
+			break;
+		}
 	}
-	writeall(histfd, inbuf + 2, chars_in);
 }
 
 /* close file descriptors after a fork() */
 
 extern void closefds() {
 	Input *i;
-	if (histstr != NULL) {			/* Close an open history file */
-		close(histfd);
-		histstr = NULL;			/* But prevent re-closing of the same file-descriptor */
-	}
 	for (i = istack; i != itop; --i)	/* close open scripts */
 		if (i->t == iFd && i->fd > 2) {
 			close(i->fd);

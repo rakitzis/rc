@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <errno.h>
 #include "rc.h"
 #if !defined(S_IFIFO) && !defined(DEVFD)
 #define NOCMDARG
@@ -68,11 +69,11 @@ extern List *concat(List *s1, List *s2) {
 		} else {
 			r->m = nalloc(z);
 			if (s1->m == NULL)
-				clear(r->m, x);
+				memzero(r->m, x);
 			else
 				memcpy(r->m, s1->m, x);
 			if (s2->m == NULL)
-				clear(&r->m[x], y);
+				memzero(&r->m[x], y);
 			else
 				memcpy(&r->m[x], s2->m, y);
 			r->m[z] = 0;
@@ -183,7 +184,7 @@ static List *bqinput(List *ifs, int fd) {
 	char isifs[256];
 	int n, state; /* a simple FSA is used to read in data */
 
-	clear(isifs, sizeof isifs);
+	memzero(isifs, sizeof isifs);
 	for (isifs['\0'] = TRUE; ifs != NULL; ifs = ifs->n)
 		for (s = ifs->w; *s != '\0'; s++)
 			isifs[*(unsigned char *)s] = TRUE;
@@ -209,8 +210,12 @@ static List *bqinput(List *ifs, int fd) {
 		if ((n = rc_read(fd, end, remain)) <= 0) {
 			if (n == 0)
 	/* break */		break;
-			uerror("backquote read");
-			rc_error(NULL);
+			else if (errno == EINTR)
+				return NULL; /* interrupted, wait for subproc */
+			else {
+				uerror("backquote read");
+				rc_error(NULL);
+			}
 		}
 		remain -= n;
 		for (bufend = &end[n]; end < bufend; end++)
@@ -218,6 +223,7 @@ static List *bqinput(List *ifs, int fd) {
 				if (!isifs[*(unsigned char *)end]) {
 					state = 1;
 					r->w = end;
+					r->m = NULL;
 				}
 			} else {
 				if (isifs[*(unsigned char *)end]) {
@@ -252,7 +258,6 @@ static List *backq(Node *ifs, Node *n) {
 		rc_error(NULL);
 	}
 	if ((pid = rc_fork()) == 0) {
-		setsigdefaults(FALSE);
 		mvfd(p[1], 1);
 		close(p[0]);
 		redirq = NULL;
@@ -264,7 +269,8 @@ static List *backq(Node *ifs, Node *n) {
 	close(p[0]);
 	rc_wait4(pid, &sp, TRUE);
 	statprint(-1, sp);
-	SIGCHK;
+	varassign("bqstatus", word(strstatus(sp), NULL), FALSE);
+	sigchk();
 	return bq;
 }
 

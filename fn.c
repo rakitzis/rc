@@ -12,9 +12,9 @@ static void fn_handler(int), dud_handler(int);
 
 static bool runexit = FALSE;
 static Node *handlers[NUMOFSIGNALS], null;
-static void (*def_sigint)(int) = SIG_DFL,
-	    (*def_sigquit)(int) = SIG_DFL,
-	    (*def_sigterm)(int) = SIG_DFL;
+static void (*def_sigint)(int) = SIG_DFL;
+static void (*def_sigquit)(int) = SIG_DFL;
+static void (*def_sigterm)(int) = SIG_DFL;
 
 /*
    Set signals to default values for rc. This means that interactive
@@ -106,13 +106,12 @@ extern void setsigdefaults(bool sysvbackground) {
 /* rc's exit. if runexit is set, run the sigexit function. */
 
 extern void rc_exit(int stat) {
-	static char *sigexit[2] = {
-		"sigexit",
-		NULL
-	};
 	if (runexit) {
+		char *sig[2];
+		sig[0] = "sigexit";
+		sig[1] = NULL;
 		runexit = FALSE;
-		funcall(sigexit);
+		funcall(sig);
 		stat = getstatus();
 	}
 	exit(stat);
@@ -121,22 +120,14 @@ extern void rc_exit(int stat) {
 /* The signal handler for all functions. calls walk() */
 
 static void fn_handler(int s) {
-	List *dollarzero;
-	Estack e;
-	Edata star;
+	char *sig[2];
 	int olderrno;
 	if (s < 1 || s >= NUMOFSIGNALS)
 		panic("unknown signal");
 	olderrno = errno;
-	dollarzero = nnew(List);
-	dollarzero->w = signals[s].name;
-	dollarzero->n = NULL;
-	varassign("*", dollarzero, TRUE);
-	star.name = "*";
-	except(eVarstack, star, &e);
-	walk(handlers[s], TRUE);
-	varrm("*", TRUE);
-	unexcept(); /* eVarstack */
+	sig[0] = signals[s].name;
+	sig[1] = NULL;
+	funcall(sig);
 	errno = olderrno;
 }
 
@@ -217,7 +208,7 @@ extern char *fnlookup_string(char *name) {
 		return NULL;
 	if (look->extdef != NULL)
 		return look->extdef;
-	return look->extdef = fun2str(name, look->def);
+	return look->extdef = mprint("fn_%F={%T}", name, look->def);
 }
 
 /*

@@ -110,9 +110,20 @@ extern void exec(List *s, bool parent) {
 		redirq = NULL;
 		rc_wait4(pid, &stat, TRUE);
 		setstatus(-1, stat);
+		/*
+		   There is a very good reason for having this weird
+		   nl_on_intr variable: when rc and its child both
+		   process a SIGINT, (i.e., the child has a SIGINT
+		   catcher installed) then you don't want rc to print
+		   a newline when the child finally exits. Here's an
+		   example: ed, <type ^C>, <type "q">. rc does not
+		   and should not print a newline before the next
+		   prompt, even though there's a SIGINT in its signal
+		   vector.
+		*/
 		if ((stat & 0xff) == 0)
 			nl_on_intr = FALSE;
-		SIGCHK;
+		sigchk();
 		nl_on_intr = TRUE;
 		pop_cmdarg(TRUE);
 	}

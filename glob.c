@@ -94,11 +94,39 @@ static List *dmatch(char *d, char *p, char *m) {
 	extern DIR *opendir(const char *);
 	extern struct dirent *readdir(DIR *);
 	/*extern int closedir(DIR *);*/
+	int i;
+
+	/*
+ 	   return a match if there are no metacharacters; allows globbing through
+	   directories with no read permission. make sure the file exists, though.
+	 */
+	matched = TRUE;
+	if (m != NULL)
+		for (i = 0; p[i] != '\0'; i++)
+			if (m[i]) {
+				matched = FALSE;
+				break;
+			}
+
+	if (matched) {
+		char *path = nprint("%s/%s", d, p);
+		if (stat(path, &s) < 0)
+			return NULL;
+		r = nnew(List);
+		r->w = ncpy(p);
+		r->m = NULL;
+		r->n = NULL;
+		return r;
+	}
 
 	top = r = NULL;
-	/* opendir succeeds on regular files on some systems, so the stat() call is necessary (sigh) */
-	if (stat(d, &s) < 0 || (s.st_mode & S_IFMT) != S_IFDIR || (dirp = opendir(d)) == NULL)
+	if ((dirp = opendir(d)) == NULL)
 		return NULL;
+	/* opendir succeeds on regular files on some systems, so the stat() call is necessary (sigh) */
+	if (stat(d, &s) < 0 || (s.st_mode & S_IFMT) != S_IFDIR) {
+		closedir(dirp);
+		return NULL;
+	}
 	while ((dp = readdir(dirp)) != NULL)
 		if ((*dp->d_name != '.' || *p == '.') && match(p, m, dp->d_name)) { /* match ^. explicitly */
 			matched = TRUE;
@@ -125,15 +153,17 @@ static List *dmatch(char *d, char *p, char *m) {
 
 static List *lglob(List *s, char *p, char *m, SIZE_T slashcount) {
 	List *q, *r, *top, foo;
-	static List slash;
-	static SIZE_T slashsize = 0;
-	if (slashcount + 1 > slashsize) {
-		slash.w = ealloc(slashcount + 1);
-		slashsize = slashcount;
+	static struct {
+		List l;
+		SIZE_T size;
+	} slash;
+	if (slashcount+1 > slash.size) {
+		slash.size = 2*(slashcount+1);
+		slash.l.w = erealloc(slash.l.w, slash.size);
 	}
-	slash.w[slashcount] = '\0';
+	slash.l.w[slashcount] = '\0';
 	while (slashcount > 0)
-		slash.w[--slashcount] = '/';
+		slash.l.w[--slashcount] = '/';
 	for (top = r = NULL; s != NULL; s = s->n) {
 		q = dmatch(s->w, p, m);
 		if (q != NULL) {
@@ -141,7 +171,7 @@ static List *lglob(List *s, char *p, char *m, SIZE_T slashcount) {
 			foo.m = NULL;
 			foo.n = NULL;
 			if (!(s->w[0] == '/' && s->w[1] == '\0')) /* need to separate */
-				q = concat(&slash, q);		  /* dir/name with slash */
+				q = concat(&slash.l, q);	  /* dir/name with slash */
 			q = concat(&foo, q);
 			if (r == NULL)
 				top = r = q;
@@ -209,7 +239,7 @@ static List *doglob(char *w, char *m) {
 	}
 	do {
 		SIZE_T slashcount;
-		SIGCHK;
+		sigchk();
 		for (slashcount = 0; *s == '/'; s++, m++)
 			slashcount++; /* skip slashes */
 		while (*s != '/' && *s != '\0')

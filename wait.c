@@ -16,7 +16,7 @@ static struct Pid {
 } *plist = NULL;
 
 extern int rc_fork() {
-	Pid *new = enew(Pid);
+	Pid *new;
 	int pid = fork();
 	switch (pid) {
 	case -1:
@@ -25,9 +25,10 @@ extern int rc_fork() {
 		/* NOTREACHED */
 	case 0:
 		forked = TRUE;
-		SIGCHK;
+		sigchk();
 		return 0;
 	default:
+		new = enew(Pid);
 		new->pid = pid;
 		new->alive = TRUE;
 		new->n = plist;
@@ -98,7 +99,7 @@ extern void waitforall() {
 			setstatus(pid, stat);
 		else
 			set(FALSE);
-		SIGCHK;
+		sigchk();
 	}
 }
 

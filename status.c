@@ -80,25 +80,33 @@ extern void statprint(int pid, int i) {
 /* prepare a list to be passed back. Used whenever $status is dereferenced */
 
 extern List *sgetstatus() {
-	List *r;
+	List *r = NULL;
 	int i;
-	for (r = NULL, i = 0; i < pipelength; i++) {
+
+	for (i = 0; i < pipelength; i++) {
 		List *q = nnew(List);
-		int s = statuses[i];
-		int t;
+		q->w = strstatus(statuses[i]);
+		q->m = NULL;
 		q->n = r;
 		r = q;
-		if ((t = s & 0x7f) != 0) {
-			const char *core = (s & 0x80) ? "+core" : "";
-			if (t < NUMOFSIGNALS && *signals[t].name != '\0')
-				r->w = nprint("%s%s", signals[t].name, core);
-			else
-				r->w = nprint("-%d%s", t, core); /* unknown signals are negated */
-		} else
-			r->w = nprint("%d", (s >> 8) & 0xff);
-		r->m = NULL;
 	}
+
 	return r;
+}
+
+/* return status as a string (used above and for bqstatus) */
+
+extern char *strstatus(int s) {
+	int t = s & 0x7f;
+
+	if (t != 0) {
+		const char *core = (s & 0x80) ? "+core" : "";
+		if (t < NUMOFSIGNALS && *signals[t].name != '\0')
+			return nprint("%s%s", signals[t].name, core);
+		else
+			return nprint("-%d%s", t, core); /* unknown signals are negated */
+	} else
+		return nprint("%d", (s >> 8) & 0xff);
 }
 
 extern void ssetstatus(char **av) {

@@ -12,6 +12,7 @@
 #include <errno.h>
 #include "rc.h"
 #include "jbwrap.h"
+#include "sigmsgs.h"
 #ifndef NOLIMITS
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -266,7 +267,7 @@ static void b_wait(char **av) {
 		setstatus(pid, stat);
 	else
 		set(FALSE);
-	SIGCHK;
+	sigchk();
 }
 
 /*
@@ -274,46 +275,69 @@ static void b_wait(char **av) {
    is defined as a variable, function or pathname.
 */
 
+#define not(b)	((b)^TRUE)
+#define show(b)	(not(eff|vee|pee|bee|ess)|(b))
+
+static bool issig(char *s) {
+	int i;
+	for (i = 0; i < NUMOFSIGNALS; i++)
+		if (streq(s, signals[i].name))
+			return TRUE;
+	return FALSE;
+}
+
 static void b_whatis(char **av) {
+	bool ess, eff, vee, pee, bee;
 	bool f, found;
-	bool ess = FALSE;
 	int i, ac, c;
 	List *s;
 	Node *n;
 	char *e;
 	for (rc_optind = ac = 0; av[ac] != NULL; ac++)
 		; /* count the arguments for getopt */
-	while ((c = rc_getopt(ac, av, "s")) == 's')
-		ess = TRUE;
-	if (c != -1) {
-		set(FALSE);
-		return;
-	}
+	ess = eff = vee = pee = bee = FALSE;
+	while ((c = rc_getopt(ac, av, "sfvpb")) != -1)
+		switch (c) {
+		default: set(FALSE); return;
+		case 's': ess = TRUE; break;
+		case 'f': eff = TRUE; break;
+		case 'v': vee = TRUE; break;
+		case 'p': pee = TRUE; break;
+		case 'b': bee = TRUE; break;
+		}
 	av += rc_optind;
-	if (*av == NULL && !ess) {
-		whatare_all_vars();
+	if (*av == NULL) {
+		if (vee|eff)
+			whatare_all_vars(eff, vee);
+		if (ess)
+			whatare_all_signals();
+		if (bee)
+			for (i = 0; i < arraysize(builtins); i++)
+				fprint(1, "builtin %s\n", builtins[i].name);
+		if (pee)
+			fprint(2, "whatis -p: must specify argument\n");
+		if (show(FALSE)) /* no options? */
+			whatare_all_vars(TRUE, TRUE);
 		set(TRUE);
 		return;
 	}
-	if (ess)
-		whatare_all_signals();
 	found = TRUE;
 	for (i = 0; av[i] != NULL; i++) {
 		f = FALSE;
 		errno = ENOENT;
-		if ((s = varlookup(av[i])) != NULL) {
+		if (show(vee) && (s = varlookup(av[i])) != NULL) {
 			f = TRUE;
 			prettyprint_var(1, av[i], s);
 		}
-		if ((n = fnlookup(av[i])) != NULL) {
+		if (((show(ess)&&issig(av[i])) || show(eff)) && (n = fnlookup(av[i])) != NULL) {
 			f = TRUE;
 			prettyprint_fn(1, av[i], n);
-		} else if (isbuiltin(av[i]) != NULL) {
+		} else if (show(bee) && isbuiltin(av[i]) != NULL) {
 			f = TRUE;
 			fprint(1, "builtin %s\n", av[i]);
-		} else if ((e = which(av[i], FALSE)) != NULL) {
+		} else if (show(pee) && (e = which(av[i], FALSE)) != NULL) {
 			f = TRUE;
-			fprint(1, "%s\n", e);
+			fprint(1, "%S\n", e);
 		}
 		if (!f) {
 			found = FALSE;
@@ -440,8 +464,10 @@ static const Limit limits[] = {
 	{ NULL, 0, NULL }
 };
 
+#ifndef SYSVR4
 extern int getrlimit(int, struct rlimit *);
 extern int setrlimit(int, struct rlimit *);
+#endif
 
 static void printlimit(const Limit *limit, bool hard) {
 	struct rlimit rlim;

@@ -246,7 +246,7 @@ again:	s = last;
 
 	/*
 	 * if the command contains the "me" character at the start of the line
-	 * or after any of [`{|()] then try again
+	 * or after any of [`{|()@] then try again
 	 */
 
 	for (t = s; *t != '\0'; t++)
@@ -254,8 +254,16 @@ again:	s = last;
 			char *u = t - 1;
 			while (u >= s && (*u == ' ' || *u == '\t'))
 				--u;
-			if (u < s || *u == '`' || *u == '{' || *u == '|' || *u == '(' || *u == ')')
+			if (u < s)
 				goto again;
+			switch (*u) {
+			case '`': case '@':
+			case '(': case ')':
+			case '{': case '|':
+				goto again;
+			default:
+				break;
+			}
 		}
 	return s;
 }

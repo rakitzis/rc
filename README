@@ -1,4 +1,4 @@
-This is release 1.4 of rc.
+This is release 1.5 of rc.
 
 Read COPYRIGHT for copying information. All files are
 
@@ -62,6 +62,17 @@ differences from the "real" rc. Most of these changes were necessary
 to get rc to work in a reasonable fashion on a real (i.e., commercial,
 non-Labs) UNIX system; a few were changes motivated by concern
 about some inadequacies in the original design.
+
+YACC
+
+The yacc that Sun ships with SunOS 4.1.1 calls malloc() to allocate
+space for the state stack, and requires a call to YYACCEPT or YYABORT
+to free this memory. This means that if rc takes an interrupt while
+parsing a command (say, if ^C is typed), yacc will leak away this
+memory. The solution is to use a yacc which statically allocates
+this array, such as the yacc in the BSD distribution. Berkeley yacc-
+generated y.tab.c and y.tab.h are shipped with rc in case you cannot
+get hold of Berkeley yacc.
 
 OLD C
 

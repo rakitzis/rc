@@ -490,6 +490,7 @@ This allows the unambiguous use of variables adjacent to text, as in
 .Ds
 .Cr $variable^follow
 .De
+.PP
 To include a literal
 .Cr $
 in a here document when an unquoted end-of-file marker is being used,
@@ -683,8 +684,8 @@ the first command exits with a zero exit status (``true'' in Unix).
 .Cr "command || command"
 .De
 .PP
-executes the first command executing the second command if and only if
-the second command exits with a nonzero exit status (``false'' in Unix).
+executes the first command and then executes the second command if and only if
+the first command exits with a nonzero exit status (``false'' in Unix).
 .Ds
 .Cr "! command"
 .De
@@ -1625,7 +1626,7 @@ If no
 .I pid
 is specified,
 .I rc
-waits for any child process to exit.
+waits for all child processes to exit.
 .TP
 \fBwhatis \fR[\fB\-s\fR] [\fB\-\|\-\fR] [\fIname ...\fR]
 Prints a definition of the named objects.

@@ -122,6 +122,8 @@ extern void *ealloc(SIZE_T n) {
 
 extern void *erealloc(void *p, SIZE_T n) {
 	extern void *realloc(void *, SIZE_T);
+	if (p == NULL)		/* convenience feature */
+		return ealloc(n);
 	if ((p = realloc(p, n)) == NULL) {
 		uerror("realloc");
 		rc_exit(1);

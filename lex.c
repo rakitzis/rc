@@ -10,7 +10,7 @@
 	The lexical analyzer is fairly straightforward. The only really
 	unclean part concerns backslash continuation and "double
 	backslashes". A backslash followed by a newline is treated as a
-	space, otherwise backslash is not a special characeter (i.e.,
+	space, otherwise backslash is not a special character (i.e.,
 	it can be part of a word).  This introduces a host of unwanted
 	special cases. In our case, \ cannot be a word character, since
 	we wish to read in all word characters in a tight loop.
@@ -155,9 +155,6 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 			w = KW;
 	}
 	switch (c) {
-	case '\0':
-		pr_error("warning: null character ignored");
-		goto top;
 	case '!':
 		return BANG;
 	case '@':
