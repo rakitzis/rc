@@ -1,12 +1,12 @@
 AC_INIT(rc.h)
 
 dnl Automake stuff.
-AM_INIT_AUTOMAKE(rc, 1.5s19980724)
+AM_INIT_AUTOMAKE(rc, 1.5s19980727)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-07-24")
+AC_DEFINE(RELDATE, "1998-07-27")
 
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
@@ -36,7 +36,7 @@ AC_TYPE_UID_T
 AC_CHECK_TYPE(ssize_t, long)
 
 AC_CHECK_FUNCS(getgroups setpgrp setrlimit)
-
+RC_FUNC_GETGROUPS
 
 dnl sigsetjmp() isn't a real function in some places.
 AC_CACHE_CHECK(for sigsetjmp, rc_cv_sigsetjmp,

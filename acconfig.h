@@ -72,3 +72,6 @@
 
 /* Define if you have SA_INTERRUPT (and sigaction()). */
 #undef HAVE_SA_INTERRUPT
+
+/* Define if you have POSIX getgroups(). */
+#undef HAVE_POSIX_GETGROUPS
