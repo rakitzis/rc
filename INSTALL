@@ -181,6 +181,9 @@ On some systems there are warnings about "passing arg 2 of `getgroups'
 from incompatible pointer type" in which.c.  I believe this is due to an
 incorrect declaration of `getgroups()' in those systems' header files.
 
+The warning "left shift count >= width of type" in tripping.c may
+occur if off_t is only 32 bits.
+
 Any other warnings should be reported to the maintainer.
 
 
