@@ -145,7 +145,12 @@ sigaction(SIGINT, 0, 0);
 
 
 dnl Do we have SysV SIGCLD semantics?  In other words, if we set the
-dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?
+dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?  Linux,
+dnl of course, is bizarre here.  It basically implements the SysV
+dnl semantics, but if the parent calls wait() before the child calls
+dnl exit(), wait() returns with the PID of the child as normal.  (I'm
+dnl almost, but not quite 100% sure that real SysV will *always* return
+dnl ECHILD.)  Anyway, this is why the `sleep(1)' is there.
 AC_DEFUN(RC_SYS_V_SIGCLD, [
 	AC_CACHE_CHECK(for SysV SIGCLD semantics, rc_cv_sysv_sigcld,
 		AC_TRY_RUN([
@@ -156,13 +161,14 @@ AC_DEFUN(RC_SYS_V_SIGCLD, [
 #include <unistd.h>
 int main(void) {
 	int i;
-	sigset(SIGCLD, SIG_IGN);
+	signal(SIGCLD, SIG_IGN);
 	switch (fork()) {
 	case -1:
 		return 1;
 	case 0:
 		return 0;
 	default:
+		sleep(1);
 		if (wait(&i) == -1 && errno == ECHILD) return 0;
 		else return 1;
 	}
