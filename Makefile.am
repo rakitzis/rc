@@ -49,9 +49,9 @@ trip: rc
 
 install-exec-hook:
 if HISTORY
-	$(LN) $(HISTORY) - ;\
+	$(LN) $(HISTBIN) - ;\
 	$(INSTALL_PROGRAM) - $(bindir) ;\
-	-rm -f $(bindir)/--;  $(LN) $(bindir)/- $(bindir)/-- ;\
-	-rm -f $(bindir)/-p;  $(LN) $(bindir)/- $(bindir)/-p ;\
-	-rm -f $(bindir)/--p; $(LN) $(bindir)/- $(bindir)/--p
+	rm -f $(bindir)/--;  $(LN) $(bindir)/- $(bindir)/-- ;\
+	rm -f $(bindir)/-p;  $(LN) $(bindir)/- $(bindir)/-p ;\
+	rm -f $(bindir)/--p; $(LN) $(bindir)/- $(bindir)/--p
 endif
