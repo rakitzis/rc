@@ -150,8 +150,11 @@ produce a few warnings.
 Warnings about "implicit declaration" of system functions may occur if
 your system's include files are deficient---they are usually harmless.
 
-There is a warning about "variable `n' might be clobbered" in walk.c.
-I'm not sure how serious this warning is, nor how to eliminate it.
+Some older versions of gcc warn about "variable `n' might be
+clobbered" in walk.c.  As far as I can tell, this is gcc telling you
+that it might not be compiling the code correctly!  I don't know how
+to eliminate the warning, but it doesn't appear to cause any problems
+in practice.
 
 On some systems there are warnings about "passing arg 2 of `getgroups'
 from incompatible pointer type" in which.c.  I believe this is due to an
