@@ -70,4 +70,11 @@ extern void initsignal() {
 			signal(i, h);
 		sighandlers[i] = h;
 	}
+
+#ifdef SIGCLD
+	/* Ensure that SIGCLD is not SIG_IGN.  Solaris's rshd does this.  :-( */
+	h = signal(SIGCLD, SIG_DFL);
+	if (h != SIG_IGN)
+		signal(SIGCLD, h);
+#endif
 }
