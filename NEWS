@@ -2,22 +2,23 @@ Highlights of changes since rc-1.4.  See ChangeLog for further details.
 
 Portability.  The major change since the last full release is that rc
 now uses GNU autoconf and automake.  Other parts of the build process
-have been tidied up too, so that building rc should be painless.  It has
-been tested on a wide variety of Unix-like systems.
+have been tidied up too, so that building rc should now be painless.  It
+has been tested on a wide variety of Unix-like systems.
 
 Bug fixes.  The following bugs have been fixed: the interaction with
 readline was not always correct; SIGCLD set to SIG_IGN could cause a
 hang; some obscure pipeline incantations could cause a hang; the `wait'
 builtin could become uninterruptible; an application could crash rc
 by making stdin nonblocking; the `-i' flag didn't work with readline;
-$history didn't work properly over NFS; some memory leaks; off by one
-bug in reporting line numbers of errors.
+$history didn't work properly over NFS; a few memory leaks; and an off
+by one bug in reporting line numbers of errors.
 
 New features.  The following features are new: the `-s' flag, which
 causes rc to read from stdin even if arguments are present; the `-V'
-flag, which prints a version string); $bqstatus which holds the exit
+flag, which prints a version string; $bqstatus which holds the exit
 status of the last backquote command; additional options to the `whatis'
-builtin; support for vrl, another lightweight readline-style library.
+builtin; and support for vrl, another lightweight readline-style
+library.
 
 What happened to rc-1.5?  A number of beta releases were made with names
 like rc-1.5b2, which might suggest improvements over rc-1.5.  To avoid
