@@ -502,3 +502,25 @@ Changes since rc-1.5b2
 
   Documentation: it seems better to have but a single URL in the README
   file, which indirects to the other places of interest.
+
+1998-12-08
+
+  Portability: use AM_PROG_CC_STDC.  This obviates the need for a
+  special hack on HP-UX.
+
+  Documentation: document all the flags to `whatis'.
+
+1998-12-09
+
+  Tidiness: latest autoconf version has fixed AC_FUNC_SETPGRP, so we
+  no longer need to supply our own.
+
+  Portability: test for va_copy() needs to include <stdarg.h>.
+
+1998-12-10
+
+  Tidiness: move most of the configure.in nastiness into acinclude.m4.
+
+1998-12-11
+
+  Tidiness: the release date now only needs to be changed in one place.
