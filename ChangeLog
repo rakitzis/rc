@@ -826,3 +826,7 @@ Changes since rc-1.5b2
   Testing: remove test for large file support, as it causes
   indigestion on file systems that don't support sparse files (thanks
   Scott Schwartz).
+
+2003-07-22
+
+  Release: rc-1.7.1.
