@@ -7,6 +7,9 @@ allows partial writes */
 #include "rc.h"
 #include "jbwrap.h"
 
+Jbwrap slowbuf;
+volatile sig_atomic_t slow, interrupt_happened;
+
 static char *safe_buf;
 static size_t safe_remain;
 
