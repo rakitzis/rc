@@ -1,13 +1,10 @@
 AC_INIT(rc.h)
 
-AC_CONFIG_HEADER(config.h)
+dnl Automake stuff.
+AM_INIT_AUTOMAKE(rc, 1.5b3)
+AM_CONFIG_HEADER(config.h)
 
-dnl These are required by automake (and are a good idea, anyway).
-PACKAGE=rc
-VERSION=1.5b3
 RELDATE=1997-07-01
-AC_SUBST(PACKAGE)
-AC_SUBST(VERSION)
 AC_SUBST(RELDATE)
 
 AC_ARG_PROGRAM
@@ -267,15 +264,14 @@ xyes)
 	;;
 esac
 	
-AC_ARG_ENABLE(history, [  --enable-history        Build history subprograms],
-	test "x$enableval" != "xno" && rc_history=yes,
-	rc_history=no)
-case "x$rc_history" in
-xyes)
-	HISTORY=history/history
-	;;
-esac
-AC_SUBST(HISTORY)
+AC_ARG_ENABLE(history,
+	[  --enable-history        Build history subprograms],[
+	case "x$enableval" in
+        xyes) rc_history=yes ;;
+        *) rc_history=no ;;
+        esac
+	], rc_history=no)
+AM_CONDITIONAL(HISTORY, test x$rc_history = xyes)
 
 AC_ARG_WITH(addon, [  --with-addon            Extra builtins, from addon.c ],[
 	case "x$withval" in
@@ -303,6 +299,4 @@ AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing],
 		AC_MSG_WARN(readline library not found),
 		-ltermcap))
 
-AC_OUTPUT(Makefile stamp-h version.c, [
-	test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h
-])
+AC_OUTPUT(Makefile version.c)
