@@ -257,6 +257,7 @@ again:	s = last;
 			case '`': case '@':
 			case '(': case ')':
 			case '{': case '|':
+			case '/':
 				goto again;
 			default:
 				break;
@@ -275,7 +276,6 @@ int main(int argc, char **argv) {
 		s++;
 		editit = TRUE;
 	}
-editit = TRUE;
 	if (*s == 'p') {
 		s++;
 		printit = TRUE;
