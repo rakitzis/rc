@@ -196,7 +196,7 @@ static void barf(char *msg) {
     exit(1);
 }
 
-extern int main() {
+int main(void) {
     int maxsig = NUMSIG-1;
     int s;
     signaming *snp;
