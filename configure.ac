@@ -13,7 +13,7 @@ dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
 dnl -Wmissing-prototypes', and all the warning generated are harmless.
 AC_PROG_CC
 case "$GCC" in
-yes) CFLAGS="-Wall  $CFLAGS" ;;
+yes) CFLAGS="-Wall $CFLAGS" ;;
 esac
 
 AC_PROG_CPP
