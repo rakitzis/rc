@@ -236,6 +236,7 @@ extern List *parse_var(char *extdef) {
 
 	first = last = NULL;
 	begin = strchr(extdef, '=');
+	assert(begin); /* guaranteed by initenv() */
 	while (*begin) {
 		++begin;
 		end = begin;
