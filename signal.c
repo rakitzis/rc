@@ -28,10 +28,16 @@ extern void catcher(int s) {
 		in_readline = FALSE;
 		switch (s) {
 		extern int rl_pending_input;
-		
+		extern VFunction *rl_deprep_term_function;
+	
 		default:
+#if READLINE_OLD
 			rl_clean_up_for_exit();
 			rl_deprep_terminal();
+#else
+			_rl_clean_up_for_exit();
+			(*rl_deprep_term_function)();
+#endif
 			rl_clear_signals();
 			rl_pending_input = 0;
 			break;

@@ -52,6 +52,9 @@
 /* Define if you want to use GNU readline. */
 #undef READLINE
 
+/* Define if you have the older readline, with rl_deprep_terminal. */
+#undef READLINE_OLD
+
 /* Define if RLIMIT_foo defines need _KERNEL. */
 #undef RLIMIT_NEEDS_KERNEL
 

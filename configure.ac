@@ -290,12 +290,21 @@ AC_ARG_WITH(editline, [  --with-editline         Simmule Turner's line editing],
 		AC_DEFINE(EDITLINE) LIBS="$LIBS -ledit",
 		AC_MSG_WARN(editline library not found)))
 
-AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing],
-	AC_CHECK_LIB(readline, readline, [
+dnl Getting readline right is hard.  There are (at least) two incompatible versions,
+dnl and we need to know which one we are using.  There are also two different
+dnl names for the include files.
+AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing], [
+	AC_CHECK_LIB(readline, rl_deprep_terminal, [
+		AC_DEFINE(READLINE)
+		AC_DEFINE(READLINE_OLD)
+	], [
+		AC_CHECK_LIB(readline, readline, [
 			AC_DEFINE(READLINE)
-			LIBS="$LIBS -lreadline -ltermcap"
-			AC_CHECK_HEADERS(readline.h readline/readline.h)
-	], AC_MSG_WARN(readline library not found), -ltermcap))
+		], AC_MSG_WARN(readline library not found), -ltermcap)
+	], -ltermcap)
+	LIBS="$LIBS -lreadline -ltermcap"
+	AC_CHECK_HEADERS(readline.h readline/readline.h)
+])
 AM_CONDITIONAL(AMC_READLINE, test "${with_readline+set}" = set)
 
 AC_OUTPUT(Makefile)
