@@ -72,7 +72,7 @@ extern void funcall(char **av) {
 	Jbwrap j;
 	Estack e1, e2;
 	Edata jreturn, star;
-	if (setjmp(j.j))
+	if (sigsetjmp(j.j, 1))
 		return;
 	starassign(*av, av+1, TRUE);
 	jreturn.jb = &j;

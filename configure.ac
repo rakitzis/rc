@@ -18,23 +18,11 @@ AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 
-dnl Linux puts real signal names in /usr/include/asm/signal.h.  NT puts
-dnl them somewhere else altogether.  This attempts to parse the output
-dnl of saying `#include <signal.h>' to find the full path of files named
-dnl signal.h, then examines each of those to see if it contains the
-dnl `#define's we want.  What a hack.
-
-echo '#include <signal.h>' > temp.c
-AC_CACHE_CHECK(for full paths of <signal.h>, rc_cv_full_signal_h, [
-	rc_cv_full_signal_h=`$CPP temp.c |sed -n 's/.*"\(.*signal.h\)".*/\1/p' |sort -u |sed 'y/
-/ /'`
-	case "x$rc_cv_full_signal_h" in
-	x)
-		rc_cv_full_signal_h='/usr/include/sys/signal.h /usr/include/asm/signal.h'
-		;;
-	esac
-])
-rm temp.c
+dnl At some point, we might attempt to parse the output of saying
+dnl `#include <signal.h>' using something like
+dnl rc_cv_full_signal_h=`$CPP temp.c |sed -n 's/.*"\(.*signal.h\)".*/\1/p' |sort -u |sed 'y/\n/ /'`
+dnl (but that doesn't work quite right).
+rc_cv_full_signal_h='/usr/include/signal.h /usr/include/sys/signal.h /usr/include/asm/signal.h'
 
 AC_CACHE_CHECK(for signal names, rc_cv_signal_h,
 	for i in $rc_cv_full_signal_h; do
@@ -60,7 +48,24 @@ AC_TYPE_UID_T
 
 AC_CHECK_FUNCS(getgroups setpgrp setrlimit)
 
+
+dnl sigsetjmp() isn't a real function in some places.
+AC_CACHE_CHECK(for sigsetjmp, rc_cv_sigsetjmp,
+	AC_TRY_LINK([
+#include <setjmp.h>
+	], [
+jmp_buf e;
+setjmp(e);
+	], rc_cv_sigsetjmp=yes, rc_cv_sigsetjmp=no))
+case "x$rc_cv_sigsetjmp" in
+xyes)
+	AC_DEFINE(HAVE_SIGSETJMP)
+	;;
+esac
+
+
 AC_FUNC_SETPGRP
+
 
 dnl HPUX needs _KERNEL defined to pick up RLIMIT_foo defines.  (Why?)
 AC_CACHE_CHECK(if _KERNEL is required for RLIMIT defines, rc_cv_kernel_rlimit,
@@ -84,6 +89,7 @@ xyes)
 	AC_DEFINE(RLIMIT_NEEDS_KERNEL)
 	;;
 esac
+
 
 dnl Look for rlim_t in sys/types.h and sys/resource.h
 AC_CACHE_CHECK(for rlim_t, rc_cv_have_rlim_t,

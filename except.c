@@ -91,7 +91,7 @@ extern void rc_raise(ecodes e) {
 
 				interactive = estack->interactive;
 				estack = estack->prev;
-				longjmp(j->j, 1);
+				siglongjmp(j->j, 1);
 			}
 		}
 	rc_exit(1); /* top of exception stack */

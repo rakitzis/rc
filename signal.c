@@ -21,7 +21,7 @@ extern void catcher(int s) {
 	interrupt_happened = TRUE;
 #ifdef HAVE_RESTARTABLE_SYSCALLS
 	if (slow)
-		longjmp(slowbuf.j, 1);
+		siglongjmp(slowbuf.j, 1);
 #endif
 }
 

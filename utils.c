@@ -76,7 +76,7 @@ extern void writeall(int fd, char *buf, size_t remain) {
 	safe_remain = remain;
 	for (i = 0; safe_remain > 0; buf += i, safe_remain -= i) {
 		interrupt_happened = FALSE;
-		if (!setjmp(slowbuf.j)) {
+		if (!sigsetjmp(slowbuf.j, 1)) {
 			slow = TRUE;
 			if (interrupt_happened)
 				break;
@@ -93,7 +93,7 @@ extern void writeall(int fd, char *buf, size_t remain) {
 extern int rc_read(int fd, char *buf, size_t n) {
 	long /*ssize_t*/ r;
 	interrupt_happened = FALSE;
-	if (!setjmp(slowbuf.j)) {
+	if (!sigsetjmp(slowbuf.j, 1)) {
 		slow = TRUE;
 		if (!interrupt_happened)
 			r = read(fd, buf, n);

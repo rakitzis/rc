@@ -36,6 +36,14 @@
 
 #endif /*HAVE_SETPGRP */
 
+#if HAVE_SIGSETJMP
+/* Smells like POSIX. */
+#else
+/* Assume BSD.  Probably fails on traditional SysV. */
+#define sigsetjmp setjmp
+#define siglongjmp longjmp
+#endif /* HAVE_SIGSETJMP */
+
 typedef void builtin_t(char **);
 typedef struct Block Block;
 typedef struct Dup Dup;

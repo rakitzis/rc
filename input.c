@@ -92,7 +92,7 @@ static int stringgchar() {
 static char *rc_readline(char *prompt) {
 	char *r;
 	interrupt_happened = FALSE;
-	if (!setjmp(slowbuf.j)) {
+	if (!sigsetjmp(slowbuf.j, 1)) {
 		slow = TRUE;
 		if (!interrupt_happened)
 			r = readline(prompt);
@@ -256,7 +256,7 @@ extern Node *doit(bool execit) {
 
 	if (dashen)
 		execit = FALSE;
-	setjmp(j.j);
+	sigsetjmp(j.j, 1);
 	jerror.jb = &j;
 	except(eError, jerror, &e1);
 	for (eof = FALSE; !eof;) {

@@ -108,7 +108,7 @@ top:	sigchk();
 			cond = oldcond;
 			break;
 		}
-		if (setjmp(j.j))
+		if (sigsetjmp(j.j, 1))
 			break;
 		jbreak.jb = &j;
 		except(eBreak, jbreak, &e1);
@@ -131,7 +131,7 @@ top:	sigchk();
 		Jbwrap j;
 		Estack e1, e2;
 		Edata jbreak;
-		if (setjmp(j.j))
+		if (sigsetjmp(j.j, 1))
 			break;
 		jbreak.jb = &j;
 		except(eBreak, jbreak, &e1);

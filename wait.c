@@ -137,7 +137,7 @@ static pid_t rc_wait(int *stat) {
 
 	gotint = 0;
 	old = signal(SIGINT, gotint_handler);
-	if (!setjmp(slowbuf.j)) {
+	if (!sigsetjmp(slowbuf.j, 1)) {
 		slow = TRUE;
 		if (!interrupt_happened)
 			r = wait(stat);
