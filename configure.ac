@@ -38,12 +38,14 @@ AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 AC_CHECK_TYPE(ssize_t, long)
 
-AC_CHECK_FUNCS(getgroups setpgrp setrlimit strerror)
+AC_CHECK_FUNCS(getgroups setpgrp setrlimit)
 RC_FUNC_GETGROUPS
 
 RC_FUNC_SIGSETJMP
 
 AC_FUNC_SETPGRP
+
+RC_FUNC_STRERROR
 
 RC_NEED_KERNEL
 

@@ -29,6 +29,19 @@ sigsetjmp(e, 1);
 	esac
 ])
 
+dnl Similarly, AC_CHECK_FUNCS doesn't find strerror() on NetBSD.
+AC_DEFUN(RC_FUNC_STRERROR, [
+	AC_CACHE_CHECK(for strerror, rc_cv_strerror,
+		AC_TRY_LINK([
+#include <string.h>
+		], [
+strerror(0);
+		], rc_cv_strerror=yes, rc_cv_strerror=no))
+	case "$rc_cv_strerror" in
+	yes)	AC_DEFINE(HAVE_STRERROR) ;;
+	esac
+])
+
 dnl HPUX needs _KERNEL defined to pick up RLIMIT_foo defines.  (Why?)
 AC_DEFUN(RC_NEED_KERNEL, [
 	AC_CACHE_CHECK(if _KERNEL is required for RLIMIT defines, rc_cv_kernel_rlimit,
