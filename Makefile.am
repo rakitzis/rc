@@ -36,7 +36,7 @@ install-exec-hook:
 if HISTORY
 	$(LN) $(HISTORY) - ;\
 	$(INSTALL_PROGRAM) - $(bindir) ;\
-	rm -f $(bindir)/--;  $(LN) $(bindir)/- $(bindir)/-- ;\
-	rm -f $(bindir)/-p;  $(LN) $(bindir)/- $(bindir)/-p ;\
-	rm -f $(bindir)/--p; $(LN) $(bindir)/- $(bindir)/--p
+	-rm -f $(bindir)/--;  $(LN) $(bindir)/- $(bindir)/-- ;\
+	-rm -f $(bindir)/-p;  $(LN) $(bindir)/- $(bindir)/-p ;\
+	-rm -f $(bindir)/--p; $(LN) $(bindir)/- $(bindir)/--p
 endif
