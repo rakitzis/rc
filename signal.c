@@ -27,8 +27,10 @@ extern void catcher(int s) {
 	if (in_readline) {
 		in_readline = FALSE;
 		switch (s) {
+		extern int rl_pending_input;
+		
 		default:
-			_rl_clean_up_for_exit();
+			rl_clean_up_for_exit();
 			rl_deprep_terminal();
 			rl_clear_signals();
 			rl_pending_input = 0;
