@@ -2,6 +2,7 @@
 
 #include "rc.h"
 #include "sigmsgs.h"
+#include "wait.h"
 
 /* status == the wait() value of the last command in the pipeline, or the last command */
 
