@@ -39,7 +39,7 @@ static bool Dconv(Format *f, int ignore) {
 
 /* defaultfd -- return the default fd for a given redirection operation */
 
-extern int defaultfd(int op) {
+static int defaultfd(int op) {
 	return (op == rCreate || op == rAppend) ? 1 : 0;
 }
 
@@ -221,7 +221,7 @@ extern char *get_name(char *s) {
 
 #define skipleft(p) do --p; while (*p != '\0' && *p != '\001');
 
-extern List *parse_var(char *name, char *extdef) {
+extern List *parse_var(char *extdef) {
 	char *endp, *realend, *sepp;
 	List *tailp, *new;
 
@@ -257,7 +257,7 @@ extern List *parse_var(char *name, char *extdef) {
 
 #define PREFIX "fn x"
 #define PRELEN conststrlen(PREFIX)
-extern Node *parse_fn(char *name, char *extdef) {
+extern Node *parse_fn(char *extdef) {
 	Node *def;
 	char *s, old[PRELEN];
 	if ((s = strchr(extdef, '=')) == NULL)
@@ -269,7 +269,7 @@ extern Node *parse_fn(char *name, char *extdef) {
 	return (def == NULL || def->type != nNewfn) ? NULL : def->u[1].p;
 }
 
-static bool Aconv(Format *f, int c) {
+static bool Aconv(Format *f, int ignore) {
 	char **a = va_arg(f->args, char **);
 	if (*a != NULL) {
 		fmtcat(f, *a);
@@ -279,7 +279,7 @@ static bool Aconv(Format *f, int c) {
 	return FALSE;
 }
 
-static bool Lconv(Format *f, int c) {
+static bool Lconv(Format *f, int ignore) {
 	List *l = va_arg(f->args, List *);
 	char *sep = va_arg(f->args, char *);
 	char *fmt = (f->flags & FMT_leftside) ? "%s%s" : "%-S%s";

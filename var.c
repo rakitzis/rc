@@ -83,7 +83,7 @@ extern List *varlookup(char *name) {
 		return look->def;
 	if (look->extdef == NULL)
 		return NULL; /* variable was set to null, e.g., a=() echo foo */
-	ret = parse_var(name, look->extdef);
+	ret = parse_var(look->extdef);
 	if (ret == NULL) {
 		look->extdef = NULL;
 		return NULL;

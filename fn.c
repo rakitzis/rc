@@ -133,7 +133,7 @@ static void fn_handler(int s) {
 
 /* A dud signal handler for SIGQUIT and SIGTERM */
 
-static void dud_handler(int s) {
+static void dud_handler(int ignore) {
 }
 
 /*
@@ -189,7 +189,7 @@ extern Node *fnlookup(char *name) {
 		return look->def;
 	if (look->extdef == NULL) /* function was set to null, e.g., fn foo {} */
 		return &null;
-	ret = parse_fn(name, look->extdef);
+	ret = parse_fn(look->extdef);
 	if (ret == NULL) {
 		efree(look->extdef);
 		look->extdef = NULL;
