@@ -9,6 +9,7 @@ xyes)
 	;;
 esac
 
+AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_YACC
 AC_CHECK_PROGS(LN, ln cp)
@@ -17,34 +18,37 @@ AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 
-dnl Linux puts real signal names in /usr/include/asm/signal.h.
-AC_CACHE_CHECK(for signal names in <sys/signal.h>, rc_cv_sys_signal_h,
-	if grep SIGINT /usr/include/sys/signal.h >/dev/null 2>&1; then
-		rc_cv_sys_signal_h=yes
-	else
-		rc_cv_sys_signal_h=no
-	fi)
+dnl Linux puts real signal names in /usr/include/asm/signal.h.  NT puts
+dnl them somewhere else altogether.  This attempts to parse the output
+dnl of saying `#include <signal.h>' to find the full path of files named
+dnl signal.h, then examines each of those to see if it contains the
+dnl `#define's we want.  What a hack.
 
-case "x$rc_cv_sys_signal_h" in
-xyes)
-	SIGNAL_H=/usr/include/sys/signal.h
-	;;
-xno)
-	AC_CACHE_CHECK(for signal names in <asm/signal.h>, rc_cv_asm_signal_h,
-		if grep SIGINT /usr/include/asm/signal.h >/dev/null 2>&1; then
-			rc_cv_asm_signal_h=yes
-		else
-			rc_cv_asm_signal_h=no
-		fi)
-
-	case "x$rc_cv_asm_signal_h" in
-	xyes)
-		SIGNAL_H=/usr/include/asm/signal.h
-		;;
-	xno)
-		AC_MSG_ERROR(Can't find signal names in <sys/signal.h> or <asm/signal.h>)
+echo '#include <signal.h>' > temp.c
+AC_CACHE_CHECK(for full paths of <signal.h>, rc_cv_full_signal_h, [
+	rc_cv_full_signal_h=`$CPP temp.c |sed -n 's/.*"\(.*signal.h\)".*/\1/p' |sort -u |sed 'y/
+/ /'`
+	case "x$rc_cv_full_signal_h" in
+	x)
+		rc_cv_full_signal_h='/usr/include/sys/signal.h /usr/include/asm/signal.h'
 		;;
 	esac
+])
+rm temp.c
+
+AC_CACHE_CHECK(for signal names, rc_cv_signal_h,
+	for i in $rc_cv_full_signal_h; do
+		if grep SIGINT $i >/dev/null 2>&1; then
+			rc_cv_signal_h=$i
+		fi
+	done
+)
+case "x$rc_cv_signal_h" in
+x)
+	AC_MSG_ERROR(Can't find signal names in $rc_cv_full_signal_h)
+	;;
+*)
+	SIGNAL_H=$rc_cv_signal_h
 	;;
 esac
 AC_SUBST(SIGNAL_H)
