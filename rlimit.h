@@ -3,40 +3,40 @@
 #if HAVE_SETRLIMIT
 
 #if HAVE_SYS_RESOURCE_H
-#  include <sys/time.h>
-#  if RLIMIT_NEEDS_KERNEL
-#    define _KERNEL
-#  endif
-#  include <sys/resource.h>
-#  if RLIMIT_NEEDS_KERNEL
-#    undef _KERNEL
-#  endif
+#include <sys/time.h>
+#if RLIMIT_NEEDS_KERNEL
+#define _KERNEL
+#endif
+#include <sys/resource.h>
+#if RLIMIT_NEEDS_KERNEL
+#undef _KERNEL
+#endif
 #else
-#  include <sys/times.h>
+#include <sys/times.h>
 #endif
 
 #if HAVE_LIMITS_H
-#  include <limits.h>
+#include <limits.h>
 #endif
 
 #ifndef HAVE_RLIM_T
-# if RLIM_T_IS_QUAD_T
+#if RLIM_T_IS_QUAD_T
 typedef quad_t rlim_t;
-# else
+#else
 typedef long rlim_t;
-# endif
+#endif
 #endif
 
 #if HAVE_QUAD_T
-# define RLIM_CONV quad_t
-# define RLIM_FMT "%s \t%qd%s\n"
+#define RLIM_CONV quad_t
+#define RLIM_FMT "%s \t%qd%s\n"
 #else
-# define RLIM_CONV long
-# define RLIM_FMT "%s \t%ld%s\n"
+#define RLIM_CONV long
+#define RLIM_FMT "%s \t%ld%s\n"
 #endif
 
 #if defined(RLIMIT_OFILE) && !defined (RLIMIT_NOFILE)
-#  define RLIMIT_NOFILE RLIMIT_OFILE
+#define RLIMIT_NOFILE RLIMIT_OFILE
 #endif
 
 #endif /* HAVE_SETRLIMIT */
