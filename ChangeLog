@@ -772,6 +772,13 @@ Changes since rc-1.5b2
 2002-04-03
 
   Feature: make $version less magical, and exportable if it's changed
-  from its default value.  Same for $prompt.
+  from its default value.  Same for $prompt (thank Erik Quanstrom).
 
   Bug: make $bqstatus and $status not exportable.
+
+  Feature: "stuttering" colons for multiple replacements in the
+  history programs (thanks Callum Gibson).
+
+2002-05-22
+
+  Release: rc-1.6c7.
