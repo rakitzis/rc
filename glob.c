@@ -127,6 +127,7 @@ static List *dmatch(char *d, char *p, char *m) {
 	}
 
 	top = r = NULL;
+	if (*d == '\0') d = "/";
 	if ((dirp = opendir(d)) == NULL)
 		return NULL;
 	/* opendir succeeds on regular files on some systems, so the stat() call is necessary (sigh) */
@@ -216,8 +217,10 @@ static List *doglob(char *w, char *m) {
 	p = pattern;
 	md = metadir;
 	mp = metapattern;
-	while (*s != '/' && *s != '\0')
-		*d++ = *s++, *md++ = *m++; /* get first directory component */
+	while (*s != '/' && *s != '\0') {
+		*d++ = *s++; /* get first directory component */
+		*md++ = *m++;
+	}
 	*d = '\0';
 	/*
 	   Special case: no slashes in the pattern, i.e., open the current directory.
