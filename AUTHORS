@@ -1,3 +1,6 @@
+The current maintainer of rc is Tim Goodwin <tgoodwin@cygnus.co.uk>.
+Please send all bug reports to him.
+
 This shell was written by me, Byron Rakitzis, but kudos go to Paul Haahr
 for letting me know what a shell should do and for contributing certain
 bits and pieces to rc (notably the limits code, print.c, most of which.c
@@ -23,4 +26,8 @@ same ftp directory as the shell).  Please read this paper bearing in
 mind that it describes a program that was written at AT&T and that the
 version of rc presented here differs in some respects.
 
-The current maintainer of rc is Tim Goodwin <tgoodwin@cygnus.co.uk>.
+Tim would like to thank these people for their contributions since
+he took over maintenance of rc.  Arvid Requate, Brynjulv Hauksson,
+Byron Rakitzis, Chris Siebenmann, Gert-Jan Vons, Ian Lance Taylor, Marc
+Moorcroft, Rich $alz, Rob Savoye, Scott Schwartz, Tom Culliton, Tom
+Tromey, Vincent Broman.
