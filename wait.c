@@ -1,3 +1,5 @@
+#include "rc.h"
+
 #include <errno.h>
 
 #include "wait.h"

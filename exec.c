@@ -7,8 +7,6 @@
 
 #include "wait.h"
 
-#include "rc.h"
-#include "wait.h"
 /*
    Takes an argument list and does the appropriate thing (calls a
    builtin, calls a function, etc.)

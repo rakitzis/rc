@@ -202,13 +202,6 @@ extern void exec(List *, bool);
 extern int my_execve(char *, char **, char **);
 #endif
 
-#if HASH_BANG
-#define rc_execve execve
-#else
-/* execve.c */
-extern int my_execve(char *, char **, char **);
-#endif
-
 /* footobar.c */
 extern char **list2array(List *, bool);
 extern char *get_name(char *);
