@@ -3,10 +3,12 @@
 
 /* datatypes */
 
+#define ENV_SEP '\001'
+#define ENV_ESC '\002'
+
 /* braindamaged IBM header files #define true and false */
 #undef FALSE
 #undef TRUE
-
 
 typedef void builtin_t(char **);
 typedef struct Block Block;
