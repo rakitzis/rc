@@ -437,3 +437,33 @@ Changes since rc-1.5b2
   include it explicitly.
 
   Documentation: document the ^A bug.
+
+1998-10-22
+
+  Tidiness: makenonblock() was a rather poor choice of name for
+  a function which makes a file descriptor *not* nonblocking :-).
+
+1998-10-26
+
+  Portability: apparently some systems declare `char *basename(const
+  char *)' in system header files.  Changing our basename() (in
+  history.c) to match this prototype allows it to be compiled on such
+  systems, and is harmless.  (Harmless, that is, if no system declares
+  `char *basename(char *)'.)
+
+1998-10-28
+
+  Bug: system-bsd.c needs to include "wait.h".
+
+  Warnings: some versions of gcc warn about "ambiguous" `else' clauses.
+
+  Portability: assigning va_list objects doesn't work everywhere (Linux
+  on the PowerPC, specifically).  Use the C 9x invention va_copy()
+  instead, if it exists, otherwise fall back to assignment.
+
+  Documentation: help HP-UX users by mentioning that you need `cc -Ae'.
+  Also, HP-UX make will build rc in a separate directory.
+
+  Tidiness: remove unused functions from print.c.  Anybody wanting to
+  use this library in another project should follow the pointer in the
+  documentation to an improved version.

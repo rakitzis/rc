@@ -4,12 +4,12 @@ dnl eventually into the automake distribution...
 AC_INIT(rc.h)
 
 dnl Automake stuff.
-AM_INIT_AUTOMAKE(rc, 1.5s19981021)
+AM_INIT_AUTOMAKE(rc, 1.5s19981028)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-10-21")
+AC_DEFINE(RELDATE, "1998-10-28")
 
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
