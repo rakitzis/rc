@@ -85,19 +85,19 @@ extern void initsignal() {
 	void (*h)(int);
 	int i;
 
-	for (i = 1; i < NUMOFSIGNALS; i++) {
-		h = sys_signal(i, SIG_DFL);
-		if (h != SIG_DFL && h != SIG_ERR)
-			sys_signal(i, h);
-		sighandlers[i] = h;
-	}
-
 #if HAVE_SYSV_SIGCLD
 	/* Ensure that SIGCLD is not SIG_IGN.  Solaris's rshd does this.  :-( */
-	h = sys_signal(SIGCLD, SIG_DFL);
+	h = sys_signal(SIGCLD, SIG_IGN);
 	if (h != SIG_IGN && h != SIG_ERR)
 		sys_signal(SIGCLD, h);
 	else
-		sighandlers[SIGCLD] = SIG_DFL;
+		sys_signal(SIGCLD, SIG_DFL);
 #endif
+
+	for (i = 1; i < NUMOFSIGNALS; i++) {
+		h = sys_signal(i, SIG_IGN);
+		if (h != SIG_IGN && h != SIG_ERR)
+			sys_signal(i, h);
+		sighandlers[i] = h;
+	}
 }

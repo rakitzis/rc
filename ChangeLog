@@ -658,3 +658,4 @@ Changes since rc-1.5b2
   Bug: absolute globs do still need a special case.  `/*' works again now, but
   we still avoid creating names like `//tmp/foo'.
 
+  Bug: avoid a putative race condition in signal.c.
