@@ -148,9 +148,9 @@ dnl Do we have SysV SIGCLD semantics?  In other words, if we set the
 dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?  Linux,
 dnl of course, is bizarre here.  It basically implements the SysV
 dnl semantics, but if the parent calls wait() before the child calls
-dnl exit(), wait() returns with the PID of the child as normal.  (I'm
-dnl almost, but not quite 100% sure that real SysV will *always* return
-dnl ECHILD.)  Anyway, this is why the `sleep(1)' is there.
+dnl exit(), wait() returns with the PID of the child as normal.  (Real
+dnl SysV waits for all children to exit, then returns with ECHILD.)
+dnl Anyway, this is why the `sleep(1)' is there.
 AC_DEFUN(RC_SYS_V_SIGCLD, [
 	AC_CACHE_CHECK(for SysV SIGCLD semantics, rc_cv_sysv_sigcld,
 		AC_TRY_RUN([
