@@ -18,48 +18,9 @@ AC_PROG_INSTALL
 AC_PROG_YACC
 AC_CHECK_PROGS(LN, ln cp)
 
-AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
+AC_CHECK_HEADERS(stdlib.h sys/resource.h sys/time.h sys/types.h unistd.h)
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-
-
-dnl Most systems put the real signal names in /usr/include/sys/signal.h.
-dnl Linux puts them in /usr/include/asm/signal.h.  CygWin32 puts them
-dnl somewhere else altogether.  This hack attempts to parse the output
-dnl of saying `#include <signal.h>' to the preprocessor in order to find
-dnl the full path of files named signal.h.  The first sed substitution
-dnl handles paths on CygWin32, and is a good example of why rc's quoting
-dnl rules are superior to sh's.  If this process doesn't produce any
-dnl filenames, fall back to the (Unixoid) defaults.
-
-AC_CACHE_CHECK(for full paths of <signal.h>, rc_cv_full_signal_h, [
-	echo '#include <signal.h>' > temp.c
-	rc_cv_full_signal_h=`$CPP temp.c |sed -n 's/\\\\\\\\/\\\\/g;s/.*"\(.*signal.h\)".*/\1/p' |
-sort -u |tr '
-' ' '`
-	rm -f temp.c
-	case "$rc_cv_full_signal_h" in
-        '')	rc_cv_full_signal_h='/usr/include/signal.h /usr/include/sys/signal.h /usr/include/asm/signal.h' ;;
-	esac
-])
-
-dnl Phew!  We now have a list of <signal.h>s.  Examine each one to see
-dnl if it contains the signal names we're after.  If not, that's a
-dnl configure error: bomb out.
-
-AC_CACHE_CHECK(for signal names, rc_cv_signal_h,
-	for i in $rc_cv_full_signal_h; do
-		if grep SIGINT $i >/dev/null 2>&1; then
-			rc_cv_signal_h=$i
-		fi
-	done
-)
-case "$rc_cv_signal_h" in
-'') AC_MSG_ERROR(Can't find signal names in $rc_cv_full_signal_h) ;;
-*) SIGNAL_H=$rc_cv_signal_h ;;
-esac
-AC_SUBST(SIGNAL_H)
-
 
 AC_TYPE_GETGROUPS
 AC_TYPE_PID_T
