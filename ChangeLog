@@ -685,10 +685,6 @@ Changes since rc-1.5b2
   Feature: add `-I' flag (definitively not interactive) for
   compatibility with Plan 9 rc.
 
-2000-07-27
-
-  Feature: the "equals hack".
-
 2000-11-27
 
   Portability: configure fails to detect strerror() on NetBSD; we need
