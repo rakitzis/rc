@@ -2,12 +2,16 @@
 
 #include <signal.h>
 #include <setjmp.h>
+
 #include "rc.h"
 #include "sigmsgs.h"
 #include "jbwrap.h"
 
+#if HAVE_RESTARTABLE_SYSCALLS
 Jbwrap slowbuf;
 volatile SIG_ATOMIC_T slow, interrupt_happened;
+#endif
+
 void (*sighandlers[NUMOFSIGNALS])(int);
 
 static volatile SIG_ATOMIC_T sigcount, caught[NUMOFSIGNALS];
@@ -18,11 +22,13 @@ extern void catcher(int s) {
 		caught[s] = 1;
 	}
 	signal(s, catcher);
-	interrupt_happened = TRUE;
+
 #if HAVE_RESTARTABLE_SYSCALLS
+	interrupt_happened = TRUE;
 	if (slow)
 		siglongjmp(slowbuf.j, 1);
 #endif
+
 }
 
 extern void sigchk() {
