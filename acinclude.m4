@@ -9,7 +9,7 @@ int main(void) {
 }
 	], rc_cv_func_posix_getgroups=yes, rc_cv_func_posix_getgroups=no, rc_cv_func_posix_getgroups=yes))
 	case "$rc_cv_func_posix_getgroups" in
-	yes) AC_DEFINE(HAVE_POSIX_GETGROUPS, 1, [Has POSIX getgroups()]) ;;
+	yes) AC_DEFINE(HAVE_POSIX_GETGROUPS, 1, [Define to 1 if you have the `getgroups' function with POSIX semantics.]) ;;
 	esac
 ])
 
@@ -61,7 +61,7 @@ int f;
 f = RLIMIT_DATA;
 			], rc_cv_kernel_rlimit=yes, rc_cv_kernel_rlimit=no)]))
 	case "$rc_cv_kernel_rlimit" in
-	yes)	AC_DEFINE(RLIMIT_NEEDS_KERNEL, 1, [Needs _KERNEL for RLIMIT]) ;;
+	yes)	AC_DEFINE(RLIMIT_NEEDS_KERNEL, 1, [Define to 1 if `_KERNEL' must be defined for `RLIMIT_*' macros.]) ;;
 	esac
 ])
 
@@ -77,7 +77,7 @@ AC_DEFUN(RC_TYPE_RLIM_T, [
 		], rc_cv_have_rlim_t=yes, rc_cv_have_rlim_t=no))
 
 	case "$rc_cv_have_rlim_t" in
-	yes)	AC_DEFINE(HAVE_RLIM_T, 1, [Has rlim_t]) ;;
+	yes)	AC_DEFINE(HAVE_RLIM_T, 1, [Define to 1 if you have the `rlim_t' type.]) ;;
 	no)	AC_CACHE_CHECK(for native quad_t, rc_cv_have_quad_t,
 			AC_TRY_COMPILE([
 #include <sys/types.h>
@@ -88,7 +88,7 @@ a = (quad_t)0;
 			], rc_cv_have_quad_t=yes, rc_cv_have_quad_t=no))
 
 		case "$rc_cv_have_quad_t" in
-		yes)	AC_DEFINE(HAVE_QUAD_T, 1, [Has quad_t])
+		yes)	AC_DEFINE(HAVE_QUAD_T, 1, [Define to 1 if you have the `quad_t' type.])
 			AC_CACHE_CHECK(if rlimit values are quad_t, rc_cv_rlim_t_is_quad_t,
 				AC_TRY_RUN([
 #include <sys/types.h>
@@ -108,7 +108,7 @@ main(){
 				], rc_cv_rlim_t_is_quad_t=yes, rc_cv_rlim_t_is_quad_t=no, $ac_cv_type_quad_t))
 
 			case "$rc_cv_rlim_t_is_quad_t" in
-			yes)	AC_DEFINE(RLIM_T_IS_QUAD_T, 1, [rlim_t is quad_t]) ;;
+			yes)	AC_DEFINE(RLIM_T_IS_QUAD_T, 1, [Define to 1 if `rlim_t' is `quad_t'.]) ;;
 			esac
 			;;
 		esac
@@ -123,7 +123,7 @@ AC_DEFUN(RC_TYPE_SIG_ATOMIC_T, [
 		AC_EGREP_HEADER(sig_atomic_t, signal.h,
 			rc_cv_sig_atomic_t=yes, rc_cv_sig_atomic_t=no))
 	case "$rc_cv_sig_atomic_t" in
-	no)	AC_DEFINE(sig_atomic_t, int, [Has sig_atomic_t]) ;;
+	no)	AC_DEFINE(sig_atomic_t, int, [Define to 1 if you have the `sig_atomic_t' type.]) ;;
 	esac
 ])
 
