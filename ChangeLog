@@ -688,3 +688,8 @@ Changes since rc-1.5b2
 2000-07-27
 
   Feature: the "equals hack".
+
+2000-11-27
+
+  Portability: configure fails to detect strerror() on NetBSD; we need
+  to include <string.h>.
