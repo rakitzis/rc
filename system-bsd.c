@@ -50,7 +50,7 @@ extern int rc_read(int fd, char *buf, size_t n) {
 	return r;
 }
 
-static r = -1;
+static int r = -1;
 extern pid_t rc_wait(int *stat) {
 	interrupt_happened = FALSE;
 	if (!sigsetjmp(slowbuf.j, 1)) {
