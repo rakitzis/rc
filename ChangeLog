@@ -428,3 +428,10 @@ Changes since rc-1.5b2
   Documentation: document the `-V' flag and mention Linux's
   /proc/self/fd as alternative to /dev/fd.
 
+1998-10-21
+
+  Bug: shells need to be prepared for bogus applications to have set
+  their input file descriptor to non-blocking, and set it back.
+
+  Tidiness: <sys/types.h> is in "proto.h", so nothing else needs to
+  include it explicitly.
