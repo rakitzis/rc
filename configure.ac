@@ -1,15 +1,13 @@
-dnl A lot of the stuff in this file should be moved into acinclude.m4, and
-dnl eventually into the automake distribution...
-
+dnl Get things going...
 AC_INIT(rc.h)
 
 dnl Automake stuff.
 AM_INIT_AUTOMAKE(rc, 1.5s19981209)
 AM_CONFIG_HEADER(config.h)
-
-AC_ARG_PROGRAM
-
 AC_DEFINE(RELDATE, "1998-12-09")
+
+dnl Anybody using name transformations?
+AC_ARG_PROGRAM
 
 dnl Find a standard C compiler
 AC_PROG_CC
@@ -27,9 +25,6 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_CHECK_PROGS(LN, ln cp)
 
-dnl Don't bother looking for `yacc'.  
-dnl AC_PROG_YACC
-
 AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
 AC_HEADER_DIRENT
 AC_HEADER_STDC
@@ -44,147 +39,27 @@ AC_CHECK_TYPE(ssize_t, long)
 AC_CHECK_FUNCS(getgroups setpgrp setrlimit)
 RC_FUNC_GETGROUPS
 
-dnl sigsetjmp() isn't a real function in some places.
-AC_CACHE_CHECK(for sigsetjmp, rc_cv_sigsetjmp,
-	AC_TRY_LINK([
-#include <setjmp.h>
-	], [
-sigjmp_buf e;
-sigsetjmp(e, 1);
-	], rc_cv_sigsetjmp=yes, rc_cv_sigsetjmp=no))
-case "$rc_cv_sigsetjmp" in
-yes)	AC_DEFINE(HAVE_SIGSETJMP) ;;
-esac
-
+RC_FUNC_SIGSETJMP
 
 AC_FUNC_SETPGRP
 
+RC_NEED_KERNEL
 
-dnl HPUX needs _KERNEL defined to pick up RLIMIT_foo defines.  (Why?)
-AC_CACHE_CHECK(if _KERNEL is required for RLIMIT defines, rc_cv_kernel_rlimit,
-	AC_TRY_COMPILE([
-#include <sys/types.h>
-#include <sys/resource.h>
-	], [
-int f;
-f = RLIMIT_DATA;
-	], rc_cv_kernel_rlimit=no, [ AC_TRY_COMPILE([
-#include <sys/types.h>
-#define _KERNEL
-#include <sys/resource.h>
-#undef _KERNEL
-		], [
-int f;
-f = RLIMIT_DATA;
-		], rc_cv_kernel_rlimit=yes, rc_cv_kernel_rlimit=no)]))
-case "$rc_cv_kernel_rlimit" in
-yes)	AC_DEFINE(RLIMIT_NEEDS_KERNEL) ;;
-esac
+RC_TYPE_RLIM_T
 
-
-dnl Look for rlim_t in sys/types.h and sys/resource.h
-AC_CACHE_CHECK(for rlim_t, rc_cv_have_rlim_t,
-	AC_EGREP_CPP(rlim_t, [
-#include <sys/types.h>
-#if RLIMIT_NEEDS_KERNEL
-#define _KERNEL
-#endif
-#include <sys/resource.h>
-	], rc_cv_have_rlim_t=yes, rc_cv_have_rlim_t=no))
-
-case "$rc_cv_have_rlim_t" in
-yes)	AC_DEFINE(HAVE_RLIM_T) ;;
-no)	AC_CACHE_CHECK(for native quad_t, rc_cv_have_quad_t,
-		AC_TRY_COMPILE([
-#include <sys/types.h>
-		], [
-typedef quad_t align_t;
-align_t a;
-a = (quad_t)0;
-		], rc_cv_have_quad_t=yes, rc_cv_have_quad_t=no))
-
-	case "$rc_cv_have_quad_t" in
-	yes)	AC_DEFINE(HAVE_QUAD_T)
-		AC_CACHE_CHECK(if rlimit values are quad_t, rc_cv_rlim_t_is_quad_t,
-			AC_TRY_RUN([
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#if RLIMIT_NEEDS_KERNEL
-#define _KERNEL
-#endif
-#include <sys/resource.h>
-#if RLIMIT_NEEDS_KERNEL
-#undef _KERNEL
-#endif
-main(){
-	struct rlimit rl;
-	exit(sizeof rl.rlim_cur != sizeof(quad_t));
-}
-			], rc_cv_rlim_t_is_quad_t=yes, rc_cv_rlim_t_is_quad_t=no, $ac_cv_type_quad_t))
-
-		case "$rc_cv_rlim_t_is_quad_t" in
-		yes)	AC_DEFINE(RLIM_T_IS_QUAD_T) ;;
-		esac
-		;;
-	esac
-	;;
-esac
-
-dnl Check type of sig_atomic_t.
-AC_CACHE_CHECK(for sig_atomic_t, rc_cv_sig_atomic_t,
-	AC_EGREP_HEADER(sig_atomic_t, signal.h,
-		rc_cv_sig_atomic_t=yes, rc_cv_sig_atomic_t=no))
-case "$rc_cv_sig_atomic_t" in
-no)	AC_DEFINE(sig_atomic_t, int) ;;
-esac
+RC_TYPE_SIG_ATOMIC_T
 
 dnl We prefer system calls that don't restart.  If we have sigaction() and
 dnl SA_INTERRUPT, we'll use 'em.  Otherwise, we check whether
 dnl good ol' signal() produces interruptible system calls.
-AC_CACHE_CHECK(for sigaction and SA_INTERRUPT, rc_cv_sa_int,
-	AC_TRY_COMPILE([
-#include <signal.h>
-	], [
-struct sigaction foo;
-foo.sa_flags = SA_INTERRUPT;
-sigaction(SIGINT, 0, 0);
-	], rc_cv_sa_int=yes, rc_cv_sa_int=no
-	)
-)
+RC_FUNC_SIGACTION
 case "$rc_cv_sa_int" in
 yes)	AC_DEFINE(HAVE_SA_INTERRUPT) ;;
 no) AC_SYS_RESTARTABLE_SYSCALLS ;;
 esac
 AM_CONDITIONAL(AMC_RESTART, test "$ac_cv_sys_restartable_syscalls" = yes)
 
-dnl Do we have SysV SIGCLD semantics?  In other words, if we set the
-dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?
-AC_CACHE_CHECK(for SysV SIGCLD semantics, rc_cv_sysv_sigcld,
-	AC_TRY_RUN([
-#include <errno.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-int main(void) {
-	int i;
-	sigset(SIGCLD, SIG_IGN);
-	switch (fork()) {
-	case -1:
-		return 1;
-	case 0:
-		return 0;
-	default:
-		if (wait(&i) == -1 && errno == ECHILD) return 0;
-		else return 1;
-	}
-}
-	], rc_cv_sysv_sigcld=yes, rc_cv_sysv_sigcld=no, rc_cv_sysv_sigcld=yes))
-case "$rc_cv_sysv_sigcld" in
-yes)	AC_DEFINE(HAVE_SYSV_SIGCLD) ;;
-esac
-
+RC_SYS_V_SIGCLD
 
 dnl Does the kernel handle `#! /interpreter'?
 AC_SYS_INTERPRETER
@@ -197,15 +72,7 @@ AM_CONDITIONAL(AMC_NO_HASHBANG, test "$ac_cv_sys_interpreter" = no)
 dnl What do we do for command arguments?  We want /dev/fd or Linux's
 dnl /proc/self/fd.  Failing that, we'll try for POSIX mkfifo(), or a
 dnl mknod() that makes FIFOs.
-AC_CACHE_CHECK(for /dev/fd, rc_cv_sys_dev_fd,
-	if test -d /dev/fd && test -r /dev/fd/0; then
-		rc_cv_sys_dev_fd=yes
-	elif test -d /proc/self/fd && test -r /proc/self/fd/0; then
-		rc_cv_sys_dev_fd=odd
-	else
-		rc_cv_sys_dev_fd=no
-	fi)
-	
+RC_SYS_DEV_FD
 case "$rc_cv_sys_dev_fd" in
 yes)	AC_DEFINE(HAVE_DEV_FD) ;;
 odd)	AC_DEFINE(HAVE_PROC_SELF_FD) ;;
@@ -214,20 +81,7 @@ esac
 
 case "$ac_cv_func_mkfifo" in
 yes)	AC_DEFINE(HAVE_FIFO) ;;
-no)	AC_CACHE_CHECK(for mknod FIFOs, rc_cv_sys_fifo,
-		AC_TRY_RUN([
-#include <sys/types.h>
-#include <sys/stat.h>
-
-main() {
-	exit(mknod("/tmp/rc$$.0", S_IFIFO | 0666, 0) != 0);
-}
-		], rc_cv_sys_fifo=yes, rc_cv_sys_fifo=no, rc_cv_sys_fifo=no))
-	rm -f /tmp/rc$$.0
-	case "$rc_cv_sys_fifo" in
-	yes)	AC_DEFINE(HAVE_FIFO) ;;
-	esac
-	;;
+no)	RC_SYS_MKNOD_FIFO ;;
 esac
 
 RC_HAVE_VA_COPY
