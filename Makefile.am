@@ -23,7 +23,7 @@ RLO = readline.o
 endif
 
 bin_PROGRAMS = rc
-noinst_PROGRAMS = $(HISTBIN)
+noinst_PROGRAMS = mksignal $(HISTBIN)
 
 rc_SOURCES = @ADDON@ builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c
 
@@ -34,6 +34,8 @@ rc_LDADD = $(SYSTEM) $(EXECVE) $(RLO)
 
 history_SOURCES = history.c
 
+mksignal_SOURCES = mksignal.c
+
 noinst_HEADERS = group.h jbwrap.h proto.h rc.h rlimit.h y.tab.h
 
 BUILT_SOURCES = sigmsgs.c y.tab.c
@@ -43,7 +45,7 @@ man_MANS = rc.1 $(HISTMAN)
 EXTRA_DIST = addon.c addon.h EXAMPLES history.1 mksignal parse.y rc.1 trip.rc
 
 sigmsgs.c sigmsgs.h: $(srcdir)/mksignal
-	sh $(srcdir)/mksignal '@SIGNAL_H@'
+	$(srcdir)/mksignal
 
 y.tab.c: $(srcdir)/parse.y
 	$(YACC) -d $(srcdir)/parse.y
