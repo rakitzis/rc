@@ -6,17 +6,12 @@ See COPYING for copying information.  All files are
 
 See INSTALL for build and installation information.
 
-WWW
-
-More information on releases of rc can be found at this web page.
-
-    http://www.cygnus.com/~tgoodwin/rc/
 
 BUGS
 
-Send bug reports to <tgoodwin@cygnus.co.uk>.  If a core dump is
-generated, sending a backtrace will help a great deal.  You can get a
-backtrace like this.
+Send bug reports to <tjg@star.le.ac.uk>.  If a core dump is generated,
+sending a backtrace will help a great deal.  You can get a backtrace
+like this.
 
 	; gdb rc core
 	(gdb) where
@@ -26,6 +21,7 @@ backtrace like this.
 Also, always report the machine, OS (`uname -a'), and compiler used to
 make rc; this information is extremely valuable.
 
+
 FEEPING CREATURISM
 
 See the end of the man page, under "INCOMPATABILITIES" for (known?)
@@ -34,46 +30,10 @@ to get rc to work in a reasonable fashion on a real (i.e. commercial,
 non-Labs) Unix system; a few were changes motivated by concern about
 some inadequacies in the original design.
 
-ASSOCIATED PACKAGES
 
-rc uses a set of printing routines originally written by Paul Haahr.
-Scott Schwartz has developed this as a separate package which is
-available from comp.sources.unix v29i017.
+WWW
 
-rc can be linked with the editline library.  This was developed by
-Simmule Turner and Rich $alz, and is available from here.
+More information on releases of rc can be found at this web page.
 
-    ftp://ftp.cygnus.com/pub/tgoodwin/rc/misc/editline-1.5.tar.gz
- 
-A package with similar aims (that is, to be a lightweight command line
-editing library) is vrl.  This was developed by Gert-Jan Vons, and is
-available from here.
+    http://www.star.le.ac.uk/~tjg/rc/
 
-    ftp://ftp.cygnus.com/pub/tgoodwin/rc/misc/vrl-1.2.tar.gz
-
-Alternatively, rc can be linked with GNU readline versions 2.1 or 2.2.
-This is available from the master FSF distribution site, and its many
-mirrors.
-
-    ftp://prep.ai.mit.edu/pub/gnu/readline-2.2.tar.gz
-
-There are a number of other programs which, like rc, are Unix
-implementations of Plan 9 tools.
-
-Rob Pike's editor sam has been ported to X, and is available from here.
-
-     http://netlib.bell-labs.com/netlib/research/sam.shar.gz
-
-Gary Capell has written wily, a reimplementation of the Plan 9 acme.
-Although it may sound oxymoronic, wily is a minimalist "integrated
-development environment" for X.  Further information can be found here.
-
-    http://www.cs.su.oz.au/~gary/wily/
-
-James Matthew Farrow has written 9term, and David Hogan 9wm.  These are,
-respectively, a terminal emulator and window manager for X with the Plan
-9 "look and feel".
-
-    http://www.psrg.cs.usyd.edu.au/~matty/9term/index.html
-
-    http://dhog.g7.org/dhog/9wm.html
