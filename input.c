@@ -21,12 +21,12 @@ typedef struct Input {
 #define BUFSIZE ((size_t) 256)
 
 #if READLINE
-extern char *readline(char *);
 extern void add_history(char *);
 static char *rlinebuf;
+char *prompt;
 #endif
 
-char *prompt, *prompt2;
+char *prompt2;
 bool rcrc;
 
 static int dead(void);
@@ -85,38 +85,14 @@ static int stringgchar() {
 	return last = (inbuf[chars_out] == '\0' ? EOF : inbuf[chars_out++]);
 }
 
-/* signal-safe readline wrapper */
-
-#if READLINE
-#if HAVE_RESTARTABLE_SYSCALLS
-static char *rc_readline(char *prompt) {
-	char *r;
-	interrupt_happened = FALSE;
-	if (!sigsetjmp(slowbuf.j, 1)) {
-		slow = TRUE;
-		if (!interrupt_happened)
-			r = readline(prompt);
-		else
-			r = NULL;
-	} else
-		r = NULL;
-	slow = FALSE;
-	if (r == NULL)
-		errno = EINTR;
-	sigchk();
-	return r;
-}
-#else
-#define rc_readline readline
-#endif /* HAVE_RESTARTABLE_SYSCALLS */
-#endif /* READLINE */
-
 /*
-   read a character from a file-descriptor. If GNU readline is defined, add a newline and doctor
-   the buffer to look like a regular fdgchar buffer.
+   read a character from a file-descriptor. If GNU readline is defined,
+   add a newline and doctor the buffer to look like a regular fdgchar
+   buffer.
 */
 
 static int fdgchar() {
+
 	if (chars_out >= chars_in + 2) { /* has the buffer been exhausted? if so, replenish it */
 		while (1) {
 #if READLINE
@@ -136,9 +112,18 @@ static int fdgchar() {
 				}
 			} else
 #endif
-				{
-				long /*ssize_t*/ r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
-				sigchk();
+
+/* There is a possible problem here.  POSIX allows read() interrupted
+by a signal to return -1 and set errno == EINTR *even if data have
+successfully been read*.  (They are also allowed to do the Right Thing,
+and return a count of the partial read.)  If you have such a broken
+system, you lose. */
+			{
+				ssize_t r;
+				do {
+					r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
+					sigchk();
+				} while (r < 0 && errno == EINTR);
 				if (r < 0) {
 					uerror("read");
 					rc_exit(1);
@@ -280,7 +265,7 @@ extern Node *doit(bool execit) {
 			}
 			if ((s = varlookup("prompt")) != NULL) {
 #if READLINE
-				if (istack->t == iFd && istack->fd == 0)
+				if (istack->t == iFd && istack->fd == 0 && isatty(0))
 					prompt = s->w;
 				else
 #endif
@@ -367,7 +352,7 @@ extern void print_prompt2() {
 	lineno++;
 	if (interactive) {
 #if READLINE
-		if (istack->t == iFd && istack->fd == 0)
+		if (istack->t == iFd && istack->fd == 0 && isatty(0))
 			prompt = prompt2;
 		else
 #endif
