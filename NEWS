@@ -3,9 +3,7 @@ autoconfiguration code, some of them critical.  One problem (which I
 introduced) was found in minutes with ElectricFence: I had spent several
 hours failing to find it with other tools.
 
-A few bugs in the rc code itself have been fixed.  These were mostly
-obscure.  I could not have tracked them down so quickly without Source
-Navigator---it's a great way to find your way around code (plug!).
+Two bugs in rc itself, one of them trivial, were fixed.
 
 rc now uses GNU automake.  Although I feel that automake is sticking
 plaster to mend a broken leg, it has made my job as maintainer easier.
@@ -36,9 +34,6 @@ Binaries of rc-1.5b4 are typically a few kilobytes smaller than 1.5b2.
 I believe this is due to improved autoconfiguration: we are now much
 more careful only to include code that will be used.
 
-rc-1.5b4 will build under the beta20 release of CygWin32.  It won't run
-trip.rc successfully, and does not appear to be very stable.
-
 Support for vrl (another lightweight "readline"-style library) was
 added.
 
@@ -52,4 +47,4 @@ who'd found bugs in rc-1.5b2 that were called b3.  To avoid any
 possibility of confusion, I have named this beta release rc-1.5b4.
 
 Tim Goodwin
-1998-10-21
+1999-01-11
