@@ -8,11 +8,11 @@
    and to strip out unneeded functionality.
 */
 
+#include "rc.h"
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/param.h>
-#include <errno.h>
-#include "rc.h"
+#include <unistd.h>
 
 #define X_USR 0100
 #define X_GRP 0010
@@ -22,16 +22,18 @@
 extern int stat(const char *, struct stat *);
 
 static bool initialized = FALSE;
-static int uid, gid;
+static uid_t uid;
+static gid_t gid;
 
-#ifdef NGROUPS
-static int ngroups, gidset[NGROUPS];
+#if HAVE_GETGROUPS
+static int ngroups;
+static GETGROUPS_T *gidset;
 
 /* determine whether gid lies in gidset */
 
-static int ingidset(int g) {
-	int i;
-	for (i = 0; i < ngroups; i++)
+static int ingidset(gid_t g) {
+	gid_t i;
+	for (i = 0; i < ngroups; ++i)
 		if (g == gidset[i])
 			return 1;
 	return 0;
@@ -55,7 +57,7 @@ static bool rc_access(char *path, bool verbose) {
 		mask = X_ALL;
 	else if (uid == st.st_uid)
 		mask = X_USR;
-#ifdef NGROUPS
+#if HAVE_GETGROUPS
 	else if (gid == st.st_gid || ingidset(st.st_gid))
 #else
 	else if (gid == st.st_gid)
@@ -75,7 +77,7 @@ static bool rc_access(char *path, bool verbose) {
 
 extern char *which(char *name, bool verbose) {
 	static char *test = NULL;
-	static SIZE_T testlen = 0;
+	static size_t testlen = 0;
 	List *path;
 	int len;
 	if (name == NULL)	/* no filename? can happen with "> foo" as a command */
@@ -84,15 +86,20 @@ extern char *which(char *name, bool verbose) {
 		initialized = TRUE;
 		uid = geteuid();
 		gid = getegid();
-#ifdef NGROUPS
-		ngroups = getgroups(NGROUPS, gidset);
+#if HAVE_GETGROUPS
+		ngroups = getgroups(0, (gid_t *)0);
+		gidset = malloc(ngroups * sizeof(gid_t));
+		if (!gidset)
+			uerror("malloc");
+		else
+			getgroups(ngroups, gidset);
 #endif
 	}
 	if (isabsolute(name)) /* absolute pathname? */
 		return rc_access(name, verbose) ? name : NULL;
 	len = strlen(name);
 	for (path = varlookup("path"); path != NULL; path = path->n) {
-		SIZE_T need = strlen(path->w) + len + 2; /* one for null terminator, one for the '/' */
+		size_t need = strlen(path->w) + len + 2; /* one for null terminator, one for the '/' */
 		if (testlen < need) {
 			efree(test);
 			test = ealloc(testlen = need);
