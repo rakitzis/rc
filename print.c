@@ -331,19 +331,20 @@ extern int fprint(int fd, const char *fmt,...) {
 static void memprint_grow(Format *format, size_t more) {
 	char *buf;
 	size_t len = format->bufend - format->bufbegin + 1;
+	size_t used = format->buf - format->bufbegin;
+
 	len = (len >= more)
 		? len * 2
 		: ((len + more) + PRINT_ALLOCSIZE) &~ (PRINT_ALLOCSIZE - 1);
 	if (format->u.n)
 		buf = erealloc(format->bufbegin, len);
 	else {
-		size_t used = format->buf - format->bufbegin;
 		buf = nalloc(len);
 		memcpy(buf, format->bufbegin, used);
 	}
-	format->buf	 = buf + (format->buf - format->bufbegin);
+	format->buf = buf + used;
 	format->bufbegin = buf;
-	format->bufend	 = buf + len - 1;
+	format->bufend = buf + len - 1;
 }
 
 static char *memprint(Format *format, const char *fmt, char *buf, size_t len) {
