@@ -1,4 +1,4 @@
-This is snapshot release rc-1.6s20010618.
+This is beta release rc-1.6b3.
 
 See COPYING for copying information.  All files are
 
@@ -24,7 +24,7 @@ make rc; this information is extremely valuable.
 
 FEEPING CREATURISM
 
-See the end of the man page, under "INCOMPATABILITIES" for (known?)
+See the end of the man page, under "INCOMPATIBILITIES" for (known?)
 differences from the "real" rc.  Most of these changes were necessary
 to get rc to work in a reasonable fashion on a real (i.e. commercial,
 non-Labs) Unix system; a few were changes motivated by concern about
