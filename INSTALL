@@ -74,8 +74,17 @@ and if you have either of those you probably don't want to bother with
   It is the only builtin which is not essential, and purists may wish
   to omit it.
 
+  --with-addon
+  --with-addon=foo.c
+  
+  On the other hand, non-purists may wish to add extra builtin commands.
+  An example of how to do this is included in the files addon.c and
+  addon.h, which will only be built if you specify `--with-addon'.  If
+  your addons are in another file, you can specify that instead (but
+  beware that the interface file is still addon.h).
+
   --disable-def-interp
-  --enable-def-interp /bin/foo
+  --enable-def-interp=/bin/foo
 
   By default, a program that fails with "Exec format error" is handed to
   /bin/sh.  This does the Right Thing for scripts that start with `:' to
