@@ -1,25 +1,20 @@
-Highlights of changes since rc-1.6.  See ChangeLog for further details.
+Highlights of changes since rc-1.7.  See ChangeLog for further details.
 
-Portability.  Many minor tweaks, including fixes for BeOS, CygWin,
-QNX, and gcc-3.
+Portability.  A fix to the autoconfiguration means that the nasty
+longjmp() code is now omitted for all modern Unix systems; previously
+rc only did the Right Thing on Linux.  The test for large files in
+trip.rc was removed, as this causes indigestion on file systems that
+don't support sparse files (the configuration and implementation of
+large file support is still present of course).
 
-Bug fixes.  A number of bugs have been fixed.  The serious ones were:
-a core dump, triggered by `~ () '*''; premature exit, triggered by
-sourcing a file which could be open()ed but not read() (such as a
-directory on many systems); uninterruptible looping, triggered by
-semantic errors in `fn prompt'; deficiencies in the `limit' builtin.
+Bug fixes.  Broken symlinks now glob correctly. The variables $prompt
+and $version are now exported if they are inherited from the
+environment when rc starts.  EIO handling is now enabled for readline
+too.  A few bogosities in the history program were fixed.
 
-New features.  The following features are new: the `$version' variable
-replaces the `-V' flag; the `-I' flag (definitively not interactive)
-was added for compatibility with the Plan 9 rc; ASCII SOH (^A) is now
-handled transparently; support for large files; support for more
-process resource limits.
+New features.  None - this is a bugfix release.
 
-Documentation.  Distributions of this rc used to include a PostScript
-paper given by Tom Duff to the UKUUG, describing the Plan 9 rc.  This
-paper is no longer distributed with rc, but instead is available on
-the web, both in its original PostScript version, and an updated HTML
-version.
+Documentation.  Minor updates only.
 
 Tim Goodwin
-2002-05-21
+2003-07-17

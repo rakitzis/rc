@@ -6,9 +6,9 @@ AC_DEFINE_UNQUOTED(RELDATE, "$RELDATE", [Release date])
 
 dnl Automake stuff.
 dnl Use this one for snapshots...
-AM_INIT_AUTOMAKE(rc, 1.7s`echo $RELDATE |sed 's/-//g'`)
+dnl AM_INIT_AUTOMAKE(rc, 1.7s`echo $RELDATE |sed 's/-//g'`)
 dnl ...and this one for releases
-dnl AM_INIT_AUTOMAKE(rc, 1.7)
+AM_INIT_AUTOMAKE(rc, 1.7.1)
 
 AM_CONFIG_HEADER(config.h)
 
