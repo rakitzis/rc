@@ -242,9 +242,9 @@ extern void flushu() {
 
 extern Node *doit(bool clobberexecit) {
 	bool eof;
-	bool execit ;
+	bool execit;
 	Jbwrap j;
-	Estack e1, e2;
+	Estack e1;
 	Edata jerror;
 
 	if (dashen)
@@ -255,6 +255,7 @@ extern Node *doit(bool clobberexecit) {
 	except(eError, jerror, &e1);
 	for (eof = FALSE; !eof;) {
 		Edata block;
+		Estack e2;
 		block.b = newblock();
 		except(eArena, block, &e2);
 		sigchk();
@@ -270,7 +271,17 @@ extern Node *doit(bool clobberexecit) {
 			List *s;
 			if (!dashen && fnlookup("prompt") != NULL) {
 				static char *arglist[] = { "prompt", NULL };
-				funcall(arglist);
+				Estack e3;
+				Edata pjmp;
+				Jbwrap pj;
+				
+				if (sigsetjmp(pj.j, 1) == 0) {
+					pjmp.jb = &pj;
+					except(eError, pjmp, &e3);
+
+					funcall(arglist);
+					unexcept();
+				}
 			}
 			if ((s = varlookup("prompt")) != NULL) {
 #if EDITLINE || READLINE

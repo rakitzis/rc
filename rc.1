@@ -1959,17 +1959,6 @@ code is illegal.
 .TP
 The redundant inner parentheses must be omitted.
 .PP
-Semantic errors (e.g. "bad concatenation") in
-.B fn prompt
-are not handled elegantly.  For example,
-.Ds
-.Cr "fn prompt { echo (a b)^(c d e) }"
-.De
-.TP
-throws
-.I rc
-into a tailspin.
-.PP
 Bug reports should be mailed to
 .Cr "<tjg@star.le.ac.uk>" .
 .SH INCOMPATIBILITIES
