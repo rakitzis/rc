@@ -94,7 +94,7 @@ static int fdgchar() {
 	if (chars_out >= chars_in + 2) { /* has the buffer been exhausted? if so, replenish it */
 		while (1) {
 #if EDITLINE || READLINE
-			if (interactive && istack->fd == 0 && isatty(0)) {
+			if (interactive && istack->t == iFd && isatty(istack->fd)) {
 				/* The readline library doesn't handle read() returning EAGAIN. */
 				makeblocking(istack->fd);
 				rlinebuf = rc_readline(prompt);
@@ -266,7 +266,7 @@ extern Node *doit(bool clobberexecit) {
 			}
 			if ((s = varlookup("prompt")) != NULL) {
 #if EDITLINE || READLINE
-				if (istack->t == iFd && istack->fd == 0 && isatty(0))
+				if (istack->t == iFd && isatty(istack->fd))
 					prompt = s->w;
 				else
 #endif
@@ -353,7 +353,7 @@ extern void print_prompt2() {
 	lineno++;
 	if (interactive) {
 #if EDITLINE || READLINE
-		if (istack->t == iFd && istack->fd == 0 && isatty(0))
+		if (istack->t == iFd && isatty(istack->fd))
 			prompt = prompt2;
 		else
 #endif
