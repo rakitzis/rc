@@ -39,10 +39,12 @@ noinst_HEADERS = getgroups.h jbwrap.h parse.h proto.h rc.h rlimit.h wait.h
 
 BUILT_SOURCES = sigmsgs.c
 
-EXTRA_DIST = addon.c addon.h EXAMPLES history.1 parse.y rc.1 trip.rc
+EXTRA_DIST = EXAMPLES RELDATE addon.c addon.h history.1 parse.y rc.1 trip.rc
 
 sigmsgs.c sigmsgs.h: mksignal
 	./mksignal
+
+CONFIGURE_DEPENDENCIES = RELDATE
 
 # Of course, parse.c and parse.h depend on parse.y.  However, unless
 # you're hacking on rc's grammar, it's not useful to have this

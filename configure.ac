@@ -1,10 +1,16 @@
 dnl Get things going...
 AC_INIT(rc.h)
 
+RELDATE=`cat $srcdir/RELDATE`
+AC_DEFINE_UNQUOTED(RELDATE, "$RELDATE")
+
 dnl Automake stuff.
-AM_INIT_AUTOMAKE(rc, 1.5s19981209)
+dnl Use this one for snapshots...
+AM_INIT_AUTOMAKE(rc, 1.5s`echo $RELDATE |sed 's/-//g'`)
+dnl ...and this one for releases
+dnl AM_INIT_AUTOMAKE(rc, 1.6)
+
 AM_CONFIG_HEADER(config.h)
-AC_DEFINE(RELDATE, "1998-12-09")
 
 dnl Anybody using name transformations?
 AC_ARG_PROGRAM
