@@ -18,7 +18,7 @@ AC_PROG_INSTALL
 AC_PROG_YACC
 AC_CHECK_PROGS(LN, ln cp)
 
-AC_CHECK_HEADERS(stdlib.h sys/resource.h sys/time.h sys/types.h unistd.h)
+AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 

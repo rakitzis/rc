@@ -1,5 +1,11 @@
 #include "config.h"
 
+#include <stdarg.h>
+
+#if STDC_HEADERS
+#include <stdlib.h>
+#endif
+
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -16,7 +22,6 @@
 #undef FALSE
 #undef TRUE
 
-#include <stdarg.h>
 
 #if HAVE_SETPGRP
 
