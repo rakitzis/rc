@@ -8,10 +8,11 @@
    and to strip out unneeded functionality.
 */
 
+#include "rc.h"
+
 #include <errno.h>
 #include <sys/stat.h>
 
-#include "rc.h"
 #include "getgroups.h"
 
 #define X_USR 0100

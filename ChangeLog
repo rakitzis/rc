@@ -480,3 +480,5 @@ Changes since rc-1.5b2
   null character on the fly (since it's a nuisance having a literal
   null character in trip.rc); reset sigexit in `fn fail'; add test for
   nonblocking input file descriptor; fix test for cdpath.
+
+  Portability: include <sys/types.h> before <sys/stat.h>.
