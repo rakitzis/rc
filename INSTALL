@@ -1,5 +1,8 @@
 COMPILING
 
+See below for system-specific changes to these instructions (currently
+only HP-UX).
+
 rc uses GNU autoconf and automake.  The following commands are all you
 need to configure, build, test, and install rc.
 
@@ -140,7 +143,14 @@ If you have a suitable `make', you can build rc in a different directory
 from where the sources are held.  This is particularly useful if you
 are building rc for multiple architectures.  All you need do is specify
 the path to the configure script in the first step.  Suitable `make's
-include GNU, and SunOS, but not Irix, nor Ultrix, nor UnixWare.
+include GNU, HP-UX, and SunOS, but not Irix, nor Ultrix, nor UnixWare.
+
+SPECIAL INSTRUCTIONS FOR HP-UX
+
+On HP-UX, if you are using the system-supplied compiler, you must
+specify `-Ae', for example like this.
+
+    CC='cc -Ae' sh configure
 
 COMPILATION WARNINGS
 
