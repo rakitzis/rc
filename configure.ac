@@ -293,8 +293,13 @@ AC_ARG_WITH(editline, [  --with-editline         Simmule Turner's line editing],
 		AC_DEFINE(EDITLINE) LIBS="$LIBS -ledit",
 		AC_MSG_ERROR(editline library not found)))
 
+AC_ARG_WITH(vrl, [  --with-vrl              Gert-Jan Vons's line editing],
+	AC_CHECK_LIB(readline, readline,
+		AC_DEFINE(EDITLINE) LIBS="$LIBS -lreadline -ltermcap",
+		AC_MSG_ERROR(vrl library not found), -ltermcap))
+
 dnl There are (at least) two incompatible versions of readline, and we
-dnl need to know which one we are using
+dnl need to know which one we are using.  We don't support readline 2.0.
 AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing], [
 	AC_CHECK_LIB(readline, readline, [
 		AC_DEFINE(READLINE)
