@@ -16,13 +16,13 @@ re-working parts of that code.
 
 Of course, without Tom Duff's design of the original rc, I could not
 have written this shell (though I probably would have written *a*
-shell).  Almost of all of the features, with minor exceptions, have been
+shell).  Almost all of the features, with minor exceptions, have been
 implemented as described in the Unix v10 manuals.  Hats off to td for
 designing a C-like, minimal but very useful shell.
 
-Tom Duff has kindly given permission for the paper he wrote for UKUUG
-to be distributed with this version of rc (called "plan9.ps" in the
-same ftp directory as the shell).  Please read this paper bearing in
+Tom Duff has kindly given permission for the paper he wrote for UKUUG to
+be distributed with this version of rc (called "plan9.ps" in the same
+FTP or HTTP directory as the shell).  Please read this paper bearing in
 mind that it describes a program that was written at AT&T and that the
 version of rc presented here differs in some respects.
 
