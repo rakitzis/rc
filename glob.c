@@ -3,16 +3,28 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "rc.h"
-#ifdef NODIRENT
-#include <sys/dir.h>
-#define dirent direct /* need to get the struct declaraction right */
+
+/* Lifted from autoconf documentation.*/
+#if HAVE_DIRENT_H
+# include <dirent.h>
+# define NAMLEN(dirent) strlen((dirent)->d_name)
 #else
-#include <dirent.h>
+# define dirent direct
+# define NAMLEN(dirent) (dirent)->d_namlen
+# if HAVE_SYS_NDIR_H
+#  include <sys/ndir.h>
+# endif
+# if HAVE_SYS_DIR_H
+#  include <sys/dir.h>
+# endif
+# if HAVE_NDIR_H
+#  include <ndir.h>
+# endif
 #endif
 
 static List *dmatch(char *, char *, char *);
 static List *doglob(char *, char *);
-static List *lglob(List *, char *, char *, SIZE_T);
+static List *lglob(List *, char *, char *, size_t);
 static List *sort(List *);
 
 /*
@@ -90,10 +102,6 @@ static List *dmatch(char *d, char *p, char *m) {
 	static DIR *dirp;
 	static struct dirent *dp;
 	static struct stat s;
-	/* prototypes for XXXdir functions. comment out if necessary */
-	extern DIR *opendir(const char *);
-	extern struct dirent *readdir(DIR *);
-	/*extern int closedir(DIR *);*/
 	int i;
 
 	/*
@@ -151,11 +159,11 @@ static List *dmatch(char *d, char *p, char *m) {
    matched name. e.g., for matching ////tmp/////foo*
 */
 
-static List *lglob(List *s, char *p, char *m, SIZE_T slashcount) {
+static List *lglob(List *s, char *p, char *m, size_t slashcount) {
 	List *q, *r, *top, foo;
 	static struct {
 		List l;
-		SIZE_T size;
+		size_t size;
 	} slash;
 	if (slashcount+1 > slash.size) {
 		slash.size = 2*(slashcount+1);
@@ -191,9 +199,9 @@ static List *lglob(List *s, char *p, char *m, SIZE_T slashcount) {
 
 static List *doglob(char *w, char *m) {
 	static char *dir = NULL, *pattern = NULL, *metadir = NULL, *metapattern = NULL;
-	static SIZE_T dsize = 0;
+	static size_t dsize = 0;
 	char *d, *p, *md, *mp;
-	SIZE_T psize;
+	size_t psize;
 	char *s = w;
 	List firstdir;
 	List *matched;
@@ -238,7 +246,7 @@ static List *doglob(char *w, char *m) {
 		matched = dmatch(".", dir, metadir);
 	}
 	do {
-		SIZE_T slashcount;
+		size_t slashcount;
 		sigchk();
 		for (slashcount = 0; *s == '/'; s++, m++)
 			slashcount++; /* skip slashes */
@@ -258,7 +266,7 @@ end:	if (matched == NULL) {
 }
 
 static List *sort(List *s) {
-	SIZE_T nel = listnel(s);
+	size_t nel = listnel(s);
 	if (nel > 1) {
 		char **a;
 		List *t;

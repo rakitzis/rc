@@ -5,9 +5,6 @@
 #include <signal.h>
 #include <errno.h>
 #include "rc.h"
-#if !defined(S_IFIFO) && !defined(DEVFD)
-#define NOCMDARG
-#endif
 
 static List *backq(Node *, Node *);
 static List *bqinput(List *, int);
@@ -58,9 +55,9 @@ extern List *concat(List *s1, List *s2) {
 	if ((n1 = listnel(s1)) != (n2 = listnel(s2)) && n1 != 1 && n2 != 1)
 		rc_error("bad concatenation");
 	for (r = top = nnew(List); 1; r = r->n = nnew(List)) {
-		SIZE_T x = strlen(s1->w);
-		SIZE_T y = strlen(s2->w);
-		SIZE_T z = x + y + 1;
+		size_t x = strlen(s1->w);
+		size_t y = strlen(s2->w);
+		size_t z = x + y + 1;
 		r->w = nalloc(z);
 		strcpy(r->w, s1->w);
 		strcat(r->w, s2->w);
@@ -115,7 +112,7 @@ extern List *varsub(List *var, List *subs) {
 
 extern List *flatten(List *s) {
 	List *r;
-	SIZE_T step;
+	size_t step;
 	char *f;
 	if (s == NULL || s->n == NULL)
 		return s;
@@ -175,12 +172,12 @@ extern void assign(List *s1, List *s2, bool stack) {
    who could not stand the incompetence of my own backquote implementation.
 */
 
-#define BUFSIZE	((SIZE_T) 1000)
+#define BUFSIZE	((size_t) 1000)
 
 static List *bqinput(List *ifs, int fd) {
 	char *end, *bufend, *s;
 	List *r, *top, *prev;
-	SIZE_T remain, bufsize;
+	size_t remain, bufsize;
 	char isifs[256];
 	int n, state; /* a simple FSA is used to read in data */
 
@@ -197,7 +194,7 @@ static List *bqinput(List *ifs, int fd) {
 
 	while (1) {
 		if (remain == 0) { /* is the string bigger than the buffer? */
-			SIZE_T m = end - r->w;
+			size_t m = end - r->w;
 			char *buf;
 			while (bufsize < m + BUFSIZE)
 				bufsize *= 2;
@@ -249,7 +246,8 @@ static List *bqinput(List *ifs, int fd) {
 }
 
 static List *backq(Node *ifs, Node *n) {
-	int p[2], pid, sp;
+	int p[2], sp;
+	pid_t pid;
 	List *bq;
 	if (n == NULL)
 		return NULL;
@@ -288,13 +286,44 @@ extern void qredir(Node *n) {
 	next->n = NULL;
 }
 
-#ifdef NOCMDARG
+#if HAVE_DEV_FD || HAVE_PROC_SELF_FD
 static List *mkcmdarg(Node *n) {
-	rc_error("named pipes are not supported");
-	return NULL;
-}
+	char *name;
+	List *ret = nnew(List);
+	Estack *e = nnew(Estack);
+	Edata efd;
+	int p[2];
+	if (pipe(p) < 0) {
+		uerror("pipe");
+		return NULL;
+	}
+	if (rc_fork() == 0) {
+		setsigdefaults(FALSE);
+		if (mvfd(p[n->u[0].i == rFrom], n->u[0].i == rFrom) < 0) /* stupid hack */
+			exit(1);
+		close(p[n->u[0].i != rFrom]);
+		redirq = NULL;
+		walk(n->u[2].p, FALSE);
+		exit(getstatus());
+	}
+
+#if HAVE_DEV_FD
+	name = nprint("/dev/fd/%d", p[n->u[0].i != rFrom]);
 #else
-#ifndef DEVFD
+	name = nprint("/proc/self/fd/%d", p[n->u[0].i != rFrom]);
+#endif
+
+	efd.fd = p[n->u[0].i != rFrom];
+	except(eFd, efd, e);
+	close(p[n->u[0].i == rFrom]);
+	ret->w = name;
+	ret->m = NULL;
+	ret->n = NULL;
+	return ret;
+}
+
+#elif HAVE_FIFO
+
 static List *mkcmdarg(Node *n) {
 	int fd;
 	char *name;
@@ -302,7 +331,7 @@ static List *mkcmdarg(Node *n) {
 	Estack *e = enew(Estack);
 	List *ret = nnew(List);
 	static int fifonumber = 0;
-	name = nprint("%s/rc%d.%d", TMPDIR, getpid(), fifonumber++);
+	name = nprint("/tmp/rc%d.%d", getpid(), fifonumber++);
 	if (mknod(name, S_IFIFO | 0666, 0) < 0) {
 		uerror("mknod");
 		return NULL;
@@ -327,37 +356,15 @@ static List *mkcmdarg(Node *n) {
 	ret->n = NULL;
 	return ret;
 }
+
 #else
+
 static List *mkcmdarg(Node *n) {
-	char *name;
-	List *ret = nnew(List);
-	Estack *e = nnew(Estack);
-	Edata efd;
-	int p[2];
-	if (pipe(p) < 0) {
-		uerror("pipe");
-		return NULL;
-	}
-	if (rc_fork() == 0) {
-		setsigdefaults(FALSE);
-		if (mvfd(p[n->u[0].i == rFrom], n->u[0].i == rFrom) < 0) /* stupid hack */
-			exit(1);
-		close(p[n->u[0].i != rFrom]);
-		redirq = NULL;
-		walk(n->u[2].p, FALSE);
-		exit(getstatus());
-	}
-	name = nprint("/dev/fd/%d", p[n->u[0].i != rFrom]);
-	efd.fd = p[n->u[0].i != rFrom];
-	except(eFd, efd, e);
-	close(p[n->u[0].i == rFrom]);
-	ret->w = name;
-	ret->m = NULL;
-	ret->n = NULL;
-	return ret;
+	rc_error("named pipes are not supported");
+	return NULL;
 }
-#endif /* DEVFD */
-#endif /* !NOCMDARG */
+
+#endif
 
 extern List *glom(Node *n) {
 	List *v, *head, *tail;
