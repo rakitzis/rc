@@ -18,10 +18,11 @@ extern Node *mk(int /*nodetype*/ t,...) {
 		n->u[1].i = va_arg(ap, int);
 		n->u[2].i = va_arg(ap, int);
 		break;
-	case nWord: case nQword:
-		n = nalloc(offsetof(Node, u[2]));
+	case nWord:
+		n = nalloc(offsetof(Node, u[3]));
 		n->u[0].s = va_arg(ap, char *);
 		n->u[1].s = va_arg(ap, char *);
+		n->u[2].i = va_arg(ap, int);
 		break;
 	case nBang: case nNowait:
 	case nCount: case nFlat: case nRmfn: case nSubshell:
@@ -79,7 +80,7 @@ extern Node *treecpy(Node *s, void *(*alloc)(size_t)) {
 		n->u[1].i = s->u[1].i;
 		n->u[2].i = s->u[2].i;
 		break;
-	case nWord: case nQword:
+	case nWord:
 		n = (*alloc)(offsetof(Node, u[2]));
 		n->u[0].s = strcpy((char *) (*alloc)(strlen(s->u[0].s) + 1), s->u[0].s);
 		if (s->u[1].s != NULL) {
@@ -138,7 +139,7 @@ extern void treefree(Node *s) {
 		/* NOTREACHED */
 	case nDup:
 		break;
-	case nWord: case nQword:
+	case nWord:
 		efree(s->u[0].s);
 		efree(s->u[1].s);
 		break;

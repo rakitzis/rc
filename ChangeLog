@@ -694,10 +694,15 @@ Changes since rc-1.5b2
 
   Bug: you can't pass a short to a stdargs function!
 
-  
 2001-09-27
 
   Documentation: we don't consider that `.' failing to search path is
   a bug.
 
   Bug: the ^A bug is fixed.
+
+2001-10-01
+
+  Bug: it's no longer possible to use parentheses to sneak a word that
+  needs quoting past the "quoting detector", so `fn x { echo $(x.y) }'
+  now works both in the current rc and its descendants.

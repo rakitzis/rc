@@ -444,7 +444,7 @@ if (whatis printenv >/dev/null>[2=1]) {
 } else
 	printenv=()
 
-if (~ $#printenv 1 && !~ `` $nl {$printenv | grep fn___2d__2d__2d} 'fn___2d__2d__2d={for(i in $*)a|[2=3]b >>c <<<''e''&f >[2=1]}')
+if (~ $#printenv 1 && !~ `` $nl {$printenv | grep fn___2d__2d__2d} 'fn___2d__2d__2d={for(i in $*)a|[2=3]b >>c <<<e&f >[2=1]}')
 	fail protect_env
 
 fn --- {replace}

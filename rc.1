@@ -1933,17 +1933,6 @@ The
 notation for flattening should allow for using an arbitrary
 separating character, not just space.
 .PP
-It is usually possible to use parentheses to defeat
-free caret insertion; that is, to use
-.Cr $(x.y)
-as a synonym for
-.Cr $'x.y' .
-However, the former syntax is not correctly handled in functions
-exported to the environment: a function defined using this syntax will
-not work properly in descendant
-.I rc
-processes.
-.PP
 List definitions in exported functions are "noisier" than they need to be.
 .PP
 If both
@@ -1959,11 +1948,6 @@ can quite happily deal with path elements that contain
 but such elements will be split at the colon in descendant
 .I rc
 processes.
-.PP
-The
-.Cr .
-command should search
-.Cr $path .
 .PP
 Extra parentheses around a
 .Cr ~

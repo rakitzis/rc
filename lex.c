@@ -69,6 +69,16 @@ enum filedescriptors {
 	UNSET = -9, CLOSED = -1
 };
 
+/* does this string require quoting? */
+extern bool quotep(char *s) {
+	unsigned char c;
+
+	while ((c = *s++))
+		if (nw[c])
+			return TRUE;
+	return FALSE;
+}
+
 extern int yylex() {
 	static bool dollar = FALSE;
 	bool saw_meta = FALSE;
@@ -147,6 +157,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		} else {
 			y->word.m = NULL;
 		}
+		y->word.q = FALSE;
 		return WORD;
 	}
 	if (c == '`' || c == '!' || c == '@' || c == '~' || c == '$' || c == '\'') {
@@ -179,7 +190,8 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 	case '\'':
 		w = RW;
 		i = 0;
-		do {
+		/* double ' to quote it, like this: 'how''s it going?' */
+		while ((c = gchar()) != '\'' || (c = gchar()) == '\'') {
 			buf[i++] = c;
 			if (c == '\n')
 				print_prompt2();
@@ -190,11 +202,12 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 			}
 			if (i >= bufsize)
 				buf = realbuf = erealloc(buf, bufsize *= 2);
-		} while ((c = gchar()) != '\'' || (c = gchar()) == '\''); /* quote "'" thus: 'how''s it going?' */
+		}
 		ugchar(c);
 		buf[i] = '\0';
 		y->word.w = ncpy(buf);
 		y->word.m = NULL;
+		y->word.q = TRUE;
 		return WORD;
 	case '\\':
 		if ((c = gchar()) == '\n') {

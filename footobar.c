@@ -52,8 +52,6 @@ static bool Tconv(Format *f, int ignore) {
 		return FALSE;
 	}
 	switch (n->type) {
-	case nWord:	fmtprint(f, "%S", n->u[0].s);				break;
-	case nQword:	fmtprint(f, "%#S", n->u[0].s);				break;
 	case nBang:	fmtprint(f, "!%T", n->u[0].p);				break;
 	case nCase:	fmtprint(f, "case %T", n->u[0].p);			break;
 	case nNowait:	fmtprint(f, "%T&", n->u[0].p);				break;
@@ -73,11 +71,14 @@ static bool Tconv(Format *f, int ignore) {
 	case nLappend:	fmtprint(f, "(%T %T)", n->u[0].p, n->u[1].p);		break;
 	case nForin:	fmtprint(f, "for(%T in %T)%T", n->u[0].p, n->u[1].p, n->u[2].p); break;
 	case nVarsub:	fmtprint(f, "$%T(%T)", n->u[0].p, n->u[1].p);		break;
+	case nWord:
+		fmtprint(f, quotep(n->u[0].s) ? "%#S" : "%S", n->u[0].s);
+		break;
 	case nCount: case nFlat: case nVar: {
 		char *lp = "", *rp = "";
 		Node *n0 = n->u[0].p;
 
-		if (n0->type != nWord && n0->type != nQword)
+		if (n0->type != nWord)
 			lp = "(", rp = ")";
 
 		switch (n->type) {

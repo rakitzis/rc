@@ -29,8 +29,8 @@ typedef struct Format Format;
 typedef union Edata Edata;
 
 typedef enum nodetype {
-	nAndalso, nAssign, nBackq, nBang, nBody, nCbody, nNowait, nBrace, nConcat,
-	nCount, nElse, nFlat, nDup, nEpilog, nNewfn, nForin, nIf, nQword,
+	nAndalso, nAssign, nBackq, nBang, nBody, nCbody, nNowait, nBrace,
+	nConcat, nCount, nElse, nFlat, nDup, nEpilog, nNewfn, nForin, nIf,
 	nOrelse, nPipe, nPre, nRedir, nRmfn, nArgs, nSubshell, nCase,
 	nSwitch, nMatch, nVar, nVarsub, nWhile, nWord, nLappend, nNmpipe
 } nodetype;
@@ -97,6 +97,7 @@ struct Redir {
 
 struct Word {
 	char *w, *m;
+	bool q;
 };
 
 struct Rq {
@@ -279,6 +280,7 @@ extern bool rcrc;
 
 
 /* lex.c */
+extern bool quotep(char *);
 extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);
