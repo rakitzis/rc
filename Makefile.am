@@ -28,7 +28,7 @@ endif
 bin_PROGRAMS = rc
 noinst_PROGRAMS = mksignal $(HISTORY)
 
-rc_SOURCES = builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c
+rc_SOURCES = builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c parse.c print.c redir.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c
 
 EXTRA_rc_SOURCES = addon.c execve.c readline.c system.c system-bsd.c
 
@@ -37,7 +37,7 @@ rc_LDADD = sigmsgs.o $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
 
 mksignal_SOURCES = mksignal.c
 
-noinst_HEADERS = group.h jbwrap.h proto.h rc.h rlimit.h y.tab.h
+noinst_HEADERS = group.h jbwrap.h parse.h proto.h rc.h rlimit.h
 
 BUILT_SOURCES = sigmsgs.c
 
@@ -46,13 +46,15 @@ EXTRA_DIST = addon.c addon.h EXAMPLES history.1 parse.y rc.1 trip.rc
 sigmsgs.c sigmsgs.h: mksignal
 	./mksignal
 
-# Of course, y.tab.c and y.tab.h depend on parse.y.  However, unless
+# Of course, parse.c and parse.h depend on parse.y.  However, unless
 # you're hacking on rc's grammar, it's not useful to have this
-# dependency expressed, since the distributed y.tab.[ch] (generated with
-# byacc, and *very* lightly edited to remove a couple of gcc warnings)
-# are portable (I hope).
-#y.tab.c y.tab.h: $(srcdir)/parse.y
+# dependency expressed, since the distributed parse.[ch] (generated with
+# byacc, and lightly edited to remove a couple of gcc warnings) are
+# portable (I hope).
+#parse.c parse.h: $(srcdir)/parse.y
 #	$(YACC) -d $(srcdir)/parse.y
+#     mv y.tab.c parse.c
+#     mv y.tab.h parse.h
 
 trip: rc
 	./rc -p < $(srcdir)/trip.rc
