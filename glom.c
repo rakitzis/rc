@@ -384,7 +384,7 @@ extern List *glom(Node *n) {
 		words = n->u[0].p;
 		tail = NULL;
 		while (words != NULL && (words->type == nArgs || words->type == nLappend)) {
-			if (words->u[1].p != NULL && words->u[1].p->type != nWord && words->u[1].p->type != nQword)
+			if (words->u[1].p != NULL && words->u[1].p->type != nWord)
 				break;
 			head = glom(words->u[1].p);
 			if (head != NULL) {
@@ -405,7 +405,6 @@ extern List *glom(Node *n) {
 		qredir(n);
 		return NULL;
 	case nWord:
-	case nQword:
 		return word(n->u[0].s, n->u[1].s);
 	case nNmpipe:
 		return mkcmdarg(n);

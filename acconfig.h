@@ -34,6 +34,9 @@
 /* Define if you have sigsetjmp(). */
 #undef HAVE_SIGSETJMP
 
+/* Define in you have strerror(). */
+#undef HAVE_STRERROR
+
 /* Define if you want rc to encode strange characters in the environment. */
 #undef PROTECT_ENV
 

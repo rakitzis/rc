@@ -69,6 +69,18 @@ enum filedescriptors {
 	UNSET = -9, CLOSED = -1
 };
 
+/* does this string require quoting? */
+extern bool quotep(char *s, bool dollar) {
+	unsigned char c;
+	const char *meta;
+
+	meta = dollar ? dnw : nw;
+	while ((c = *s++))
+		if (meta[c])
+			return TRUE;
+	return FALSE;
+}
+
 extern int yylex() {
 	static bool dollar = FALSE;
 	bool saw_meta = FALSE;
@@ -147,6 +159,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		} else {
 			y->word.m = NULL;
 		}
+		y->word.q = FALSE;
 		return WORD;
 	}
 	if (c == '`' || c == '!' || c == '@' || c == '~' || c == '$' || c == '\'') {
@@ -179,7 +192,8 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 	case '\'':
 		w = RW;
 		i = 0;
-		do {
+		/* double ' to quote it, like this: 'how''s it going?' */
+		while ((c = gchar()) != '\'' || (c = gchar()) == '\'') {
 			buf[i++] = c;
 			if (c == '\n')
 				print_prompt2();
@@ -190,11 +204,12 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 			}
 			if (i >= bufsize)
 				buf = realbuf = erealloc(buf, bufsize *= 2);
-		} while ((c = gchar()) != '\'' || (c = gchar()) == '\''); /* quote "'" thus: 'how''s it going?' */
+		}
 		ugchar(c);
 		buf[i] = '\0';
 		y->word.w = ncpy(buf);
 		y->word.m = NULL;
+		y->word.q = TRUE;
 		return WORD;
 	case '\\':
 		if ((c = gchar()) == '\n') {
@@ -306,13 +321,13 @@ extern void yyerror(const char *s) {
 	if (!interactive) {
 		if (w != NW)
 			tok = realbuf;
-		else if (last == EOF)
+		else if (lastchar == EOF)
 			tok = "eof";
-		else if (last == '\n')
+		else if (lastchar == '\n')
 			tok = "end of line";
 		else
-			tok = nprint((last < 32 || last > 126) ? "(decimal %d)" : "'%c'", last);
-		fprint(2, "line %d: %s near %s\n", lineno - (last == '\n'), s, tok);
+			tok = nprint((lastchar < 32 || lastchar > 126) ? "(decimal %d)" : "'%c'", lastchar);
+		fprint(2, "line %d: %s near %s\n", lineno - (lastchar == '\n'), s, tok);
 	} else
 		fprint(2, "%s\n", s);
 }

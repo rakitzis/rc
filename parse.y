@@ -124,7 +124,7 @@ first	: comword
 	| first '^' sword		{ $$ = mk(nConcat,$1,$3); }
 
 sword	: comword
-	| keyword			{ $$ = mk(nWord,$1, NULL); }
+	| keyword			{ $$ = mk(nWord, $1, NULL, FALSE); }
 
 word	: sword
 	| word '^' sword		{ $$ = mk(nConcat,$1,$3); }
@@ -139,7 +139,7 @@ comword	: '$' sword			{ $$ = mk(nVar,$2); }
 	| BACKBACK word	sword		{ $$ = mk(nBackq,$2,$3); }
 	| '(' nlwords ')'		{ $$ = $2; }
 	| REDIR brace			{ $$ = mk(nNmpipe,$1.type,$1.fd,$2); }
-	| WORD				{ $$ = ($1.w[0] == '\'') ? mk(nQword, $1.w+1, NULL) : mk(nWord,$1.w, $1.m); }
+	| WORD				{ $$ = mk(nWord, $1.w, $1.m, $1.q); }
 
 keyword	: FOR		{ $$ = "for"; }
 	| IN		{ $$ = "in"; }
@@ -166,7 +166,7 @@ optnl	: /* empty */
 %%
 
 void initparse() {
-	star = treecpy(mk(nVar,mk(nWord,"*",NULL)), ealloc);
-	nolist = treecpy(mk(nVar,mk(nWord,"ifs",NULL)), ealloc);
+	star = treecpy(mk(nVar, mk(nWord,"*", NULL, FALSE)), ealloc);
+	nolist = treecpy(mk(nVar, mk(nWord,"ifs", NULL, FALSE)), ealloc);
 }
 

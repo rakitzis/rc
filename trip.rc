@@ -318,7 +318,7 @@ submatch 'cdpath='''' cd frobnatz' 'couldn''t cd to frobnatz' 'cd to frobnatz su
 submatch 'wait 1 2 3' 'too many arguments to wait' 'arg count'
 $rc -c 'wait 1' >[2]/dev/null && fail wait 1
 
-sleep 5&
+sleep 3&
 expect $apid
 echo $apids
 wait
@@ -329,7 +329,6 @@ if (~ `` '' {wait} ?)
 #
 # matching
 #
-
 touch /tmp/abc.$pid /tmp/bbc.$pid
 mkdir /tmp/dir.$pid /tmp/dip.$pid
 touch /tmp/dir.$pid/^(a b c) /tmp/dip.$pid/^(a b c)
@@ -369,7 +368,6 @@ rm -rf /tmp/dir.$pid /tmp/dip.$pid
 #
 # signals
 #
-
 fn sigint {eval}
 kill -2 $pid
 fn sigint
@@ -377,7 +375,6 @@ fn sigint
 #
 # path searching
 #
-
 $rc -c /frobnatz >[2]/dev/null && fail 'search error'
 
 touch /tmp/noexec.$pid
@@ -427,15 +424,13 @@ $rc -c '. /frobnatz' >[2]/dev/null && fail 'dot of a nonexistent file'
 #
 # stdin
 #
-
 if (!~ `{echo echo hi | $rc} hi)
 	fail piping stdin to rc
 
 #
 # functions, variables & environment
 #
-
-fn --- {for(i)a|[2=3]b>>c<<<'e'&f>[2=1]}
+fn --- {for(i)a|[2=3]b>>c<<<e&f>[2=1]}
 
 if (whatis printenv >/dev/null>[2=1]) {
 	printenv=printenv
@@ -444,7 +439,7 @@ if (whatis printenv >/dev/null>[2=1]) {
 } else
 	printenv=()
 
-if (~ $#printenv 1 && !~ `` $nl {$printenv | grep fn___2d__2d__2d} 'fn___2d__2d__2d={for(i in $*)a|[2=3]b >>c <<<''e''&f >[2=1]}')
+if (~ $#printenv 1 && !~ `` $nl {$printenv | grep fn___2d__2d__2d} 'fn___2d__2d__2d={for(i in $*)a|[2=3]b >>c <<<e&f >[2=1]}')
 	fail protect_env
 
 fn --- {replace}
@@ -470,7 +465,6 @@ fn_ff='{' prompt='' if (!~ `` $nl {$rc -cff>[2=1]} 'line 1: '*' error near eof')
 #
 # statuses
 #
-
 ~ `{$rc -ec 'sleep 10&kill -9 $apid;wait'>[2=1]} killed ||
 	fail status diagnostic
 
@@ -481,7 +475,6 @@ submatch 'exit foo' 'bad status' 'exit diagnostic'
 #
 # control structures
 #
-
 if (!~ `{false || echo hi} hi)
 	fail '||'
 if (!~ `{true && echo hi} hi)
@@ -522,7 +515,6 @@ submatch 'fn () {eval}' 'null function name' 'assigning null function name'
 #
 # prompt
 #
-
 fn prompt {echo hi}
 prompt=() if (!~ `{$rc -i /dev/null>[2]/dev/null} hi) fail fn prompt
 fn prompt
@@ -530,7 +522,6 @@ fn prompt
 #
 # history
 #
-
 history=/tmp/hist.$pid prompt='' echo 'history=()' | $rc -i
 
 if (!~ `{cat /tmp/hist.$pid} 'history=()')
@@ -569,3 +560,29 @@ eof
 # Believe it or not, I broke root directory globbing in rc-1.6b1.
 x=/*
 ~ '/*' $^x && fail root directory globbing
+
+# fn sigexit should be cleared in children
+
+x = ()
+expect nonesuch not found
+x = `{true | nonesuch}; if (~ $x trip) fail sigexit in children
+x = `{ < /dev/null wc |grep xxx }; if (~ $x trip) fail sigexit in children
+x = `{{ wc | wc } < /dev/null }; if (~ $x trip) fail sigexit in children
+
+# core dumps in glob.c
+~ () '*' && fail globber problem
+~ () '**' && fail globber problem
+
+# check for ctrl-a bug
+x=`{./tripping a}
+# ~ `{$rc -c 'echo $x'} $x || fail ctrl-a bug detected
+
+# check for hilarious quoting bug introduced while fixing ctrl-a
+x=('#' '#' '#')
+eval z^`{whatis -v x}
+~ $#zx 3 || fail hilarious quoting bug
+
+# parens bypass quote detector bug
+fn x {echo x.y $(x.y)}
+~ ``''{whatis -f x} 'fn x {echo x.y $''x.y''}
+' || fail sneaky parens bug

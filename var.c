@@ -107,7 +107,7 @@ extern char *varlookup_string(char *name) {
 		return look->extdef;
 	if (look->def == NULL)
 		return NULL;
-	return look->extdef = mprint("%F=%-L", name, look->def, "\001");
+	return look->extdef = mprint("%F=%W", name, look->def);
 }
 
 /* remove a variable from the symtab. "stack" determines whether a level of scoping is popped or not */

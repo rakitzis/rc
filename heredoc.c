@@ -82,14 +82,14 @@ static Node *parseheredoc(char *s) {
 			while ((c = *s++) != '\0' && c != '$')
 				;
 			*--s = '\0';
-			node = mk(nQword, begin, NULL);
+			node = mk(nWord, begin, NULL);
 			break;
 		}
 		case '$': {
 			char *begin = ++s, *var;
 			c = *s++;
 			if (c == '$') {
-				node = mk(nQword, "$", NULL);
+				node = mk(nWord, "$", NULL);
 				c = *s;
 			} else {
 				size_t len = 0;
@@ -129,7 +129,7 @@ extern int heredoc(int end) {
 			char *s = readheredoc(here->name);
 			if (dead)
 				return FALSE;
-			n->u[2].p = here->quoted ? mk(nQword, s, NULL) : parseheredoc(s);
+			n->u[2].p = here->quoted ? mk(nWord, s, NULL, FALSE) : parseheredoc(s);
 			n->u[0].i = rHerestring;
 		} while ((here = here->n) != NULL);
 	}
@@ -140,7 +140,7 @@ extern int heredoc(int end) {
 
 extern int qdoc(Node *name, Node *n) {
 	Hq *new, **prev;
-	if (name->type != nWord && name->type != nQword) {
+	if (name->type != nWord) {
 		yyerror("eof-marker not a single literal word");
 		flushu();
 		return FALSE;
@@ -149,7 +149,7 @@ extern int qdoc(Node *name, Node *n) {
 		;
 	*prev = new = nnew(Hq);
 	new->name = name->u[0].s;
-	new->quoted = (name->type == nQword);
+	new->quoted = name->u[2].i;
 	new->doc = n;
 	new->n = NULL;
 	return TRUE;

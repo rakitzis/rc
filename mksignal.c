@@ -1,5 +1,6 @@
-#include <stdio.h>
 #include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef NSIG
 #define NUMSIG NSIG
@@ -7,13 +8,13 @@
 #define NUMSIG 1
 #endif
 
-typedef struct {
+struct signaming {
     int signo;
-    char *signame;
-    char *sigmsg;
-} signaming;
+    const char *signame;
+    const char *sigmsg;
+};
 
-static signaming signamings[] = {
+static struct signaming signamings[] = {
 #ifdef SIGABRT
     { SIGABRT,	"sigabrt",	"abort"},
 #endif
@@ -191,7 +192,7 @@ static signaming signamings[] = {
     { 0, 0, 0}
 };
 
-static void barf(char *msg) {
+static void barf(const char *msg) {
     fprintf(stderr, "mksignals: %s\n", msg);
     exit(1);
 }
@@ -199,7 +200,7 @@ static void barf(char *msg) {
 int main(void) {
     int maxsig = NUMSIG-1;
     int s;
-    signaming *snp;
+    struct signaming *snp;
     FILE *outf;
 
     for (snp = signamings; snp->signo; ++snp)

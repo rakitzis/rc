@@ -38,7 +38,11 @@ static Input *istack, *itop;
 static int (*realgchar)(void);
 static void (*realugchar)(int);
 
-int last;
+int lastchar;
+
+#if EDITLINE || READLINE
+static char *rlinebuf, *prompt;
+#endif
 
 #if EDITLINE || READLINE
 static char *rlinebuf, *prompt;
@@ -49,7 +53,7 @@ extern int gchar() {
 
 	if (eofread) {
 		eofread = FALSE;
-		return last = EOF;
+		return lastchar = EOF;
 	}
 
 	while ((c = (*realgchar)()) == '\0')
@@ -63,7 +67,7 @@ extern void ugchar(int c) {
 }
 
 static int dead() {
-	return last = EOF;
+	return lastchar = EOF;
 }
 
 static void ugdead(int ignore) {
@@ -80,7 +84,7 @@ static void ugalive(int c) {
 /* get the next character from a string. */
 
 static int stringgchar() {
-	return last = (inbuf[chars_out] == '\0' ? EOF : inbuf[chars_out++]);
+	return lastchar = (inbuf[chars_out] == '\0' ? EOF : inbuf[chars_out++]);
 }
 
 /*
@@ -94,7 +98,7 @@ static int fdgchar() {
 	if (chars_out >= chars_in + 2) { /* has the buffer been exhausted? if so, replenish it */
 		while (1) {
 #if EDITLINE || READLINE
-			if (interactive && istack->fd == 0 && isatty(0)) {
+			if (interactive && istack->t == iFd && isatty(istack->fd)) {
 				/* The readline library doesn't handle read() returning EAGAIN. */
 				makeblocking(istack->fd);
 				rlinebuf = rc_readline(prompt);
@@ -117,10 +121,18 @@ static int fdgchar() {
 				do {
 					r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
 					sigchk();
-					if (errno == EAGAIN) {
+					switch (errno) {
+					case EAGAIN:
 						if (!makeblocking(istack->fd))
 							panic("not O_NONBLOCK");
 						errno = EINTR;
+						break;
+					case EIO:
+						if (makesamepgrp(istack->fd))
+							errno = EINTR;
+						else
+							errno = EIO;
+						break;
 					}
 				} while (r < 0 && errno == EINTR);
 				if (r < 0) {
@@ -132,13 +144,13 @@ static int fdgchar() {
 			break;
 		}
 		if (chars_in == 0)
-			return last = EOF;
+			return lastchar = EOF;
 		chars_out = 2;
 		if (dashvee)
 			writeall(2, inbuf + 2, chars_in);
 		history();
 	}
-	return last = inbuf[chars_out++];
+	return lastchar = inbuf[chars_out++];
 }
 
 /* set up the input stack, and put a "dead" input at the bottom, so that yyparse will always read eof */
@@ -159,7 +171,7 @@ static void pushcommon() {
 	istack->ibuf = inbuf;
 	istack->lineno = lineno;
 	istack->saved = save_lineno;
-	istack->last = last;
+	istack->last = lastchar;
 	istack->eofread = eofread;
 	istack++;
 	idiff = istack - itop;
@@ -206,7 +218,7 @@ extern void popinput() {
 		realgchar = dead;
 		realugchar = ugdead;
 	}
-	last = istack->last;
+	lastchar = istack->last;
 	eofread = istack->eofread;
 	inbuf = istack->ibuf;
 	chars_out = istack->index;
@@ -222,7 +234,7 @@ extern void popinput() {
 
 extern void flushu() {
 	int c;
-	if (last == '\n' || last == EOF)
+	if (lastchar == '\n' || lastchar == EOF)
 		return;
 	while ((c = gchar()) != '\n' && c != EOF)
 		; /* skip to newline */
@@ -234,9 +246,9 @@ extern void flushu() {
 
 extern Node *doit(bool clobberexecit) {
 	bool eof;
-	bool execit ;
+	bool execit;
 	Jbwrap j;
-	Estack e1, e2;
+	Estack e1;
 	Edata jerror;
 
 	if (dashen)
@@ -247,6 +259,7 @@ extern Node *doit(bool clobberexecit) {
 	except(eError, jerror, &e1);
 	for (eof = FALSE; !eof;) {
 		Edata block;
+		Estack e2;
 		block.b = newblock();
 		except(eArena, block, &e2);
 		sigchk();
@@ -261,12 +274,18 @@ extern Node *doit(bool clobberexecit) {
 		if (interactive) {
 			List *s;
 			if (!dashen && fnlookup("prompt") != NULL) {
+				static bool died = FALSE;
 				static char *arglist[] = { "prompt", NULL };
-				funcall(arglist);
+
+				if (!died) {
+					died = TRUE;
+					funcall(arglist);
+				}
+				died = FALSE;
 			}
 			if ((s = varlookup("prompt")) != NULL) {
 #if EDITLINE || READLINE
-				if (istack->t == iFd && istack->fd == 0 && isatty(0))
+				if (istack->t == iFd && isatty(istack->fd))
 					prompt = s->w;
 				else
 #endif
@@ -277,7 +296,7 @@ extern Node *doit(bool clobberexecit) {
 		inityy();
 		if (yyparse() == 1 && execit)
 			rc_raise(eError);
-		eof = (last == EOF); /* "last" can be clobbered during a walk() */
+		eof = (lastchar == EOF); /* "lastchar" can be clobbered during a walk() */
 		if (parsetree != NULL) {
 			if (execit)
 				walk(parsetree, TRUE);
@@ -353,7 +372,7 @@ extern void print_prompt2() {
 	lineno++;
 	if (interactive) {
 #if EDITLINE || READLINE
-		if (istack->t == iFd && istack->fd == 0 && isatty(0))
+		if (istack->t == iFd && isatty(istack->fd))
 			prompt = prompt2;
 		else
 #endif

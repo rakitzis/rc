@@ -46,14 +46,14 @@ static int defaultfd(int op) {
 /* convert a function in Node * form into something rc can parse (and humans can read?) */
 
 static bool Tconv(Format *f, int ignore) {
+	bool dollar = f->flags & FMT_altform;
 	Node *n = va_arg(f->args, Node *);
+
 	if (n == NULL) {
 		fmtprint(f, "()");
 		return FALSE;
 	}
 	switch (n->type) {
-	case nWord:	fmtprint(f, "%S", n->u[0].s);				break;
-	case nQword:	fmtprint(f, "%#S", n->u[0].s);				break;
 	case nBang:	fmtprint(f, "!%T", n->u[0].p);				break;
 	case nCase:	fmtprint(f, "case %T", n->u[0].p);			break;
 	case nNowait:	fmtprint(f, "%T&", n->u[0].p);				break;
@@ -70,21 +70,34 @@ static bool Tconv(Format *f, int ignore) {
 	case nSwitch:	fmtprint(f, "switch(%T){%T}", n->u[0].p, n->u[1].p);	break;
 	case nMatch:	fmtprint(f, "~ %T %T", n->u[0].p, n->u[1].p);		break;
 	case nWhile:	fmtprint(f, "while(%T)%T", n->u[0].p, n->u[1].p);	break;
-	case nLappend:	fmtprint(f, "(%T %T)", n->u[0].p, n->u[1].p);		break;
 	case nForin:	fmtprint(f, "for(%T in %T)%T", n->u[0].p, n->u[1].p, n->u[2].p); break;
 	case nVarsub:	fmtprint(f, "$%T(%T)", n->u[0].p, n->u[1].p);		break;
+	case nWord:
+		fmtprint(f, quotep(n->u[0].s, dollar) ? "%#S" : "%S", n->u[0].s);
+		break;
+	case nLappend: {
+		static bool inlist;
+		if (!inlist) {
+			inlist = TRUE;
+			fmtprint(f, "(%T %T)", n->u[0].p, n->u[1].p);
+			inlist = FALSE;
+		} else {
+			fmtprint(f, "%T %T", n->u[0].p, n->u[1].p);
+		}
+		break;
+	}
 	case nCount: case nFlat: case nVar: {
 		char *lp = "", *rp = "";
 		Node *n0 = n->u[0].p;
 
-		if (n0->type != nWord && n0->type != nQword)
+		if (n0->type != nWord)
 			lp = "(", rp = ")";
 
 		switch (n->type) {
 		default:	panic("this can't happen");		break;
-		case nCount:	fmtprint(f, "$#%s%T%s", lp, n0, rp);	break;
-		case nFlat:	fmtprint(f, "$^%s%T%s", lp, n0, rp);	break;
-		case nVar:	fmtprint(f, "$%s%T%s", lp, n0, rp);	break;
+		case nCount:	fmtprint(f, "$#%s%#T%s", lp, n0, rp);	break;
+		case nFlat:	fmtprint(f, "$^%s%#T%s", lp, n0, rp);	break;
+		case nVar:	fmtprint(f, "$%s%#T%s", lp, n0, rp);	break;
 		}
 		break;
 	}
@@ -212,45 +225,52 @@ extern char *get_name(char *s) {
 		}
 }
 
-/*
-   Hacky routine to split a ^A-separated environment variable. Scans
-   backwards. Be VERY CAREFUL with the loop boundary conditions. e.g.,
-   notice what happens when there is no ^A in the extdef. (It does
-   the right thing, of course :-)
-*/
-
-#define skipleft(p) do --p; while (*p != '\0' && *p != '\001');
+/* interpret a variable from environment.  ^A separates list elements;
+   ^B escapes a literal ^A or ^B.  For minimal surprise, ^B followed
+   by anything other than ^A or ^B is preserved. */
 
 extern List *parse_var(char *extdef) {
-	char *endp, *realend, *sepp;
-	List *tailp, *new;
+	char *begin, *end, *from, *to;
+	int len;
+	List *first, *last, *new;
 
-	extdef = strchr(extdef, '=');
-	*extdef++ = '\0'; /* null "initiate" the string for rtol scanning */
-
-	sepp = realend = strchr(extdef, '\0');
-	tailp = NULL;
-
-	while (1) {
-		endp = sepp;	/* set endp to end of current mebmer */
-		skipleft(sepp);	/* advance sepp to the previous \1,  */
-		*endp = '\0';   /* and null terminate the member.    */
-
+	first = last = NULL;
+	begin = strchr(extdef, '=');
+	assert(begin); /* guaranteed by initenv() */
+	while (*begin) {
+		++begin;
+		end = begin;
+		len = 0;
+		while (*end != ENV_SEP && *end != '\0') {
+			if (*end == ENV_ESC) {
+				++end;
+				if (*end != ENV_SEP && *end != ENV_ESC) --end;
+			}
+			++end; ++len;
+		}
 		new = enew(List);
-		new->w = ecpy(sepp+1);
+		if (last)
+			last->n = new;
+		else
+			first = new;
+		last = new;
+		new->w = ealloc(len + 1);
 		new->m = NULL;
-		new->n = tailp;
-		tailp = new;
-
-		if (sepp < extdef)	/* break when sepp hits the null "initiator" */
-			break;
-		if (endp != realend)	/* else restore the \1 in between members */
-			*endp = '\001';
+		new->n = NULL;
+		to = new->w;
+		for (from = begin; from < end; ++from) {
+			if (*from == ENV_ESC) {
+				++from;
+				if (*from != ENV_SEP && *from != ENV_ESC)
+					--from;
+			}
+			*to = *from;
+			++to;
+		}
+		*to = '\0';
+		begin = end;
 	}
-	if (endp != realend)
-		*endp = '\001';
-	*--extdef = '='; /* restore extdef '=' */
-	return tailp;
+	return first;
 }
 
 /* get an environment entry for a function and have rc parse it. */
@@ -279,16 +299,42 @@ static bool Aconv(Format *f, int ignore) {
 	return FALSE;
 }
 
+/* %L -- print a list */
 static bool Lconv(Format *f, int ignore) {
-	List *l = va_arg(f->args, List *);
-	char *sep = va_arg(f->args, char *);
-	char *fmt = (f->flags & FMT_leftside) ? "%s%s" : "%-S%s";
+	bool plain;
+	char *sep;
+	List *l, *n;
+
+	plain = f->flags & FMT_leftside;
+	l = va_arg(f->args, List *);
+	sep = va_arg(f->args, char *);
 	if (l == NULL && (f->flags & FMT_leftside) == 0)
 		fmtprint(f, "()");
 	else {
-		List *s;
-		for (s = l; s != NULL; s = s->n)
-			fmtprint(f, fmt, s->w, s->n == NULL ? "" : sep);
+		for (; l != NULL; l = n) {
+			n = l->n;
+			fmtprint(f, plain ? "%s" : "%-S", l->w);
+			if (n != NULL) fmtputc(f, *sep);
+		}
+	}
+	return FALSE;
+}
+
+/* %W -- print a list for exporting */
+static bool Wconv(Format *f, int ignore) {
+	List *l, *n;
+
+	l = va_arg(f->args, List *);
+	for (; l != NULL; l = n) {
+		char c, *s;
+
+		for (s = l->w; (c = *s) != '\0'; ++s) {
+			if (c == ENV_SEP || c == ENV_ESC)
+				fmtputc(f, ENV_ESC);
+			fmtputc(f, c);
+		}
+		n = l->n;
+		if (n != NULL) fmtputc(f, ENV_SEP);
 	}
 	return FALSE;
 }
@@ -329,6 +375,7 @@ void initprint(void) {
 	fmtinstall('S', Sconv);
 	fmtinstall('T', Tconv);
 	fmtinstall('D', Dconv);
+	fmtinstall('W', Wconv);
 #if PROTECT_ENV
 	fmtinstall('F', Fconv);
 #else

@@ -3,14 +3,18 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-void out0(void) {
+static void out0(void) {
 	putchar('t'); putchar('r');
 	putchar('\0');
 	putchar('u'); putchar('e');
 	putchar('\n');
 }
 
-void makenonblock(void) {
+static void ctrl_a(void) {
+	puts("a\001ab\002b");
+}
+
+static void makenonblock(void) {
 	int flags;
 
 	if ((flags = fcntl(0, F_GETFL)) == -1)
@@ -24,6 +28,9 @@ int main(int argc, char **argv) {
 	switch(argv[1][0]) {
 	case '0':
 		out0();
+		break;
+	case 'a':
+		ctrl_a();
 		break;
 	case 'n':
 		makenonblock();

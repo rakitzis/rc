@@ -1,8 +1,8 @@
-This is beta release rc-1.6b2.
+This is beta release rc-1.6b3.
 
 See COPYING for copying information.  All files are
 
-   Copyright 1991, 1999 Byron Rakitzis.
+   Copyright 1991, 2001 Byron Rakitzis.
 
 See INSTALL for build and installation information.
 
@@ -24,7 +24,7 @@ make rc; this information is extremely valuable.
 
 FEEPING CREATURISM
 
-See the end of the man page, under "INCOMPATABILITIES" for (known?)
+See the end of the man page, under "INCOMPATIBILITIES" for (known?)
 differences from the "real" rc.  Most of these changes were necessary
 to get rc to work in a reasonable fashion on a real (i.e. commercial,
 non-Labs) Unix system; a few were changes motivated by concern about

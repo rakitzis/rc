@@ -665,3 +665,61 @@ Changes since rc-1.5b2
   available on the web.
 
   Release: rc-1.6b2.
+
+2000-04-19
+
+  Bug: isatty() tests in input.c are relevant to any fd, not just 0.
+  Now `. -i /dev/tty' works right.
+
+  Bug: fn sigexit wasn't always cleared in child shells.
+
+  Bug: `~ () '*'' dumped core.
+
+2000-05-25
+
+  Portability: need special runes for read() returning EIO under job
+  control systems.
+
+2000-06-20
+
+  Feature: add `-I' flag (definitively not interactive) for
+  compatibility with Plan 9 rc.
+
+2000-11-27
+
+  Portability: configure fails to detect strerror() on NetBSD; we need
+  to include <string.h>.
+
+2001-06-18
+
+  Bug: you can't pass a short to a stdargs function!
+
+2001-09-27
+
+  Documentation: we don't consider that `.' failing to search path is
+  a bug.
+
+  Feature: ^A in lists is now handled transparently.
+
+2001-10-01
+
+  Bug: it's no longer possible to use parentheses to sneak a word that
+  needs quoting past the "quoting detector", so `fn x { echo $(x.y) }'
+  now works both in the current rc and its descendants.
+
+  Documentation: mention the catastrophic effects of a semantic error
+  in fn prompt.
+
+2001-10-03
+
+  Feature: exported lists no longer use redundant parentheses.
+
+2001-10-04
+
+  Bug: semantic errors in `fn prompt' no longer throw rc into a tailspin.
+
+  Feature: don't export $cdpath or $home (the lower-case versions).
+
+2001-10-12
+
+  Release: rc-1.6b3.

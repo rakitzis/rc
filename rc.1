@@ -161,12 +161,12 @@
 .if !"\\$4"" .Xf \\$2 \\$1 "\\$3\\f\\$1\\$4\\*(Xi" "\\$5" "\\$6" "\\$7" "\\$8" "\\$9"
 .if "\\$4"" \\$3\fR\s10
 ..
-.TH RC 1 "1999-12-10"
+.TH RC 1 "2001-10-12"
 .SH NAME
 rc \- shell
 .SH SYNOPSIS
 .B rc
-.RB [ \-deilnopsVvx ]
+.RB [ \-deiIlnopsvx ]
 .RB [ \-c
 .IR command ]
 .RI [ arguments ]
@@ -242,13 +242,23 @@ will be in
 mode.
 That is, a prompt (from
 .Cr $prompt(1)\^ )
-will be printed before an
-input line is taken, and
+will be printed before an input line is taken, and
 .I rc
-will ignore the signals
+will ignore
+.Cr SIGINT .
+.TP
+.Cr \-I
+If the
+.Cr \-I
+flag is present, or if the input to
+.I rc
+is not from a terminal, then
+.I rc
+will not be in interactive mode.  No prompts will be printed, and
 .Cr SIGINT
-and
-.Cr SIGQUIT .
+will cause
+.I rc
+to exit.
 .TP
 .Cr \-l
 If the
@@ -261,7 +271,7 @@ is a dash
 then
 .I rc
 will behave as a login shell.
-That is, it will try to run commands present in
+That is, it will run commands from
 .Cr $home/.rcrc ,
 if this file exists, before reading any other input.
 .TP
@@ -339,7 +349,7 @@ of shell functions, builtin commands,
 or as a file in the directories named by
 .Cr $path .
 .SS "Background Tasks"
-A command ending with a
+A command ending with
 .Cr &
 is run in the background; that is,
 the shell returns immediately rather than waiting for the command to
@@ -506,6 +516,7 @@ Note that no spaces may appear in these constructs:
 .Ds
 .Cr "command > [2] file"
 .De
+.PP
 would send the output of the command to a file named
 .Cr [2] ,
 with the intended filename appearing in the command's argument list.
@@ -618,9 +629,7 @@ redirection is implemented with some kind of pipe, and since one cannot
 .IR lseek (2)
 on a pipe, commands that use
 .IR lseek (2)
-will hang.
-For example,
-most versions of
+will hang.  For example, some versions of
 .IR diff (1)
 use
 .IR lseek (2)
@@ -671,7 +680,7 @@ and performs the command as long as the
 .I test
 is true.
 .TP
-.Ci "for (" var " in" " list" ) " cmd"
+.Ci "for (" var " in " list ) " cmd"
 .I rc
 sets
 .I var
@@ -899,18 +908,16 @@ Note that the null string,
 .Cr "''" ,
 and the null list,
 .Cr "()" ,
-are two very
-different things.
-Assigning the null string to variable is a valid
-operation, but it does not remove its definition.
-For example,
-if
-.Cr $a
-is set to
-.Cr "''" ,
-then
-.Cr "$#a" ,
-returns a 1.
+are two very different things.  Assigning the null string to a
+variable is a valid operation, but it does not remove its definition.
+.Ds
+.Cr "null = '' empty = () echo $#null $#empty"
+.De
+.PP
+produces the output
+.Ds
+.Cr "1 0"
+.De
 .SS "List Concatenation"
 Two lists may be joined by the concatenation operator
 .Rc ( ^ ).
@@ -981,7 +988,7 @@ A list may be assigned to a variable, using the notation:
 .PP
 The special variable
 .Cr *
-may be assigned to using this notation;
+may also be assigned to using this notation;
 .I rc
 has no
 .B set
@@ -993,19 +1000,20 @@ digits, may be used as a variable name.  Any character except
 may be used, but special characters must be quoted.
 All user-defined variables are exported into the environment.
 .PP
-The value of a variable is referenced with the notation:
+The value of a variable is referenced with the dollar
+.Rc ( $ )
+operator:
 .Ds
 .Ci $ var
 .De
 .PP
 Any variable which has not been assigned a value returns the null list,
 .Cr "()" ,
-when referenced.
-In addition, multiple references are allowed:
+when referenced.  Multiple references are allowed:
 .Ds
-.Cr a=foo
-.Cr b=a
-.Cr "echo $$b"
+.Cr "a = foo"
+.Cr "b = a"
+.Cr "echo $ $ b"
 .De
 .PP
 prints
@@ -1064,16 +1072,11 @@ Variables may be subscripted with the notation
 .PP
 where
 .I n
-is a list of integers (origin 1).
-The list of subscripts need
-not be in order or even unique.
-Thus, if
+is a list of integers (origin 1).  The opening parenthesis must
+immediately follow the variable name.  The list of subscripts need not
+be in order or even unique.  Thus,
 .Ds
 .Cr "a=(one two three)"
-.De
-.PP
-then
-.Ds
 .Cr "echo $a(3 3 3)"
 .De
 .PP
@@ -1119,14 +1122,15 @@ This returns a single-element list, with the number of elements in
 .Cr $var .
 .SS "Flat Lists"
 In order to create a single-element list from a multi-element list,
-with the components space-separated, use
+with the components space-separated, use the dollar-caret
+.Rc ( $^ )
+operator:
 .Ds
 .Cr $^var
 .De
 .PP
 This is useful when the normal list concatenation rules need to be
-bypassed.
-For example, to append a single period at the end of
+bypassed.  For example, to append a single period at the end of
 .Cr $path ,
 use:
 .Ds
@@ -1245,7 +1249,9 @@ Note also that an assignment to
 .Cr $cdpath
 causes an automatic assignment to
 .Cr $CDPATH ,
-and vice-versa.
+and vice-versa.  Only
+.Cr $CDPATH
+is exported into the environment.
 .TP
 .Cr history
 .Cr $history
@@ -1299,11 +1305,11 @@ and
 and
 .Cr $PATH
 are aliased to each other.
-If
-.Cr $path
-or
+If neither
 .Cr $PATH
-is not set at startup time,
+nor
+.Cr $path
+is set at startup time,
 .Cr $path
 assumes a default value suitable for your system.
 This is typically
@@ -1355,19 +1361,15 @@ is about to print
 .Cr "$prompt(1)" .
 .TP
 .Cr status " (read only)"
-The exit status of the last command.
-If the command exited with a numeric value,
-that number is the status.
-If the died with a signal,
-the status is the name of that signal; if a core file
-was created, the string
+The exit status of the last command.  If the command exited with a
+numeric value, that number is the status.  If the command died with a
+signal, the status is the name of that signal; if a core file was
+created, the string
 .Rc `` +core ''
-is appended.
-The value of
+is appended.  The value of
 .Cr $status
-for a pipeline is a list, with one entry,
-as above, for each process in the pipeline.
-For example, the command
+for a pipeline is a list, with one entry, as above, for each process
+in the pipeline.  For example, the command
 .Ds
 .Cr "ls | wc"
 .De
@@ -1497,7 +1499,9 @@ Thus:
 .Cr "fn sigint {}"
 .De
 .PP
-causes SIGINT to be ignored by the shell.
+causes
+.Cr SIGINT
+to be ignored by the shell.
 Only signals that are being ignored are passed on to programs run by
 .IR rc ;
 signal functions are not exported.
@@ -1629,9 +1633,10 @@ The resources which can be shown or altered are
 .BR filesize ,
 .BR datasize ,
 .BR stacksize ,
-.B coredumpsize
-and
-.BR memoryuse .
+.BR coredumpsize ,
+.BR memoryuse ,
+and, where supported,
+.BR descriptors .
 For
 example:
 .Ds
@@ -1766,22 +1771,66 @@ For example,
 .Ds
 .Cr "whatis \-\|\- \-p"
 .De
+.SH EXAMPLES
+The
+.B shift
+builtin only shifts
+.Cr "$*" .
+This function can shift any variable (except
+.Cr "$lshift" ).
+.Ds
+.Cr "fn lshift { lshift=$*; *=$$1; shift $lshift(2); $lshift(1)=$* }"
+.De
+.PP
+With this definition in place,
+.Ds
+.Cr "walrus = (shoes ships sealing-wax cabbages kings)"
+.Cr "lshift walrus 3"
+.Cr "whatis walrus"
+.De
+.PP
+prints
+.Ds
+.Cr "walrus=(cabbages kings)"
+.De
+.PP
+The
+.Cr $^var
+operator flattens a list by separating each element with a space.
+This function allows the separator to be an arbitrary string.
+.Ds
+.Cr "fn lflat {"
+.Cr "  lflat=$*; *=$$1"
+.Cr "  while () {"
+.Cr "    echo -n $1; shift"
+.Cr "    ~ $#* 0 && break"
+.Cr "    echo -n $lflat(2)"
+.Cr "}"
+.De
+.PP
+With this definition in place,
+.Ds
+.Cr "hops=(uunet mcvax ukc tlg)"
+.Cr lflat hops !
+.De
+.PP
+prints (with no final newline)
+.Ds
+.Cr uunet!mcvax!ukc!tlg
+.De
 .SH "EXIT STATUS"
 The exit status of
 .I rc
-is normally the same as that of the
-last command executed.  If the last
-command was a pipeline,
+is normally the same as that of the last command executed.  If the
+last command was a pipeline,
 .I rc
 exits
 .Cr 0
-if every command in the pipeline did;
-otherwise it exits
+if every command in the pipeline did; otherwise it exits
 .Cr 1 .
 .PP
 .I rc
-can be made to exit with a particular
-status using the
+can be made to exit with a particular status using the
 .B exit
 builtin.
 .SH GRAMMAR
@@ -1894,12 +1943,6 @@ The design of this shell was copied from the
 .I rc
 that Tom Duff wrote at Bell Labs.
 .SH BUGS
-Environment variables that contain the ASCII character SOH (also known
-as '\\001', or CTRL-A) will be split into lists at that character in
-descendant
-.IR rc
-processes.
-.PP
 There is a compile-time limit on the number of
 .Cr ;
 separated commands in a line: usually 500.
@@ -1913,31 +1956,35 @@ On modern systems that support
 or
 .Cr /proc/self/fd ,
 .Cr <{foo}
-style redirection is implemented that way.
-However, on other systems it is implemented with named pipes,
-and it is sometimes
+style redirection is implemented that way.  However, on older systems
+it is implemented with named pipes.  Allegedly, it is sometimes
 possible to foil
 .I rc
 into removing the FIFO it places in
 .Cr /tmp
 prematurely, or it is even possible to cause
 .I rc
-to hang.
-.PP
-The functionality of
-.B shift
-should be available for variables other than
-.Cr "$*" .
+to hang.  (The current maintainer has never seen this, but then he
+doesn't use systems which lack
+.Cr /dev/fd
+any more.  If anybody can reproduce this problem, please let the
+maintainer know.)
 .PP
 .B echo
 is built in only for performance reasons, which is a bad idea.
 .PP
 There should be a way to avoid exporting a variable.
 .PP
-The
-.Cr $^var
-notation for flattening should allow for using an arbitrary
-separating character, not just space.
+Extra parentheses around a
+.Cr ~
+expression or a
+.Cr !
+expression are a syntax error.  Thus, this code is illegal.
+.Ds
+.Cr "while ((~ $1 -*) && (! ~ $1 --)) { ..."
+.De
+.TP
+The redundant inner parentheses must be omitted.
 .PP
 It is usually possible to use parentheses to defeat
 free caret insertion; that is, to use
@@ -2020,12 +2067,12 @@ for
 .IR file .
 This
 .I rc
-does not; this is a bug.
+does not, since it is not considered useful.
 .PP
 The list flattening operator,
 .Cr $^foo ,
 is spelt
-.Cr $"foo
+.Cr "$\"foo"
 in those versions of the Bell Labs
 .IR rc
 which have it.
@@ -2063,7 +2110,7 @@ Unix Research System,
 Tenth Edition,
 Volume 2. (Saunders College Publishing)
 .PP
-.Cr http://www.star.le.ac.uk/~tjg/rc/misc/td.html ,
+.Cr http://www.star.le.ac.uk/~tjg/rc/misc/td ,
 an updated version of the above paper.
 .PP
 .IR history (1)

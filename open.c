@@ -43,3 +43,21 @@ extern bool makeblocking(int fd) {
 	}
 	return TRUE;
 }
+
+/* make a file descriptor the same pgrp as us.  Returns TRUE if
+it changes anything. */
+
+extern bool makesamepgrp(int fd) {
+	pid_t grp;
+
+	grp = getpgrp();
+
+	if (tcgetpgrp(fd) == grp)
+		return FALSE;
+
+	if (tcsetpgrp(fd, grp) < 0) {
+		uerror("tcsetgrp");
+		return FALSE;
+	}
+	return TRUE;
+}

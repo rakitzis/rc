@@ -34,23 +34,13 @@ static List *sort(List *);
 
 extern bool lmatch(List *s, List *p) {
 	List *q;
-	int i;
-	bool okay;
 	if (s == NULL) {
 		if (p == NULL) /* null matches null */
 			return TRUE;
-		for (; p != NULL; p = p->n) { /* one or more stars match null */
-			if (*p->w != '\0') { /* the null string is a special case; it does *not* match () */
-				okay = TRUE;
-				for (i = 0; p->w[i] != '\0'; i++)
-					if (p->w[i] != '*' || p->m[i] != 1) {
-						okay = FALSE;
-						break;
-					}
-				if (okay)
-					return TRUE;
-			}
-		}
+		for (; p != NULL; p = p->n) /* one or more stars match null */
+			if (strspn(p->w, "*") == strlen(p->w) &&
+			    p->m != NULL && strlen(p->m) == strlen(p->w))
+				return TRUE;
 		return FALSE;
 	}
 	for (; s != NULL; s = s->n)
