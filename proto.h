@@ -52,10 +52,6 @@ extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 
 #endif /* STDC_HEADERS */
 
-#if HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif

@@ -2,7 +2,10 @@
 allows partial writes */
 
 #include <errno.h>
+
+#if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
 
 #include "rc.h"
 #include "jbwrap.h"
