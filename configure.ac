@@ -117,13 +117,11 @@ xyes)
 	;;
 xno)
 	AC_CACHE_CHECK(for native quad_t, rc_cv_have_quad_t,
-		AC_TRY_RUN([
+		AC_TRY_COMPILE([
 #include <sys/types.h>
-main() {
-	quad_t q;
-	q = 0;
-	exit((int) q);
-}
+		], [
+typedef quad_t align_t;
+align_t a;
 		], rc_cv_have_quad_t=yes, rc_cv_have_quad_t=no))
 
 	case "x$rc_cv_have_quad_t" in
