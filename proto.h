@@ -4,6 +4,10 @@
   file, or---for older systems---declaring the functions directly.
 */
 
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
 #include <signal.h>
 
 #if HAVE_QUAD_T
@@ -47,10 +51,6 @@ extern void *realloc(void *, size_t);
 extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 
 #endif /* STDC_HEADERS */
-
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
 
 #if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
