@@ -639,3 +639,5 @@ Changes since rc-1.5b2
 
   Portability: add /usr/bsd to default default path.
 
+  Documentation: failing to search $path for a `.' command is at least
+  an incompatibility with Tenth Edition rc, and probably a bug.

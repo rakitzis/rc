@@ -1958,13 +1958,18 @@ and
 .Cr $path
 are set,
 .I rc
-believes the former.  Arguably this is a bug, since although
+believes the former.  Arguably this is a bug:
 .I rc
 can quite happily deal with path elements that contain
 .Cr : ,
-such elements will be split at the colon in descendant
+but such elements will be split at the colon in descendant
 .I rc
 processes.
+.PP
+The
+.Cr .
+command should search
+.Cr $path .
 .PP
 Bug reports should be mailed to
 .Cr "<tjg@star.le.ac.uk>" .
@@ -1973,7 +1978,7 @@ Here is a list of features which distinguish this incarnation of
 .I rc
 from the one described in the Bell Labs manual pages:
 .PP
-The v10
+The Tenth Edition
 .I rc
 does not have the
 .B else
@@ -1987,11 +1992,24 @@ if the preceding
 .B if
 test does not succeed.
 .PP
-Backquotes are slightly different in v10
+Backquotes are slightly different in Tenth Edition
 .IR rc :
 a backquote must always be followed by a left-brace.
 This restriction is not present for single-word commands in this
 .IR rc .
+.PP
+For
+.Cr . 
+.IR file ,
+the Tenth Edition
+.IR rc
+searches
+.Cr $path
+for
+.IR file .
+This
+.I rc
+does not; this is a bug.
 .PP
 The list flattening operator,
 .Cr $^foo ,
