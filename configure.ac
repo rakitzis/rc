@@ -6,7 +6,7 @@ AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-07-10")
+AC_DEFINE(RELDATE, "1998-07-15")
 
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
@@ -297,7 +297,7 @@ AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing], [
 		AC_DEFINE(READLINE)
 		LIBS="$LIBS -lreadline -ltermcap"
 		AC_CHECK_LIB(readline, _rl_clean_up_for_exit, , AC_DEFINE(READLINE_OLD), -ltermcap)
-	], AC_MSG_ERROR("$rc_readline_err"), -ltermcap)
+	], AC_MSG_ERROR(readline library not found), -ltermcap)
 ])
 AM_CONDITIONAL(AMC_READLINE, test "${with_readline+set}" = set)
 
