@@ -276,3 +276,71 @@ Changes since rc-1.5beta1
 	was SIG_IGN when rc was started.
 
 	Portability: POSIXish systems don't have NGROUPS.
+
+Changes since rc-1.5b2
+
+	Configuration: rc now uses GNU automake.
+
+	Portability: use sigsetjmp() when available.
+
+	Portability: improve tests for quad_t.
+
+	Configuration: don't leave FIFOs in /tmp when configuring.
+
+	Configuration: let configure find `-ltermcap' when using
+	readline.
+
+	Configuration: pick up default path from config.cache.
+
+	Bug: sense of most HAVE_RESTARTABLE_SYSCALLS tests was wrong.
+
+	Bug: print prompts with `-i', even with editline / readline.
+
+	Testing: just say `false' (not `/bin/false').
+
+	Bug: confusion over gid_t versus GETGROUPS_T in which.c.
+
+	Feature: `-V' option added to report version number.
+
+	Configuration: remove version.c; `id' is defined in main.c now.
+
+	Bug: clear list of living children after fork(); `{ ls & wait }
+	|cat' no longer hangs or panics.
+
+	Testing: add regression test for above.
+
+	Tidiness: all the system call wrappers to prevent calls being
+	restarted now live in system-bsd.c.  The configure script
+	decides whether to build system.c or system-bsd.c.  Also,
+	signal.c is more careful to only declare slowbuf if it will be
+	needed.
+
+	Tidiness: similarly, configure decides whether to build execve.c
+	or not.
+
+	Portability: test for ssize_t and use it where available; use
+	long if there's no ssize_t.
+
+	Portability: use sigsetjmp where it's available and appropriate.
+	If no sigsetjmp, just use sigjmp; this probably fails in a
+	traditional SysV environment.
+
+	Portability: test explicitly for SysV SIGCLD semantics.  Main
+	(and dubious) benefit is that you can now define a function
+	called `sigcld' on systems where there is no signal called
+	SIGCLD!
+
+	Bug: rc has its own memory allocator; don't use malloc directly.
+
+	Bug: the rc_wait() wrapper is only needed on systems which
+	restart system calls.  On Linux, in particular, the wrapper
+	leads to a race which causes rc to hang (or panic in later
+	versions).  Other systems apparently don't exercise this race.
+
+	Bug: waitforall() must return if rc_wait4() returns with errno
+	== EINTR.  Otherwise, the rc builtin `wait' cannot be interrupted
+	if there are background processes (although apparently only if
+	there is a handler for SIGINT).
+
+	Portability: dreadful hack to track down the real locations
+	of signal.h to find signal names.  rc now builds under CygWin32!
