@@ -812,3 +812,8 @@ Changes since rc-1.5b2
 
   Bug: don't call ealloc(0) on systems where getgroups() doesn't
   return egid (thanks Chris Siebenmann).
+
+2002-11-27
+
+  Bug: history dumps core if more colons than substitutions (thanks
+  Callum Gibson).

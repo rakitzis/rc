@@ -78,6 +78,8 @@ static char *sub(char *s, char *old, char *new) {
 	char *t, *u;
 
 	t = isin(s, old);
+	if (!t)
+		return s;
 	u = newstr();
 
 	*t = '\0';
