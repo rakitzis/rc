@@ -56,7 +56,7 @@ static char *newstr() {
 	return ealloc((size_t)1024);
 }
 
-static char *basename(const char *s) {
+static char *rc_basename(char *s) {
 	char *t = strrchr(s, '/');
 	return (t == NULL) ? s : t + 1;
 }
@@ -175,7 +175,8 @@ start:
 				continue;	/* skip incrementing s */
 			case '\t':
 				for (;; col++) {
-					if ((*f++ = s<end? *s++ : '\t') == '\t') {
+					*f = s<end? *s++ : '\t';
+					if (*f++ == '\t') {
 						col = col | 07;	/* advance to before next tabstop */
 					}
 					if ((col&07) == 07)	/* stop before tabstop */
@@ -268,12 +269,13 @@ int main(int argc, char **argv) {
 	int i;
 	char *s;
 
-	s = progname = basename(argv[0]);
+	s = progname = rc_basename(argv[0]);
 	me = *s++;
 	if (*s == me) {
 		s++;
 		editit = TRUE;
 	}
+editit = TRUE;
 	if (*s == 'p') {
 		s++;
 		printit = TRUE;
@@ -329,7 +331,7 @@ next:	s = getcommand();
 			fprintf(stderr, "%s\n", s);
 		if (shell == NULL)
 			shell = "/bin/sh";
-		execl(shell, basename(shell), "-c", s, NULL);
+		execl(shell, rc_basename(shell), "-c", s, NULL);
 		perror(shell);
 		exit(1);
 	}
