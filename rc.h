@@ -172,8 +172,7 @@ enum {
 
 /* main.c */
 extern Rq *redirq;
-extern bool dashdee, dashee, dashvee, dashex, dashell,
-	dasheye, dashen, dashpee, interactive;
+extern bool dashdee, dashee, dashvee, dashex, dasheye, dashen, dashpee, interactive;
 extern pid_t rc_pid;
 extern int lineno;
 
@@ -264,23 +263,6 @@ extern void prettyprint_fn(int, char *, Node *);
 extern int heredoc(int);
 extern int qdoc(Node *, Node *);
 extern Hq *hq;
-
-
-/* input.c */
-extern void initinput(void);
-extern Node *parseline(char *);
-extern int gchar(void);
-extern void ugchar(int);
-extern Node *doit(bool);
-extern void flushu(void);
-extern void print_prompt2(void);
-extern void pushfd(int);
-extern void pushstring(char **, bool);
-extern void popinput(void);
-extern void closefds(void);
-extern int lastchar;
-extern bool rcrc;
-
 
 /* lex.c */
 extern bool quotep(char *, bool);

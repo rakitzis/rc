@@ -3,6 +3,7 @@
 #include <setjmp.h>
 #include <signal.h>
 
+#include "input.h"
 #include "jbwrap.h"
 
 /*

@@ -4,6 +4,7 @@
 
 #include <errno.h>
 
+#include "input.h"
 #include "jbwrap.h"
 
 /*
@@ -22,14 +23,6 @@ typedef struct Input {
 #define BUFSIZE ((size_t) 256)
 
 static char *prompt2;
-bool rcrc;
-
-static int dead(void);
-static int fdgchar(void);
-static int stringgchar(void);
-static void history(void);
-static void ugdead(int);
-static void pushcommon(void);
 
 static char *inbuf;
 static size_t istacksize, chars_out, chars_in;
@@ -82,6 +75,39 @@ static void ugalive(int c) {
 
 static int stringgchar() {
 	return lastchar = (inbuf[chars_out] == '\0' ? EOF : inbuf[chars_out++]);
+}
+
+
+/* write last command out to a file if interactive && $history is set */
+
+static void history() {
+	List *hist;
+	size_t a;
+
+	if (!interactive || (hist = varlookup("history")) == NULL)
+		return;
+
+	for (a = 0; a < chars_in; a++) {
+		char c = inbuf[a+2];
+
+		/* skip empty lines and comments */
+		if (c == '#' || c == '\n')
+			break;
+
+		/* line matches [ \t]*[^#\n] so it's ok to write out */
+		if (c != ' ' && c != '\t') {
+			char *name = hist->w;
+			int fd = rc_open(name, rAppend);
+			if (fd < 0) {
+				uerror(name);
+				varrm(name, TRUE);
+			} else {
+				writeall(fd, inbuf + 2, chars_in);
+				close(fd);
+			}
+			break;
+		}
+	}
 }
 
 /*
@@ -231,7 +257,7 @@ extern void popinput() {
 
 /* flush input characters upto newline. Used by scanerror() */
 
-extern void flushu() {
+extern void skiptonl() {
 	int c;
 	if (lastchar == '\n' || lastchar == EOF)
 		return;
@@ -262,14 +288,7 @@ extern Node *doit(bool clobberexecit) {
 		block.b = newblock();
 		except(eArena, block, &e2);
 		sigchk();
-		if (dashell) {
-			char *fname[3];
-			fname[1] = concat(varlookup("home"), word("/.rcrc", NULL))->w;
-			fname[2] = NULL;
-			rcrc = TRUE;
-			dashell = FALSE;
-			b_dot(fname);
-		}
+
 		if (interactive) {
 			List *s;
 			if (!dashen && fnlookup("prompt") != NULL) {
@@ -312,7 +331,7 @@ extern Node *doit(bool clobberexecit) {
 /* parse a function imported from the environment */
 
 extern Node *parseline(char *extdef) {
-	int i = interactive;
+	bool i = interactive;
 	char *in[2];
 	Node *fun;
 	in[0] = extdef;
@@ -322,38 +341,6 @@ extern Node *parseline(char *extdef) {
 	fun = doit(FALSE);
 	interactive = i;
 	return fun;
-}
-
-/* write last command out to a file if interactive && $history is set */
-
-static void history() {
-	List *hist;
-	size_t a;
-
-	if (!interactive || (hist = varlookup("history")) == NULL)
-		return;
-
-	for (a = 0; a < chars_in; a++) {
-		char c = inbuf[a+2];
-
-		/* skip empty lines and comments */
-		if (c == '#' || c == '\n')
-			break;
-
-		/* line matches [ \t]*[^#\n] so it's ok to write out */
-		if (c != ' ' && c != '\t') {
-			char *name = hist->w;
-			int fd = rc_open(name, rAppend);
-			if (fd < 0) {
-				uerror(name);
-				varrm(name, TRUE);
-			} else {
-				writeall(fd, inbuf + 2, chars_in);
-				close(fd);
-			}
-			break;
-		}
-	}
 }
 
 /* close file descriptors after a fork() */

@@ -5,6 +5,8 @@
 
 #include "rc.h"
 
+#include "input.h"
+
 /* protect an exported name from brain-dead shells */
 
 #if PROTECT_ENV

@@ -1,6 +1,8 @@
 /* lex.c: rc's lexical analyzer */
 
 #include "rc.h"
+
+#include "input.h"
 #include "parse.h"
 
 /*
@@ -333,7 +335,7 @@ extern void yyerror(const char *s) {
 }
 
 extern void scanerror(char *s) {
-	flushu(); /* flush upto newline */
+	skiptonl(); /* flush upto newline */
 	yyerror(s);
 	errset = prerror = TRUE;
 }

@@ -830,3 +830,7 @@ Changes since rc-1.5b2
 2003-07-22
 
   Release: rc-1.7.1.
+
+2003-09-24
+
+  Tidiness: minor improvements to input.c.

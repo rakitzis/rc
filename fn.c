@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <errno.h>
 
+#include "input.h"
 #include "sigmsgs.h"
 
 static void fn_handler(int), dud_handler(int);
