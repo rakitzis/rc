@@ -4,10 +4,9 @@ dnl Automake stuff.
 AM_INIT_AUTOMAKE(rc, 1.5b3)
 AM_CONFIG_HEADER(config.h)
 
-RELDATE=1997-07-01
-AC_SUBST(RELDATE)
-
 AC_ARG_PROGRAM
+
+AC_DEFINE(RELDATE, "1998-02-13")
 
 AC_PROG_CC
 case "x$GCC" in
@@ -300,4 +299,4 @@ AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing],
 		AC_MSG_WARN(readline library not found),
 		-ltermcap))
 
-AC_OUTPUT(Makefile version.c)
+AC_OUTPUT(Makefile)
