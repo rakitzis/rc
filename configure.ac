@@ -2,6 +2,16 @@ AC_INIT(rc.h)
 
 AC_CONFIG_HEADER(config.h)
 
+dnl These are required by automake (and are a good idea, anyway).
+PACKAGE=rc
+VERSION=1.5b3
+RELDATE=1997-07-01
+AC_SUBST(PACKAGE)
+AC_SUBST(VERSION)
+AC_SUBST(RELDATE)
+
+AC_ARG_PROGRAM
+
 AC_PROG_CC
 case "x$GCC" in
 xyes)
@@ -180,13 +190,12 @@ xodd)
 	;;
 xno)
 	AC_CACHE_CHECK(for named pipes, rc_cv_sys_fifo,
-		AC_DEFINE_UNQUOTED(TMPNAM, "/tmp/rc$$.0")
 		AC_TRY_RUN([
 #include <sys/types.h>
 #include <sys/stat.h>
 
 main() {
-	exit(mknod(TMPNAM, S_IFIFO | 0666, 0) != 0);
+	exit(mknod("/tmp/rc$$.0", S_IFIFO | 0666, 0) != 0);
 }
 		], rc_cv_sys_fifo=yes, rc_cv_sys_fifo=no, rc_cv_sys_fifo=no))
 	rm -f /tmp/rc$$.0
@@ -273,7 +282,7 @@ AC_SUBST(HISTORY)
 AC_ARG_WITH(addon, [  --with-addon            Extra builtins, from addon.c ],[
 	case "x$withval" in
 	xyes)
-		ADDON=addon.o
+		ADDON=addon.c
 		;;
 	xno)
 		ADDON=''
@@ -296,4 +305,6 @@ AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing],
 		AC_MSG_WARN(readline library not found),
 		-ltermcap))
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile stamp-h version.c, [
+	test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h
+])
