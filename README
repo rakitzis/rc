@@ -50,13 +50,11 @@ descending order of usefulness.
   --with-readline
 
   This option tells rc to use the GNU readline package, which is similar
-  to editline, but has many more features.  The readline package is over
-  6 times the size of editline (whether you count lines of code, or the
-  library itself).  You probably need to tell the compiler to link with
-  the termcap library if you're using readline.  For example, here is
-  the configure command the maintainer uses to build rc with readline.
-
-    LIBS=-ltermcap sh configure --with-readline
+  to editline, but has many more features.  The readline package is
+  over 6 times the size of editline (whether you count lines of code,
+  or the library itself).  As for editline, you can set the environment
+  variable LIBS if your readline library is not installed in a standard
+  place.
 
   --enable-history
 
