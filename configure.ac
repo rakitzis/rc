@@ -6,13 +6,11 @@ AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-02-13")
+AC_DEFINE(RELDATE, "1998-02-16")
 
 AC_PROG_CC
-case "x$GCC" in
-xyes)
-	CFLAGS="-Wall $CFLAGS"
-	;;
+case "$GCC" in
+yes)	CFLAGS="-Wall $CFLAGS" ;;
 esac
 
 AC_PROG_CPP
@@ -38,12 +36,8 @@ AC_CACHE_CHECK(for signal names, rc_cv_signal_h,
 	done
 )
 case "x$rc_cv_signal_h" in
-x)
-	AC_MSG_ERROR(Can't find signal names in $rc_cv_full_signal_h)
-	;;
-*)
-	SIGNAL_H=$rc_cv_signal_h
-	;;
+'') AC_MSG_ERROR(Can't find signal names in $rc_cv_full_signal_h) ;;
+*) SIGNAL_H=$rc_cv_signal_h ;;
 esac
 AC_SUBST(SIGNAL_H)
 
@@ -63,10 +57,8 @@ AC_CACHE_CHECK(for sigsetjmp, rc_cv_sigsetjmp,
 jmp_buf e;
 setjmp(e);
 	], rc_cv_sigsetjmp=yes, rc_cv_sigsetjmp=no))
-case "x$rc_cv_sigsetjmp" in
-xyes)
-	AC_DEFINE(HAVE_SIGSETJMP)
-	;;
+case "$rc_cv_sigsetjmp" in
+yes)	AC_DEFINE(HAVE_SIGSETJMP) ;;
 esac
 
 
@@ -90,10 +82,8 @@ f = RLIMIT_DATA;
 int f;
 f = RLIMIT_DATA;
 		], rc_cv_kernel_rlimit=yes, rc_cv_kernel_rlimit=no)]))
-case "x$rc_cv_kernel_rlimit" in
-xyes)
-	AC_DEFINE(RLIMIT_NEEDS_KERNEL)
-	;;
+case "$rc_cv_kernel_rlimit" in
+yes)	AC_DEFINE(RLIMIT_NEEDS_KERNEL) ;;
 esac
 
 
@@ -107,12 +97,9 @@ AC_CACHE_CHECK(for rlim_t, rc_cv_have_rlim_t,
 #include <sys/resource.h>
 	], rc_cv_have_rlim_t=yes, rc_cv_have_rlim_t=no))
 
-case "x$rc_cv_have_rlim_t" in
-xyes)
-	AC_DEFINE(HAVE_RLIM_T)
-	;;
-xno)
-	AC_CACHE_CHECK(for native quad_t, rc_cv_have_quad_t,
+case "$rc_cv_have_rlim_t" in
+yes)	AC_DEFINE(HAVE_RLIM_T) ;;
+no)	AC_CACHE_CHECK(for native quad_t, rc_cv_have_quad_t,
 		AC_TRY_COMPILE([
 #include <sys/types.h>
 		], [
@@ -121,10 +108,8 @@ align_t a;
 a = (quad_t)0;
 		], rc_cv_have_quad_t=yes, rc_cv_have_quad_t=no))
 
-	case "x$rc_cv_have_quad_t" in
-	xyes)
-		AC_DEFINE(HAVE_QUAD_T)
-
+	case "$rc_cv_have_quad_t" in
+	yes)	AC_DEFINE(HAVE_QUAD_T)
 		AC_CACHE_CHECK(if rlimit values are quad_t, rc_cv_rlim_t_is_quad_t,
 			AC_TRY_RUN([
 #include <sys/types.h>
@@ -143,10 +128,8 @@ main(){
 }
 			], rc_cv_rlim_t_is_quad_t=yes, rc_cv_rlim_t_is_quad_t=no, $ac_cv_type_quad_t))
 
-		case "x$rc_cv_rlim_t_is_quad_t" in
-		xyes)
-			AC_DEFINE(RLIM_T_IS_QUAD_T)
-			;;
+		case "$rc_cv_rlim_t_is_quad_t" in
+		yes)	AC_DEFINE(RLIM_T_IS_QUAD_T) ;;
 		esac
 		;;
 	esac
@@ -155,18 +138,47 @@ esac
 
 AC_SYS_RESTARTABLE_SYSCALLS
 
+dnl Do we have SysV SIGCLD semantics?  In other words, if we set the
+dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?
+AC_CACHE_CHECK(for SysV SIGCLD semantics, rc_cv_sysv_sigcld,
+	AC_TRY_RUN([
+#include <errno.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+int main(void) {
+	int i;
+	sigset(SIGCLD, SIG_IGN);
+	switch (fork()) {
+	case -1:
+		return 1;
+	case 0:
+		return 0;
+	default:
+		if (wait(&i) == -1 && errno == ECHILD) return 0;
+		else return 1;
+	}
+}
+	], rc_cv_sysv_sigcld=yes, rc_cv_sysv_sigcld=no, rc_cv_sysv_sigcld=yes))
+case "$rc_cv_sysv_sigcld" in
+yes)	AC_DEFINE(HAVE_SYSV_SIGCLD) ;;
+esac
+
+
 dnl Does the kernel handle `#! /interpreter'?
 AC_SYS_INTERPRETER
-case "x$ac_cv_sys_interpreter" in
-xyes)
-	AC_DEFINE(HASH_BANG)
+case "$ac_cv_sys_interpreter" in
+yes)	AC_DEFINE(HASH_BANG)
 	EXECVE=''
 	;;
-xno)
-	EXECVE=execve.o
+no)	EXECVE=execve.o ;;
 esac
 AC_SUBST(EXECVE)
 
+
+dnl What do we do for command arguments?  We want /dev/fd, Linux's
+dnl /proc/self/fd, or failing that, FIFOs.
 AC_CACHE_CHECK(for /dev/fd, rc_cv_sys_dev_fd,
 	if test -d /dev/fd && test -r /dev/fd/0; then
 		rc_cv_sys_dev_fd=yes
@@ -176,15 +188,10 @@ AC_CACHE_CHECK(for /dev/fd, rc_cv_sys_dev_fd,
 		rc_cv_sys_dev_fd=no
 	fi)
 	
-case "x$rc_cv_sys_dev_fd" in
-xyes)
-	AC_DEFINE(HAVE_DEV_FD)
-	;;
-xodd)
-	AC_DEFINE(HAVE_PROC_SELF_FD)
-	;;
-xno)
-	AC_CACHE_CHECK(for named pipes, rc_cv_sys_fifo,
+case "$rc_cv_sys_dev_fd" in
+yes)	AC_DEFINE(HAVE_DEV_FD) ;;
+odd)	AC_DEFINE(HAVE_PROC_SELF_FD) ;;
+no)	AC_CACHE_CHECK(for named pipes, rc_cv_sys_fifo,
 		AC_TRY_RUN([
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -194,11 +201,10 @@ main() {
 }
 		], rc_cv_sys_fifo=yes, rc_cv_sys_fifo=no, rc_cv_sys_fifo=no))
 	rm -f /tmp/rc$$.0
-	case "x$rc_cv_sys_fifo" in
-	xyes)
-		AC_DEFINE(HAVE_FIFO)
-		;;
+	case "$rc_cv_sys_fifo" in
+	yes)	AC_DEFINE(HAVE_FIFO) ;;
 	esac
+	;;
 esac
 
 AC_ARG_ENABLE(builtin-echo, [  --disable-builtin-echo  Don't include \`echo' as a builtin],
@@ -234,28 +240,21 @@ AC_ARG_ENABLE(def-path,
                           Default path [All of these that exist
                           (/usr/local/bin /usr/bin /usr/ucb /bin .)]],
 [
-	case "x$enableval" in
-	xno|xyes)
-		;;
-	*)
-		AC_DEFINE_UNQUOTED(DEFAULTPATH, $enableval)
+	case "$enableval" in
+	no|yes)	;;
+	*)	AC_DEFINE_UNQUOTED(DEFAULTPATH, $enableval) ;;
 	esac
 ],
 	enable_def_path=yes)
 
-case "x$enable_def_path" in
-xyes)
-	AC_CACHE_CHECK(extant directories for default path, rc_cv_def_path,[
+case "$enable_def_path" in
+yes)	AC_CACHE_CHECK(extant directories for default path, rc_cv_def_path,[
 		rc_cv_def_path=''
 		for i in /usr/local/bin /usr/bin /usr/ucb /bin .; do
 			if test -d $i; then
-				case "x$rc_cv_def_path" in
-				x)
-					rc_cv_def_path=\"$i\"
-					;;
-				*)
-					rc_cv_def_path=$rc_cv_def_path,\"$i\"
-					;;
+				case "$rc_cv_def_path" in
+				'')	rc_cv_def_path=\"$i\" ;;
+				*)	rc_cv_def_path=$rc_cv_def_path,\"$i\" ;;
 				esac
 			fi
 		done
@@ -263,27 +262,21 @@ xyes)
 	AC_DEFINE_UNQUOTED(DEFAULTPATH, $rc_cv_def_path)
 	;;
 esac
-	
+
 AC_ARG_ENABLE(history,
 	[  --enable-history        Build history subprograms],[
-	case "x$enableval" in
-        xyes) rc_history=yes ;;
+	case "$enableval" in
+        yes) rc_history=yes ;;
         *) rc_history=no ;;
         esac
 	], rc_history=no)
 AM_CONDITIONAL(HISTORY, test x$rc_history = xyes)
 
 AC_ARG_WITH(addon, [  --with-addon            Extra builtins, from addon.c ],[
-	case "x$withval" in
-	xyes)
-		ADDON=addon.c
-		;;
-	xno)
-		ADDON=''
-		;;
-	*)	
-		ADDON=$withval
-		;;
+	case "$withval" in
+	yes)	ADDON=addon.c ;;
+	no)	ADDON='' ;;
+	*)	ADDON=$withval ;;
 	esac
 	])
 AC_SUBST(ADDON)

@@ -26,7 +26,7 @@ extern void inithandler() {
 	null.type = nBody;
 	null.u[0].p = null.u[1].p = NULL;
 	for (i = 1; i < NUMOFSIGNALS; i++)
-#ifndef HAVE_RESTARTABLE_SYSCALLS
+#if HAVE_SYSV_SIGCLD
 		if (i != SIGCLD)
 #endif
 		if (sighandlers[i] == SIG_IGN)
@@ -148,7 +148,7 @@ extern void fnassign(char *name, Node *def) {
 	new->def = newdef;
 	new->extdef = NULL;
 	if (strncmp(name, "sig", conststrlen("sig")) == 0) { /* slight optimization */
-#ifndef HAVE_RESTARTABLE_SYSCALLS /* System V machines treat SIGCLD very specially */
+#if HAVE_SYSV_SIGCLD /* System V machines treat SIGCLD very specially */
 		if (streq(name, "sigcld"))
 			rc_error("can't trap SIGCLD");
 #endif
