@@ -282,7 +282,7 @@ extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);
 extern void scanerror(char *);
-extern const char nw[], dnw[];
+extern char nw[], dnw[];
 
 /* list.c */
 extern void listfree(List *);

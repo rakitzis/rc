@@ -33,7 +33,7 @@ static void getpair(int);
 
 int lineno;
 
-const char nw[] = {
+char nw[] = {
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0,
@@ -44,7 +44,7 @@ const char nw[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-const char dnw[] = {
+char dnw[] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,
@@ -63,6 +63,8 @@ static bool prerror = FALSE;
 static wordstates w = NW;
 static int fd_left, fd_right;
 
+int mbassign = 1;
+
 #define checkfreecaret {if (w != NW) { w = NW; ugchar(c); return '^'; }}
 
 enum filedescriptors {
@@ -74,7 +76,7 @@ extern int yylex() {
 	bool saw_meta = FALSE;
 	int c;
 	size_t i;			/* The purpose of all these local assignments is to	*/
-	const char *meta;		/* allow optimizing compilers like gcc to load these	*/
+	char *meta;		/* allow optimizing compilers like gcc to load these	*/
 	char *buf = realbuf;		/* values into registers. On a sparc this is a		*/
 	YYSTYPE *y = &yylval;		/* win, in code size *and* execution time		*/
 	if (errset) {
@@ -93,6 +95,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		w = NW;
 	if (c == EOF)
 		return END;
+	meta['='] = (mbassign == 1);
 	if (!meta[(unsigned char) c]) {	/* it's a word or keyword. */
 		checkfreecaret;
 		w = RW;
@@ -224,10 +227,15 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 	case ';':
 	case '^':
 	case ')':
-	case '=':
 	case '{': case '}':
 		w = NW;
 		return c;
+	case '=':
+		if (mbassign == 1) {
+			w = NW;
+			return EQUALS;
+		}
+		return '=';
 	case '&':
 		w = NW;
 		c = gchar();
