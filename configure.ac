@@ -6,11 +6,14 @@ AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-02-19")
+AC_DEFINE(RELDATE, "1998-07-10")
 
+dnl If we're using gcc, specify `-Wall'.  I've also checked the code
+dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
+dnl -Wmissing-prototypes', and all the warning generated are harmless.
 AC_PROG_CC
 case "$GCC" in
-yes)	CFLAGS="-Wall $CFLAGS" ;;
+yes) CFLAGS="-Wall  $CFLAGS" ;;
 esac
 
 AC_PROG_CPP
@@ -258,9 +261,9 @@ yes)	AC_CACHE_CHECK(extant directories for default path, rc_cv_def_path,[
 	;;
 esac
 
-AC_ARG_ENABLE(history,
-	[  --enable-history        Build history subprograms],[
-	case "$enableval" in
+AC_ARG_WITH(history,
+	[  --with-history        Build history subprograms],[
+	case "$withval" in
         yes) rc_history=yes ;;
         *) rc_history=no ;;
         esac
