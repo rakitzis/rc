@@ -1,3 +1,6 @@
+dnl A lot of the stuff in this file should be moved into acinclude.m4, and
+dnl eventually into the automake distribution...
+
 AC_INIT(rc.h)
 
 dnl Automake stuff.
@@ -224,6 +227,9 @@ main() {
 	;;
 esac
 
+RC_HAVE_VA_COPY
+
+dnl Now handle arguments.
 AC_ARG_ENABLE(builtin-echo, [  --disable-builtin-echo  Don't include \`echo' as a builtin],
 	test "x$enableval" != "xno" && AC_DEFINE(RC_ECHO),
 	AC_DEFINE(RC_ECHO))

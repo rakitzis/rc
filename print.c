@@ -289,11 +289,11 @@ extern int fmtprint(Format *format, const char *fmt,...) {
 	va_list ap, saveargs;
 
 	va_start(ap, fmt);
-	saveargs = format->args;
-	format->args = ap;
+	va_copy(saveargs, format->args);
+	va_copy(format->args, ap);
 	n += printfmt(format, fmt);
 	va_end(format->args);
-	format->args = saveargs;
+	va_copy(format->args, saveargs);
 
 	return n + format->flushed;
 }
@@ -320,7 +320,7 @@ extern int fprint(int fd, const char *fmt,...) {
 	format.u.n	= fd;
 
 	va_start(ap, fmt);
-	format.args = ap;
+	va_copy(format.args, ap);
 	printfmt(&format, fmt);
 	va_end(format.args);
 
@@ -365,7 +365,7 @@ extern char *mprint(const char *fmt,...) {
 
 	format.u.n = 1;
 	va_start(ap, fmt);
-	format.args = ap;
+	va_copy(format.args, ap);
 	result = memprint(&format, fmt, ealloc(PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
 	va_end(format.args);
 	return result;
@@ -378,106 +378,8 @@ extern char *nprint(const char *fmt,...) {
 
 	format.u.n = 0;
 	va_start(ap, fmt);
-	format.args = ap;
+	va_copy(format.args, ap);
 	result = memprint(&format, fmt, nalloc(PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
 	va_end(format.args);
 	return result;
 }
-
-
-/* THESE ARE UNUSED IN rc */
-
-#if 0
-
-extern int print(const char *fmt,...) {
-	char buf[1024];
-	Format format;
-
-	format.buf	= buf;
-	format.bufbegin	= buf;
-	format.bufend	= buf + sizeof buf;
-	format.grow	= fprint_flush;
-	format.flushed	= 0;
-	format.u.n	= 1;
-
-	va_start(format.args, fmt);
-	printfmt(&format, fmt);
-	va_end(format.args);
-
-	fprint_flush(&format, 0);
-	return format.flushed;
-}
-
-extern int eprint(const char *fmt,...) {
-	char buf[1024];
-	Format format;
-
-	format.buf	= buf;
-	format.bufbegin	= buf;
-	format.bufend	= buf + sizeof buf;
-	format.grow	= fprint_flush;
-	format.flushed	= 0;
-	format.u.n	= 2;
-
-	va_start(format.args, fmt);
-	printfmt(&format, fmt);
-	va_end(format.args);
-
-	fprint_flush(&format, 0);
-	return format.flushed;
-}
-
-static void snprint_grow(Format *format, size_t more) {
-	longjmp(format->u.p, 1);
-}
-
-extern int snprint(char *buf, int buflen, const char *fmt,...) {
-	int n;
-	jmp_buf jbuf;
-	Format format;
-
-	if (setjmp(jbuf)) {
-		*format.buf = '\0';
-		return format.buf - format.bufbegin;
-	}
-
-	format.buf	= buf;
-	format.bufbegin	= buf;
-	format.bufend	= buf + buflen - 1;
-	format.grow	= snprint_grow;
-	format.flushed	= 0;
-	format.u.p	= jbuf;
-
-	va_start(format.args, fmt);
-	n = printfmt(&format, fmt);
-	va_end(format.args);
-
-	*format.buf = '\0';
-	return n;
-}
-
-extern int sprint(char *buf, const char *fmt,...) {
-	int n;
-	jmp_buf jbuf;
-	Format format;
-
-	if (setjmp(jbuf)) {
-		*format.buf = '\0';
-		return format.buf - format.bufbegin;
-	}
-
-	format.buf	= buf;
-	format.bufbegin	= buf;
-	format.bufend	= buf + SPRINT_BUFSIZ - 1;
-	format.grow	= snprint_grow;
-	format.flushed	= 0;
-	format.u.p	= jbuf;
-
-	va_start(format.args, fmt);
-	n = printfmt(&format, fmt);
-	va_end(format.args);
-
-	*format.buf = '\0';
-	return n;
-}
-#endif

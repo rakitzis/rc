@@ -75,3 +75,6 @@
 
 /* Define if you have POSIX getgroups(). */
 #undef HAVE_POSIX_GETGROUPS
+
+/* Define if you have va_copy(). */
+#undef HAVE_VA_COPY
