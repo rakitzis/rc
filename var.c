@@ -57,9 +57,6 @@ extern bool varassign_string(char *extdef) {
    associated with $status)
 */
 
-static List id2 = { "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $", 0, 0 };
-static List id1 = { VERSION, 0, &id2 };
-
 extern List *varlookup(char *name) {
 	Variable *look;
 	List *ret, *l;
@@ -68,8 +65,6 @@ extern List *varlookup(char *name) {
 		return sgetapids();
 	if (streq(name, "status"))
 		return sgetstatus();
-	if (streq(name, "rc_version"))
-		return &id1;
 	if (*name != '\0' && (sub = a2u(name)) != -1) { /* handle $1, $2, etc. */
 		for (l = varlookup("*"); l != NULL && sub != 0; --sub)
 			l = l->n;

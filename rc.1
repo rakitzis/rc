@@ -1399,15 +1399,6 @@ If this function is defined, then it gets executed every time
 is about to print
 .Cr "$prompt(1)" .
 .TP
-.Cr rc_version " (read only)"
-The first element of this list variable is a string which identifies this
-version of
-.IR rc .
-The second element is a string which can be found by
-.B ident
-and
-.BR "sccs what" .
-.TP
 .Cr status " (read only)"
 The exit status of the last command.
 If the command exited with a numeric value, that number is the status.
@@ -1429,6 +1420,15 @@ usually sets
 .Cr $status
 to
 .Cr "(0 0)" .
+.TP
+.Cr version
+The first element of this list variable is a string which identifies this
+version of
+.IR rc .
+The second element is a string which can be found by
+.B ident
+and
+.BR "sccs what" .
 .PP
 The values of
 .Cr "$path" ,

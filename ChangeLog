@@ -769,6 +769,8 @@ Changes since rc-1.5b2
 
   Release: rc-1.6c6.
 
-2002-03-27
+2002-04-03
 
-  Feature: rename $version to $rc_version.
+  Feature: make $version less magical, and exportable.
+
+  Bug: make $bqstatus and $status not exportable.
