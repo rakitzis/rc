@@ -399,3 +399,24 @@ Changes since rc-1.5b2
 
   Configuration: `--with-vrl' added to support Gert-Jan Vons's readline
   library.
+
+1998-07-24
+
+  Portability: the autoconf macro AC_FUNC_SETPGRP doesn't work on OSF1: that
+  system supports arguments to setpgrp(), but also has a prototype in
+  <unistd.h> to say that it is void.  Fix this by defining our own
+  RC_FUNC_SETPGRP for now.
+
+  Bug: <sys/wait.h> was included twice in some source files.
+
+  Configuration: automake wants `make distclean' to remove *.tab.c.
+  Rename y.tab.[ch] to parse.[ch] to avoid this.
+
+1998-07-27
+
+  Portability: on Ultrix, `make trip' fails with `malloc: Invalid
+  argument'.  Problem is that getgroups(0, NULL) in which.c returns -1.
+  Add new configure test to check for POSIX getgroups() and fall back to
+  NGROUPS if it's not available.  The magic is done by "getgroups.h".
+
+  Tidiness: extract <sys/wait.h> magic into "wait.h".
