@@ -18,6 +18,7 @@ extern void varassign(char *name, List *def, bool stack) {
 	new = get_var_place(name, stack);
 	new->def = newdef;
 	new->extdef = NULL;
+	set_exportable(name, TRUE);
 #if READLINE
 	if (interactive && (streq(name, "TERM") || streq(name, "TERMCAP")))
 		rl_reset_terminal(NULL);

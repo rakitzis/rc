@@ -251,6 +251,7 @@ extern void fnassign_string(char *);
 extern void fnrm(char *);
 extern void initenv(char **);
 extern void inithash(void);
+extern void set_exportable(char *, bool);
 extern void setsigdefaults(bool);
 extern void inithandler(void);
 extern void varassign(char *, List *, bool);

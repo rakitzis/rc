@@ -771,6 +771,7 @@ Changes since rc-1.5b2
 
 2002-04-03
 
-  Feature: make $version less magical, and exportable.
+  Feature: make $version less magical, and exportable if it's changed
+  from its default value.  Same for $prompt.
 
   Bug: make $bqstatus and $status not exportable.

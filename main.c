@@ -113,6 +113,7 @@ static void assigndefault(char *name,...) {
 	for (l = NULL; (v = va_arg(ap, char *)) != NULL;)
 		l = append(l, word(v, NULL));
 	varassign(name, l, FALSE);
+	set_exportable(name, FALSE);
 	if (streq(name, "path"))
 		alias(name, l, FALSE);
 	va_end(ap);
