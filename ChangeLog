@@ -598,6 +598,12 @@ Changes since rc-1.5b2
 
   Tidiness: `make distclean' now removes sigmsgs.[ch].
 
-1995-05-28
+1999-05-28
 
   Release: rc-1.6.
+
+1999-08-19
+
+  Portability: the proposed C 9x __va_copy() macro is called that, not
+  va_copy(), as I thought.  Furthermore, it is defined to be a macro, so
+  we don't need to use autoconf to check for it.
