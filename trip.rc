@@ -565,3 +565,7 @@ expect foo bar qux
 $rc -s foo bar qux <<'eof'
 echo $*
 eof
+
+# Believe it or not, I broke root directory globbing in rc-1.6b1.
+x=/*
+~ '/*' $^x && fail root directory globbing

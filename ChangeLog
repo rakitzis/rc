@@ -652,3 +652,16 @@ Changes since rc-1.5b2
   `-L' options, not LIBS.
 
   Release: rc-1.6b1.
+
+1999-12-10
+
+  Bug: absolute globs do still need a special case.  `/*' works again now, but
+  we still avoid creating names like `//tmp/foo'.
+
+  Bug: avoid a putative race condition in signal.c.
+
+  Documentation: extra parentheses around `~' and `!' expressions are
+  forbidden.  Tom Duff's paper is not distributed with rc, but is
+  available on the web.
+
+  Release: rc-1.6b2.
