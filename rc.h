@@ -280,7 +280,7 @@ extern bool rcrc;
 
 
 /* lex.c */
-extern bool quotep(char *);
+extern bool quotep(char *, bool);
 extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);

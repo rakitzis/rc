@@ -46,7 +46,9 @@ static int defaultfd(int op) {
 /* convert a function in Node * form into something rc can parse (and humans can read?) */
 
 static bool Tconv(Format *f, int ignore) {
+	bool dollar = f->flags & FMT_altform;
 	Node *n = va_arg(f->args, Node *);
+
 	if (n == NULL) {
 		fmtprint(f, "()");
 		return FALSE;
@@ -72,7 +74,7 @@ static bool Tconv(Format *f, int ignore) {
 	case nForin:	fmtprint(f, "for(%T in %T)%T", n->u[0].p, n->u[1].p, n->u[2].p); break;
 	case nVarsub:	fmtprint(f, "$%T(%T)", n->u[0].p, n->u[1].p);		break;
 	case nWord:
-		fmtprint(f, quotep(n->u[0].s) ? "%#S" : "%S", n->u[0].s);
+		fmtprint(f, quotep(n->u[0].s, dollar) ? "%#S" : "%S", n->u[0].s);
 		break;
 	case nCount: case nFlat: case nVar: {
 		char *lp = "", *rp = "";
@@ -83,9 +85,9 @@ static bool Tconv(Format *f, int ignore) {
 
 		switch (n->type) {
 		default:	panic("this can't happen");		break;
-		case nCount:	fmtprint(f, "$#%s%T%s", lp, n0, rp);	break;
-		case nFlat:	fmtprint(f, "$^%s%T%s", lp, n0, rp);	break;
-		case nVar:	fmtprint(f, "$%s%T%s", lp, n0, rp);	break;
+		case nCount:	fmtprint(f, "$#%s%#T%s", lp, n0, rp);	break;
+		case nFlat:	fmtprint(f, "$^%s%#T%s", lp, n0, rp);	break;
+		case nVar:	fmtprint(f, "$%s%#T%s", lp, n0, rp);	break;
 		}
 		break;
 	}

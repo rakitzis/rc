@@ -70,11 +70,13 @@ enum filedescriptors {
 };
 
 /* does this string require quoting? */
-extern bool quotep(char *s) {
+extern bool quotep(char *s, bool dollar) {
 	unsigned char c;
+	const char *meta;
 
+	meta = dollar ? dnw : nw;
 	while ((c = *s++))
-		if (nw[c])
+		if (meta[c])
 			return TRUE;
 	return FALSE;
 }
