@@ -132,7 +132,7 @@ If you have a suitable `make', you can build rc in a different directory
 from where the sources are held.  This is particularly useful if you
 are building rc for multiple architectures.  All you need do is specify
 the path to the configure script in the first step.  Suitable `make's
-include GNU, and SunOS, but not Irix.
+include GNU, and SunOS, but not Irix, nor UnixWare.
 
 YACC
 
