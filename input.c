@@ -2,7 +2,6 @@
 
 #include <errno.h>
 #include <setjmp.h>
-#include <signal.h>
 
 #include "rc.h"
 #include "jbwrap.h"
@@ -21,29 +20,6 @@ typedef struct Input {
 } Input;
 
 #define BUFSIZE ((size_t) 256)
-
-#if READLINE
-extern void add_history(char *);
-extern char *readline(char *);
-
-static char *rlinebuf, *prompt;
-bool in_readline;
-
-static char *rc_readline(char *prompt) {
-	char *r;
-	void (*old)(int);
-
-	in_readline = TRUE;
-	old = signal(SIGINT, sigint);
-	r = readline(prompt);
-	signal(SIGINT, old);
-	in_readline = FALSE;
-	sigchk();
-
-	return r;
-}
-
-#endif
 
 static char *prompt2;
 bool rcrc;
@@ -64,6 +40,10 @@ static int (*realgchar)(void);
 static void (*realugchar)(int);
 
 int last;
+
+#if READLINE
+static char *rlinebuf, *prompt;
+#endif
 
 extern int gchar() {
 	int c;
@@ -133,8 +113,8 @@ static int fdgchar() {
 #endif
 
 /* There is a possible problem here.  POSIX allows read() interrupted
-by a signal to return -1 and set errno == EINTR *even if data have
-successfully been read*.  (They are also allowed to do the Right Thing,
+by a signal to return -1 and set errno == EINTR *even if some data have
+successfully been read*.  (It is also allowed to do the Right Thing,
 and return a count of the partial read.)  If you have such a broken
 system, you lose. */
 			{

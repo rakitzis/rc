@@ -18,15 +18,19 @@ if N_H_B
 EXECVE = execve.o
 endif
 
+if READLINE
+RLO = readline.o
+endif
+
 bin_PROGRAMS = rc
 noinst_PROGRAMS = $(HISTBIN)
 
 rc_SOURCES = @ADDON@ builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c
 
-EXTRA_rc_SOURCES = execve.c system.c system-bsd.c
+EXTRA_rc_SOURCES = execve.c readline.c system.c system-bsd.c
 
-rc_DEPENDENCIES = $(SYSTEM) $(EXECVE)
-rc_LDADD = $(SYSTEM) $(EXECVE)
+rc_DEPENDENCIES = $(SYSTEM) $(EXECVE) $(RLO)
+rc_LDADD = $(SYSTEM) $(EXECVE) $(RLO)
 
 history_SOURCES = history.c
 

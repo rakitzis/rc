@@ -44,7 +44,7 @@ sort -u |tr '
 ])
 
 dnl Phew!  We now have a list of <signal.h>s.  Examine each one to see
-dnl if it contains the signal names we're after.  If not, that's a a
+dnl if it contains the signal names we're after.  If not, that's a
 dnl configure error: bomb out.
 
 AC_CACHE_CHECK(for signal names, rc_cv_signal_h,
@@ -66,6 +66,14 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 AC_CHECK_TYPE(ssize_t, long)
+
+dnl Check type of sig_atomic_t.
+AC_CACHE_CHECK(for sig_atomic_t, rc_cv_sig_atomic_t,
+	AC_EGREP_HEADER(sig_atomic_t, signal.h,
+		rc_cv_sig_atomic_t=yes, rc_cv_sig_atomic_t=no))
+case "$rc_cv_sig_atomic_t" in
+no)	AC_DEFINE(sig_atomic_t, int) ;;
+esac
 
 AC_CHECK_FUNCS(getgroups setpgrp setrlimit)
 
@@ -316,5 +324,6 @@ AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing],
 		AC_DEFINE(READLINE) LIBS="$LIBS -lreadline -ltermcap",
 		AC_MSG_WARN(readline library not found),
 		-ltermcap))
+AM_CONDITIONAL(READLINE, test "$ac_cv_lib_readline_readline" = yes || test "$ac_cv_lib_edit_readline" = yes)
 
 AC_OUTPUT(Makefile)

@@ -7,14 +7,14 @@
 #include "sigmsgs.h"
 #include "jbwrap.h"
 
-#if HAVE_RESTARTABLE_SYSCALLS
+#if HAVE_RESTARTABLE_SYSCALLS || READLINE
 Jbwrap slowbuf;
-volatile SIG_ATOMIC_T slow, interrupt_happened;
+volatile sig_atomic_t slow, interrupt_happened;
 #endif
 
 void (*sighandlers[NUMOFSIGNALS])(int);
 
-static volatile SIG_ATOMIC_T sigcount, caught[NUMOFSIGNALS];
+static volatile sig_atomic_t sigcount, caught[NUMOFSIGNALS];
 
 extern void catcher(int s) {
 	if (caught[s] == 0) {
@@ -28,7 +28,7 @@ extern void catcher(int s) {
 		in_readline = FALSE;
 		switch (s) {
 		default:
-			rl_clean_up_for_exit();
+			_rl_clean_up_for_exit();
 			rl_deprep_terminal();
 			rl_clear_signals();
 			rl_pending_input = 0;
@@ -49,7 +49,7 @@ extern void catcher(int s) {
 #endif /* READLINE */
 
 
-#if HAVE_RESTARTABLE_SYSCALLS
+#if HAVE_RESTARTABLE_SYSCALLS || READLINE
 	interrupt_happened = TRUE;
 	if (slow)
 		siglongjmp(slowbuf.j, 1);
