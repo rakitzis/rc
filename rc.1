@@ -1256,7 +1256,7 @@ is not set at startup time,
 .Cr $path
 assumes a default value suitable for your system.
 This is typically
-.Cr "(/usr/ucb /usr/bin /bin .)"
+.Cr "(/usr/local/bin /usr/bin /usr/ucb /bin .)"
 .TP
 .Cr pid
 The process ID of the currently running
@@ -1864,15 +1864,18 @@ Here is a list of features which distinguish this incarnation of
 .I rc
 from the one described in the Bell Labs manual pages:
 .PP
-The treatment of
-.Cr if - else
-is different in the v10
-.IR rc :
-that version uses an
-.Cr "if not"
-clause which gets executed
+The v10
+.I rc
+does not have the
+.B else
+keyword.  Instead,
+.B if
+is optionally followed by
+an
+.B "if not"
+clause which is executed
 if the preceding
-.Cr if
+.B if
 test does not succeed.
 .PP
 Backquotes are slightly different in v10
