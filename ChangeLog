@@ -265,82 +265,118 @@ walk.c:		Fixed pre-redirection bug, removed spurious setsigdefaults(),
 
 Changes since rc-1.5beta1
 
-	Configuration: rc now uses GNU autoconf.
+  Configuration: rc now uses GNU autoconf.
 
-	Portability: mksignal works on HPUX 10.
+  Portability: mksignal works on HPUX 10.
 
-	Portability: resources can be (quad_t).
+  Portability: resources can be (quad_t).
 
-	Bug: if rc was started with SIGCLD == SIG_IGN (e.g. by Solaris's
-	rshd) it would loop.  Fixed by resetting SIGCLD to SIG_DFL if it
-	was SIG_IGN when rc was started.
+  Bug: if rc was started with SIGCLD == SIG_IGN (e.g. by Solaris's
+  rshd) it would loop.  Fixed by resetting SIGCLD to SIG_DFL if it
+  was SIG_IGN when rc was started.
 
-	Portability: POSIXish systems don't have NGROUPS.
+  Portability: POSIXish systems don't have NGROUPS.
 
 Changes since rc-1.5b2
 
-	Configuration: rc now uses GNU automake.
+  Configuration: rc now uses GNU automake.
 
-	Portability: use sigsetjmp() when available.
+  Portability: use sigsetjmp() when available.
 
-	Portability: improve tests for quad_t.
+  Portability: improve tests for quad_t.
 
-	Configuration: don't leave FIFOs in /tmp when configuring.
+  Configuration: don't leave FIFOs in /tmp when configuring.
 
-	Configuration: let configure find `-ltermcap' when using
-	readline.
+  Configuration: let configure find `-ltermcap' when using
+  readline.
 
-	Configuration: pick up default path from config.cache.
+  Configuration: pick up default path from config.cache.
 
-	Bug: sense of most HAVE_RESTARTABLE_SYSCALLS tests was wrong.
+  Bug: sense of most HAVE_RESTARTABLE_SYSCALLS tests was wrong.
 
-	Bug: print prompts with `-i', even with editline / readline.
+  Bug: print prompts with `-i', even with editline / readline.
 
-	Testing: just say `false' (not `/bin/false').
+  Testing: just say `false' (not `/bin/false').
 
-	Bug: confusion over gid_t versus GETGROUPS_T in which.c.
+  Bug: confusion over gid_t versus GETGROUPS_T in which.c.
 
-	Feature: `-V' option added to report version number.
+  Feature: `-V' option added to report version number.
 
-	Configuration: remove version.c; `id' is defined in main.c now.
+  Configuration: remove version.c; `id' is defined in main.c now.
 
-	Bug: clear list of living children after fork(); `{ ls & wait }
-	|cat' no longer hangs or panics.
+  Bug: clear list of living children after fork(); `{ ls & wait }
+  |cat' no longer hangs or panics.
 
-	Testing: add regression test for above.
+  Testing: add regression test for above.
 
-	Tidiness: all the system call wrappers to prevent calls being
-	restarted now live in system-bsd.c.  The configure script
-	decides whether to build system.c or system-bsd.c.  Also,
-	signal.c is more careful to only declare slowbuf if it will be
-	needed.
+  Tidiness: all the system call wrappers to prevent calls being
+  restarted now live in system-bsd.c.  The configure script
+  decides whether to build system.c or system-bsd.c.  Also,
+  signal.c is more careful to only declare slowbuf if it will be
+  needed.
 
-	Tidiness: similarly, configure decides whether to build execve.c
-	or not.
+  Tidiness: similarly, configure decides whether to build execve.c
+  or not.
 
-	Portability: test for ssize_t and use it where available; use
-	long if there's no ssize_t.
+  Portability: test for ssize_t and use it where available; use
+  long if there's no ssize_t.
 
-	Portability: use sigsetjmp where it's available and appropriate.
-	If no sigsetjmp, just use sigjmp; this probably fails in a
-	traditional SysV environment.
+  Portability: use sigsetjmp where it's available and appropriate.
+  If no sigsetjmp, just use sigjmp; this probably fails in a
+  traditional SysV environment.
 
-	Portability: test explicitly for SysV SIGCLD semantics.  Main
-	(and dubious) benefit is that you can now define a function
-	called `sigcld' on systems where there is no signal called
-	SIGCLD!
+  Portability: test explicitly for SysV SIGCLD semantics.  Main
+  (and dubious) benefit is that you can now define a function
+  called `sigcld' on systems where there is no signal called
+  SIGCLD!
 
-	Bug: rc has its own memory allocator; don't use malloc directly.
+  Bug: rc has its own memory allocator; don't use malloc directly.
 
-	Bug: the rc_wait() wrapper is only needed on systems which
-	restart system calls.  On Linux, in particular, the wrapper
-	leads to a race which causes rc to hang (or panic in later
-	versions).  Other systems apparently don't exercise this race.
+  Bug: the rc_wait() wrapper is only needed on systems which
+  restart system calls.  On Linux, in particular, the wrapper
+  leads to a race which causes rc to hang (or panic in later
+  versions).  Other systems apparently don't exercise this race.
 
-	Bug: waitforall() must return if rc_wait4() returns with errno
-	== EINTR.  Otherwise, the rc builtin `wait' cannot be interrupted
-	if there are background processes (although apparently only if
-	there is a handler for SIGINT).
+  Bug: waitforall() must return if rc_wait4() returns with errno
+  == EINTR.  Otherwise, the rc builtin `wait' cannot be interrupted
+  if there are background processes (although apparently only if
+  there is a handler for SIGINT).
 
-	Portability: dreadful hack to track down the real locations
-	of signal.h to find signal names.  rc now builds under CygWin32!
+  Portability: dreadful hack to track down the real locations
+  of signal.h to find signal names.  rc now builds under CygWin32!
+
+  Portability: replace above dreadful hack with mksignal.c, contributed
+  by Vincent Broman.
+
+  Portability: use POSIX wait() macros (WIFEXITED and friends).
+  Unfortunately, POSIX omitted to supply WIFDUMPED, so this doesn't buy a
+  great deal.
+
+  Distribution: remove the dependencies of y.tab.[ch] on parse.y from Makefile.am.
+  The justification for this is that, unless you're hacking on rc's grammar, there's
+  no reason to use anything other than the distributed files (which were generated
+  with byacc and very lightly edited to silence a few gcc warnings).
+
+  Enhancement: the example in addon.c wasn't very useful, since it
+  depended on files which weren't included with the distribution.  There
+  is now a working, if trivial, example.
+
+  Tidiness: the code was compiled with as many gcc warnings enabled as
+  I could find.  Very few problems turned up.  Some unused function
+  arguments were removed.  Where unused arguments could not be removed
+  (because the function is one of a set that must all have the same
+  prototype), they were renamed to `ignore'.
+
+  Portability: some versions of readline define the name `Function',
+  which rc also uses.  Its use in rc has been renamed to `rc_Function'.
+
+  Documentation: the `history' man page didn't explain what end of line
+  does in editing mode.  It now does.
+
+  Bug: the interaction with readline was broken, particularly with
+  respect to signal handling.  I've incorporated some changes from Tom
+  Culliton which should sort this out.  Unfortunately, we now have 3 different
+  code paths for readline 2.1, readline 2.2, and editline :-(.
+
+  Configuration: if you say `--with-readline' or `--with-editline' it is now an
+  error if the appropriate library is not found.
