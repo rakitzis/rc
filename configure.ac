@@ -35,14 +35,6 @@ AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 AC_CHECK_TYPE(ssize_t, long)
 
-dnl Check type of sig_atomic_t.
-AC_CACHE_CHECK(for sig_atomic_t, rc_cv_sig_atomic_t,
-	AC_EGREP_HEADER(sig_atomic_t, signal.h,
-		rc_cv_sig_atomic_t=yes, rc_cv_sig_atomic_t=no))
-case "$rc_cv_sig_atomic_t" in
-no)	AC_DEFINE(sig_atomic_t, int) ;;
-esac
-
 AC_CHECK_FUNCS(getgroups setpgrp setrlimit)
 
 
@@ -133,7 +125,31 @@ main(){
 	;;
 esac
 
-AC_SYS_RESTARTABLE_SYSCALLS
+dnl Check type of sig_atomic_t.
+AC_CACHE_CHECK(for sig_atomic_t, rc_cv_sig_atomic_t,
+	AC_EGREP_HEADER(sig_atomic_t, signal.h,
+		rc_cv_sig_atomic_t=yes, rc_cv_sig_atomic_t=no))
+case "$rc_cv_sig_atomic_t" in
+no)	AC_DEFINE(sig_atomic_t, int) ;;
+esac
+
+dnl We prefer system calls that don't restart.  If we have sigaction() and
+dnl SA_INTERRUPT, we'll use 'em.  Otherwise, we check whether
+dnl good ol' signal() produces interruptible system calls.
+AC_CACHE_CHECK(for sigaction and SA_INTERRUPT, rc_cv_sa_int,
+	AC_TRY_COMPILE([
+#include <signal.h>
+	], [
+struct sigaction foo;
+foo.sa_flags = SA_INTERRUPT;
+sigaction(SIGINT, 0, 0);
+	], rc_cv_sa_int=yes, rc_cv_sa_int=no
+	)
+)
+case "$rc_cv_sa_int" in
+yes)	AC_DEFINE(HAVE_SA_INTERRUPT) ;;
+no) AC_SYS_RESTARTABLE_SYSCALLS ;;
+esac
 AM_CONDITIONAL(AMC_RESTART, test "$ac_cv_sys_restartable_syscalls" = yes)
 
 dnl Do we have SysV SIGCLD semantics?  In other words, if we set the

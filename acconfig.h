@@ -69,3 +69,6 @@
 
 /* Define to release date. */
 #undef RELDATE
+
+/* Define if you have SA_INTERRUPT (and sigaction()). */
+#undef HAVE_SA_INTERRUPT

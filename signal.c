@@ -7,6 +7,19 @@
 #include "sigmsgs.h"
 #include "jbwrap.h"
 
+#if HAVE_SA_INTERRUPT
+static void (*sys_signal(int signum, void (*handler)(int)))(int) {
+	struct sigaction new, old;
+
+	new.sa_handler = handler;
+	new.sa_flags = SA_INTERRUPT;
+	sigaction(signum, &new, &old);
+	return old.sa_handler;
+}
+#else
+#define sys_signal signal
+#endif
+
 void (*sighandlers[NUMOFSIGNALS])(int);
 
 static volatile sig_atomic_t sigcount, caught[NUMOFSIGNALS];
@@ -16,7 +29,7 @@ extern void catcher(int s) {
 		sigcount++;
 		caught[s] = 1;
 	}
-	signal(s, catcher);
+	sys_signal(s, catcher);
 
 #if READLINE
 	if (rl_active)
@@ -59,11 +72,11 @@ extern void (*rc_signal(int s, void (*h)(int)))(int) {
 	sigchk();
 	old = sighandlers[s];
 	if (h == SIG_DFL || h == SIG_IGN) {
-		signal(s, h);
 		sighandlers[s] = h;
+		sys_signal(s, h);
 	} else {
 		sighandlers[s] = h;
-		signal(s, catcher);
+		sys_signal(s, catcher);
 	}
 	return old;
 }
@@ -73,16 +86,16 @@ extern void initsignal() {
 	int i;
 
 	for (i = 1; i < NUMOFSIGNALS; i++) {
-		h = signal(i, SIG_DFL);
+		h = sys_signal(i, SIG_DFL);
 		if (h != SIG_DFL && h != SIG_ERR)
-			signal(i, h);
+			sys_signal(i, h);
 		sighandlers[i] = h;
 	}
 
 #if HAVE_SYSV_SIGCLD
 	/* Ensure that SIGCLD is not SIG_IGN.  Solaris's rshd does this.  :-( */
-	h = signal(SIGCLD, SIG_DFL);
+	h = sys_signal(SIGCLD, SIG_DFL);
 	if (h != SIG_IGN && h != SIG_ERR)
-		signal(SIGCLD, h);
+		sys_signal(SIGCLD, h);
 #endif
 }
