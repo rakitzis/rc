@@ -5,8 +5,9 @@
    spots before av[][] so that execve does not have to call malloc.
 */
 
-#include <errno.h>
 #include "rc.h"
+
+#include <errno.h>
 
 #define giveupif(x) { if (x) goto fail; }
 

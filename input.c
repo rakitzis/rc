@@ -1,8 +1,9 @@
 /* input.c: i/o routines for files and pseudo-files (strings) */
 
+#include "rc.h"
+
 #include <errno.h>
 
-#include "rc.h"
 #include "jbwrap.h"
 
 /*
