@@ -8,7 +8,7 @@ dnl Automake stuff.
 dnl Use this one for snapshots...
 dnl AM_INIT_AUTOMAKE(rc, 1.6s`echo $RELDATE |sed 's/-//g'`)
 dnl ...and this one for releases
-AM_INIT_AUTOMAKE(rc, 1.6b3)
+AM_INIT_AUTOMAKE(rc, 1.6c4)
 
 AM_CONFIG_HEADER(config.h)
 
@@ -23,6 +23,8 @@ dnl are harmless.
 case "$GCC" in
 yes) CFLAGS="-Wall $CFLAGS" ;;
 esac
+
+AC_SYS_LARGEFILE
 
 AC_PROG_CPP
 AC_CHECK_PROGS(LN, ln cp)

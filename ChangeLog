@@ -723,3 +723,19 @@ Changes since rc-1.5b2
 2001-10-12
 
   Release: rc-1.6b3.
+
+2001-10-25
+
+  Feature: large file support (thanks Scott Schwartz, Chris
+  Siebenmann).
+
+2001-10-29
+
+  Bug: space vs tab confusion in commented out Makefile rules to
+  rebuild parser (thanks Gary Carvell).
+
+2001-10-31
+
+  Documentation: subscripted variables don't work in here documents.
+
+  Release: rc-1.6c4.

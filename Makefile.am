@@ -58,8 +58,8 @@ DISTCLEANFILES = sigmsgs.c sigmsgs.h statval.h
 # portable (I hope).
 #parse.c parse.h: $(srcdir)/parse.y
 #	$(YACC) -d $(srcdir)/parse.y
-#     mv y.tab.c parse.c
-#     mv y.tab.h parse.h
+#	mv y.tab.c parse.c
+#	mv y.tab.h parse.h
 
 check: trip
 

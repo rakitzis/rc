@@ -161,7 +161,7 @@
 .if !"\\$4"" .Xf \\$2 \\$1 "\\$3\\f\\$1\\$4\\*(Xi" "\\$5" "\\$6" "\\$7" "\\$8" "\\$9"
 .if "\\$4"" \\$3\fR\s10
 ..
-.TH RC 1 "2001-10-12"
+.TH RC 1 "2001-10-31"
 .SH NAME
 rc \- shell
 .SH SYNOPSIS
@@ -254,7 +254,8 @@ flag is present, or if the input to
 .I rc
 is not from a terminal, then
 .I rc
-will not be in interactive mode.  No prompts will be printed, and
+will not be in interactive mode.
+No prompts will be printed, and
 .Cr SIGINT
 will cause
 .I rc
@@ -312,8 +313,8 @@ scripts; the usual caveats about the setuid bit still apply.)
 .Cr \-s
 This flag causes
 .I rc
-to read from standard input.  Any arguments are
-placed in
+to read from standard input.
+Any arguments are placed in
 .Cr $* .
 .TP
 .Cr \-v
@@ -495,12 +496,14 @@ to the same file, use
 .PP
 As in
 .IR sh ,
-redirections are processed from left to right.  Thus this sequence
+redirections are processed from left to right.
+Thus this sequence
 .Ds
 .Cr "command >[2=1] > file"
 .De
 .PP
-is usually a mistake.  It first duplicates standard error to standard
+is usually a mistake.
+It first duplicates standard error to standard
 output; then redirects standard output to a file, leaving standard error
 wherever standard output originally was.
 .PP
@@ -629,7 +632,8 @@ redirection is implemented with some kind of pipe, and since one cannot
 .IR lseek (2)
 on a pipe, commands that use
 .IR lseek (2)
-will hang.  For example, some versions of
+will hang.
+For example, some versions of
 .IR diff (1)
 use
 .IR lseek (2)
@@ -908,8 +912,9 @@ Note that the null string,
 .Cr "''" ,
 and the null list,
 .Cr "()" ,
-are two very different things.  Assigning the null string to a
-variable is a valid operation, but it does not remove its definition.
+are two very different things.
+Assigning the null string to a variable is a valid operation, but it
+does not remove its definition.
 .Ds
 .Cr "null = '' empty = () echo $#null $#empty"
 .De
@@ -995,7 +1000,8 @@ has no
 builtin.
 .PP
 Any non-empty sequence of characters, except a sequence including only
-digits, may be used as a variable name.  Any character except
+digits, may be used as a variable name.
+Any character except
 .Cr =
 may be used, but special characters must be quoted.
 All user-defined variables are exported into the environment.
@@ -1009,7 +1015,8 @@ operator:
 .PP
 Any variable which has not been assigned a value returns the null list,
 .Cr "()" ,
-when referenced.  Multiple references are allowed:
+when referenced.
+Multiple references are allowed:
 .Ds
 .Cr "a = foo"
 .Cr "b = a"
@@ -1072,9 +1079,10 @@ Variables may be subscripted with the notation
 .PP
 where
 .I n
-is a list of integers (origin 1).  The opening parenthesis must
-immediately follow the variable name.  The list of subscripts need not
-be in order or even unique.  Thus,
+is a list of integers (origin 1).
+The opening parenthesis must immediately follow the variable name.
+The list of subscripts need not be in order or even unique.
+Thus,
 .Ds
 .Cr "a=(one two three)"
 .Cr "echo $a(3 3 3)"
@@ -1194,8 +1202,8 @@ as its value.
 .SH "SPECIAL VARIABLES"
 Several variables are known to
 .I rc
-and are treated specially.  In the following list,
-``(read only)'' indicates that an attempt to set the
+and are treated specially.
+In the following list, ``(read only)'' indicates that an attempt to set the
 variable will silently have no effect.
 .TP
 .Cr *
@@ -1249,7 +1257,8 @@ Note also that an assignment to
 .Cr $cdpath
 causes an automatic assignment to
 .Cr $CDPATH ,
-and vice-versa.  Only
+and vice-versa.
+Only
 .Cr $CDPATH
 is exported into the environment.
 .TP
@@ -1361,15 +1370,16 @@ is about to print
 .Cr "$prompt(1)" .
 .TP
 .Cr status " (read only)"
-The exit status of the last command.  If the command exited with a
-numeric value, that number is the status.  If the command died with a
-signal, the status is the name of that signal; if a core file was
-created, the string
+The exit status of the last command.
+If the command exited with a numeric value, that number is the status.
+If the command died with a signal, the status is the name of that signal;
+if a core file was created, the string
 .Rc `` +core ''
 is appended.  The value of
 .Cr $status
 for a pipeline is a list, with one entry, as above, for each process
-in the pipeline.  For example, the command
+in the pipeline.
+For example, the command
 .Ds
 .Cr "ls | wc"
 .De
@@ -1721,11 +1731,13 @@ is printed; for functions, including signal handlers, their definitions
 are printed; for executable files, path names are printed; and for
 variables, their values are printed.
 The flags restrict output to builtins, functions, executable
-programs, signal handlers, and variables, respectively.  If no
+programs, signal handlers, and variables, respectively.
+If no
 .IR name s
 are specified,
 .I rc
-lists all objects of that type.  (This is not permitted for
+lists all objects of that type.
+(This is not permitted for
 .Cr \-p .)
 Without arguments,
 .Cr whatis
@@ -1821,7 +1833,8 @@ prints (with no final newline)
 .SH "EXIT STATUS"
 The exit status of
 .I rc
-is normally the same as that of the last command executed.  If the
+is normally the same as that of the last command executed.
+If the
 last command was a pipeline,
 .I rc
 exits
@@ -1956,19 +1969,20 @@ On modern systems that support
 or
 .Cr /proc/self/fd ,
 .Cr <{foo}
-style redirection is implemented that way.  However, on older systems
-it is implemented with named pipes.  Allegedly, it is sometimes
-possible to foil
+style redirection is implemented that way.
+However, on older systems it is implemented with named pipes.
+Allegedly, it is sometimes possible to foil
 .I rc
 into removing the FIFO it places in
 .Cr /tmp
 prematurely, or it is even possible to cause
 .I rc
-to hang.  (The current maintainer has never seen this, but then he
+to hang.
+(The current maintainer has never seen this, but then he
 doesn't use systems which lack
 .Cr /dev/fd
-any more.  If anybody can reproduce this problem, please let the
-maintainer know.)
+any more.
+If anybody can reproduce this problem, please let the maintainer know.)
 .PP
 .B echo
 is built in only for performance reasons, which is a bad idea.
@@ -1979,55 +1993,15 @@ Extra parentheses around a
 .Cr ~
 expression or a
 .Cr !
-expression are a syntax error.  Thus, this code is illegal.
+expression are a syntax error.
+Thus, this code is illegal.
 .Ds
 .Cr "while ((~ $1 -*) && (! ~ $1 --)) { ..."
 .De
 .TP
 The redundant inner parentheses must be omitted.
 .PP
-It is usually possible to use parentheses to defeat
-free caret insertion; that is, to use
-.Cr $(x.y)
-as a synonym for
-.Cr $'x.y' .
-However, the former syntax is not correctly handled in functions
-exported to the environment: a function defined using this syntax will
-not work properly in descendant
-.I rc
-processes.
-.PP
-List definitions in exported functions are "noisier" than they need to be.
-.PP
-If both
-.Cr $PATH
-and
-.Cr $path
-are set,
-.I rc
-believes the former.  Arguably this is a bug:
-.I rc
-can quite happily deal with path elements that contain
-.Cr : ,
-but such elements will be split at the colon in descendant
-.I rc
-processes.
-.PP
-The
-.Cr .
-command should search
-.Cr $path .
-.PP
-Extra parentheses around a
-.Cr ~
-expression or a
-.Cr !
-expression are a syntax error.  Thus, this
-code is illegal.
-.Ds
-.Cr "while ((~ $1 -*) && (! ~ $1 --)) { ..."
-.De
-The redundant inner parentheses must be omitted.
+Variable subscripting cannot be used in here documents.
 .PP
 Bug reports should be mailed to
 .Cr "<tjg@star.le.ac.uk>" .
@@ -2040,7 +2014,8 @@ The Tenth Edition
 .I rc
 does not have the
 .B else
-keyword.  Instead,
+keyword.
+Instead,
 .B if
 is optionally followed by
 an
@@ -2057,7 +2032,7 @@ This restriction is not present for single-word commands in this
 .IR rc .
 .PP
 For
-.Cr . 
+.Cr .
 .IR file ,
 the Tenth Edition
 .IR rc
@@ -2072,7 +2047,7 @@ does not, since it is not considered useful.
 The list flattening operator,
 .Cr $^foo ,
 is spelt
-.Cr "$\"foo"
+.Cr "$""foo"
 in those versions of the Bell Labs
 .IR rc
 which have it.

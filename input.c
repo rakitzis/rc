@@ -44,10 +44,6 @@ int lastchar;
 static char *rlinebuf, *prompt;
 #endif
 
-#if EDITLINE || READLINE
-static char *rlinebuf, *prompt;
-#endif
-
 extern int gchar() {
 	int c;
 
