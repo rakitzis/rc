@@ -1,29 +1,24 @@
-Highlights of changes since rc-1.4.  See ChangeLog for further details.
+Highlights of changes since rc-1.6.  See ChangeLog for further details.
 
-Portability.  The major change since the last full release is that rc
-now uses GNU autoconf and automake.  Other parts of the build process
-have been tidied up too, so that building rc should now be painless.  It
-has been tested on a wide variety of Unix-like systems.
+Portability.  Many minor tweaks, including fixes for BeOS, CygWin, and
+gcc-3.
 
-Bug fixes.  The following bugs have been fixed: the interaction with
-readline was not always correct; SIGCLD set to SIG_IGN could cause a
-hang; some obscure pipeline incantations could cause a hang; the `wait'
-builtin could become uninterruptible; an application could crash rc
-by making stdin nonblocking; the `-i' flag didn't work with readline;
-$history didn't work properly over NFS; a few memory leaks; and an off
-by one bug in reporting line numbers of errors.
+Bug fixes.  A number of bugs have been fixed.  The serious ones were:
+a core dump, triggered by `~ () '*''; premature exit, triggered by
+sourcing a file which could be open()ed but not read() (such as a
+directory on many systems); uninterruptible looping, triggered by
+semantic errors in `fn prompt'.
 
-New features.  The following features are new: the `-s' flag, which
-causes rc to read from stdin even if arguments are present; the `-V'
-flag, which prints a version string; $bqstatus which holds the exit
-status of the last backquote command; additional options to the `whatis'
-builtin; and support for vrl, another lightweight readline-style
-library.
+New features.  The following features are new: the `$version' variable
+replaces the `-V' flag; the `-I' flag (definitively not interactive)
+was added for compatibility with the Plan 9 rc; ASCII SOH (^A) is now
+handled transparently.
 
-What happened to rc-1.5?  A number of beta releases were made with names
-like rc-1.5b2, which might suggest improvements over rc-1.5.  To avoid
-any possibility of confusion, I decided to name this release rc-1.6
-instead.
+Documentation.  Distributions of this rc used to include a PostScript
+paper given by Tom Duff to the UKUUG, describing the Plan 9 rc.  This
+paper is no longer distributed with rc, but instead is available on
+the web, both in its original PostScript version, and an updated HTML
+version.
 
 Tim Goodwin
-1999-05-26
+2001-10-05

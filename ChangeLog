@@ -699,10 +699,27 @@ Changes since rc-1.5b2
   Documentation: we don't consider that `.' failing to search path is
   a bug.
 
-  Bug: the ^A bug is fixed.
+  Feature: ^A in lists is now handled transparently.
 
 2001-10-01
 
   Bug: it's no longer possible to use parentheses to sneak a word that
   needs quoting past the "quoting detector", so `fn x { echo $(x.y) }'
   now works both in the current rc and its descendants.
+
+  Documentation: mention the catastrophic effects of a semantic error
+  in fn prompt.
+
+2001-10-03
+
+  Feature: exported lists no longer use redundant parentheses.
+
+2001-10-04
+
+  Bug: semantic errors in `fn prompt' no longer throw rc into a tailspin.
+
+  Feature: don't export $cdpath or $home (the lower-case versions).
+
+2001-10-12
+
+  Release: rc-1.6b3.
