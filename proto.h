@@ -77,8 +77,9 @@ extern char *sys_errlist[];
 #if SETPGRP_VOID
 /* Smells like POSIX: should all be ok. */
 #else
-/* BSD: fake it. */
+/* Old BSD: fake it. */
 #define setpgid(pid, pgrp) setpgrp(pid, pgrp)
+#include <sys/ioctl.h>
 #define tcgetpgrp(fd) ioctl((fd), TIOCGPGRP)
 #define tcsetpgrp(fd, pgrp) ioctl((fd), TIOCSPGRP, &(pgrp))
 #endif
