@@ -31,7 +31,7 @@ extern void writeall(int fd, char *buf, size_t remain) {
 }
 
 extern int rc_read(int fd, char *buf, size_t n) {
-	long /*ssize_t*/ r;
+	ssize_t r;
 	interrupt_happened = FALSE;
 	if (!sigsetjmp(slowbuf.j, 1)) {
 		slow = TRUE;
@@ -48,3 +48,25 @@ extern int rc_read(int fd, char *buf, size_t n) {
 	}
 	return r;
 }
+
+/* signal-safe readline wrapper */
+#if READLINE
+extern char *rc_readline(char *prompt) {
+	char *r;
+
+	interrupt_happened = FALSE;
+	if (!sigsetjmp(slowbuf.j, 1)) {
+		slow = TRUE;
+		if (!interrupt_happened)
+			r = readline(prompt);
+		else
+			r = NULL;
+	} else
+		r = NULL;
+	slow = FALSE;
+	if (r == NULL)
+		errno = EINTR;
+	sigchk();
+	return r;
+}
+#endif /* READLINE */

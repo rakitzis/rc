@@ -366,6 +366,10 @@ extern void initparse(void);
 extern void writeall(int, char *, size_t);
 extern int rc_read(int, char *, size_t);
 
+#if READLINE
+extern char *rc_readline(char *prompt);
+#endif
+
 /* redir.c */
 extern void doredirs(void);
 
@@ -396,7 +400,6 @@ extern void treefree(Node *);
 /* utils.c */
 extern bool isabsolute(char *);
 extern int n2u(char *, unsigned int);
-extern int rc_read(int, char *, size_t);
 extern int mvfd(int, int);
 extern int starstrcmp(const void *, const void *);
 extern void pr_error(char *);
