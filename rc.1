@@ -1421,7 +1421,7 @@ usually sets
 to
 .Cr "(0 0)" .
 .TP
-.Cr version " (read only)"
+.Cr rc_version " (read only)"
 The first element of this list variable is a string which identifies this
 version of
 .IR rc .
@@ -2119,6 +2119,11 @@ keywords,
 the
 .B echo
 builtin,
+the
+.Cr bqstatus
+and
+.Cr rc_version
+variables,
 the support for the GNU
 .IR readline (3)
 library and

@@ -768,3 +768,7 @@ Changes since rc-1.5b2
   Bug: yet more wrongly ordered header file includes.
 
   Release: rc-1.6c6.
+
+2002-03-27
+
+  Feature: rename $version to $rc_version.

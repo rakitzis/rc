@@ -68,7 +68,7 @@ extern List *varlookup(char *name) {
 		return sgetapids();
 	if (streq(name, "status"))
 		return sgetstatus();
-	if (streq(name, "version"))
+	if (streq(name, "rc_version"))
 		return &id1;
 	if (*name != '\0' && (sub = a2u(name)) != -1) { /* handle $1, $2, etc. */
 		for (l = varlookup("*"); l != NULL && sub != 0; --sub)
