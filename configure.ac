@@ -6,11 +6,12 @@ AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-07-15")
+AC_DEFINE(RELDATE, "1998-07-16")
 
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
-dnl -Wmissing-prototypes', and all the warning generated are harmless.
+dnl -Wmissing-prototypes', and checked that all the warnings generated
+dnl are harmless.
 AC_PROG_CC
 case "$GCC" in
 yes) CFLAGS="-Wall $CFLAGS" ;;
@@ -18,8 +19,10 @@ esac
 
 AC_PROG_CPP
 AC_PROG_INSTALL
-AC_PROG_YACC
 AC_CHECK_PROGS(LN, ln cp)
+
+dnl Don't bother looking for `yacc'.  
+dnl AC_PROG_YACC
 
 AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
 AC_HEADER_DIRENT
