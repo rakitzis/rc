@@ -52,6 +52,8 @@ descending order of usefulness.
   variable LIBS if your readline library is not installed in a standard
   place.
 
+    LIBS=-L/usr/gnu/lib sh configure --with-readline
+
   --enable-history
 
   Use this option if you want to build and install the programs that
@@ -78,10 +80,10 @@ and if you have either of those you probably don't want to bother with
   --with-addon=foo.c
   
   On the other hand, non-purists may wish to add extra builtin commands.
-  An example of how to do this is included in the files addon.c and
-  addon.h, which will only be built if you specify `--with-addon'.  If
-  your addons are in another file, you can specify that instead (but
-  beware that the interface file is still addon.h).
+  An example is included in the files addon.c and addon.h, which will
+  only be built if you specify `--with-addon'.  If your addons are
+  in another file, you can specify that instead (but beware that the
+  interface file is still addon.h).
 
   --disable-def-interp
   --enable-def-interp=/bin/foo
