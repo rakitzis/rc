@@ -43,7 +43,7 @@ BUILT_SOURCES = sigmsgs.c
 
 EXTRA_DIST = addon.c addon.h EXAMPLES history.1 parse.y rc.1 trip.rc
 
-sigmsgs.c sigmsgs.h: ./mksignal
+sigmsgs.c sigmsgs.h: mksignal
 	./mksignal
 
 # Of course, y.tab.c and y.tab.h depend on parse.y.  However, unless
