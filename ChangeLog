@@ -598,4 +598,6 @@ Changes since rc-1.5b2
 
   Tidiness: `make distclean' now removes sigmsgs.[ch].
 
+1995-05-28
+
   Release: rc-1.6.
