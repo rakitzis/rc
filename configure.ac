@@ -6,7 +6,7 @@ AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-07-16")
+AC_DEFINE(RELDATE, "1998-07-21")
 
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
