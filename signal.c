@@ -19,7 +19,7 @@ extern void catcher(int s) {
 	}
 	signal(s, catcher);
 	interrupt_happened = TRUE;
-#ifndef SVSIGS
+#ifndef HAVE_RESTARTABLE_SYSCALLS
 	if (slow)
 		longjmp(slowbuf.j, 1);
 #endif
