@@ -118,9 +118,7 @@ and if you have either of those you probably don't want to bother with
 After you've built rc, you may wish to run it through a test script
 to see that everything is ok.  Type `make trip' for this.  This will
 produce some output, and end with "trip is complete".  If the trip ends
-with "trip took a wrong turn..." please contact the maintainer.  (If
-you've built in either of the command line history libraries, the trip
-will fail near the end with `trip took a wrong turn: dot -i'.)
+with "trip took a wrong turn..." please contact the maintainer.
 
 YACC
 
