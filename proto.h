@@ -56,6 +56,9 @@ extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 #include <unistd.h>
 #endif
 
+#if HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
 
 /* Fake the POSIX wait() macros if we don't have them. */
 #ifndef WIFEXITED

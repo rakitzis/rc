@@ -2,10 +2,6 @@
 
 #include <errno.h>
 
-#if HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-
 bool forked = FALSE;
 
 typedef struct Pid Pid;
