@@ -35,10 +35,13 @@ Scott Schwartz has developed this as a separate package which is
 available from comp.sources.unix v29i017.
 
 rc can be linked with the editline library.  This was developed by
-Simmule Turner and Rich $alz, and is available from comp.sources.unix
-v31i071.
+Simmule Turner and Rich $alz, and is available from here.
 
-Alternatively, rc can be linked with readline versions 2.1 or 2.2.
+    http://www.cygnus.com/~tgoodwin/rc/dist/editline-1.5.tar.gz
+
+Alternatively, rc can be linked with GNU readline versions 2.1 or 2.2.
+This is available from the master FSF distribution site, and its many
+mirrors.
 
     ftp://prep.ai.mit.edu/pub/gnu/readline-2.2.tar.gz
 
