@@ -382,14 +382,20 @@ Changes since rc-1.5b2
   Bug: rc didn't work on RedHat 5 systems.  This is because of
   peculiarities in the handling of signals and system calls on this
   system (the C library attempts to fake restartable system calls).
-  The fix I have put in place involves testing at configure time for
-  sigaction() and SA_INTERRUPT: if both exist, we set up sys_signal()
-  to be an "always interrupt" wrapper around sigaction().  (If we don't
-  have sigaction(), we use signal() and check for restartable system
-  calls as usual.)  I'm not entirely confident that this fix is solid.
+  The fix involves testing at configure time for sigaction() and
+  SA_INTERRUPT: if both exist, we set up sys_signal() to be an "always
+  interrupt" wrapper around sigaction().  (If we don't have sigaction(),
+  we use signal() and check for restartable system calls as usual.)
 
   Portability: on AIX, lconv is defined by the system header files.
   Rename lconv in print.c to avoid the clash.
 
   Testing: add a test that `cd' prints the new directory if we are
   interactive and the directory was found via $cdpath.
+
+1998-07-23
+
+  Testing: fix silly typo in above test.
+
+  Configuration: `--with-vrl' added to support Gert-Jan Vons's readline
+  library.
