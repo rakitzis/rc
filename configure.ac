@@ -4,12 +4,12 @@ dnl eventually into the automake distribution...
 AC_INIT(rc.h)
 
 dnl Automake stuff.
-AM_INIT_AUTOMAKE(rc, 1.5s19981204)
+AM_INIT_AUTOMAKE(rc, 1.5s19981209)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-12-04")
+AC_DEFINE(RELDATE, "1998-12-09")
 
 dnl Find a standard C compiler
 AC_PROG_CC
@@ -57,7 +57,7 @@ yes)	AC_DEFINE(HAVE_SIGSETJMP) ;;
 esac
 
 
-RC_FUNC_SETPGRP
+AC_FUNC_SETPGRP
 
 
 dnl HPUX needs _KERNEL defined to pick up RLIMIT_foo defines.  (Why?)
