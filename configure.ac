@@ -176,7 +176,6 @@ AC_ARG_WITH(editline, [  --with-editline         Simmule Turner's line editing],
 
 if test "${with_vrl+set}" = set -o "${with_readline+set}" = set; then
 	RC_LIB_TGETENT
-	echo "found tgetent in $rc_lib_tgetent"
 fi
 
 AC_ARG_WITH(vrl, [  --with-vrl              Gert-Jan Vons's line editing],
