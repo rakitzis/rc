@@ -1,6 +1,9 @@
 /* Define to a suitable ssize_t. */
 #undef ssize_t
 
+/* Define to a suitable sig_atomic_t. */
+#undef sig_atomic_t
+
 /* Define if you want rc to hand off exec errors to (e.g.) /bin/sh. */
 #undef DEFAULTINTERP
 
