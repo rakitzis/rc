@@ -53,7 +53,7 @@ extern int gchar() {
 	}
 
 	while ((c = (*realgchar)()) == '\0')
-		pr_error("warning: null character ignored");
+		pr_error("warning: null character ignored", 0);
 
 	return c;
 }
@@ -95,6 +95,8 @@ static int fdgchar() {
 		while (1) {
 #if EDITLINE || READLINE
 			if (interactive && istack->fd == 0 && isatty(0)) {
+				/* The readline library doesn't handle read() returning EAGAIN. */
+				makeblocking(istack->fd);
 				rlinebuf = rc_readline(prompt);
 				if (rlinebuf == NULL) {
 					chars_in = 0;
@@ -110,19 +112,14 @@ static int fdgchar() {
 				}
 			} else
 #endif
-
-/* There is a possible problem here.  POSIX allows read() interrupted
-by a signal to return -1 and set errno == EINTR *even if some data have
-successfully been read*.  (It is also allowed to do the Right Thing,
-and return a count of the partial read.)  If you have such a broken
-system, you lose. */
 			{
 				ssize_t r;
 				do {
 					r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
 					sigchk();
 					if (errno == EAGAIN) {
-						makeblocking(istack->fd);
+						if (!makeblocking(istack->fd))
+							panic("not O_NONBLOCK");
 						errno = EINTR;
 					}
 				} while (r < 0 && errno == EINTR);
