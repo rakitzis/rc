@@ -118,7 +118,7 @@ extern void exec(List *s, bool parent) {
 		   prompt, even though there's a SIGINT in its signal
 		   vector.
 		*/
-		if ((stat & 0xff) == 0)
+		if (WIFEXITED(stat))
 			nl_on_intr = FALSE;
 		sigchk();
 		nl_on_intr = TRUE;
