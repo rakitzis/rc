@@ -79,7 +79,7 @@ extern char *sys_errlist[];
 #else
 /* BSD: fake it. */
 #define setpgid(pid, pgrp) setpgrp(pid, pgrp)
-#define tcgetpgrp(fd, pgrp) ioctl((fd), TIOCGPGRP)
+#define tcgetpgrp(fd) ioctl((fd), TIOCGPGRP)
 #define tcsetpgrp(fd, pgrp) ioctl((fd), TIOCSPGRP, &(pgrp))
 #endif
 
