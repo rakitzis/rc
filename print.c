@@ -14,7 +14,7 @@
  */
 
 #define Flag(name, flag) \
-static bool name(Format *format, int c) { \
+static bool name(Format *format, int ignore) { \
 	format->flags |= flag; \
 	return TRUE; \
 }
@@ -41,7 +41,7 @@ static bool digitconv(Format *format, int c) {
 	return TRUE;
 }
 
-static bool zeroconv(Format *format, int c) {
+static bool zeroconv(Format *format, int ignore) {
 	if (format->flags & (FMT_f1set | FMT_f2set))
 		return digitconv(format, '0');
 	format->flags |= FMT_zeropad;
@@ -53,7 +53,7 @@ static void pad(Format *format, size_t len, int c) {
 		fmtputc(format, c);
 }
 
-static bool sconv(Format *format, int c) {
+static bool sconv(Format *format, int ignore) {
 	char *s = va_arg(format->args, char *);
 	if ((format->flags & FMT_f1set) == 0)
 		fmtcat(format, s);
@@ -151,32 +151,32 @@ static void intconv(Format *format, unsigned int radix, int upper, const char *a
 		pad(format, padding, padchar);
 }
 
-static bool cconv(Format *format, int c) {
+static bool cconv(Format *format, int ignore) {
 	fmtputc(format, va_arg(format->args, int));
 	return FALSE;
 }
 
-static bool dconv(Format *format, int c) {
+static bool dconv(Format *format, int ignore) {
 	intconv(format, 10, 0, "");
 	return FALSE;
 }
 
-static bool oconv(Format *format, int c) {
+static bool oconv(Format *format, int ignore) {
 	intconv(format, 8, 0, "0");
 	return FALSE;
 }
 
-static bool xconv(Format *format, int c) {
+static bool xconv(Format *format, int ignore) {
 	intconv(format, 16, 0, "0x");
 	return FALSE;
 }
 
-static bool pctconv(Format *format, int c) {
+static bool pctconv(Format *format, int ignore) {
 	fmtputc(format, '%');
 	return FALSE;
 }
 
-static bool badconv(Format *format, int c) {
+static bool badconv(Format *ignore, int ign0re) {
 	panic("bad conversion character in printfmt");
 	/* NOTREACHED */
 	return FALSE; /* hush up gcc -Wall */
@@ -298,7 +298,7 @@ extern int fmtprint(Format *format, const char *fmt,...) {
 	return n + format->flushed;
 }
 
-static void fprint_flush(Format *format, size_t more) {
+static void fprint_flush(Format *format, size_t ignore) {
 	size_t n = format->buf - format->bufbegin;
 	char *buf = format->bufbegin;
 
