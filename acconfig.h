@@ -1,4 +1,7 @@
-/* Define if you want rc to hand off exec errors to (e.g.) /bin/sh */
+/* Define to a suitable ssize_t. */
+#undef ssize_t
+
+/* Define if you want rc to hand off exec errors to (e.g.) /bin/sh. */
 #undef DEFAULTINTERP
 
 /* Define to the default path used if $PATH is empty when rc starts. */
@@ -54,5 +57,3 @@
 
 /* Define to release date. */
 #undef RELDATE
-
-/* eof */
