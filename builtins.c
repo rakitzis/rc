@@ -98,7 +98,7 @@ static void badnum(char *num) {
 
 /* a dummy command. (exec() performs "exec" simply by not forking) */
 
-extern void b_exec(char **av) {
+extern void b_exec(char **ignore) {
 }
 
 #if RC_ECHO
@@ -245,7 +245,7 @@ static void b_shift(char **av) {
 
 /* dud function */
 
-extern void b_builtin(char **av) {
+extern void b_builtin(char **ignore) {
 }
 
 /* wait for a given process, or all outstanding processes */
