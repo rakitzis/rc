@@ -3,18 +3,18 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-void out0(void) {
+static void out0(void) {
 	putchar('t'); putchar('r');
 	putchar('\0');
 	putchar('u'); putchar('e');
 	putchar('\n');
 }
 
-void ctrl_a(void) {
+static void ctrl_a(void) {
 	puts("a\001ab\002b");
 }
 
-void makenonblock(void) {
+static void makenonblock(void) {
 	int flags;
 
 	if ((flags = fcntl(0, F_GETFL)) == -1)
