@@ -479,4 +479,4 @@ Changes since rc-1.5b2
   Testing: add `testing' auxiliary program; use `testing' to generate
   null character on the fly (since it's a nuisance having a literal
   null character in trip.rc); reset sigexit in `fn fail'; add test for
-  nonblocking input file descriptor.
+  nonblocking input file descriptor; fix test for cdpath.

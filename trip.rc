@@ -259,8 +259,7 @@ pwd=`/bin/pwd cdpath=/ { # some local assignments
 
 # Test that cd to a directory found via cdpath produces output
 # when interactive.
-if (!~ `{$rc -i -c 'cdpath=/ cd tmp'} `{sh -c 'cd /tmp; /bin/pwd'})
-	fail cdpath produced wrong output
+submatch 'cdpath=/ cd tmp' /tmp 'cdpath produced wrong output'
 
 *=(1 2 3 4 5) {
 	expect bad number
