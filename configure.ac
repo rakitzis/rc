@@ -1,12 +1,12 @@
 AC_INIT(rc.h)
 
 dnl Automake stuff.
-AM_INIT_AUTOMAKE(rc, 1.5s19980723)
+AM_INIT_AUTOMAKE(rc, 1.5s19980724)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-07-23")
+AC_DEFINE(RELDATE, "1998-07-24")
 
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
@@ -51,7 +51,7 @@ yes)	AC_DEFINE(HAVE_SIGSETJMP) ;;
 esac
 
 
-AC_FUNC_SETPGRP
+RC_FUNC_SETPGRP
 
 
 dnl HPUX needs _KERNEL defined to pick up RLIMIT_foo defines.  (Why?)
