@@ -11,7 +11,7 @@ endif
 bin_PROGRAMS = rc
 noinst_PROGRAMS = $(HISTBIN)
 
-rc_SOURCES = @ADDON@ builtins.c except.c exec.c execve.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c version.c wait.c walk.c which.c y.tab.c
+rc_SOURCES = @ADDON@ builtins.c except.c exec.c execve.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c
 
 history_SOURCES = history.c
 
@@ -33,14 +33,10 @@ trip: rc
 	./rc -p < $(srcdir)/trip.rc
 
 install-exec-hook:
-	case "x@HISTORY@" in \
-	x) \
-		;; \
-	*) \
-		$(LN) $(HISTORY) - ;\
-		$(INSTALL_PROGRAM) - $(bindir) ;\
-		$(LN) $(bindir)/- $(bindir)/-- ;\
-		$(LN) $(bindir)/- $(bindir)/-p ;\
-		$(LN) $(bindir)/- $(bindir)/--p ;\
-		;; \
-	esac
+if HISTORY
+	$(LN) $(HISTORY) - ;\
+	$(INSTALL_PROGRAM) - $(bindir) ;\
+	rm -f $(bindir)/--;  $(LN) $(bindir)/- $(bindir)/-- ;\
+	rm -f $(bindir)/-p;  $(LN) $(bindir)/- $(bindir)/-p ;\
+	rm -f $(bindir)/--p; $(LN) $(bindir)/- $(bindir)/--p
+endif
