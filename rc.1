@@ -1859,6 +1859,14 @@ descendant
 .IR rc
 processes.
 .PP
+There is a compile-time limit on the number of
+.Cr ;
+separated commands in a line: usually 500.
+This is sometimes a problem for automatically generated scripts:
+substituting the newline character for
+.Cr ;
+avoids the limit.
+.PP
 On modern systems that support
 .Cr /dev/fd
 or
