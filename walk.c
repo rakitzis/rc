@@ -33,7 +33,7 @@ top:	sigchk();
 	switch (n->type) {
 	case nArgs: case nBackq: case nConcat: case nCount:
 	case nFlat: case nLappend: case nRedir: case nVar:
-	case nVarsub: case nWord: case nQword:
+	case nVarsub: case nWord:
 		exec(glob(glom(n)), parent);	/* simple command */
 		break;
 	case nBody:
