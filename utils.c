@@ -82,7 +82,7 @@ extern void writeall(int fd, char *buf, SIZE_T remain) {
 		slow = FALSE;
 	}
 	slow = FALSE;
-	SIGCHK;
+	sigchk();
 }
 
 extern int rc_read(int fd, char *buf, SIZE_T n) {
@@ -101,16 +101,7 @@ extern int rc_read(int fd, char *buf, SIZE_T n) {
 		errno = EINTR;
 		r = -1;
 	}
-	SIGCHK;
 	return r;
-}
-
-/* clear out z bytes from character string s */
-
-extern char *clear(char *s, SIZE_T z) {
-	while (z != 0)
-		s[--z] = 0;
-	return s;
 }
 
 /* duplicate a fd and close the old one only if necessary */

@@ -150,6 +150,7 @@ enum {
 #define a2u(x) n2u(x, 10)
 #define o2u(x) n2u(x, 8)
 #define arraysize(a) ((int)(sizeof(a)/sizeof(*a)))
+#define memzero(s, n) memset(s, 0, n)
 #define enew(x) ((x *) ealloc(sizeof(x)))
 #define ecpy(x) strcpy((char *) ealloc(strlen(x) + 1), x)
 #define lookup_fn(s) ((Function *) lookup(s, fp))
@@ -192,8 +193,6 @@ extern void exec(List *, bool);
 extern void doredirs(void);
 
 /* footobar.c */
-extern char *fun2str(char *, Node *);
-extern char *list2str(char *, List *);
 extern char **list2array(List *, bool);
 extern char *get_name(char *);
 extern List *parse_var(char *, char *);
@@ -245,7 +244,7 @@ extern void setsigdefaults(bool);
 extern void inithandler(void);
 extern void varassign(char *, List *, bool);
 extern void varrm(char *, bool);
-extern void whatare_all_vars(void);
+extern void whatare_all_vars(bool, bool);
 extern void whatare_all_signals(void);
 extern void prettyprint_var(int, char *, List *);
 extern void prettyprint_fn(int, char *, Node *);
@@ -338,7 +337,6 @@ extern void sigchk(void);
 extern void (*rc_signal(int, void (*)(int)))(int);
 extern void (*sighandlers[])(int);
 extern volatile SIG_ATOMIC_T slow, interrupt_happened;
-#define SIGCHK sigchk()
 
 /* status.c */
 extern int istrue(void);
@@ -349,6 +347,7 @@ extern List *sgetstatus(void);
 extern void setpipestatus(int [], int);
 extern void statprint(int, int);
 extern void ssetstatus(char **);
+extern char *strstatus(int s);
 
 /* tree.c */
 extern Node *mk(int /*nodetype*/,...);
@@ -362,7 +361,6 @@ extern int rc_read(int, char *, SIZE_T);
 extern int mvfd(int, int);
 extern int starstrcmp(const void *, const void *);
 extern void pr_error(char *);
-extern char *clear(char *, SIZE_T);
 extern void panic(char *);
 extern void uerror(char *);
 extern void writeall(int, char *, SIZE_T);

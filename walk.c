@@ -11,6 +11,7 @@
 */
 bool cond = FALSE;
 
+static bool haspreredir(Node *);
 static bool isallpre(Node *);
 static bool dofork(bool);
 static void dopipe(Node *);
@@ -22,7 +23,7 @@ static void dopipe(Node *);
 /* walk the parse-tree. "obvious". */
 
 extern bool walk(Node *n, bool parent) {
-top:	SIGCHK;
+top:	sigchk();
 	if (n == NULL) {
 		if (!parent)
 			exit(0);
@@ -147,7 +148,6 @@ top:	SIGCHK;
 	}
 	case nSubshell:
 		if (dofork(TRUE)) {
-			setsigdefaults(FALSE);
 			walk(n->u[0].p, FALSE);
 			rc_exit(getstatus());
 		}
@@ -214,8 +214,14 @@ top:	SIGCHK;
 	case nPre: {
 		List *v;
 		if (n->u[0].p->type == nRedir || n->u[0].p->type == nDup) {
+			if (redirq == NULL && !dofork(parent)) /* subshell on first preredir */
+				break;
 			qredir(n->u[0].p);
-			walk(n->u[1].p, parent);
+			if (!haspreredir(n->u[1].p))
+				doredirs(); /* no more preredirs, empty queue */
+			walk(n->u[1].p, FALSE);
+			rc_exit(getstatus());
+			/* NOTREACHED */
 		} else if (n->u[0].p->type == nAssign) {
 			if (isallpre(n->u[1].p)) {
 				walk(n->u[0].p, TRUE);
@@ -239,7 +245,6 @@ top:	SIGCHK;
 		if (n->u[1].p == NULL) {
 			WALK(n->u[0].p, parent);
 		} else if (dofork(parent)) {
-			setsigdefaults(FALSE);
 			walk(n->u[1].p, TRUE); /* Do redirections */
 			redirq = NULL;   /* Reset redirection queue */
 			walk(n->u[0].p, FALSE); /* Do commands */
@@ -265,6 +270,17 @@ top:	SIGCHK;
 	return istrue();
 }
 
+/* checks to see whether there are any pre-redirections left in the tree */
+
+static bool haspreredir(Node *n) {
+	while (n != NULL && n->type == nPre) {
+		if (n->u[0].p->type == nDup || n->u[0].p->type == nRedir)
+			return TRUE;
+		n = n->u[1].p;
+	}
+	return FALSE;
+}
+
 /* checks to see whether a subtree is all pre-command directives, i.e., assignments and redirs only */
 
 static bool isallpre(Node *n) {
@@ -286,7 +302,7 @@ static bool dofork(bool parent) {
 	redirq = NULL; /* clear out the pre-redirection queue in the parent */
 	rc_wait4(pid, &sp, TRUE);
 	setstatus(-1, sp);
-	SIGCHK;
+	sigchk();
 	return FALSE;
 }
 
@@ -304,7 +320,6 @@ static void dopipe(Node *n) {
 			rc_error(NULL);
 		}
 		if ((pid = rc_fork()) == 0) {
-			setsigdefaults(FALSE);
 			redirq = NULL; /* clear preredir queue */
 			mvfd(p[0], r->u[1].i);
 			if (fd_prev != 1)
@@ -321,7 +336,6 @@ static void dopipe(Node *n) {
 		close(p[0]);
 	}
 	if ((pid = rc_fork()) == 0) {
-		setsigdefaults(FALSE);
 		mvfd(fd_prev, fd_out);
 		walk(r, FALSE);
 		exit(getstatus());
@@ -340,5 +354,5 @@ static void dopipe(Node *n) {
 		intr |= (sp == SIGINT);
 	}
 	setpipestatus(stats, i);
-	SIGCHK;
+	sigchk();
 }

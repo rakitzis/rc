@@ -21,7 +21,7 @@ CFLAGS=
 LDFLAGS=
 
 # You may substitute "bison -y" for yacc. (You want to choose the one that
-# makes a smaller y.tab.c.)
+# makes a smaller y.tab.c. Also see the README about Sun's yacc.)
 YACC=yacc
 
 OBJS=$(ADDON) builtins.o except.o exec.o $(EXECVE) fn.o footobar.o getopt.o \

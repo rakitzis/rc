@@ -13,8 +13,6 @@ void (*sighandlers[NUMOFSIGNALS])(int);
 static volatile SIG_ATOMIC_T sigcount, caught[NUMOFSIGNALS];
 
 extern void catcher(int s) {
-	if (forked)
-		exit(1); /* exit unconditionally on a signal in a child process */
 	if (caught[s] == 0) {
 		sigcount++;
 		caught[s] = 1;
@@ -52,7 +50,7 @@ extern void sigchk() {
 
 extern void (*rc_signal(int s, void (*h)(int)))(int) {
 	void (*old)(int);
-	SIGCHK;
+	sigchk();
 	old = sighandlers[s];
 	if (h == SIG_DFL || h == SIG_IGN) {
 		signal(s, h);

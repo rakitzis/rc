@@ -131,7 +131,7 @@ extern void sigint(int s) {
 	if (s != SIGINT)
 		panic("s != SIGINT in sigint catcher");
 	/* this is the newline you see when you hit ^C while typing a command */
-	if (nl_on_intr)
+	if (interactive && nl_on_intr)
 		fprint(2, "\n");
 	nl_on_intr = TRUE;
 	redirq = NULL;

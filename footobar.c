@@ -5,15 +5,12 @@
 
 #include "rc.h"
 
-#define FSCHAR '\1'
-#define FSSTRING "\1"
-
-static char *getenvw(char *, bool);
+/* protect an exported name from brain-dead shells */
 
 #ifdef PROTECT_ENV
-static bool Fconv(Format *f, int ignore) {	/* protect an exported name from brain-dead shells */
-	int c;
+static bool Fconv(Format *f, int ignore) {
 	unsigned const char *s = va_arg(f->args, unsigned const char *);
+	int c;
 
 	while ((c = *s++) != '\0')
 		if (dnw[c] || c == '*' || (c == '_' && *s == '_'))
@@ -23,12 +20,6 @@ static bool Fconv(Format *f, int ignore) {	/* protect an exported name from brai
 	return FALSE;
 }
 #endif
-
-/* used to turn a function in Node * form into something we can export to the environment */
-
-extern char *fun2str(char *name, Node *n) {
-	return mprint("fn_%F={%T}", name, n);
-}
 
 /* convert a redirection to a printable form */
 
@@ -63,14 +54,11 @@ static bool Tconv(Format *f, int ignore) {
 	switch (n->type) {
 	case nWord:	fmtprint(f, "%S", n->u[0].s);				break;
 	case nQword:	fmtprint(f, "%#S", n->u[0].s);				break;
-	case nBang:	fmtprint(f, "! %T", n->u[0].p);				break;
+	case nBang:	fmtprint(f, "!%T", n->u[0].p);				break;
 	case nCase:	fmtprint(f, "case %T", n->u[0].p);			break;
 	case nNowait:	fmtprint(f, "%T&", n->u[0].p);				break;
-	case nCount:	fmtprint(f, "$#%T", n->u[0].p);				break;
-	case nFlat:	fmtprint(f, "$^%T", n->u[0].p);				break;
 	case nRmfn:	fmtprint(f, "fn %T", n->u[0].p);			break;
 	case nSubshell:	fmtprint(f, "@ %T", n->u[0].p);				break;
-	case nVar:	fmtprint(f, "$%T", n->u[0].p);				break;
 	case nAndalso:	fmtprint(f, "%T&&%T", n->u[0].p, n->u[1].p);		break;
 	case nAssign:	fmtprint(f, "%T=%T", n->u[0].p, n->u[1].p);		break;
 	case nConcat:	fmtprint(f, "%T^%T", n->u[0].p, n->u[1].p);		break;
@@ -81,10 +69,25 @@ static bool Tconv(Format *f, int ignore) {
 	case nArgs:	fmtprint(f, "%T %T", n->u[0].p, n->u[1].p);		break;
 	case nSwitch:	fmtprint(f, "switch(%T){%T}", n->u[0].p, n->u[1].p);	break;
 	case nMatch:	fmtprint(f, "~ %T %T", n->u[0].p, n->u[1].p);		break;
-	case nVarsub:	fmtprint(f, "$%T(%T)", n->u[0].p, n->u[1].p);		break;
 	case nWhile:	fmtprint(f, "while(%T)%T", n->u[0].p, n->u[1].p);	break;
 	case nLappend:	fmtprint(f, "(%T %T)", n->u[0].p, n->u[1].p);		break;
 	case nForin:	fmtprint(f, "for(%T in %T)%T", n->u[0].p, n->u[1].p, n->u[2].p); break;
+	case nVarsub:	fmtprint(f, "$%T(%T)", n->u[0].p, n->u[1].p);		break;
+	case nCount: case nFlat: case nVar: {
+		char *lp = "", *rp = "";
+		Node *n0 = n->u[0].p;
+
+		if (n0->type != nWord && n0->type != nQword)
+			lp = "(", rp = ")";
+
+		switch (n->type) {
+		default:	panic("this can't happen");		break;
+		case nCount:	fmtprint(f, "$#%s%T%s", lp, n0, rp);	break;
+		case nFlat:	fmtprint(f, "$^%s%T%s", lp, n0, rp);	break;
+		case nVar:	fmtprint(f, "$%s%T%s", lp, n0, rp);	break;
+		}
+		break;
+	}
 	case nDup:
 		if (n->u[2].i != -1)
 			fmtprint(f, "%D[%d=%d]", n->u[0].i, n->u[1].i, n->u[2].i);
@@ -154,65 +157,41 @@ static bool Tconv(Format *f, int ignore) {
 	return FALSE;
 }
 
-/* convert a List to a string, separating it with ^A characters. Used for exporting variables to the environment */
-
-extern char *list2str(char *name, List *s) {
-	SIZE_T size, step;
-	List *t;
-	char *w, *x;
-	name = nprint("%F", name);
-	size = strlen(name) + listlen(s);
-	w = ealloc(size + 2);
-	t = s;
-	x = w;
-	strcpy(x, name);
-	strcpy(x += strlen(name), "=");
-	strcpy(x += conststrlen("="), t->w);
-	for (x += strlen(t->w), s = s->n; s != NULL; s = s->n) {
-		memcpy(x, FSSTRING, step = conststrlen(FSSTRING));
-		x += step;
-		memcpy(x, s->w, step = strlen(s->w));
-		x += step;
-	}
-	*x = '\0';
-	return w;
-}
-
 /* convert a List to an array, for execve() */
 
 extern char **list2array(List *s, bool print) {
-	char **av;
-	int i;
+	char **argv, **av;
 
-	/* 4 == 1 for the null terminator + 2 for the fake execve() + 1 for defaulting to sh */
-	av = nalloc((listnel(s) + 4) * sizeof (char *));
-	av += 3; /* hide the two free spots from rc (two for #! emulation, one for defaulting to sh) */
 	if (print)
 		fprint(2, "%L\n", s, " ");
-	for (i = 0; s != NULL; i++) {
-		av[i] = s->w;
+	/*
+	   Allocate 3 extra spots (2 for the fake execve & 1 for defaulting to
+	   sh) and hide these from exec().
+	*/
+	argv = av = (char **) nalloc((listnel(s) + 4) * sizeof *av) + 3;
+	while (s != NULL) {
+		*av++ = s->w;
 		s = s->n;
 	}
-	av[i] = NULL;
-	return av;
+	*av = NULL;
+	return argv;
 }
 
-/* figure out the name of a variable given an environment string. copy this into malloc space */
+/* figure out the name of a variable given an environment string. */
 
 extern char *get_name(char *s) {
+	char *eq = strchr(s, '=');
+	char *r, *result;
 	int c;
-	SIZE_T i;
-	char *r, *namebuf;
-	for (i = 0; s[i] != '\0' && s[i] != '='; i++)
-		;
-	if (s[i] == '\0')
+	
+	if (eq == NULL)
 		return NULL;
-	r = namebuf = ealloc(i + 1);
+	r = result = nalloc(eq - s + 1);
 	while (1)
 		switch (c = *s++) {
 		case '=':
 			*r++ = '\0';
-			return namebuf;
+			return result;
 #ifdef PROTECT_ENV
 		case '_':
 			if (*s == '_') {
@@ -233,55 +212,45 @@ extern char *get_name(char *s) {
 		}
 }
 
-/* get the next word from a variable's value as represented in the environment. */
+/*
+   Hacky routine to split a ^A-separated environment variable. Scans
+   backwards. Be VERY CAREFUL with the loop boundary conditions. e.g.,
+   notice what happens when there is no ^A in the extdef. (It does
+   the right thing, of course :-)
+*/
 
-static char *getenvw(char *s, bool saw_alpha) {
-	SIZE_T i;
-	char *r;
-	for (i = 0; s[i] != '\0' && s[i] != FSCHAR; i++)
-		;
-	if (i == 0) {
-		if (s[i] == '\0' && !saw_alpha)
-			return NULL;
-		else
-			return clear(enew(char), (SIZE_T) 1);
-	}
-	r = strncpy(ealloc(i + 1), s, i);
-	r[i] = '\0';
-	return r;
-}
-
-/* take an environment entry for a variable (elements ^A separated) and turn it into a List */
+#define skipleft(p) do --p; while (*p != '\0' && *p != '\001');
 
 extern List *parse_var(char *name, char *extdef) {
-	List *r, *top;
-	char *f;
-	bool saw_alpha;
-	top = r = enew(List);
-	extdef = strchr(extdef, '=') + 1;
-	if ((f = getenvw(extdef, FALSE)) == NULL) {
-		r->w = "";
-		r->m = NULL;
-		r->n = NULL;
-	} else {
-		while (1) {
-			r->w = f;
-			r->m = NULL;
-			extdef += strlen(f);
-			if (*extdef == FSCHAR) {
-				extdef++;
-				saw_alpha = TRUE;
-			} else {
-				saw_alpha = FALSE;
-			}
-			if ((f = getenvw(extdef, saw_alpha)) == NULL) {
-				r->n = NULL;
-				break;
-			}
-			r = r->n = enew(List);
-		}
+	char *endp, *realend, *sepp;
+	List *tailp, *new;
+
+	extdef = strchr(extdef, '=');
+	*extdef++ = '\0'; /* null "initiate" the string for rtol scanning */
+
+	sepp = realend = strchr(extdef, '\0');
+	tailp = NULL;
+
+	while (1) {
+		endp = sepp;	/* set endp to end of current mebmer */
+		skipleft(sepp);	/* advance sepp to the previous \1,  */
+		*endp = '\0';   /* and null terminate the member.    */
+
+		new = enew(List);
+		new->w = ecpy(sepp+1);
+		new->m = NULL;
+		new->n = tailp;
+		tailp = new;
+
+		if (sepp < extdef)	/* break when sepp hits the null "initiator" */
+			break;
+		if (endp != realend)	/* else restore the \1 in between members */
+			*endp = '\001';
 	}
-	return top;
+	if (endp != realend)
+		*endp = '\001';
+	*--extdef = '='; /* restore extdef '=' */
+	return tailp;
 }
 
 /* get an environment entry for a function and have rc parse it. */

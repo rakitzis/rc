@@ -47,6 +47,7 @@ extern char *strncpy(char *, const char *, SIZE_T);
 extern char *strcat(char *, const char *);
 extern char *strncat(char *, const char *, SIZE_T);
 extern void *memcpy(void *, const void *, SIZE_T);
+extern void *memset(void *, int, SIZE_T);
 
 /* fake unistd.h */
 

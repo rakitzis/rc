@@ -104,7 +104,7 @@ extern char *varlookup_string(char *name) {
 		return look->extdef;
 	if (look->def == NULL)
 		return NULL;
-	return look->extdef = list2str(name, look->def);
+	return look->extdef = mprint("%F=%-L", name, look->def, "\001");
 }
 
 /* remove a variable from the symtab. "stack" determines whether a level of scoping is popped or not */
@@ -166,16 +166,15 @@ static void listassign(char *name, List *def, bool stack) {
 		return;
 	}
 	v = def->w;
-	r = val = enew(List);
+	r = val = nnew(List);
 	while ((w = strchr(v, ':')) != NULL) {
 		*w = '\0';
-		r->w = ecpy(v);
+		r->w = ncpy(v);
 		*w = ':';
 		v = w + 1;
-		r->n = enew(List);
-		r = r->n;
+		r = r->n = nnew(List);
 	}
-	r->w = ecpy(v);
+	r->w = ncpy(v);
 	r->n = NULL;
 	varassign(name, val, stack);
 }

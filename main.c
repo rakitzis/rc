@@ -3,7 +3,7 @@
 #include "rc.h"
 
 bool dashdee, dashee, dashvee, dashex, dashell, dasheye,
-	dashen, dashpee, interactive;
+	dashen, dashpee, dashess, interactive;
 int rc_pid;
 
 static bool dashoh;
@@ -19,7 +19,7 @@ extern void main(int argc, char *argv[], char *envp[]) {
 	dollarzero = argv[0];
 	rc_pid = getpid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
-	while ((c = rc_getopt(argc, argv, "nolpeivdxc:")) != -1)
+	while ((c = rc_getopt(argc, argv, "nolpeivdxsc:")) != -1)
 		switch (c) {
 		case 'l':
 			dashell = TRUE;
@@ -39,6 +39,9 @@ extern void main(int argc, char *argv[], char *envp[]) {
 		case 'd':
 			dashdee = TRUE;
 			break;
+		case 's':
+			dashess = dasheye = interactive = TRUE;
+			break;
 		case 'c':
 			dashsee[0] = rc_optarg;
 			goto quitopts;
@@ -56,8 +59,8 @@ extern void main(int argc, char *argv[], char *envp[]) {
 		}
 quitopts:
 	argv += rc_optind;
-	/* use isatty() iff -i is not set, and iff the input is not from a script or -c flag */
-	if (!dasheye && dashsee[0] == NULL && *argv == NULL)
+	/* use isatty() iff -i is not set, and iff the input is not from a script or -c or -s flags */
+	if (!dasheye && !dashess && dashsee[0] == NULL && *argv == NULL)
 		interactive = isatty(0);
 	if (!dashoh) {
 		checkfd(0, rFrom);
@@ -78,10 +81,13 @@ quitopts:
 	null[0] = NULL;
 	starassign(dollarzero, null, FALSE); /* assign $0 to $* */
 	inithandler();
-	if (dashsee[0] != NULL) {	/* input from the -c flag? */
+	if (dashsee[0] != NULL || dashess) {	/* input from  -c or -s? */
 		if (*argv != NULL)
 			starassign(dollarzero, argv, FALSE);
-		pushstring(dashsee, TRUE);
+		if (dashess)
+			pushfd(0);
+		else
+			pushstring(dashsee, TRUE);
 	} else if (*argv != NULL) {	/* else from a file? */
 		b_dot(--argv);
 		rc_exit(getstatus());
