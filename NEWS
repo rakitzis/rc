@@ -1,0 +1,27 @@
+Since rc-1.5b2 was released, many fixes have been made to the
+autoconfiguration code, some of them critical.
+
+A few bugs in the rc code itself have been fixed.  These were mostly
+obscure.  I could not have tracked them down so quickly without Source
+Navigator---it's a great way to find your way around code (plug!).
+
+rc now uses GNU automake.  Although I feel that automake is sticking
+plaster to mend a broken leg, it has made my job as maintainer easier.
+(Errm, apart from tracking down bugs in automake itself, that is.)  For
+people building rc, it's now possible (depending on your flavour of
+`make') to build in a separate directory from the source.
+
+Creeping featurism: rc now has a `-V' switch to report its version
+number.
+
+Binaries of rc-1.5b3 are typically a few kilobytes smaller than 1.5b2.
+I believe this is due to improved autoconfiguration: we are now much
+more careful only to include code that will be used.
+
+rc-1.5b3 will build under the beta18 release of CygWin32.  It won't run
+trip.rc successfully, and does not appear to be very stable.
+
+See ChangeLog for more details.
+
+Tim Goodwin
+1998-02-19
