@@ -88,11 +88,8 @@ extern char *which(char *name, bool verbose) {
 		gid = getegid();
 #if HAVE_GETGROUPS
 		ngroups = getgroups(0, (GETGROUPS_T *)0);
-		gidset = malloc(ngroups * sizeof(GETGROUPS_T));
-		if (!gidset)
-			uerror("malloc");
-		else
-			getgroups(ngroups, gidset);
+		gidset = ealloc(ngroups * sizeof(GETGROUPS_T));
+		getgroups(ngroups, gidset);
 #endif
 	}
 	if (isabsolute(name)) /* absolute pathname? */
