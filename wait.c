@@ -1,15 +1,9 @@
 #include "rc.h"
 
 #include <errno.h>
-#include <setjmp.h>
-#include <signal.h>
 #include <sys/wait.h>
 
-#include "jbwrap.h"
-
 bool forked = FALSE;
-
-static pid_t rc_wait(int *);
 
 typedef struct Pid Pid;
 
@@ -22,7 +16,9 @@ static struct Pid {
 
 extern pid_t rc_fork() {
 	Pid *new;
+	struct Pid *p, *q;
 	pid_t pid = fork();
+
 	switch (pid) {
 	case -1:
 		uerror("fork");
@@ -30,8 +26,15 @@ extern pid_t rc_fork() {
 		/* NOTREACHED */
 	case 0:
 		forked = TRUE;
-		plist = 0;
 		sigchk();
+		p = plist; q = 0;
+		while (p) {
+			if (q) efree(q);
+			q = p;
+			p = p->n;
+		}
+		if (q) efree(q);
+		plist = 0;
 		return 0;
 	default:
 		new = enew(Pid);
@@ -64,12 +67,14 @@ extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
 		int ret;
 		Pid *q;
 
-		ret = rc_wait(stat);
+		ret = wait(stat);
 
 		if (ret < 0) {
 			if (errno == ECHILD)
 				panic("lost child");
-			if (!nointr)
+			if (nointr)
+				continue;
+			else
 				return ret;
 		}
 
@@ -107,46 +112,13 @@ extern List *sgetapids() {
 
 extern void waitforall() {
 	int stat;
+
 	while (plist != NULL) {
-		int pid = rc_wait4(plist->pid, &stat, FALSE);
+		pid_t pid = rc_wait4(plist->pid, &stat, FALSE);
 		if (pid > 0)
 			setstatus(pid, stat);
 		else
 			set(FALSE);
 		sigchk();
 	}
-}
-
-static int gotint;
-void gotint_handler(int s) {
-	gotint = 1;
-	signal(s, gotint_handler);
-}
-
-/*
-   rc_wait: a wait() wrapper that interfaces wait() w/rc signals.
-   Note that the signal queue is not checked in this fn; someone
-   may want to resume the wait() without delivering any signals.
-*/
-
-static int r;
-static pid_t rc_wait(int *stat) {
-	void (*old)(int);
-
-	interrupt_happened = FALSE;
-	r = -1;
-
-	gotint = 0;
-	old = signal(SIGINT, gotint_handler);
-	if (!sigsetjmp(slowbuf.j, 1)) {
-		slow = TRUE;
-		if (!interrupt_happened)
-			r = wait(stat);
-	}
-	slow = FALSE;
-	signal(SIGINT, old);
-	if (gotint && old != SIG_DFL && old != SIG_IGN)
-		(*old)(SIGINT);
-
-	return r;
 }
