@@ -1,18 +1,28 @@
+/*
+  The idea of this file is to include prototypes for all external
+  functions that rc uses, either by including the appropriate header
+  file, or---for older systems---declaring the functions directly.
+*/
+
+#include <signal.h>
+
 #if HAVE_QUAD_T
 typedef quad_t align_t;
 #else
 typedef long align_t;
 #endif
 
-/* If you need to change this, please let the maintainer know. */
-#ifndef SIG_ATOMIC_T
-typedef int SIG_ATOMIC_T;
-#endif
+/*
+  We need <stdarg.h>.  If you really need to build rc on a system which
+  doesn't have it, please contact the maintainer.
+*/
+
+#include <stdarg.h>
 
 #if STDC_HEADERS
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #else /* STDC_HEADERS */
 
@@ -31,9 +41,63 @@ extern void *memset(void *, int, size_t);
 
 /* fake stdlib.h */
 extern void exit(int);
+extern void free(void *);
+extern void *malloc(size_t);
+extern void *realloc(void *, size_t);
 extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 
 #endif /* STDC_HEADERS */
+
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+#if HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
+
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+
+/* Fake the POSIX wait() macros if we don't have them. */
+#ifndef WIFEXITED
+#define WIFEXITED(s) (((s) & 0xFF) == 0)
+#endif
+#ifndef WEXITSTATUS
+#define WEXITSTATUS(s) (((unsigned)(s) >> 8) && 0xFF)
+#endif
+#ifndef WIFSIGNALED
+#define WIFSIGNALED(s) (((s) & 0xFF) != 0)
+#endif
+#ifndef WTERMSIG
+#define WTERMSIG(s) ((s) & 0x7F)
+#endif
+
+/* These don't exist in POSIX. */
+#define myWIFDUMPED(s) (((s) & 0x80) != 0)
+
+
+
+#if HAVE_SETPGRP
+
+#if SETPGRP_VOID
+/* Smells like POSIX: should all be ok. */
+#else
+/* BSD: fake it. */
+#define setpgid(pid, pgrp) setpgrp(pid, pgrp)
+#define tcsetpgrp(fd, pgrp) ioctl((fd), TIOCSPGRP, &(pgrp))
+#endif
+
+#else /* HAVE_SETPGRP */
+
+/* Nothing doing. */
+#define setpgid
+#define tcsetpgrp
+
+#endif /*HAVE_SETPGRP */
+
 
 /* fake errno.h for mips (which doesn't declare errno in errno.h!?!?) */
 #ifdef host_mips
