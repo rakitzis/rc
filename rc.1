@@ -1863,12 +1863,19 @@ a backquote must always be followed by a left-brace.
 This restriction is not present for single-word commands in this
 .IR rc .
 .PP
+The list flattening operator,
+.Cr $^foo ,
+is spelt
+.Cr $"foo
+in those versions of the Bell Labs
+.IR rc
+which have it.
+.PP
 The following are all new with this version of
 .IR rc :
 The
 .Cr \-n
 option,
-the list flattening operator,
 here strings (they facilitate exporting of functions
 with here documents into the environment),
 the
