@@ -1,4 +1,4 @@
-#define NDEBUG 1
+#undef NDEBUG
 #include "config.h"
 #include "proto.h"
 
