@@ -243,7 +243,6 @@ extern void flushu() {
 extern Node *doit(bool clobberexecit) {
 	bool eof;
 	bool execit;
-	bool infnprompt;
 	Jbwrap j;
 	Estack e1;
 	Edata jerror;
@@ -251,7 +250,6 @@ extern Node *doit(bool clobberexecit) {
 	if (dashen)
 		clobberexecit = FALSE;
 	execit = clobberexecit;
-	infnprompt = FALSE;
 	sigsetjmp(j.j, 1);
 	jerror.jb = &j;
 	except(eError, jerror, &e1);
@@ -272,13 +270,14 @@ extern Node *doit(bool clobberexecit) {
 		if (interactive) {
 			List *s;
 			if (!dashen && fnlookup("prompt") != NULL) {
+				static bool died = FALSE;
 				static char *arglist[] = { "prompt", NULL };
 
-				if (!infnprompt) {
-					infnprompt = TRUE;
+				if (!died) {
+					died = TRUE;
 					funcall(arglist);
 				}
-				infnprompt = FALSE;
+				died = FALSE;
 			}
 			if ((s = varlookup("prompt")) != NULL) {
 #if EDITLINE || READLINE
