@@ -15,8 +15,8 @@ to build rc in a different directory).
 BUILD AND CONFIGURATION OPTIONS
 
 There are lots of options you can give to configure to modify rc's
-behaviour.  You can also select a command line history library to
-link against---see the README file for details of where to find these
+behaviour.  You can also select a command line history library to link
+against---see the rc web page for details of where to find these
 libraries.  For a summary of all options, run `sh configure --help'.
 
 You can specify Makefile variables by setting the corresponding
@@ -31,7 +31,7 @@ descending order of usefulness.
 
   --with-editline
 
-  This option tells rc to use the editline package (see the README file
+  This option tells rc to use the editline package (see the web page
   for details) to provide EMACS style command line editing and history.
   If the editline library is not installed in a standard place, you can
   tell configure where to find it by setting the environment variable
@@ -42,7 +42,7 @@ descending order of usefulness.
 
   --with-vrl
 
-  This option tells rc to use the vrl package (see the README file for
+  This option tells rc to use the vrl package (see the web page for
   details) to provide EMACS style command line editing and history.  As
   for `--with-editline', you may need to set the environment variable
   LDFLAGS appropriately.
@@ -61,13 +61,13 @@ descending order of usefulness.
   --with-history
 
   Use this option if you want to build and install the programs that
-  support a crude history mechanism.
+  support a crude command-line history mechanism.
 
 You can't use more than one of `--with-editline', `--with-vrl', and
 `--with-readline' at the same time.  If you have any of these you
 probably don't want to bother with `--with-history'.
 
-  --prefix /path
+  --prefix=/path
 
   By default, `prefix' is /usr/local, which means that `make install'
   installs rc (and possibly the history programs) in /usr/local/bin, and
@@ -94,10 +94,10 @@ probably don't want to bother with `--with-history'.
   --disable-def-interp
   --enable-def-interp=/bin/foo
 
-  By default, a program that fails with "Exec format error" is handed to
-  /bin/sh.  This does the Right Thing for scripts that start with `:' to
-  indicate that they are sh scripts.  You can disable this behaviour
-  entirely, or specify a different default interpreter.
+  By default, a program that fails with ENOEXEC (Exec format error) is
+  handed to /bin/sh.  This does the Right Thing for scripts that start
+  with `:' to indicate that they are sh scripts.  You can disable this
+  behaviour entirely, or specify a different default interpreter.
 
   --disable-def-path
   --enable-def-path "/usr/local/bin","/usr/bin"
@@ -129,11 +129,11 @@ probably don't want to bother with `--with-history'.
   dying or discarding the variables.  This option disables the default
   behaviour.  You are unlikely to want this option on any Unix system.
 
-After you've built rc, I recommend that you run it through a test script
-to gain some confidence that all is working well.  Type `make trip' to
-do this.  This will produce some output, and should end with "trip is
-complete".  If the trip instead ends with "trip took a wrong turn..."
-please contact the maintainer.
+After you've built rc, I recommend that you run it through the test
+script to gain some confidence that all is working well.  Type `make
+trip' to do this.  This will produce some output, and should end with
+"trip is complete".  If the trip instead ends with "trip took a wrong
+turn..."  please contact the maintainer.
 
 
 LARGE FILE SUPPORT
@@ -180,6 +180,9 @@ in practice.
 On some systems there are warnings about "passing arg 2 of `getgroups'
 from incompatible pointer type" in which.c.  I believe this is due to an
 incorrect declaration of `getgroups()' in those systems' header files.
+
+The warning "left shift count >= width of type" in tripping.c may
+occur if off_t is only 32 bits.
 
 Any other warnings should be reported to the maintainer.
 

@@ -74,12 +74,13 @@ quitopts:
 	initsignal();
 	inithash();
 	initparse();
-	assigndefault("prompt", "; ", "", (void *)0);
+	assigndefault("ifs", " ", "\t", "\n", (void *)0);
 #ifdef DEFAULTPATH
 	assigndefault("path", DEFAULTPATH, (void *)0);
 #endif
-	assigndefault("ifs", " ", "\t", "\n", (void *)0);
 	assigndefault("pid", nprint("%d", rc_pid), (void *)0);
+	assigndefault("prompt", "; ", "", (void *)0);
+	assigndefault("version", VERSION, "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $", (void *)0);
 	initenv(envp);
 	initinput();
 	null[0] = NULL;
@@ -112,6 +113,7 @@ static void assigndefault(char *name,...) {
 	for (l = NULL; (v = va_arg(ap, char *)) != NULL;)
 		l = append(l, word(v, NULL));
 	varassign(name, l, FALSE);
+	set_exportable(name, FALSE);
 	if (streq(name, "path"))
 		alias(name, l, FALSE);
 	va_end(ap);

@@ -176,13 +176,14 @@ matched before a command is selected.
 Substitutions may also be specified on the command line.
 These have the syntax:
 .Ds
-.Ic old : new
+.Ic old :[:...] new
 .De
 .PP
 (Note that the
 .I old
 pattern is used as a search-limiting pattern also.)
-Substitutions happen on the first match.
+Substitutions happen from left to right and are repeated according to the
+number of colons specified.
 .PP
 Finally, if the program was invoked as
 .RI `` -- ''
@@ -241,3 +242,13 @@ reinterpretation:
 .Cr "		eval $comm"
 .Cr "	}"
 .Cr "}"
+.De
+.PP
+Stuttering the `:' in a substitution allows things like:
+.Ds
+; prog 1 2 3 abc > /very/long/path/abc.out
+etc.
+- prog abc::xyz
+prog 1 2 3 xyz > /very/long/path/xyz.out
+;
+.De

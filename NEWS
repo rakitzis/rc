@@ -1,7 +1,7 @@
 Highlights of changes since rc-1.6.  See ChangeLog for further details.
 
-Portability.  Many minor tweaks, including fixes for BeOS, CygWin, and
-gcc-3.
+Portability.  Many minor tweaks, including fixes for BeOS, CygWin,
+QNX, and gcc-3.
 
 Bug fixes.  A number of bugs have been fixed.  The serious ones were:
 a core dump, triggered by `~ () '*''; premature exit, triggered by
@@ -13,7 +13,7 @@ New features.  The following features are new: the `$version' variable
 replaces the `-V' flag; the `-I' flag (definitively not interactive)
 was added for compatibility with the Plan 9 rc; ASCII SOH (^A) is now
 handled transparently; support for large files; support for more
-limits.
+process resource limits.
 
 Documentation.  Distributions of this rc used to include a PostScript
 paper given by Tom Duff to the UKUUG, describing the Plan 9 rc.  This
@@ -22,4 +22,4 @@ the web, both in its original PostScript version, and an updated HTML
 version.
 
 Tim Goodwin
-2002-02-08
+2002-05-21

@@ -161,7 +161,7 @@
 .if !"\\$4"" .Xf \\$2 \\$1 "\\$3\\f\\$1\\$4\\*(Xi" "\\$5" "\\$6" "\\$7" "\\$8" "\\$9"
 .if "\\$4"" \\$3\fR\s10
 ..
-.TH RC 1 "2002-02-08"
+.TH RC 1 "2002-05-21"
 .SH NAME
 rc \- shell
 .SH SYNOPSIS
@@ -1200,10 +1200,38 @@ as its value.
 Several variables are known to
 .I rc
 and are treated specially.
-In the following list, ``(read only)'' indicates that an attempt to set the
-variable will silently have no effect.
+In the following list, ``default'' indicates that
+.I rc
+gives the variable a default value on startup; ``no-export'' indicates
+that the variable is never exported; and ``read-only'' indicates that
+an attempt to set the variable will silently have no effect.
+.PP
+Also, ``alias'' means that the variable is aliased to the same name in
+capitals.
+For example, an assignment to
+.Cr $cdpath
+causes an automatic assignment to
+.Cr $CDPATH ,
+and vice-versa.
+If
+.Cr $CDPATH
+is set when
+.I rc
+is started, its value is imported into
+.Cr $cdpath .
+.Cr $cdpath
+and
+.Cr $path
+are
+.I rc
+lists;
+.Cr $CDPATH
+and
+.Cr $PATH
+are colon-separated lists.
+Only the names spelt in capitals are exported into the environment.
 .TP
-.Cr *
+.Cr * " (no-export)"
 The argument list of
 .IR rc .
 .Cr "$1, $2,"
@@ -1212,7 +1240,7 @@ etc. are the same as
 .Cr $*(2) ,
 etc.
 .TP
-.Cr 0
+.Cr 0 " (default no-export)"
 The variable
 .Cr $0
 holds the value of
@@ -1234,15 +1262,15 @@ is not an element of
 .Cr $* ,
 and is never treated as one.
 .TP
-.Cr apid
+.Cr apid " (no-export)"
 The process ID of the last process started in the background.
 .TP
-.Cr apids " (read only)"
+.Cr apids " (no-export read-only)"
 A list whose elements are the process IDs of all background processes
 which are still alive, or which have died and have not been waited for
 yet.
 .TP
-.Cr bqstatus
+.Cr bqstatus " (no-export)"
 The exit status of the
 .I rc
 forked to execute the most recent backquote substitution.  Note that, unlike
@@ -1273,7 +1301,7 @@ prints
 .Cr "bqstatus=1"
 .De
 .TP
-.Cr cdpath
+.Cr cdpath " (alias)"
 A list of directories to search for the target of a
 .B cd
 command.
@@ -1283,14 +1311,6 @@ Note that if the
 variable does not contain the current directory, then the current
 directory will not be searched; this allows directory searching to
 begin in a directory other than the current directory.
-Note also that an assignment to
-.Cr $cdpath
-causes an automatic assignment to
-.Cr $CDPATH ,
-and vice-versa.
-Only
-.Cr $CDPATH
-is exported into the environment.
 .TP
 .Cr history
 .Cr $history
@@ -1309,7 +1329,7 @@ is not set, then
 .I rc
 does not append commands to any file.
 .TP
-.Cr home
+.Cr home " (alias)"
 The default directory for the builtin
 .B cd
 command, and the directory in which
@@ -1319,30 +1339,17 @@ looks to find its initialization file,
 if
 .I rc
 has been started up as a login shell.
-Like
-.Cr $cdpath
-and
-.Cr $CDPATH ,
-.Cr $home
-and
-.Cr $HOME
-are aliased to each other.
 .TP
-.Cr ifs
+.Cr ifs " (default)"
 The internal field separator, used for splitting up the output of
-backquote commands for digestion as a list.
+backquote commands for digestion as a list.  On startup,
+.I rc
+assigns the list containing the characters space, tab, and newline to
+.Cr $ifs .
 .TP
-.Cr path
+.Cr path " (alias)"
 This is a list of directories to search in for commands.
 The empty string stands for the current directory.
-Note that like
-.Cr $cdpath
-and
-.Cr $CDPATH ,
-.Cr $path
-and
-.Cr $PATH
-are aliased to each other.
 If neither
 .Cr $PATH
 nor
@@ -1353,11 +1360,13 @@ assumes a default value suitable for your system.
 This is typically
 .Cr "(/usr/local/bin /usr/bin /usr/ucb /bin .)"
 .TP
-.Cr pid
-The process ID of the currently running
+.Cr pid " (default no-export)"
+On startup,
+.Cr $pid
+is initialized to the numeric process ID of the currently running
 .IR rc .
 .TP
-.Cr prompt
+.Cr prompt " (default)"
 This variable holds the two prompts (in list form, of course) that
 .I rc
 prints.
@@ -1398,7 +1407,7 @@ If this function is defined, then it gets executed every time
 is about to print
 .Cr "$prompt(1)" .
 .TP
-.Cr status " (read only)"
+.Cr status " (no-export read-only)"
 The exit status of the last command.
 If the command exited with a numeric value, that number is the status.
 If the command died with a signal, the status is the name of that signal;
@@ -1419,38 +1428,14 @@ usually sets
 to
 .Cr "(0 0)" .
 .TP
-.Cr version " (read only)"
-The first element of this list variable is a string which identifies this
-version of
+.Cr version " (default)"
+On startup, the first element of this list variable is initialized to
+a string which identifies this version of
 .IR rc .
-The second element is a string which can be found by
+The second element is initialized to a string which can be found by
 .B ident
 and
 .BR "sccs what" .
-.PP
-The values of
-.Cr "$path" ,
-.Cr "$cdpath" ,
-and
-.Cr $home
-are derived from the environment
-values of
-.Cr "$PATH" ,
-.Cr "$CDPATH" ,
-and
-.Cr "$HOME" .
-Otherwise, they are derived from
-the environment values of
-.Cr $path ,
-.Cr $cdpath
-and
-.Cr $home .
-This is for compatibility with other Unix programs, like
-.IR sh (1).
-.Cr $PATH
-and
-.Cr $CDPATH
-are assumed to be colon-separated lists.
 .SH FUNCTIONS
 .I rc
 functions are identical to
@@ -1490,7 +1475,7 @@ could be:
 .PP
 but not
 .Ds
-.Cr "fn l { ls -FC }"
+.Cr "fn l { ls -FC } # WRONG"
 .De
 .SH "INTERRUPTS AND SIGNALS"
 .I rc
@@ -1579,7 +1564,7 @@ Thus from within a shell script,
 .De
 .TP
 \&
-does the ``right'' thing.
+does the ``right thing''.
 .TP
 .B break
 Breaks from the innermost
@@ -1682,7 +1667,7 @@ Similar to the
 .IR csh (1)
 .B limit
 builtin, this command operates upon the
-BSD-style limits of a process.
+BSD-style resource limits of a process.
 The
 .Cr \-h
 flag displays/alters the hard
@@ -1695,9 +1680,14 @@ The resources which can be shown or altered are
 .BR coredumpsize ,
 .BR memoryuse ,
 and, where supported,
-.BR descriptors .
-For
-example:
+.BR descriptors ,
+.BR memoryuse ,
+.BR memoryrss ,
+.BR maxproc ,
+.BR memorylocked ,
+and
+.BR filelocks .
+For example:
 .Ds
 .Cr "limit coredumpsize 0"
 .De
@@ -2117,6 +2107,11 @@ keywords,
 the
 .B echo
 builtin,
+the
+.Cr bqstatus
+and
+.Cr rc_version
+variables,
 the support for the GNU
 .IR readline (3)
 library and

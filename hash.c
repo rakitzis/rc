@@ -228,14 +228,37 @@ extern void initenv(char **envp) {
 		}
 }
 
-static bool var_exportable(char *s) {
-	static char *notforexport[] = {
-		"apid", "apids", "cdpath", "home", "ifs",
-		"path", "pid", "version", "*"
-	};
+static char *neverexport[] = {
+	"apid", "apids", "bqstatus", "cdpath", "home",
+	"ifs", "path", "pid", "status", "*"
+};
+
+/* for a few variables that have default values, we export them only
+if they've been explicitly set; maybeexport[n].flag is TRUE if this
+has occurred. */
+struct nameflag {
+	char *name;
+	bool flag;
+};
+static struct nameflag maybeexport[] = {
+	{ "prompt", FALSE },
+	{ "version", FALSE }
+};
+
+void set_exportable(char *s, bool b) {
 	int i;
-	for (i = 0; i < arraysize(notforexport); i++)
-		if (streq(s, notforexport[i]))
+	for (i = 0; i < arraysize(maybeexport); ++i)
+		if (maybeexport[i].flag != b && streq(s, maybeexport[i].name))
+			maybeexport[i].flag = b;
+}
+
+static bool var_exportable(char *s) {
+	int i;
+	for (i = 0; i < arraysize(neverexport); i++)
+		if (streq(s, neverexport[i]))
+			return FALSE;
+	for (i = 0; i < arraysize(maybeexport); i++)
+		if (maybeexport[i].flag == FALSE && streq(s, maybeexport[i].name))
 			return FALSE;
 	return TRUE;
 }

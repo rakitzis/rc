@@ -18,6 +18,7 @@ extern void varassign(char *name, List *def, bool stack) {
 	new = get_var_place(name, stack);
 	new->def = newdef;
 	new->extdef = NULL;
+	set_exportable(name, TRUE);
 #if READLINE
 	if (interactive && (streq(name, "TERM") || streq(name, "TERMCAP")))
 		rl_reset_terminal(NULL);
@@ -68,8 +69,6 @@ extern List *varlookup(char *name) {
 		return sgetapids();
 	if (streq(name, "status"))
 		return sgetstatus();
-	if (streq(name, "version"))
-		return &id1;
 	if (*name != '\0' && (sub = a2u(name)) != -1) { /* handle $1, $2, etc. */
 		for (l = varlookup("*"); l != NULL && sub != 0; --sub)
 			l = l->n;
