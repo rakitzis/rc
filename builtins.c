@@ -251,7 +251,7 @@ extern void b_builtin(char **ignore) {
 /* wait for a given process, or all outstanding processes */
 
 static void b_wait(char **av) {
-	int stat;
+	int status;
 	pid_t pid;
 	if (av[1] == NULL) {
 		waitforall();
@@ -265,8 +265,8 @@ static void b_wait(char **av) {
 		badnum(av[1]);
 		return;
 	}
-	if (rc_wait4(pid, &stat, FALSE) > 0)
-		setstatus(pid, stat);
+	if (rc_wait4(pid, &status, FALSE) > 0)
+		setstatus(pid, status);
 	else
 		set(FALSE);
 	sigchk();

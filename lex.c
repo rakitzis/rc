@@ -321,13 +321,13 @@ extern void yyerror(const char *s) {
 	if (!interactive) {
 		if (w != NW)
 			tok = realbuf;
-		else if (last == EOF)
+		else if (lastchar == EOF)
 			tok = "eof";
-		else if (last == '\n')
+		else if (lastchar == '\n')
 			tok = "end of line";
 		else
-			tok = nprint((last < 32 || last > 126) ? "(decimal %d)" : "'%c'", last);
-		fprint(2, "line %d: %s near %s\n", lineno - (last == '\n'), s, tok);
+			tok = nprint((lastchar < 32 || lastchar > 126) ? "(decimal %d)" : "'%c'", lastchar);
+		fprint(2, "line %d: %s near %s\n", lineno - (lastchar == '\n'), s, tok);
 	} else
 		fprint(2, "%s\n", s);
 }

@@ -278,7 +278,7 @@ extern void pushfd(int);
 extern void pushstring(char **, bool);
 extern void popinput(void);
 extern void closefds(void);
-extern int last;
+extern int lastchar;
 extern bool rcrc;
 
 

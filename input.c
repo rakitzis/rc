@@ -38,7 +38,7 @@ static Input *istack, *itop;
 static int (*realgchar)(void);
 static void (*realugchar)(int);
 
-int last;
+int lastchar;
 
 #if EDITLINE || READLINE
 static char *rlinebuf, *prompt;
@@ -49,7 +49,7 @@ extern int gchar() {
 
 	if (eofread) {
 		eofread = FALSE;
-		return last = EOF;
+		return lastchar = EOF;
 	}
 
 	while ((c = (*realgchar)()) == '\0')
@@ -63,7 +63,7 @@ extern void ugchar(int c) {
 }
 
 static int dead() {
-	return last = EOF;
+	return lastchar = EOF;
 }
 
 static void ugdead(int ignore) {
@@ -80,7 +80,7 @@ static void ugalive(int c) {
 /* get the next character from a string. */
 
 static int stringgchar() {
-	return last = (inbuf[chars_out] == '\0' ? EOF : inbuf[chars_out++]);
+	return lastchar = (inbuf[chars_out] == '\0' ? EOF : inbuf[chars_out++]);
 }
 
 /*
@@ -140,13 +140,13 @@ static int fdgchar() {
 			break;
 		}
 		if (chars_in == 0)
-			return last = EOF;
+			return lastchar = EOF;
 		chars_out = 2;
 		if (dashvee)
 			writeall(2, inbuf + 2, chars_in);
 		history();
 	}
-	return last = inbuf[chars_out++];
+	return lastchar = inbuf[chars_out++];
 }
 
 /* set up the input stack, and put a "dead" input at the bottom, so that yyparse will always read eof */
@@ -167,7 +167,7 @@ static void pushcommon() {
 	istack->ibuf = inbuf;
 	istack->lineno = lineno;
 	istack->saved = save_lineno;
-	istack->last = last;
+	istack->last = lastchar;
 	istack->eofread = eofread;
 	istack++;
 	idiff = istack - itop;
@@ -214,7 +214,7 @@ extern void popinput() {
 		realgchar = dead;
 		realugchar = ugdead;
 	}
-	last = istack->last;
+	lastchar = istack->last;
 	eofread = istack->eofread;
 	inbuf = istack->ibuf;
 	chars_out = istack->index;
@@ -230,7 +230,7 @@ extern void popinput() {
 
 extern void flushu() {
 	int c;
-	if (last == '\n' || last == EOF)
+	if (lastchar == '\n' || lastchar == EOF)
 		return;
 	while ((c = gchar()) != '\n' && c != EOF)
 		; /* skip to newline */
@@ -292,7 +292,7 @@ extern Node *doit(bool clobberexecit) {
 		inityy();
 		if (yyparse() == 1 && execit)
 			rc_raise(eError);
-		eof = (last == EOF); /* "last" can be clobbered during a walk() */
+		eof = (lastchar == EOF); /* "lastchar" can be clobbered during a walk() */
 		if (parsetree != NULL) {
 			if (execit)
 				walk(parsetree, TRUE);
