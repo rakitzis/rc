@@ -88,7 +88,7 @@ static int stringgchar() {
 /* signal-safe readline wrapper */
 
 #if READLINE
-#ifdef HAVE_RESTARTABLE_SYSCALLS
+#if HAVE_RESTARTABLE_SYSCALLS
 static char *rc_readline(char *prompt) {
 	char *r;
 	interrupt_happened = FALSE;
