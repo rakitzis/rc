@@ -792,3 +792,7 @@ Changes since rc-1.5b2
 2002-07-25
 
   Bug: fix globbing of broken symlinks.
+
+2002-07-31
+
+  Bug: readline doesn't handle EIO either.

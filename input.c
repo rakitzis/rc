@@ -96,8 +96,10 @@ static int fdgchar() {
 		while (1) {
 #if EDITLINE || READLINE
 			if (interactive && istack->t == iFd && isatty(istack->fd)) {
-				/* The readline library doesn't handle read() returning EAGAIN. */
+				/* The readline library doesn't handle
+				 * read() returning EAGAIN or EIO. */
 				makeblocking(istack->fd);
+				makesamepgrp(istack->fd);
 				rlinebuf = rc_readline(prompt);
 				if (rlinebuf == NULL) {
 					chars_in = 0;
