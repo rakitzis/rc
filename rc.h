@@ -194,7 +194,6 @@ enum {
 /* rc prototypes */
 
 /* main.c */
-extern char *prompt, *prompt2;
 extern Rq *redirq;
 extern bool dashdee, dashee, dashvee, dashex, dashell,
 	dasheye, dashen, dashpee, interactive;
@@ -289,6 +288,7 @@ extern int heredoc(int);
 extern int qdoc(Node *, Node *);
 extern Hq *hq;
 
+
 /* input.c */
 extern void initinput(void);
 extern Node *parseline(char *);
@@ -303,6 +303,12 @@ extern void popinput(void);
 extern void closefds(void);
 extern int last;
 extern bool rcrc;
+
+#if READLINE
+extern bool in_readline;
+extern int rl_pending_input; /* Really from readline library. */
+#endif
+
 
 /* lex.c */
 extern int yylex(void);
@@ -365,6 +371,7 @@ extern void initparse(void);
 /* redir.c */
 extern void doredirs(void);
 
+
 /* signal.c */
 extern void initsignal(void);
 extern void catcher(int);
@@ -372,6 +379,13 @@ extern void sigchk(void);
 extern void (*rc_signal(int, void (*)(int)))(int);
 extern void (*sighandlers[])(int);
 extern volatile SIG_ATOMIC_T slow, interrupt_happened;
+
+#if READLINE
+extern void rl_clean_up_for_exit(void);
+extern void rl_deprep_terminal(void);
+extern int rl_clear_signals(void);
+#endif
+
 
 /* status.c */
 extern int istrue(void);
@@ -390,17 +404,13 @@ extern void writeall(int, char *, size_t);
 
 #if HAVE_RESTARTABLE_SYSCALLS
 extern int rc_read(int, char *, size_t);
-#if READLINE
-extern char *rc_readline(char *prompt);
-#endif
+extern pid_t rc_wait(int *);
 
 #else /* HAVE_RESTARTABLE_SYSCALLS */
-#define rc_read read
-#define rc_wait wait
-#if READLINE
-#define rc_readline readline
-#endif
 
+#define rc_read read
+#include <sys/wait.h>
+#define rc_wait wait
 #endif /* HAVE_RESTARTABLE_SYSCALLS */
 
 

@@ -23,6 +23,32 @@ extern void catcher(int s) {
 	}
 	signal(s, catcher);
 
+#if READLINE
+	if (in_readline) {
+		in_readline = FALSE;
+		switch (s) {
+		default:
+			rl_clean_up_for_exit();
+			rl_deprep_terminal();
+			rl_clear_signals();
+			rl_pending_input = 0;
+			break;
+
+/* These signals are already cleaned up by readline. */
+
+		case SIGINT:
+		case SIGALRM:
+#ifdef SIGTSTP
+		case SIGTSTP:
+		case SIGTTOU:
+		case SIGTTIN:
+#endif
+			break;
+		}
+	}
+#endif /* READLINE */
+
+
 #if HAVE_RESTARTABLE_SYSCALLS
 	interrupt_happened = TRUE;
 	if (slow)

@@ -69,25 +69,3 @@ extern pid_t rc_wait(int *stat) {
 	}
 	return r;
 }
-
-/* signal-safe readline wrapper */
-#if READLINE
-extern char *rc_readline(char *prompt) {
-	char *r;
-
-	interrupt_happened = FALSE;
-	if (!sigsetjmp(slowbuf.j, 1)) {
-		slow = TRUE;
-		if (!interrupt_happened)
-			r = readline(prompt);
-		else
-			r = NULL;
-	} else
-		r = NULL;
-	slow = FALSE;
-	if (r == NULL)
-		errno = EINTR;
-	sigchk();
-	return r;
-}
-#endif /* READLINE */

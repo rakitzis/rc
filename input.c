@@ -2,6 +2,8 @@
 
 #include <errno.h>
 #include <setjmp.h>
+#include <signal.h>
+
 #include "rc.h"
 #include "jbwrap.h"
 
@@ -22,11 +24,28 @@ typedef struct Input {
 
 #if READLINE
 extern void add_history(char *);
-static char *rlinebuf;
-char *prompt;
+extern char *readline(char *);
+
+static char *rlinebuf, *prompt;
+bool in_readline;
+
+static char *rc_readline(char *prompt) {
+	char *r;
+	void (*old)(int);
+
+	in_readline = TRUE;
+	old = signal(SIGINT, sigint);
+	r = readline(prompt);
+	signal(SIGINT, old);
+	in_readline = FALSE;
+	sigchk();
+
+	return r;
+}
+
 #endif
 
-char *prompt2;
+static char *prompt2;
 bool rcrc;
 
 static int dead(void);
