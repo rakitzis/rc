@@ -579,5 +579,5 @@ Changes since rc-1.5b2
   Portability: Linux *almost* has SysV SIGCLD semantics, and we need to
   detect them.
 
-  Bug: if we reset SIGCLG to SIG_DFL, we need to record the fact in the
+  Bug: if we reset SIGCLD to SIG_DFL, we need to record the fact in the
   sighandlers[] array.
