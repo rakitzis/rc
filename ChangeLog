@@ -482,3 +482,12 @@ Changes since rc-1.5b2
   nonblocking input file descriptor; fix test for cdpath.
 
   Portability: include <sys/types.h> before <sys/stat.h>.
+
+1998-10-30
+
+  Portability: rename basename() to rc_basename(), since the former is
+  quite widespread, and has a variety of different definitions (none of
+  them, of course, static).
+
+  Portability: work around i386 GCC 2.7.2.3 optimization bug triggered
+  by a (really quite simple) expression in history.c.
