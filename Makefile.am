@@ -8,10 +8,20 @@ HISTBIN =
 HISTMAN =
 endif
 
+if H_R_S
+RDWR = rdwr-bsd.c
+ORDWR = rdwr.c
+else
+RDWR = rdwr.c
+ORDWR = rdwr-bsd.c
+endif
+
 bin_PROGRAMS = rc
 noinst_PROGRAMS = $(HISTBIN)
 
-rc_SOURCES = @ADDON@ builtins.c except.c exec.c execve.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c
+rc_SOURCES = @ADDON@ builtins.c except.c exec.c execve.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c $(RDWR) redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c
+
+EXTRA_rc_SOURCES = $(ORDWR)
 
 history_SOURCES = history.c
 

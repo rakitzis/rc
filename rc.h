@@ -36,14 +36,6 @@
 
 #endif /*HAVE_SETPGRP */
 
-#if HAVE_SIGSETJMP
-/* Smells like POSIX. */
-#else
-/* Assume BSD.  Probably fails on traditional SysV. */
-#define sigsetjmp setjmp
-#define siglongjmp longjmp
-#endif /* HAVE_SIGSETJMP */
-
 typedef void builtin_t(char **);
 typedef struct Block Block;
 typedef struct Dup Dup;
@@ -366,6 +358,10 @@ extern Node *parsetree;
 extern int yyparse(void);
 extern void initparse(void);
 
+/* rdwr.c */
+extern void writeall(int, char *, size_t);
+extern int rc_read(int, char *, size_t);
+
 /* redir.c */
 extern void doredirs(void);
 
@@ -402,7 +398,6 @@ extern int starstrcmp(const void *, const void *);
 extern void pr_error(char *);
 extern void panic(char *);
 extern void uerror(char *);
-extern void writeall(int, char *, size_t);
 
 /* wait.c */
 extern pid_t rc_fork(void);
@@ -414,4 +409,3 @@ extern bool forked;
 /* walk.c */
 extern bool walk(Node *, bool);
 extern bool cond;
-

@@ -137,6 +137,7 @@ main(){
 esac
 
 AC_SYS_RESTARTABLE_SYSCALLS
+AM_CONDITIONAL(H_R_S, test "$ac_cv_sys_restartable_syscalls" = yes)
 
 dnl Do we have SysV SIGCLD semantics?  In other words, if we set the
 dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?
