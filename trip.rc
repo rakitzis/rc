@@ -559,3 +559,9 @@ expect date
 x=`{ { sleep 1; echo echo foo } | { ./tripping n; $rc >[2=1] } }
 if (!~ foo $x)
 	fail input file descriptor nonblocking
+
+# `rc -s' reads from stdin, but should not imply `-i'
+expect foo bar qux
+$rc -s foo bar qux <<'eof'
+echo $*
+eof

@@ -529,3 +529,28 @@ Changes since rc-1.5b2
 
   Documentation: the Bell Labs rc now has the list flattening operator,
   but spelt $"foo.
+
+1999-01-11
+
+  Release: rc-1.5b4.
+
+1999-01-19
+
+  Documentation: document the `-s' option.  Also, arrange the option
+  documentation in alphabetical order.
+
+  Tidiness: just install `history' to `$(bindir)/-'; don't create an
+  extra link (which `make clean' failed to remove).
+
+1999-01-22
+
+  Bug: `-s' should not imply `-i'.
+
+  Testing: add regression test for `-s' behaviour.
+
+1999-01-27
+
+  Documentation: default path was out of date; minor consistency
+  improvements.
+
+  Release: rc-1.5b5.

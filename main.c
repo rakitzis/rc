@@ -21,10 +21,13 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	dollarzero = argv[0];
 	rc_pid = getpid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
-	while ((c = rc_getopt(argc, argv, "Vnolpeivdxsc:")) != -1)
+	while ((c = rc_getopt(argc, argv, "c:deilnopsVvx")) != -1)
 		switch (c) {
-		case 'l':
-			dashell = TRUE;
+		case 'c':
+			dashsee[0] = rc_optarg;
+			goto quitopts;
+		case 'd':
+			dashdee = TRUE;
 			break;
 		case 'e':
 			dashee = TRUE;
@@ -32,40 +35,37 @@ extern int main(int argc, char *argv[], char *envp[]) {
 		case 'i':
 			dasheye = interactive = TRUE;
 			break;
+		case 'l':
+			dashell = TRUE;
+			break;
+		case 'n':
+			dashen = TRUE;
+			break;
+		case 'o':
+			dashoh = TRUE;
+			break;
+		case 'p':
+			dashpee = TRUE;
+			break;
+		case 's':
+			dashess = TRUE;
+			break;
+		case 'V':
+			fprint(1, "%s\n", id);
+			exit(0);
 		case 'v':
 			dashvee = TRUE;
 			break;
 		case 'x':
 			dashex = TRUE;
 			break;
-		case 'd':
-			dashdee = TRUE;
-			break;
-		case 's':
-			dashess = dasheye = interactive = TRUE;
-			break;
-		case 'c':
-			dashsee[0] = rc_optarg;
-			goto quitopts;
-		case 'n':
-			dashen = TRUE;
-			break;
-		case 'p':
-			dashpee = TRUE;
-			break;
-		case 'o':
-			dashoh = TRUE;
-			break;
-		case 'V':
-			fprint(1, "%s\n", id);
-			exit(0);
 		case '?':
 			exit(1);
 		}
 quitopts:
 	argv += rc_optind;
-	/* use isatty() iff -i is not set, and iff the input is not from a script or -c or -s flags */
-	if (!dasheye && !dashess && dashsee[0] == NULL && *argv == NULL)
+	/* use isatty() iff -i is not set, and iff the input is not from a script or -c flags */
+	if (!dasheye && dashsee[0] == NULL && (dashess || *argv == NULL))
 		interactive = isatty(0);
 	if (!dashoh) {
 		checkfd(0, rFrom);

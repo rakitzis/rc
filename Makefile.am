@@ -61,8 +61,7 @@ trip: rc tripping
 
 install-exec-hook:
 if AMC_HISTORY
-	$(LN) history - ;\
-	$(INSTALL_PROGRAM) - $(bindir) ;\
+	$(INSTALL_PROGRAM) history $(bindir)/- ;\
 	rm -f $(bindir)/--;  $(LN) $(bindir)/- $(bindir)/-- ;\
 	rm -f $(bindir)/-p;  $(LN) $(bindir)/- $(bindir)/-p ;\
 	rm -f $(bindir)/--p; $(LN) $(bindir)/- $(bindir)/--p

@@ -166,7 +166,7 @@
 rc \- shell
 .SH SYNOPSIS
 .B rc
-.RB [ \-eixvldnpoV ]
+.RB [ \-deilnopsVvx ]
 .RB [ \-c
 .IR command ]
 .RI [ arguments ]
@@ -183,10 +183,44 @@ Its use is intended to be interactive,
 but the language lends itself well to scripts.
 .SH OPTIONS
 .TP
+.Cr \-c
+If
+.Cr \-c
+is present, commands are executed from the immediately following
+argument.
+Any further arguments to
+.I rc
+are placed in
+.Cr $* .
+Thus:
+.Ds
+.Cr "rc -c 'echo $*' 1 2 3"
+.De
+.TP
+\&
+prints out
+.Ds
+.Cr "1 2 3"
+.De
+.TP
+.Cr \-d
+This flag causes
+.I rc
+not to ignore
+.Cr SIGQUIT
+or
+.Cr SIGTERM .
+Thus
+.I rc
+can be made to dump core if sent
+.Cr SIGQUIT .
+This flag is only useful for debugging
+.IR rc .
+.TP
 .Cr \-e
 If the
 .Cr \-e
-option is present, then
+flag is present, then
 .I rc
 will exit if the exit status of a command is false (nonzero).
 .I rc
@@ -197,7 +231,7 @@ command.
 .Cr \-i
 If the
 .Cr \-i
-option is present or if the input to
+flag is present or if the input to
 .I rc
 is from a terminal (as determined by
 .IR isatty (3))
@@ -216,23 +250,10 @@ will ignore the signals
 and
 .Cr SIGQUIT .
 .TP
-.Cr \-x
-This option will make
-.I rc
-print every command on standard error before it is executed.
-It can be useful for debugging
-.I rc
-scripts.
-.TP
-.Cr \-v
-This option will echo input to
-.I rc
-on standard error as it is read.
-.TP
 .Cr \-l
 If the
 .Cr \-l
-option is present, or if
+flag is present, or if
 .IR rc 's
 .Cr argv[0][0]
 is a dash
@@ -244,20 +265,6 @@ That is, it will try to run commands present in
 .Cr $home/.rcrc ,
 if this file exists, before reading any other input.
 .TP
-.Cr \-d
-This flag causes
-.I rc
-not to ignore
-.Cr SIGQUIT
-or
-.Cr SIGTERM .
-Thus
-.I rc
-can be made to dump core if sent
-.Cr SIGQUIT .
-This option is only useful for debugging
-.IR rc .
-.TP
 .Cr \-n
 This flag causes
 .I rc
@@ -265,10 +272,16 @@ to read its input and parse it, but not to execute any commands.
 This is useful for syntax checking on scripts.
 If used in combination with the
 .Cr \-x
-option,
+flag,
 .I rc
 will print each command as it is parsed in a form similar to the one
 used for exporting functions into the environment.
+.TP
+.Cr \-o
+This flag prevents the usual practice of trying to open
+.Cr /dev/null
+on file descriptors 0, 1, and 2, if any of those descriptors
+are inherited closed.
 .TP
 .Cr \-p
 This flag prevents
@@ -280,31 +293,36 @@ to run in a protected mode, whereby it becomes more difficult for
 an
 .I rc
 script to be subverted by placing false commands in the environment.
-(Note that this presence of this option does NOT mean that it is safe to
+(Note that this presence of this flag does NOT mean that it is safe to
 run setuid
 .I rc
 scripts; the usual caveats about the setuid bit still apply.)
 .TP
-.Cr \-o
-This flag prevents the usual practice of trying to open
-.Cr /dev/null
-on file descriptors 0, 1, and 2, if any of those descriptors
-are inherited closed.
-.TP
-.Cr \-c
-If
-.Cr \-c
-is present, commands are executed from the immediately following
-argument.
-Any further arguments to
+.Cr \- s
+This flag causes
 .I rc
-are placed in
+to read from standard input.  Any arguments are
+placed in
 .Cr $* .
 .TP
 .Cr \-V
 This flag causes
 .I rc
 to print a version string to stdout, and exit immediately.
+.TP
+.Cr \-v
+This flag causes
+.I rc
+to echo its input
+to standard error as it is read.
+.TP
+.Cr \-x
+This flag causes
+.I rc
+to print every command on standard error before it is executed.
+It can be useful for debugging
+.I rc
+scripts.
 .PP
 .SH COMMANDS
 A simple command is a sequence of words, separated by white space
@@ -1238,7 +1256,7 @@ is not set at startup time,
 .Cr $path
 assumes a default value suitable for your system.
 This is typically
-.Cr "(/usr/ucb /usr/bin /bin .)"
+.Cr "(/usr/local/bin /usr/bin /usr/ucb /bin .)"
 .TP
 .Cr pid
 The process ID of the currently running
@@ -1641,7 +1659,7 @@ For builtins,
 is printed; for functions, including signal handlers, their definitions
 are printed; for executable files, path names are printed; and for
 variables, their values are printed.
-The options restrict output to builtins, functions, executable
+The flags restrict output to builtins, functions, executable
 programs, signal handlers, and variables, respectively.  If no
 .IR name s
 are specified,
@@ -1683,7 +1701,7 @@ uses
 .IR getopt (3)
 to parse its arguments, you can use the special argument
 .Cr "\-\|\-"
-to terminate its options.
+to terminate its flags.
 This allows you to use names beginning with a dash, such as
 the
 .IR history (1)
@@ -1846,15 +1864,18 @@ Here is a list of features which distinguish this incarnation of
 .I rc
 from the one described in the Bell Labs manual pages:
 .PP
-The treatment of
-.Cr if - else
-is different in the v10
-.IR rc :
-that version uses an
-.Cr "if not"
-clause which gets executed
+The v10
+.I rc
+does not have the
+.B else
+keyword.  Instead,
+.B if
+is optionally followed by
+an
+.B "if not"
+clause which is executed
 if the preceding
-.Cr if
+.B if
 test does not succeed.
 .PP
 Backquotes are slightly different in v10
@@ -1875,7 +1896,7 @@ The following are all new with this version of
 .IR rc :
 The
 .Cr \-n
-option,
+flag,
 here strings (they facilitate exporting of functions
 with here documents into the environment),
 the
