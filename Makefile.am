@@ -35,7 +35,7 @@ EXTRA_rc_SOURCES = addon.c execve.c readline.c system.c system-bsd.c
 rc_DEPENDENCIES = sigmsgs.o $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
 rc_LDADD = sigmsgs.o $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
 
-noinst_HEADERS = getgroups.h jbwrap.h parse.h proto.h rc.h rlimit.h wait.h
+noinst_HEADERS = getgroups.h jbwrap.h parse.h proto.h rc.h rlimit.h stat.h wait.h
 
 BUILT_SOURCES = sigmsgs.c
 
