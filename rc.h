@@ -258,8 +258,8 @@ extern int my_execve(char *, char **, char **);
 /* footobar.c */
 extern char **list2array(List *, bool);
 extern char *get_name(char *);
-extern List *parse_var(char *, char *);
-extern Node *parse_fn(char *, char *);
+extern List *parse_var(char *);
+extern Node *parse_fn(char *);
 extern void initprint(void);
 extern void rc_exit(int); /* here for odd reasons; user-defined signal handlers are kept in fn.c */
 

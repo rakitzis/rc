@@ -26,8 +26,8 @@ same ftp directory as the shell).  Please read this paper bearing in
 mind that it describes a program that was written at AT&T and that the
 version of rc presented here differs in some respects.
 
-Tim would like to thank these people for their contributions since
-he took over maintenance of rc.  Arvid Requate, Brynjulv Hauksson,
-Byron Rakitzis, Chris Siebenmann, Gert-Jan Vons, Ian Lance Taylor, Marc
-Moorcroft, Rich $alz, Rob Savoye, Scott Schwartz, Tom Culliton, Tom
-Tromey, Vincent Broman.
+Tim would like to thank these people for their contributions since he
+took over maintenance of rc.  Arvid Requate, Bengt Kleberg, Brynjulv
+Hauksson, Byron Rakitzis, Chris Siebenmann, Gert-Jan Vons, Ian Lance
+Taylor, Marc Moorcroft, Mark K Gardner, Rich $alz, Rob Savoye, Scott
+Schwartz, Tom Culliton, Tom Tromey, Vincent Broman.
