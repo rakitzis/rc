@@ -282,6 +282,7 @@ AC_ARG_WITH(editline, [  --with-editline         Simmule Turner's line editing],
 AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing],
 	AC_CHECK_LIB(readline, readline,
 		AC_DEFINE(READLINE) LIBS="$LIBS -lreadline -ltermcap",
-		AC_MSG_WARN(readline library not found)))
+		AC_MSG_WARN(readline library not found),
+		-ltermcap))
 
 AC_OUTPUT(Makefile)
