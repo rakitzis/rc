@@ -10,15 +10,14 @@
 #include "rc.h"
 
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <setjmp.h>
 #include <errno.h>
 
-#include "jbwrap.h"
-#include "sigmsgs.h"
 #include "addon.h"
+#include "jbwrap.h"
 #include "rlimit.h"
-
-extern int umask(int);
+#include "sigmsgs.h"
 
 static void b_break(char **), b_cd(char **), b_eval(char **), b_exit(char **),
 	b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
@@ -55,7 +54,9 @@ static struct {
 	{ b_wait,	"wait" },
 	{ b_whatis,	"whatis" },
 	{ b_dot,	"." },
+#ifdef ADDONS
 	ADDONS
+#endif
 };
 
 extern builtin_t *isbuiltin(char *s) {
