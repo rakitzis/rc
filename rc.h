@@ -1,43 +1,4 @@
 #include "config.h"
-
-#include <stdarg.h>
-
-#if STDC_HEADERS
-#include <stdlib.h>
-#else
-extern void *malloc(size_t);
-#endif
-
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#if HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-
-/* Fake the POSIX wait() macros if we don't have them. */
-#ifndef WIFEXITED
-#define WIFEXITED(s) (((s) & 0xFF) == 0)
-#endif
-#ifndef WEXITSTATUS
-#define WEXITSTATUS(s) (((unsigned)(s) >> 8) && 0xFF)
-#endif
-#ifndef WIFSIGNALED
-#define WIFSIGNALED(s) (((s) & 0xFF) != 0)
-#endif
-#ifndef WTERMSIG
-#define WTERMSIG(s) ((s) & 0x7F)
-#endif
-
-/* These don't exist in POSIX. */
-#define myWIFDUMPED(s) (((s) & 0x80) != 0)
-
-
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
 #include "proto.h"
 
 /* datatypes */
@@ -46,24 +7,6 @@ extern void *malloc(size_t);
 #undef FALSE
 #undef TRUE
 
-
-#if HAVE_SETPGRP
-
-#if SETPGRP_VOID
-/* Smells like POSIX: should all be ok. */
-#else
-/* BSD: fake it. */
-#define setpgid(pid, pgrp) setpgrp(pid, pgrp)
-#define tcsetpgrp(fd, pgrp) ioctl((fd), TIOCSPGRP, &(pgrp))
-#endif
-
-#else /* HAVE_SETPGRP */
-
-/* Nothing doing. */
-#define setpgid
-#define tcsetpgrp
-
-#endif /*HAVE_SETPGRP */
 
 typedef void builtin_t(char **);
 typedef struct Block Block;
@@ -395,18 +338,28 @@ extern void initparse(void);
 /* readline */
 
 #if READLINE
-#include <stdio.h>
 
-#if HAVE_READLINE_H
-#include <readline.h>
-#include <history.h>
-#elif HAVE_READLINE_READLINE_H
-#include <readline/readline.h>
-#include <readline/history.h>
+/* Including the real readline .h files is too complicated, so we just
+declare what we actually use. */
+
+extern void add_history(char *);
+extern char *readline(char *);
+extern int rl_clear_signals(void);
+extern int rl_pending_input;
+extern int rl_reset_terminal(char *);
+
+#if READLINE_OLD
+extern void rl_clean_up_for_exit(void);
+extern void rl_deprep_terminal(void);
+#else
+extern void _rl_clean_up_for_exit(void);
+extern void (*rl_deprep_term_function)(void);
 #endif
 
-extern bool in_readline;
 extern char *rc_readline(char *);
+
+extern volatile sig_atomic_t rl_active;
+extern struct Jbwrap rl_buf;
 #endif
 
 #if EDITLINE
@@ -425,7 +378,6 @@ extern void catcher(int);
 extern void sigchk(void);
 extern void (*rc_signal(int, void (*)(int)))(int);
 extern void (*sighandlers[])(int);
-extern volatile SIG_ATOMIC_T slow, interrupt_happened;
 
 
 /* status.c */
@@ -446,6 +398,8 @@ extern void writeall(int, char *, size_t);
 #if HAVE_RESTARTABLE_SYSCALLS
 extern int rc_read(int, char *, size_t);
 extern pid_t rc_wait(int *);
+extern Jbwrap slowbuf;
+extern volatile sig_atomic_t slow;
 
 #else /* HAVE_RESTARTABLE_SYSCALLS */
 
