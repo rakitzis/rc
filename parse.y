@@ -7,11 +7,13 @@
 %{
 #include "rc.h"
 
+extern int mbassign;
+
 static Node *star, *nolist;
 Node *parsetree;	/* not using yylval because bison declares it as an auto */
 %}
 
-%token ANDAND BACKBACK BANG CASE COUNT DUP ELSE END FLAT FN FOR IF IN
+%token ANDAND BACKBACK BANG CASE COUNT DUP ELSE END EQUALS FLAT FN FOR IF IN
 %token OROR PIPE REDIR SREDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
 
 %left WHILE ')' ELSE
@@ -56,8 +58,8 @@ cmdsa	: cmd ';'
 	| cmd '&'		{ $$ = ($1 != NULL ? mk(nNowait,$1) : $1); }
 
 /* a line is a single command, or a command terminated by ; or & followed by a line (recursive) */
-line	: cmd
-	| cmdsa line		{ $$ = ($1 != NULL ? mk(nBody,$1,$2) : $2); }
+line	: cmd			{ mbassign = TRUE; }
+	| cmdsa line		{ mbassign = TRUE; $$ = ($1 != NULL ? mk(nBody,$1,$2) : $2); }
 
 /* a body is like a line, only commands may also be terminated by newline */
 body	: cmd
@@ -70,7 +72,7 @@ brace	: '{' body '}'		{ $$ = $2; }
 
 paren	: '(' body ')'		{ $$ = $2; }
 
-assign	: first '=' word	{ $$ = mk(nAssign,$1,$3); }
+assign	: first EQUALS { mbassign = 2; } word	{ mbassign = 1; $$ = mk(nAssign,$1,$4); }
 
 epilog	:			{ $$ = NULL; }
 	| redir epilog		{ $$ = mk(nEpilog,$1,$2); }
@@ -123,12 +125,10 @@ simple	: first
 first	: comword
 	| first '^' sword		{ $$ = mk(nConcat,$1,$3); }
 
-sword	: comword
-	| keyword			{ $$ = mk(nWord,$1, NULL); }
+sword	: comword 	{ if (mbassign) --mbassign; }
+	| keyword			{ if (mbassign) --mbassign; $$ = mk(nWord,$1, NULL); }
 
 word	: sword
-	| word '='			{ if (interactive) { $$ = mk(nConcat,$1,mk(nWord,"=",NULL)); } else { yyerror("syntax error"); YYERROR; } }
-	| word '=' sword		{ if (interactive) { $$ = mk(nConcat,$1,mk(nConcat,mk(nWord,"=",NULL),$3)); } else { yyerror("syntax error"); YYERROR; } }
 	| word '^' sword		{ $$ = mk(nConcat,$1,$3); }
 
 comword	: '$' sword			{ $$ = mk(nVar,$2); }
@@ -141,7 +141,7 @@ comword	: '$' sword			{ $$ = mk(nVar,$2); }
 	| BACKBACK word	sword		{ $$ = mk(nBackq,$2,$3); }
 	| '(' nlwords ')'		{ $$ = $2; }
 	| REDIR brace			{ $$ = mk(nNmpipe,$1.type,$1.fd,$2); }
-	| WORD				{ $$ = ($1.w[0] == '\'') ? mk(nQword, $1.w+1, NULL) : mk(nWord,$1.w, $1.m); }
+	| WORD				{  $$ = ($1.w[0] == '\'') ? mk(nQword, $1.w+1, NULL) : mk(nWord,$1.w, $1.m); }
 
 keyword	: FOR		{ $$ = "for"; }
 	| IN		{ $$ = "in"; }
