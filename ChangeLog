@@ -491,3 +491,14 @@ Changes since rc-1.5b2
 
   Portability: work around i386 GCC 2.7.2.3 optimization bug triggered
   by a (really quite simple) expression in history.c.
+
+1998-12-04
+
+  Bug: a debugging statement was left in history.c by mistake.
+
+  Bug: `history' needs to check for `me' character preceded by `/', as
+  well as all the other options.  An invocation like ../rc-1.5/- no
+  longer loops.
+
+  Documentation: it seems better to have but a single URL in the README
+  file, which indirects to the other places of interest.
