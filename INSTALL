@@ -42,7 +42,9 @@ descending order of usefulness.
   --with-vrl
 
   This option tells rc to use the vrl package (see the README file for
-  details) to provide EMACS style command line editing and history.
+  details) to provide EMACS style command line editing and history.  As
+  for `--with-editline', you may need to set the environment variable
+  LIBS appropriately.
 
   --with-readline
 

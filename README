@@ -1,4 +1,4 @@
-This is release 1.5b3 of rc.
+This is snapshot 1.5s19980727 of rc.
 
 See COPYING for copying information.  All files are
 
@@ -43,13 +43,13 @@ available from comp.sources.unix v29i017.
 rc can be linked with the editline library.  This was developed by
 Simmule Turner and Rich $alz, and is available from here.
 
-    ftp://ftp.cygnus.com/pub/tgoodwin/rc/editline-1.5.tar.gz
+    ftp://ftp.cygnus.com/pub/tgoodwin/rc/misc/editline-1.5.tar.gz
  
 A package with similar aims (that is, to be a lightweight command line
 editing library) is vrl.  This was developed by Gert-Jan Vons, and is
 available from here.
 
-    ftp://ftp.cygnus.com/pub/tgoodwin/rc/vrl-1.1.tar.gz
+    ftp://ftp.cygnus.com/pub/tgoodwin/rc/misc/vrl-1.2.tar.gz
 
 Alternatively, rc can be linked with GNU readline versions 2.1 or 2.2.
 This is available from the master FSF distribution site, and its many
