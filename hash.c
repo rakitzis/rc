@@ -15,7 +15,7 @@ static bool var_exportable(char *);
 static bool fn_exportable(char *);
 static int hash(char *, int);
 static int find(char *, Htab *, int);
-static void free_fn(Function *);
+static void free_fn(rc_Function *);
 
 Htab *fp;
 Htab *vp;
@@ -118,7 +118,7 @@ extern void *lookup(char *s, Htab *ht) {
 	return (ht[h].name == NULL) ? NULL : ht[h].p;
 }
 
-extern Function *get_fn_place(char *s) {
+extern rc_Function *get_fn_place(char *s) {
 	int h = fnfind(s);
 	env_dirty = TRUE;
 	if (fp[h].name == NULL) {
@@ -126,7 +126,7 @@ extern Function *get_fn_place(char *s) {
 			h = fnfind(s);
 		fused++;
 		fp[h].name = ecpy(s);
-		fp[h].p = enew(Function);
+		fp[h].p = enew(rc_Function);
 	} else
 		free_fn(fp[h].p);
 	return fp[h].p;
@@ -205,7 +205,7 @@ extern void delete_var(char *s, bool stack) {
 	}
 }
 
-static void free_fn(Function *f) {
+static void free_fn(rc_Function *f) {
 	treefree(f->def);
 	efree(f->extdef);
 }
@@ -294,7 +294,7 @@ extern void whatare_all_vars(bool showfn, bool showvar) {
 
 /* fake getenv() for readline() follows: */
 
-#if READLINE
+#if EDITLINE || READLINE
 extern char *getenv(const char *name) {
 	List *s;
 	if (name == NULL || vp == NULL || (s = varlookup((char *) name)) == NULL)
