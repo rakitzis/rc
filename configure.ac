@@ -1,12 +1,12 @@
 AC_INIT(rc.h)
 
 dnl Automake stuff.
-AM_INIT_AUTOMAKE(rc, 1.5s19980727)
+AM_INIT_AUTOMAKE(rc, 1.5b4)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-07-27")
+AC_DEFINE(RELDATE, "1998-10-20")
 
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
