@@ -629,3 +629,10 @@ Changes since rc-1.5b2
   sys_errlist[] where not.
 
   Feature: replace `-V' with `version' variable.
+
+1999-10-14
+
+  Portability: exporting `path' causes indigestion in CygWin.  Since
+  it's virtually impossible for a child `rc' process to inherit `path'
+  (which I consider a bug, but it's not going to be fixed now), simply
+  don't export `path'.
