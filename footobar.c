@@ -288,9 +288,11 @@ static bool Aconv(Format *f, int ignore) {
 
 /* %L -- print a list */
 static bool Lconv(Format *f, int ignore) {
-	List *l, *n;
+	bool plain;
 	char *sep;
+	List *l, *n;
 
+	plain = f->flags & FMT_leftside;
 	l = va_arg(f->args, List *);
 	sep = va_arg(f->args, char *);
 	if (l == NULL && (f->flags & FMT_leftside) == 0)
@@ -298,7 +300,7 @@ static bool Lconv(Format *f, int ignore) {
 	else {
 		for (; l != NULL; l = n) {
 			n = l->n;
-			fmtprint(f, (f->flags & FMT_leftside) ? "%s" : "%-S", l->w);
+			fmtprint(f, plain ? "%s" : "%-S", l->w);
 			if (n != NULL) fmtputc(f, *sep);
 		}
 	}
