@@ -69,7 +69,7 @@ typedef void builtin_t(char **);
 typedef struct Block Block;
 typedef struct Dup Dup;
 typedef struct Estack Estack;
-typedef struct Function Function;
+typedef struct rc_Function rc_Function;
 typedef struct Hq Hq;
 typedef struct Htab Htab;
 typedef struct Jbwrap Jbwrap;
@@ -159,7 +159,7 @@ struct Rq {
 	struct Rq *n;
 };
 
-struct Function {
+struct rc_Function {
 	Node *def;
 	char *extdef;
 };
@@ -210,7 +210,7 @@ enum {
 #define memzero(s, n) memset(s, 0, n)
 #define enew(x) ((x *) ealloc(sizeof(x)))
 #define ecpy(x) strcpy((char *) ealloc(strlen(x) + 1), x)
-#define lookup_fn(s) ((Function *) lookup(s, fp))
+#define lookup_fn(s) ((rc_Function *) lookup(s, fp))
 #define lookup_var(s) ((Variable *) lookup(s, vp))
 #define nnew(x) ((x *) nalloc(sizeof(x)))
 #define ncpy(x) (strcpy((char *) nalloc(strlen(x) + 1), x))
@@ -286,7 +286,7 @@ extern List *word(char *, char *);
 /* hash.c */
 extern Htab *fp, *vp;
 extern void *lookup(char *, Htab *);
-extern Function *get_fn_place(char *);
+extern rc_Function *get_fn_place(char *);
 extern List *varlookup(char *);
 extern Node *fnlookup(char *);
 extern Variable *get_var_place(char *, bool);
@@ -332,11 +332,6 @@ extern void popinput(void);
 extern void closefds(void);
 extern int last;
 extern bool rcrc;
-
-#if READLINE
-extern bool in_readline;
-extern int rl_pending_input; /* Really from readline library. */
-#endif
 
 
 /* lex.c */
@@ -397,6 +392,29 @@ extern Node *parsetree;
 extern int yyparse(void);
 extern void initparse(void);
 
+/* readline */
+
+#if READLINE
+#include <stdio.h>
+
+#if HAVE_READLINE_H
+#include <readline.h>
+#include <history.h>
+#elif HAVE_READLINE_READLINE_H
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
+
+extern bool in_readline;
+extern char *rc_readline(char *);
+#endif
+
+#if EDITLINE
+extern char *readline(char *);
+#define rc_readline readline
+#endif
+
+
 /* redir.c */
 extern void doredirs(void);
 
@@ -408,12 +426,6 @@ extern void sigchk(void);
 extern void (*rc_signal(int, void (*)(int)))(int);
 extern void (*sighandlers[])(int);
 extern volatile SIG_ATOMIC_T slow, interrupt_happened;
-
-#if READLINE
-extern void rl_clean_up_for_exit(void);
-extern void rl_deprep_terminal(void);
-extern int rl_clear_signals(void);
-#endif
 
 
 /* status.c */
