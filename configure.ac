@@ -119,6 +119,7 @@ xno)
 		], [
 typedef quad_t align_t;
 align_t a;
+a = (quad_t)0;
 		], rc_cv_have_quad_t=yes, rc_cv_have_quad_t=no))
 
 	case "x$rc_cv_have_quad_t" in
