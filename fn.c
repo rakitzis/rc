@@ -243,13 +243,14 @@ extern void fnrm(char *name) {
 extern void whatare_all_signals() {
 	int i;
 	for (i = 1; i < NUMOFSIGNALS; i++)
-		if (*signals[i].name != '\0')
+		if (*signals[i].name != '\0') {
 			if (sighandlers[i] == SIG_IGN)
 				fprint(1, "fn %s {}\n", signals[i].name);
 			else if (sighandlers[i] == fn_handler)
 				fprint(1, "fn %S {%T}\n", signals[i].name, handlers[i]);
 			else
 				fprint(1, "fn %s\n", signals[i].name);
+		}
 }
 
 extern void prettyprint_fn(int fd, char *name, Node *n) {
