@@ -32,14 +32,18 @@ information only.  The supplied y.tab.[ch] were built with Berkeley
 `yacc', and lightly edited to remove a few gcc warnings.  This idea was
 suggested by Gert-Jan Vons.
 
-Binaries of rc-1.5b3 are typically a few kilobytes smaller than 1.5b2.
+Binaries of rc-1.5b4 are typically a few kilobytes smaller than 1.5b2.
 I believe this is due to improved autoconfiguration: we are now much
 more careful only to include code that will be used.
 
-rc-1.5b3 will build under the beta19 release of CygWin32.  It won't run
+rc-1.5b4 will build under the beta20 release of CygWin32.  It won't run
 trip.rc successfully, and does not appear to be very stable.
 
 See ChangeLog for more details.
 
+What happened to rc-1.5b3?  There were a couple of releases to people
+who'd found bugs in rc-1.5b2 that were called b3.  To avoid any
+possibility of confusion, I have named this beta release rc-1.5b4.
+
 Tim Goodwin
-1998-07-27
+1998-10-20
