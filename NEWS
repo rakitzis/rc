@@ -16,8 +16,8 @@ flavour of `make') to build in a separate directory from the source.
 Creeping featurism: rc now has a `-V' switch to report its version
 number.
 
-The detection of signal names has been completely revised.  Vincent Broman
-suggested this, and contributed mksignal.c.
+The detection of signal names has been completely revised.  Vincent
+Broman suggested this, and contributed mksignal.c.
 
 The interaction with readline has been redone, principally to work
 around bugs in the readline library.  Tom Culliton persuaded me of
@@ -38,6 +38,9 @@ more careful only to include code that will be used.
 
 rc-1.5b4 will build under the beta20 release of CygWin32.  It won't run
 trip.rc successfully, and does not appear to be very stable.
+
+Support for vrl (another lightweight "readline"-style library) was
+added.
 
 See ChangeLog for more details.
 
