@@ -9,21 +9,24 @@ HISTMAN =
 endif
 
 if H_R_S
-RDWR = rdwr-bsd.c
+SYSTEM = system-bsd.o
 else
-RDWR = rdwr.c
+SYSTEM = system.o
 endif
 
 if N_H_B
-EXECVE = execve.c
+EXECVE = execve.o
 endif
 
 bin_PROGRAMS = rc
 noinst_PROGRAMS = $(HISTBIN)
 
-rc_SOURCES = @ADDON@ builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c $(RDWR) $(EXECVE)
+rc_SOURCES = @ADDON@ builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c print.c redir.c sigmsgs.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c y.tab.c
 
-EXTRA_rc_SOURCES = execve.c rdwr.c rdwr-bsd.c
+EXTRA_rc_SOURCES = execve.c system.c system-bsd.c
+
+rc_DEPENDENCIES = $(SYSTEM) $(EXECVE)
+rc_LDADD = $(SYSTEM) $(EXECVE)
 
 history_SOURCES = history.c
 
