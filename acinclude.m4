@@ -128,21 +128,6 @@ AC_DEFUN(RC_TYPE_SIG_ATOMIC_T, [
 ])
 
 
-dnl Check for sigaction and SA_INTERRUPT
-AC_DEFUN(RC_FUNC_SIGACTION, [
-	AC_CACHE_CHECK(for sigaction and SA_INTERRUPT, rc_cv_sa_int,
-		AC_TRY_COMPILE([
-#include <signal.h>
-		], [
-struct sigaction foo;
-foo.sa_flags = SA_INTERRUPT;
-sigaction(SIGINT, 0, 0);
-		], rc_cv_sa_int=yes, rc_cv_sa_int=no
-		)
-	)
-])
-
-
 dnl Do we have SysV SIGCLD semantics?  In other words, if we set the
 dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?  Linux,
 dnl of course, is bizarre here.  It basically implements the SysV

@@ -40,7 +40,16 @@ AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 AC_CHECK_TYPE(ssize_t, long)
 
-AC_CHECK_FUNCS(getgroups lstat setpgrp setrlimit)
+AC_CHECK_FUNCS(getgroups lstat setpgrp setrlimit sigaction)
+
+dnl We prefer system calls that don't restart.  If we have sigaction()
+dnl we'll use it.  Otherwise, we check whether good ol' signal()
+dnl produces interruptible system calls.
+case "$ac_cv_func_sigaction" in
+no) AC_SYS_RESTARTABLE_SYSCALLS ;;
+esac
+AM_CONDITIONAL(AMC_RESTART, test "$ac_cv_sys_restartable_syscalls" = yes)
+
 RC_FUNC_GETGROUPS
 
 RC_FUNC_SIGSETJMP
@@ -54,16 +63,6 @@ RC_NEED_KERNEL
 RC_TYPE_RLIM_T
 
 RC_TYPE_SIG_ATOMIC_T
-
-dnl We prefer system calls that don't restart.  If we have sigaction()
-dnl and SA_INTERRUPT, we'll use 'em.  Otherwise, we check whether good
-dnl ol' signal() produces interruptible system calls.
-RC_FUNC_SIGACTION
-case "$rc_cv_sa_int" in
-yes)	AC_DEFINE(HAVE_SA_INTERRUPT) ;;
-no) AC_SYS_RESTARTABLE_SYSCALLS ;;
-esac
-AM_CONDITIONAL(AMC_RESTART, test "$ac_cv_sys_restartable_syscalls" = yes)
 
 RC_SYS_V_SIGCLD
 
