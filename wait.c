@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <setjmp.h>
+#include <signal.h>
 #include <sys/wait.h>
 
 #include "jbwrap.h"
@@ -43,34 +44,42 @@ extern pid_t rc_fork() {
 
 extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
 	Pid *r, *prev;
-	int ret;
-	/* first look for a child which may already have exited */
-again:	for (r = plist, prev = NULL; r != NULL; prev = r, r = r->n)
+
+	/* Find the child on the list. */
+	for (r = plist, prev = NULL; r != NULL; prev = r, r = r->n)
 		if (r->pid == pid)
 			break;
+
+	/* Uh-oh, not there. */
 	if (r == NULL) {
 		errno = ECHILD; /* no children */
 		uerror("wait");
 		*stat = 0x100; /* exit(1) */
 		return -1;
 	}
-	if (r->alive) {
-		while (pid != (ret = rc_wait(stat))) {
-			Pid *q;
-			if (ret < 0) {
-				if (nointr)
-					goto again;
+
+	/* If it's still alive, wait() for it. */
+	while (r->alive) {
+		int ret;
+		Pid *q;
+
+		ret = rc_wait(stat);
+
+		if (ret < 0) {
+			if (errno == ECHILD)
+				panic("lost child");
+			if (!nointr)
 				return ret;
-			}
-			for (q = plist; q != NULL; q = q->n)
-				if (q->pid == ret) {
-					q->alive = FALSE;
-					q->stat = *stat;
-					break;
-				}
 		}
-	} else
-		*stat = r->stat;
+
+		for (q = plist; q != NULL; q = q->n)
+			if (q->pid == ret) {
+				q->alive = FALSE;
+				q->stat = *stat;
+				break;
+			}
+	}
+	*stat = r->stat;
 	if (prev == NULL)
 		plist = r->n; /* remove element from head of list */
 	else
@@ -107,23 +116,36 @@ extern void waitforall() {
 	}
 }
 
+static int gotint;
+void gotint_handler(int s) {
+	gotint = 1;
+	signal(s, gotint_handler);
+}
+
 /*
    rc_wait: a wait() wrapper that interfaces wait() w/rc signals.
    Note that the signal queue is not checked in this fn; someone
    may want to resume the wait() without delivering any signals.
 */
 
+static int r;
 static pid_t rc_wait(int *stat) {
-	int r;
+	void (*old)(int);
+
 	interrupt_happened = FALSE;
+	r = -1;
+
+	gotint = 0;
+	old = signal(SIGINT, gotint_handler);
 	if (!setjmp(slowbuf.j)) {
 		slow = TRUE;
 		if (!interrupt_happened)
 			r = wait(stat);
-		else
-			r = -1;
-	} else
-		r = -1;
+	}
 	slow = FALSE;
+	signal(SIGINT, old);
+	if (gotint && old != SIG_DFL && old != SIG_IGN)
+		(*old)(SIGINT);
+
 	return r;
 }
