@@ -70,12 +70,22 @@ static bool Tconv(Format *f, int ignore) {
 	case nSwitch:	fmtprint(f, "switch(%T){%T}", n->u[0].p, n->u[1].p);	break;
 	case nMatch:	fmtprint(f, "~ %T %T", n->u[0].p, n->u[1].p);		break;
 	case nWhile:	fmtprint(f, "while(%T)%T", n->u[0].p, n->u[1].p);	break;
-	case nLappend:	fmtprint(f, "(%T %T)", n->u[0].p, n->u[1].p);		break;
 	case nForin:	fmtprint(f, "for(%T in %T)%T", n->u[0].p, n->u[1].p, n->u[2].p); break;
 	case nVarsub:	fmtprint(f, "$%T(%T)", n->u[0].p, n->u[1].p);		break;
 	case nWord:
 		fmtprint(f, quotep(n->u[0].s, dollar) ? "%#S" : "%S", n->u[0].s);
 		break;
+	case nLappend: {
+		static bool inlist;
+		if (!inlist) {
+			inlist = TRUE;
+			fmtprint(f, "(%T %T)", n->u[0].p, n->u[1].p);
+			inlist = FALSE;
+		} else {
+			fmtprint(f, "%T %T", n->u[0].p, n->u[1].p);
+		}
+		break;
+	}
 	case nCount: case nFlat: case nVar: {
 		char *lp = "", *rp = "";
 		Node *n0 = n->u[0].p;

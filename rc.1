@@ -1933,8 +1933,6 @@ The
 notation for flattening should allow for using an arbitrary
 separating character, not just space.
 .PP
-List definitions in exported functions are "noisier" than they need to be.
-.PP
 If both
 .Cr $PATH
 and
@@ -1958,7 +1956,19 @@ code is illegal.
 .Ds
 .Cr "while ((~ $1 -*) && (! ~ $1 --)) { ..."
 .De
+.TP
 The redundant inner parentheses must be omitted.
+.PP
+Semantic errors (e.g. "bad concatenation") in
+.B fn prompt
+are not handled elegantly.  For example,
+.Ds
+.Cr "fn prompt { echo (a b)^(c d e) }"
+.De
+.TP
+throws
+.I rc
+into a tailspin.
 .PP
 Bug reports should be mailed to
 .Cr "<tjg@star.le.ac.uk>" .
