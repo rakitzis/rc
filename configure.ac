@@ -262,7 +262,7 @@ yes)	AC_CACHE_CHECK(extant directories for default path, rc_cv_def_path,[
 esac
 
 AC_ARG_WITH(history,
-	[  --with-history        Build history subprograms],[
+	[  --with-history          Build history subprograms],[
 	case "$withval" in
         yes) rc_history=yes ;;
         *) rc_history=no ;;
