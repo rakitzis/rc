@@ -32,14 +32,13 @@ extern void makenonblock(int fd) {
 
 	if ((flags = fcntl(fd, F_GETFL)) == -1) {
 		uerror("fcntl");
-		exit(1);
+		rc_error(NULL);
 	}
 	if (! (flags & O_NONBLOCK))
 		panic("not O_NONBLOCK");
 	flags &= ~O_NONBLOCK;
 	if (fcntl(fd, F_SETFL, (long) flags) == -1) {
 		uerror("fcntl");
-		exit(1);
+		rc_error(NULL);
 	}
 }
-
