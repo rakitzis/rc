@@ -420,3 +420,11 @@ Changes since rc-1.5b2
   NGROUPS if it's not available.  The magic is done by "getgroups.h".
 
   Tidiness: extract <sys/wait.h> magic into "wait.h".
+
+1998-10-20
+
+  Tidiness: include prototype for add_history() when doing editline.
+
+  Documentation: document the `-V' flag and mention Linux's
+  /proc/self/fd as alternative to /dev/fd.
+
