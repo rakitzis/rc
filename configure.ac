@@ -128,7 +128,7 @@ main(){
 esac
 
 AC_SYS_RESTARTABLE_SYSCALLS
-AM_CONDITIONAL(H_R_S, test "$ac_cv_sys_restartable_syscalls" = yes)
+AM_CONDITIONAL(AMC_RESTART, test "$ac_cv_sys_restartable_syscalls" = yes)
 
 dnl Do we have SysV SIGCLD semantics?  In other words, if we set the
 dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?
@@ -161,9 +161,9 @@ esac
 dnl Does the kernel handle `#! /interpreter'?
 AC_SYS_INTERPRETER
 case "$ac_cv_sys_interpreter" in
-yes)	AC_DEFINE(HASH_BANG) ;;
+yes)  AC_DEFINE(HASH_BANG) ;;
 esac
-AM_CONDITIONAL(N_H_B, test "$ac_cv_sys_interpreter" = no)
+AM_CONDITIONAL(AMC_NO_HASHBANG, test "$ac_cv_sys_interpreter" = no)
 
 
 dnl What do we do for command arguments?  We want /dev/fd or Linux's
@@ -218,10 +218,10 @@ AC_ARG_ENABLE(def-interp,
 [  --enable-def-interp=/bin/foo
                           Use /bin/foo as default interpreter [/bin/sh]],
 [
-	case "x$enableval" in
-	xno)
+	case "$enableval" in
+	no)
 		;;
-	xyes)
+	yes)
 		AC_DEFINE(DEFAULTINTERP, "/bin/sh")
 		;;
 	*)
@@ -265,27 +265,34 @@ AC_ARG_ENABLE(history,
         *) rc_history=no ;;
         esac
 	], rc_history=no)
-AM_CONDITIONAL(HISTORY, test "$rc_history" = yes)
+AM_CONDITIONAL(AMC_HISTORY, test "$rc_history" = yes)
 
-AC_ARG_WITH(addon, [  --with-addon            Extra builtins, from addon.c ],[
+
+AC_ARG_WITH(addon, [  --with-addon[=foo.c]    Extra builtins, from addon.c by default ],[
 	case "$withval" in
-	yes)	ADDON=addon.c ;;
+	yes)	ADDON=addon.o ;;
 	no)	ADDON='' ;;
-	*)	ADDON=$withval ;;
+	*)	ADDON=`echo $withval |sed 's/\.c$/\.o/'` ;;
 	esac
-	])
+])
+AM_CONDITIONAL(AMC_ADDON, test "$ADDON" != "")
+case "$ADDON" in
+?*) AC_DEFINE(RC_ADDON) ;;
+esac
 AC_SUBST(ADDON)
+
 
 AC_ARG_WITH(editline, [  --with-editline         Simmule Turner's line editing],
 	AC_CHECK_LIB(edit, readline,
-		AC_DEFINE(READLINE) LIBS="$LIBS -ledit",
+		AC_DEFINE(EDITLINE) LIBS="$LIBS -ledit",
 		AC_MSG_WARN(editline library not found)))
 
 AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing],
-	AC_CHECK_LIB(readline, readline,
-		AC_DEFINE(READLINE) LIBS="$LIBS -lreadline -ltermcap",
-		AC_MSG_WARN(readline library not found),
-		-ltermcap))
-AM_CONDITIONAL(READLINE, test "$ac_cv_lib_readline_readline" = yes || test "$ac_cv_lib_edit_readline" = yes)
+	AC_CHECK_LIB(readline, readline, [
+			AC_DEFINE(READLINE)
+			LIBS="$LIBS -lreadline -ltermcap"
+			AC_CHECK_HEADERS(readline.h readline/readline.h)
+	], AC_MSG_WARN(readline library not found), -ltermcap))
+AM_CONDITIONAL(AMC_READLINE, test "${with_readline+set}" = set)
 
 AC_OUTPUT(Makefile)
