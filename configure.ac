@@ -1,7 +1,7 @@
 AC_INIT(rc.h)
 
 dnl Automake stuff.
-AM_INIT_AUTOMAKE(rc, 1.5b3)
+AM_INIT_AUTOMAKE(rc, 1.5s19980721)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
