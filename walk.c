@@ -148,6 +148,7 @@ top:	sigchk();
 	}
 	case nSubshell:
 		if (dofork(TRUE)) {
+			setsigdefaults(FALSE);
 			walk(n->u[0].p, FALSE);
 			rc_exit(getstatus());
 		}
