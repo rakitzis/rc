@@ -40,7 +40,7 @@ AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 AC_CHECK_TYPE(ssize_t, long)
 
-AC_CHECK_FUNCS(getgroups setpgrp setrlimit)
+AC_CHECK_FUNCS(getgroups lstat setpgrp setrlimit)
 RC_FUNC_GETGROUPS
 
 RC_FUNC_SIGSETJMP

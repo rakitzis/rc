@@ -788,3 +788,7 @@ Changes since rc-1.5b2
 2002-06-18
 
   Release: rc-1.7.
+
+2002-07-25
+
+  Bug: fix globbing of broken symlinks.
