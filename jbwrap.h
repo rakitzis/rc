@@ -21,11 +21,3 @@ worth it. */
 struct Jbwrap {
 	sigjmp_buf j;
 };
-
-
-/* The slowbuf jump buffer is used to prevent "slow" system calls being
-restarted on systems like BSD where they are restarted after a signal. */
-
-#if HAVE_RESTARTABLE_SYSCALLS || READLINE
-extern Jbwrap slowbuf;
-#endif
