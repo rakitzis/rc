@@ -1,7 +1,3 @@
-Fix the ^A bug.
-
-Fix the parentheses bug.
-
 I18N.
 
 Offer more control over what rc prints about commands (e.g. a way to
@@ -14,5 +10,3 @@ Dynamically load readline and friends.
 Make --disable-def-interp the default.
 
 Allow builtin wait more than one argument.
-
-Expand shift builtin.
