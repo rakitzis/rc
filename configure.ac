@@ -8,12 +8,9 @@ dnl Automake stuff.
 dnl Use this one for snapshots...
 dnl AM_INIT_AUTOMAKE(rc, 1.5s`echo $RELDATE |sed 's/-//g'`)
 dnl ...and this one for releases
-AM_INIT_AUTOMAKE(rc, 1.5b5)
+AM_INIT_AUTOMAKE(rc, 1.5b6)
 
 AM_CONFIG_HEADER(config.h)
-
-dnl Anybody using name transformations?
-AC_ARG_PROGRAM
 
 dnl Find a standard C compiler
 AC_PROG_CC
@@ -28,7 +25,6 @@ yes) CFLAGS="-Wall $CFLAGS" ;;
 esac
 
 AC_PROG_CPP
-AC_PROG_INSTALL
 AC_CHECK_PROGS(LN, ln cp)
 
 AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
