@@ -7,11 +7,6 @@
 #include "sigmsgs.h"
 #include "jbwrap.h"
 
-#if HAVE_RESTARTABLE_SYSCALLS || READLINE
-Jbwrap slowbuf;
-volatile sig_atomic_t slow, interrupt_happened;
-#endif
-
 void (*sighandlers[NUMOFSIGNALS])(int);
 
 static volatile sig_atomic_t sigcount, caught[NUMOFSIGNALS];
@@ -24,50 +19,21 @@ extern void catcher(int s) {
 	signal(s, catcher);
 
 #if READLINE
-	if (in_readline) {
-		in_readline = FALSE;
-		switch (s) {
-		extern int rl_pending_input;
-		extern VFunction *rl_deprep_term_function;
-	
-		default:
-#if READLINE_OLD
-			rl_clean_up_for_exit();
-			rl_deprep_terminal();
-#else
-			_rl_clean_up_for_exit();
-			(*rl_deprep_term_function)();
-#endif
-			rl_clear_signals();
-			rl_pending_input = 0;
-			break;
-
-/* These signals are already cleaned up by readline. */
-
-		case SIGINT:
-		case SIGALRM:
-#ifdef SIGTSTP
-		case SIGTSTP:
-		case SIGTTOU:
-		case SIGTTIN:
-#endif
-			break;
-		}
-	}
+	if (rl_active)
+		siglongjmp(rl_buf.j, s);
 #endif /* READLINE */
 
-
-#if HAVE_RESTARTABLE_SYSCALLS || READLINE
-	interrupt_happened = TRUE;
-	if (slow)
-		siglongjmp(slowbuf.j, 1);
+#if HAVE_RESTARTABLE_SYSCALLS
+	if (slow) {
+		siglongjmp(slowbuf.j, s);
+}
 #endif
-
 }
 
 extern void sigchk() {
 	void (*h)(int);
 	int s, i;
+
 	if (sigcount == 0)
 		return; /* ho hum; life as usual */
 	if (forked)
