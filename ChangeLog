@@ -467,3 +467,16 @@ Changes since rc-1.5b2
   Tidiness: remove unused functions from print.c.  Anybody wanting to
   use this library in another project should follow the pointer in the
   documentation to an improved version.
+
+1998-10-29
+
+  Bug: the "null character ignored" warning was printed with the wrong
+  line number.  Fix by adding an offset argument to pr_error.
+
+  Portability: work around readline's broken treatment of a non-blocking
+  input file descriptor.
+
+  Testing: add `testing' auxiliary program; use `testing' to generate
+  null character on the fly (since it's a nuisance having a literal
+  null character in trip.rc); reset sigexit in `fn fail'; add test for
+  nonblocking input file descriptor.
