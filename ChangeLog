@@ -570,6 +570,14 @@ Changes since rc-1.5b2
   Documentation: document the yacc-imposed limit on ; separated commands
   in a line.
 
-1993-05-06
+1999-05-06
 
   Portability: tgetent() might be in -lncurses instead of -ltermcap.
+
+1999-05-10
+
+  Portability: Linux *almost* has SysV SIGCLD semantics, and we need to
+  detect them.
+
+  Bug: if we reset SIGCLG to SIG_DFL, we need to record the fact in the
+  sighandlers[] array.
