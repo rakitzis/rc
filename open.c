@@ -24,10 +24,10 @@ extern int rc_open(const char *name, redirtype m) {
 	return open(name, mode_masks[m], 0666);
 }
 
-/* make a file descriptor non blocking. must only be called after read()
-has returned EAGAIN. */
+/* make a file descriptor blocking. return value indicates whether
+the desciptor was previously set to non-blocking. */
 
-extern void makeblocking(int fd) {
+extern bool makeblocking(int fd) {
 	int flags;
 
 	if ((flags = fcntl(fd, F_GETFL)) == -1) {
@@ -35,10 +35,11 @@ extern void makeblocking(int fd) {
 		rc_error(NULL);
 	}
 	if (! (flags & O_NONBLOCK))
-		panic("not O_NONBLOCK");
+		return FALSE;
 	flags &= ~O_NONBLOCK;
 	if (fcntl(fd, F_SETFL, (long) flags) == -1) {
 		uerror("fcntl");
 		rc_error(NULL);
 	}
+	return TRUE;
 }
