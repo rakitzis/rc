@@ -796,3 +796,9 @@ Changes since rc-1.5b2
 2002-07-31
 
   Bug: readline doesn't handle EIO either.
+
+2002-08-15
+
+  Bug: variables that are sometimes exported (i.e. $prompt and
+  $version) need to be made exportable if they are inherited from the
+  environment.

@@ -48,6 +48,7 @@ extern bool varassign_string(char *extdef) {
 	strcpy(new->extdef, extdef);
 	if (i != -1)
 		alias(name, varlookup(name), FALSE);
+	set_exportable(name, TRUE);
 	return TRUE;
 }
 
