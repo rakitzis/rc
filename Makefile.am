@@ -49,7 +49,7 @@ statval.h: mkstatval
 
 CONFIGURE_DEPENDENCIES = RELDATE
 
-DISTCLEANFILES = sigmsgs.c sigmsgs.h
+DISTCLEANFILES = sigmsgs.c sigmsgs.h statval.h
 
 # Of course, parse.c and parse.h depend on parse.y.  However, unless
 # you're hacking on rc's grammar, it's not useful to have this
