@@ -27,12 +27,14 @@ dnl Most systems put the real signal names in /usr/include/sys/signal.h.
 dnl Linux puts them in /usr/include/asm/signal.h.  CygWin32 puts them
 dnl somewhere else altogether.  This hack attempts to parse the output
 dnl of saying `#include <signal.h>' to the preprocessor in order to find
-dnl the full path of files named signal.h.  If this doesn't
-dnl produce any filenames, fall back to the (Unixoid) defaults.
+dnl the full path of files named signal.h.  The first sed substitution
+dnl handles paths on CygWin32, and is a good example of why rc's quoting
+dnl rules are superior to sh's.  If this process doesn't produce any
+dnl filenames, fall back to the (Unixoid) defaults.
 
 AC_CACHE_CHECK(for full paths of <signal.h>, rc_cv_full_signal_h, [
 	echo '#include <signal.h>' > temp.c
-	rc_cv_full_signal_h=`$CPP temp.c |sed -n 's/.*"\(.*signal.h\)".*/\1/p' |
+	rc_cv_full_signal_h=`$CPP temp.c |sed -n 's/\\\\\\\\/\\\\/g;s/.*"\(.*signal.h\)".*/\1/p' |
 sort -u |tr '
 ' ' '`
 	rm -f temp.c
@@ -73,8 +75,8 @@ AC_CACHE_CHECK(for sigsetjmp, rc_cv_sigsetjmp,
 	AC_TRY_LINK([
 #include <setjmp.h>
 	], [
-jmp_buf e;
-setjmp(e);
+sigjmp_buf e;
+sigsetjmp(e, 1);
 	], rc_cv_sigsetjmp=yes, rc_cv_sigsetjmp=no))
 case "$rc_cv_sigsetjmp" in
 yes)	AC_DEFINE(HAVE_SIGSETJMP) ;;
