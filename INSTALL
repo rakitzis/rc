@@ -16,8 +16,9 @@ This will build rc in the source directory (see below for details on how
 to build rc in a different directory).  
 
 There are lots of options you can give to configure to modify rc's
-behaviour.  You can also select a command line history library to link
-against.  For a summary of all options, run `sh configure --help'.
+behaviour.  You can also select a command line history library to
+link against---see the README file for details of where to find these
+libraries.  For a summary of all options, run `sh configure --help'.
 
 You can specify Makefile variables by setting the corresponding
 environment variables.  For example, you might want to set `CC=cc', to
@@ -29,17 +30,13 @@ descending order of usefulness.
 
   --with-editline
 
-  This option tells rc to use Simmule Turner's and Rich $alz's editline
-  package, which you can get from the following location.  This is
-  essentially a lightweight version of GNU readline, providing EMACS
-  style command line editing and history.
-
-    ftp://ftp.cygnus.co.uk/people/tgoodwin/editline.tar.gz
-
-  If the editline library is not installed in a standard place, you can
-  tell configure where to find it by setting the environment variable
-  LIBS.  For example, the maintainer builds rc by copying libedit.a into
-  the rc build directory and then running this configure command.
+  This option tells rc to use the editline package (see the README .
+  This is essentially a lightweight version of GNU readline, providing
+  EMACS style command line editing and history.  If the editline library
+  is not installed in a standard place, you can tell configure where to
+  find it by setting the environment variable LIBS.  For example, the
+  maintainer builds rc by copying libedit.a into the rc build directory
+  and then running this configure command.
 
     LIBS=-L. sh ../rc-1.5b3/configure --with-editline
 
