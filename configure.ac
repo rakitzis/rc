@@ -8,12 +8,9 @@ dnl Automake stuff.
 dnl Use this one for snapshots...
 dnl AM_INIT_AUTOMAKE(rc, 1.5s`echo $RELDATE |sed 's/-//g'`)
 dnl ...and this one for releases
-AM_INIT_AUTOMAKE(rc, 1.5b5)
+AM_INIT_AUTOMAKE(rc, 1.5b6)
 
 AM_CONFIG_HEADER(config.h)
-
-dnl Anybody using name transformations?
-AC_ARG_PROGRAM
 
 dnl Find a standard C compiler
 AC_PROG_CC
@@ -28,7 +25,6 @@ yes) CFLAGS="-Wall $CFLAGS" ;;
 esac
 
 AC_PROG_CPP
-AC_PROG_INSTALL
 AC_CHECK_PROGS(LN, ln cp)
 
 AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
@@ -178,19 +174,23 @@ AC_ARG_WITH(editline, [  --with-editline         Simmule Turner's line editing],
 		AC_DEFINE(EDITLINE) LIBS="$LIBS -ledit",
 		AC_MSG_ERROR(editline library not found)))
 
+if test "${with_vrl+set}" = set -o "${with_readline+set}" = set; then
+	RC_LIB_TGETENT
+fi
+
 AC_ARG_WITH(vrl, [  --with-vrl              Gert-Jan Vons's line editing],
 	AC_CHECK_LIB(vrl, readline,
-		AC_DEFINE(EDITLINE) LIBS="$LIBS -lvrl -ltermcap",
-		AC_MSG_ERROR(vrl library not found), -ltermcap))
+		AC_DEFINE(EDITLINE) LIBS="$LIBS -lvrl $rc_lib_tgetent",
+		AC_MSG_ERROR(vrl library not found), $rc_lib_tgetent))
 
 dnl There are (at least) two incompatible versions of readline, and we
 dnl need to know which one we are using.  We don't support readline 2.0.
 AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing], [
 	AC_CHECK_LIB(readline, readline, [
 		AC_DEFINE(READLINE)
-		LIBS="$LIBS -lreadline -ltermcap"
-		AC_CHECK_LIB(readline, _rl_clean_up_for_exit, , AC_DEFINE(READLINE_OLD), -ltermcap)
-	], AC_MSG_ERROR(readline library not found), -ltermcap)
+		LIBS="$LIBS -lreadline $rc_lib_tgetent"
+		AC_CHECK_LIB(readline, _rl_clean_up_for_exit, , AC_DEFINE(READLINE_OLD), $rc_lib_tgetent)
+	], AC_MSG_ERROR(readline library not found), $rc_lib_tgetent)
 ])
 AM_CONDITIONAL(AMC_READLINE, test "${with_readline+set}" = set)
 

@@ -554,3 +554,38 @@ Changes since rc-1.5b2
   improvements.
 
   Release: rc-1.5b5.
+
+1999-02-15
+
+  Portability: AM_INIT_AUTOMAKE calls AC_ARG_PROGRAM and
+  AC_PROG_INSTALL.  Don't do it explicitly.  For once, the configure
+  script gets smaller!  Program name transformations work right now.
+
+  Documentation: note that rc has no `set' builtin; fix weird variable
+  name example; any character except `=' may be used in a variable name;
+  document bqstatus; document rc's exit status; other tidying.
+
+1999-03-01
+
+  Documentation: document the yacc-imposed limit on ; separated commands
+  in a line.
+
+1999-05-06
+
+  Portability: tgetent() might be in -lncurses instead of -ltermcap.
+
+1999-05-10
+
+  Portability: Linux *almost* has SysV SIGCLD semantics, and we need to
+  detect them.
+
+  Bug: if we reset SIGCLD to SIG_DFL, we need to record the fact in the
+  sighandlers[] array.
+
+1999-05-12
+
+  Documentation: note that `$(a.b)' syntax only mostly works, and that
+  list definitions in exported functions are noisier than they need to
+  be.
+
+  Release: rc-1.5b6.

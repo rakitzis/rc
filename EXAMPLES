@@ -1,6 +1,6 @@
-There is no repository for useful rc code snippets as yet, so I'm including
-a (short) file in the distribution with some helpful/intriguing pieces of
-rc code.
+There is no repository for useful rc code snippets as yet, so
+I'm including a (short) file in the distribution with some
+helpful/intriguing pieces of rc code.
 
 A sample .rcrc
 --------------
@@ -624,7 +624,7 @@ Status: RO
 
 Use
 	trimhist [-#lines]
-trims your history file back; useful for folks with dis quota's :-)
+trims your history file back; useful for folks with disk quota's :-)
 fn trimhist { p1=-100 {
     cp $history $history^'~'
     ~ $#* 1 && p1=$1
@@ -742,8 +742,8 @@ fn pathprefix { p1=() i=() j=() {
 
 home=/user/users/rsalz
 z=/usr/users
-pathprefix /usr/users/rsalz home usr	# --> $home
-pathprefix /usr/users/rsalz z		# --> $z/rsalz
-pathprefix /usr/users/rsalz/foo z home	# --> $z/rsalz/foo
-pathprefix /usr/users/rsalz/foo home	# --> $home/foo
+pathprefix /usr/users/rsalz home usr    # --> $home
+pathprefix /usr/users/rsalz z           # --> $z/rsalz
+pathprefix /usr/users/rsalz/foo z home  # --> $z/rsalz/foo
+pathprefix /usr/users/rsalz/foo home    # --> $home/foo
 

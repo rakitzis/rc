@@ -97,5 +97,7 @@ extern void initsignal() {
 	h = sys_signal(SIGCLD, SIG_DFL);
 	if (h != SIG_IGN && h != SIG_ERR)
 		sys_signal(SIGCLD, h);
+	else
+		sighandlers[SIGCLD] = SIG_DFL;
 #endif
 }

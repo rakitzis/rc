@@ -145,7 +145,12 @@ sigaction(SIGINT, 0, 0);
 
 
 dnl Do we have SysV SIGCLD semantics?  In other words, if we set the
-dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?
+dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?  Linux,
+dnl of course, is bizarre here.  It basically implements the SysV
+dnl semantics, but if the parent calls wait() before the child calls
+dnl exit(), wait() returns with the PID of the child as normal.  (Real
+dnl SysV waits for all children to exit, then returns with ECHILD.)
+dnl Anyway, this is why the `sleep(1)' is there.
 AC_DEFUN(RC_SYS_V_SIGCLD, [
 	AC_CACHE_CHECK(for SysV SIGCLD semantics, rc_cv_sysv_sigcld,
 		AC_TRY_RUN([
@@ -156,13 +161,14 @@ AC_DEFUN(RC_SYS_V_SIGCLD, [
 #include <unistd.h>
 int main(void) {
 	int i;
-	sigset(SIGCLD, SIG_IGN);
+	signal(SIGCLD, SIG_IGN);
 	switch (fork()) {
 	case -1:
 		return 1;
 	case 0:
 		return 0;
 	default:
+		sleep(1);
 		if (wait(&i) == -1 && errno == ECHILD) return 0;
 		else return 1;
 	}
@@ -203,4 +209,15 @@ main() {
 	case "$rc_cv_sys_fifo" in
 	yes)	AC_DEFINE(HAVE_FIFO) ;;
 	esac
+])
+
+dnl Where is tgetent()?
+AC_DEFUN(RC_LIB_TGETENT, [
+	AC_CHECK_LIB(termcap, tgetent,
+		rc_lib_tgetent=-ltermcap,
+		AC_CHECK_LIB(ncurses, tgetent,
+			rc_lib_tgetent=-lncurses,
+			AC_MSG_ERROR(tgetent not found)
+		)
+	)
 ])

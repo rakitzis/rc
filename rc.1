@@ -161,7 +161,7 @@
 .if !"\\$4"" .Xf \\$2 \\$1 "\\$3\\f\\$1\\$4\\*(Xi" "\\$5" "\\$6" "\\$7" "\\$8" "\\$9"
 .if "\\$4"" \\$3\fR\s10
 ..
-.TH RC 1 "28 April 1991"
+.TH RC 1 "1999-05-12"
 .SH NAME
 rc \- shell
 .SH SYNOPSIS
@@ -298,7 +298,7 @@ run setuid
 .I rc
 scripts; the usual caveats about the setuid bit still apply.)
 .TP
-.Cr \- s
+.Cr \-s
 This flag causes
 .I rc
 to read from standard input.  Any arguments are
@@ -601,7 +601,7 @@ and the output version of this notation:
 .SH "CONTROL STRUCTURES"
 The following may be used for control flow in
 .IR rc :
-.SS "If-else Statements"
+.SS "If-Else Statements"
 .PD 0
 .sp
 .Ci "if (" test ") {"
@@ -820,7 +820,7 @@ and
 .Cr "?" .
 However,
 .I rc
-does expand the glob the subject against filenames if it contains
+does expand the subject against filenames if it contains
 metacharacters.
 Thus, the command
 .Ds
@@ -945,8 +945,18 @@ A list may be assigned to a variable, using the notation:
 .Ic var " = " list
 .De
 .PP
-Any sequence of non-special characters, except a sequence including
-only digits, may be used as a variable name.
+The special variable
+.Cr *
+may be assigned to using this notation;
+.I rc
+has no
+.B set
+builtin.
+.PP
+Any non-empty sequence of characters, except a sequence including only
+digits, may be used as a variable name.  Any character except
+.Cr =
+may be used, but special characters must be quoted.
 All user-defined variables are exported into the environment.
 .PP
 The value of a variable is referenced with the notation:
@@ -989,7 +999,7 @@ To reference a variable with other
 characters in its name, quote the variable name.
 Thus:
 .Ds
-.Cr "echo $'we$Ird\Variab!le'"
+.Cr "echo $'we$Ird:Variab!le'"
 .De
 .SS "Local Variables"
 Any number of variable assignments may be made local to a single
@@ -1179,6 +1189,11 @@ The process ID of the last process started in the background.
 .Cr apids
 The process IDs of any background processes which are outstanding
 or which have died and have not been waited for yet.
+.TP
+.Cr bqstatus
+The exit status of the
+.I rc
+forked to execute the most recent backquote substitution.
 .TP
 .Cr cdpath
 A list of directories to search for the target of a
@@ -1654,7 +1669,7 @@ waits for all child processes to exit.
 \fBwhatis \fR[\fB\-b\fR] \fR[\fB\-f\fR] \fR[\fB\-p\fR] \fR[\fB\-s\fR] \fR[\fB\-v\fR] [\fB\-\|\-\fR] [\fIname ...\fR]
 Prints a definition of the named objects.
 For builtins,
-.B builtin
+.Cr builtin
 .I foo
 is printed; for functions, including signal handlers, their definitions
 are printed; for executable files, path names are printed; and for
@@ -1665,11 +1680,11 @@ programs, signal handlers, and variables, respectively.  If no
 are specified,
 .I rc
 lists all objects of that type.  (This is not permitted for
-.BR -p .)
+.Cr \-p .)
 Without arguments,
-.B whatis
+.Cr whatis
 is equivalent to
-.BR "whatis -fv" ,
+.Cr "whatis -fv" ,
 and prints the values of all shell variables and functions.
 .TP
 \&
@@ -1710,6 +1725,24 @@ For example,
 .Ds
 .Cr "whatis \-\|\- \-p"
 .De
+.SH "EXIT STATUS"
+The exit status of
+.I rc
+is normally the same as that of the
+last command executed.  If the last
+command was a pipeline,
+.I rc
+exits
+.Cr 0
+if every command in the pipeline did;
+otherwise it exits
+.Cr 1 .
+.PP
+.I rc
+can be made to exit with a particular
+status using the
+.B exit
+builtin.
 .SH GRAMMAR
 Here is
 .IR rc 's
@@ -1816,7 +1849,7 @@ optnl: /* empty */ | optnl '\en'
 .I rc
 was written by Byron Rakitzis, with valuable help
 from Paul Haahr, Hugh Redelmeier and David Sanderson.
-The design of this shell has been copied from the
+The design of this shell was copied from the
 .I rc
 that Tom Duff wrote at Bell Labs.
 .SH BUGS
@@ -1825,6 +1858,14 @@ as '\\001', or CTRL-A) will be split into lists at that character in
 descendant
 .IR rc
 processes.
+.PP
+There is a compile-time limit on the number of
+.Cr ;
+separated commands in a line: usually 500.
+This is sometimes a problem for automatically generated scripts:
+substituting the newline character for
+.Cr ;
+avoids the limit.
 .PP
 On modern systems that support
 .Cr /dev/fd
@@ -1856,6 +1897,19 @@ The
 .Cr $^var
 notation for flattening should allow for using an arbitrary
 separating character, not just space.
+.PP
+It is usually possible to use parentheses to defeat
+free caret insertion; that is, to use
+.Cr $(x.y)
+as a synonym for
+.Cr $'x.y' .
+However, the former syntax is not correctly handled in functions
+exported to the environment: a function defined using this syntax will
+not work properly in descendant
+.I rc
+processes.
+.PP
+List definitions in exported functions are "noisier" than they need to be.
 .PP
 Bug reports should be mailed to
 .Cr "<tjg@star.le.ac.uk>" .
