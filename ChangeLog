@@ -750,3 +750,10 @@ Changes since rc-1.5b2
   Portability: rename print.c::utoa() to rc_utoa() to avoid QNX name
   clash; use "sh -c 'test ...'" in trip.rc for missing standalone
   `test' on QNX (thanks Stefan Dalibor).
+
+2001-11-20
+
+  Documentation: tighten up various descriptions, and include some
+  more examples.
+
+  Release: rc-1.6c5.
