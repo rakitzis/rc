@@ -21,6 +21,7 @@ AC_CHECK_PROGS(LN, ln cp)
 AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
 AC_HEADER_DIRENT
 AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
 
 AC_TYPE_GETGROUPS
 AC_TYPE_PID_T
