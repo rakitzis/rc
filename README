@@ -1,136 +1,18 @@
-This is release 1.5b2 of rc.
+This is a snapshot release of rc-1.5.  The file RELDATE identifies the
+date of the snapshot.
 
-Read COPYRIGHT for copying information.  All files are
+See COPYING for copying information.  All files are
 
-   Copyright 1991, 1997 Byron Rakitzis.
+   Copyright 1991, 1999 Byron Rakitzis.
 
-COMPILING
+See INSTALL for build and installation information.
 
-rc was written in portable ANSI C.  If you don't have an ANSI compiler
-like gcc or something close (e.g., sgi's cc) read further down on
-how to convert rc's source to old C.
-
-The following commands are all you need to configure, build,
-test, and install rc.
-
-    $ sh configure
-    $ make
-    $ make trip
-    # make install
-
-There are lots of options you can give to configure to modify rc's
-behaviour.  You can also select a command line history library to link
-against.  For a summary of all options, run `sh configure --help'.
-
-You can specify Makefile variables by setting the corresponding
-environment variables.  For example, you might want to set `CC=cc', to
-prevent configure looking for gcc, or set an initial value for `LIBS',
-as in the example below.
-
-Here are the configure options you may want to use, in approximately
-descending order of usefulness.
-
-  --with-editline
-
-  This option tells rc to use Simmule Turner's and Rich $alz's editline
-  package, which you can get from the following location.  This is
-  essentially a lightweight version of GNU readline, providing EMACS
-  style command line editing and history.
-
-    ftp://ftp.pipex.net/people/tim/editline.tar.gz
-
-  If the editline library is not installed in a standard place, you
-  can tell configure where to find it by setting the environment
-  variable LIBS.  For example, the maintainer builds rc by copying
-  libedit.a into the rc directory and then running this configure
-  command.
-
-    LIBS=-L. sh configure --with-editline
-
-  --with-readline
-
-  This option tells rc to use the GNU readline package, which is similar
-  to editline, but has many more features.  The readline package is over
-  6 times the size of editline (whether you count lines of code, or the
-  library itself).  You probably need to tell the compiler to link with
-  the termcap library if you're using readline.  For example, here is
-  the configure command the maintainer uses to build rc with readline.
-
-    LIBS=-ltermcap sh configure --with-readline
-
-  --enable-history
-
-  Use this option if you want to build and install the programs that
-  support a crude history mechanism.
-
-You can't use `--with-editline' and `--with-readline' together, of course,
-and if you have either of those you probably don't want to bother with
-`--enable-history'.
-
-  --prefix=/path
-
-  By default, `prefix' is /usr/local, which means that `make install'
-  installs rc (and possibly the history programs) in /usr/local/bin, and
-  man pages in /usr/local/man/man1.  Use this option to change where
-  `make install' puts things.
-
-  --disable-builtin-echo
-
-  By default, the `echo' command is builtin to rc for efficiency reasons.
-  It is the only builtin which is not essential, and purists may wish
-  to omit it.
-
-  --disable-def-interp
-  --enable-def-interp=/bin/foo
-
-  By default, a program that fails with "Exec format error" is handed to
-  /bin/sh.  This does the Right Thing for scripts that start with `:' to
-  indicate that they are sh scripts.  You can disable this behaviour
-  entirely, or specify a different default interpreter.
-
-  --disable-def-path
-  --enable-def-path="/usr/local/bin","/usr/bin"
-
-  By default, if rc is started with no PATH, it uses a default path.
-  The default path is constructed at configure time, and consists
-  of each of the following directories that exist, in order.
-
-      /usr/local/bin /usr/bin /usr/ucb /bin .
-
-  You can disable this, or specify a different default path.  Note
-  that the quote marks (") must be seen by configure; you will
-  probably need to quote them to your shell.  (Not if it's already
-  rc, but then you will need to quote the `='.)
-
-  --disable-job
-
-  By default, rc puts backgrounded processes into a new process group,
-  as though it were a job control shell (it isn't).  This is usually
-  needed to work around bugs in application programs which install
-  signal handlers for the keyboard signals without checking whether the
-  signal was being ignored.  This option disables the default behaviour,
-  making rc behave like a traditional sh.  You are unlikely to want this
-  option on any Unix system.
-
-  --disable-protect-env
-
-  By default, rc encodes special characters in environment variables.
-  This is necessary on all known Unix systems to prevent sh either
-  dying or discarding the variables.  This option disables the default
-  behaviour.  You are unlikely to want this option on any Unix system.
-
-After you've built rc, you may wish to run it through a test script
-to see that everything is ok.  Type `make trip' for this.  This will
-produce some output, and end with "trip is complete".  If the trip ends
-with "trip took a wrong turn..." please contact the maintainer.  (If
-you've built in either of the command line history libraries, the trip
-will fail near the end with `trip took a wrong turn: dot -i'.)
 
 BUGS
 
-Send bug reports to <tim@uk.uu.net> (<tgoodwin@cygnus.co.uk> after
-1997-07-27).  If a core dump is generated, sending a backtrace will
-help a great deal.  You can get a backtrace like this.
+Send bug reports to <tjg@star.le.ac.uk>.  If a core dump is generated,
+sending a backtrace will help a great deal.  You can get a backtrace
+like this.
 
 	; gdb rc core
 	(gdb) where
@@ -140,58 +22,19 @@ help a great deal.  You can get a backtrace like this.
 Also, always report the machine, OS (`uname -a'), and compiler used to
 make rc; this information is extremely valuable.
 
+
 FEEPING CREATURISM
 
 See the end of the man page, under "INCOMPATABILITIES" for (known?)
 differences from the "real" rc.  Most of these changes were necessary
-to get rc to work in a reasonable fashion on a real (i.e.  commercial,
+to get rc to work in a reasonable fashion on a real (i.e. commercial,
 non-Labs) Unix system; a few were changes motivated by concern about
 some inadequacies in the original design.
 
-YACC
 
-The yacc that Sun ships with SunOS 4.1.1 calls malloc() to allocate
-space for the state stack, and requires a call to YYACCEPT or YYABORT to
-free this memory.  This means that if rc takes an interrupt while parsing
-a command (say, if ^C is typed), yacc will leak away this memory.  The
-solution is to use a yacc which statically allocates this array, such
-as the yacc in the BSD distribution.  Berkeley yacc-generated y.tab.c
-and y.tab.h are shipped with rc in case you cannot get hold of Berkeley
-yacc.
+WWW
 
-OLD C
+More information on releases of rc can be found at this web page.
 
-If you need to convert rc's source into K&R C, you need to run the
-source through a filter called "unproto", posted in comp.sources.misc.
-A sample "cpp" shell script that I used to run unproto under SunOS is
-supplied with rc.
+    http://www.star.le.ac.uk/~tjg/rc/
 
-CREDITS
-
-This shell was written by me, Byron Rakitzis, but kudos go to Paul Haahr
-for letting me know what a shell should do and for contributing certain
-bits and pieces to rc (notably the limits code, print.c, most of which.c
-and the backquote redirection code), and to Hugh Redelmeier for running
-rc through his fussy ANSI compiler and thereby provoking interesting
-discussions about portability, and also for providing many valuable
-suggestions for improving rc's code in general.  Finally, many thanks
-go to David Sanderson, for reworking the man page to format well with
-troff, and for providing many suggestions both for rc and its man page.
-
-Thanks to Boyd Roberts for the original history.c, and to Hugh again for
-re-working parts of that code.
-
-Of course, without Tom Duff's design of the original rc, I could not
-have written this shell (though I probably would have written *a*
-shell).  Almost of all of the features, with minor exceptions, have been
-implemented as described in the Unix v10 manuals.  Hats off to td for
-designing a C-like, minimal but very useful shell.
-
-Tom Duff has kindly given permission for the paper he wrote for UKUUG to
-be distributed with this version of rc (called "plan9.ps" in the same
-ftp directory as the shell).  Please read this paper bearing in mind that
-it describes a program that was written at AT&T and that the version of
-rc presented here differs in some respects.
-
-The current maintainer of rc is Tim Goodwin, <tim@uk.uu.net>
-(<tgoodwin@cygnus.co.uk> after 1997-07-27).

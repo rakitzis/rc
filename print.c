@@ -14,14 +14,14 @@
  */
 
 #define Flag(name, flag) \
-static bool name(Format *format, int c) { \
+static bool name(Format *format, int ignore) { \
 	format->flags |= flag; \
 	return TRUE; \
 }
 
 Flag(uconv,	FMT_unsigned)
 Flag(hconv,	FMT_short)
-Flag(lconv,	FMT_long)
+Flag(rc_lconv,	FMT_long)
 
 #if HAVE_QUAD_T
 Flag(qconv,	FMT_quad)
@@ -41,7 +41,7 @@ static bool digitconv(Format *format, int c) {
 	return TRUE;
 }
 
-static bool zeroconv(Format *format, int c) {
+static bool zeroconv(Format *format, int ignore) {
 	if (format->flags & (FMT_f1set | FMT_f2set))
 		return digitconv(format, '0');
 	format->flags |= FMT_zeropad;
@@ -53,7 +53,7 @@ static void pad(Format *format, size_t len, int c) {
 		fmtputc(format, c);
 }
 
-static bool sconv(Format *format, int c) {
+static bool sconv(Format *format, int ignore) {
 	char *s = va_arg(format->args, char *);
 	if ((format->flags & FMT_f1set) == 0)
 		fmtcat(format, s);
@@ -151,32 +151,32 @@ static void intconv(Format *format, unsigned int radix, int upper, const char *a
 		pad(format, padding, padchar);
 }
 
-static bool cconv(Format *format, int c) {
+static bool cconv(Format *format, int ignore) {
 	fmtputc(format, va_arg(format->args, int));
 	return FALSE;
 }
 
-static bool dconv(Format *format, int c) {
+static bool dconv(Format *format, int ignore) {
 	intconv(format, 10, 0, "");
 	return FALSE;
 }
 
-static bool oconv(Format *format, int c) {
+static bool oconv(Format *format, int ignore) {
 	intconv(format, 8, 0, "0");
 	return FALSE;
 }
 
-static bool xconv(Format *format, int c) {
+static bool xconv(Format *format, int ignore) {
 	intconv(format, 16, 0, "0x");
 	return FALSE;
 }
 
-static bool pctconv(Format *format, int c) {
+static bool pctconv(Format *format, int ignore) {
 	fmtputc(format, '%');
 	return FALSE;
 }
 
-static bool badconv(Format *format, int c) {
+static bool badconv(Format *ignore, int ign0re) {
 	panic("bad conversion character in printfmt");
 	/* NOTREACHED */
 	return FALSE; /* hush up gcc -Wall */
@@ -203,7 +203,7 @@ static void inittab(void) {
 
 	fmttab['u'] = uconv;
 	fmttab['h'] = hconv;
-	fmttab['l'] = lconv;
+	fmttab['l'] = rc_lconv;
 	fmttab['#'] = altconv;
 	fmttab['-'] = leftconv;
 	fmttab['.'] = dotconv;
@@ -289,16 +289,16 @@ extern int fmtprint(Format *format, const char *fmt,...) {
 	va_list ap, saveargs;
 
 	va_start(ap, fmt);
-	saveargs = format->args;
-	format->args = ap;
+	va_copy(saveargs, format->args);
+	va_copy(format->args, ap);
 	n += printfmt(format, fmt);
 	va_end(format->args);
-	format->args = saveargs;
+	va_copy(format->args, saveargs);
 
 	return n + format->flushed;
 }
 
-static void fprint_flush(Format *format, size_t more) {
+static void fprint_flush(Format *format, size_t ignore) {
 	size_t n = format->buf - format->bufbegin;
 	char *buf = format->bufbegin;
 
@@ -320,7 +320,7 @@ extern int fprint(int fd, const char *fmt,...) {
 	format.u.n	= fd;
 
 	va_start(ap, fmt);
-	format.args = ap;
+	va_copy(format.args, ap);
 	printfmt(&format, fmt);
 	va_end(format.args);
 
@@ -331,19 +331,20 @@ extern int fprint(int fd, const char *fmt,...) {
 static void memprint_grow(Format *format, size_t more) {
 	char *buf;
 	size_t len = format->bufend - format->bufbegin + 1;
+	size_t used = format->buf - format->bufbegin;
+
 	len = (len >= more)
 		? len * 2
 		: ((len + more) + PRINT_ALLOCSIZE) &~ (PRINT_ALLOCSIZE - 1);
 	if (format->u.n)
 		buf = erealloc(format->bufbegin, len);
 	else {
-		size_t used = format->buf - format->bufbegin;
 		buf = nalloc(len);
 		memcpy(buf, format->bufbegin, used);
 	}
-	format->buf	 = buf + (format->buf - format->bufbegin);
+	format->buf = buf + used;
 	format->bufbegin = buf;
-	format->bufend	 = buf + len - 1;
+	format->bufend = buf + len - 1;
 }
 
 static char *memprint(Format *format, const char *fmt, char *buf, size_t len) {
@@ -364,7 +365,7 @@ extern char *mprint(const char *fmt,...) {
 
 	format.u.n = 1;
 	va_start(ap, fmt);
-	format.args = ap;
+	va_copy(format.args, ap);
 	result = memprint(&format, fmt, ealloc(PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
 	va_end(format.args);
 	return result;
@@ -377,106 +378,8 @@ extern char *nprint(const char *fmt,...) {
 
 	format.u.n = 0;
 	va_start(ap, fmt);
-	format.args = ap;
+	va_copy(format.args, ap);
 	result = memprint(&format, fmt, nalloc(PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
 	va_end(format.args);
 	return result;
 }
-
-
-/* THESE ARE UNUSED IN rc */
-
-#if 0
-
-extern int print(const char *fmt,...) {
-	char buf[1024];
-	Format format;
-
-	format.buf	= buf;
-	format.bufbegin	= buf;
-	format.bufend	= buf + sizeof buf;
-	format.grow	= fprint_flush;
-	format.flushed	= 0;
-	format.u.n	= 1;
-
-	va_start(format.args, fmt);
-	printfmt(&format, fmt);
-	va_end(format.args);
-
-	fprint_flush(&format, 0);
-	return format.flushed;
-}
-
-extern int eprint(const char *fmt,...) {
-	char buf[1024];
-	Format format;
-
-	format.buf	= buf;
-	format.bufbegin	= buf;
-	format.bufend	= buf + sizeof buf;
-	format.grow	= fprint_flush;
-	format.flushed	= 0;
-	format.u.n	= 2;
-
-	va_start(format.args, fmt);
-	printfmt(&format, fmt);
-	va_end(format.args);
-
-	fprint_flush(&format, 0);
-	return format.flushed;
-}
-
-static void snprint_grow(Format *format, size_t more) {
-	longjmp(format->u.p, 1);
-}
-
-extern int snprint(char *buf, int buflen, const char *fmt,...) {
-	int n;
-	jmp_buf jbuf;
-	Format format;
-
-	if (setjmp(jbuf)) {
-		*format.buf = '\0';
-		return format.buf - format.bufbegin;
-	}
-
-	format.buf	= buf;
-	format.bufbegin	= buf;
-	format.bufend	= buf + buflen - 1;
-	format.grow	= snprint_grow;
-	format.flushed	= 0;
-	format.u.p	= jbuf;
-
-	va_start(format.args, fmt);
-	n = printfmt(&format, fmt);
-	va_end(format.args);
-
-	*format.buf = '\0';
-	return n;
-}
-
-extern int sprint(char *buf, const char *fmt,...) {
-	int n;
-	jmp_buf jbuf;
-	Format format;
-
-	if (setjmp(jbuf)) {
-		*format.buf = '\0';
-		return format.buf - format.bufbegin;
-	}
-
-	format.buf	= buf;
-	format.bufbegin	= buf;
-	format.bufend	= buf + SPRINT_BUFSIZ - 1;
-	format.grow	= snprint_grow;
-	format.flushed	= 0;
-	format.u.p	= jbuf;
-
-	va_start(format.args, fmt);
-	n = printfmt(&format, fmt);
-	va_end(format.args);
-
-	*format.buf = '\0';
-	return n;
-}
-#endif

@@ -11,7 +11,9 @@ static bool dashoh;
 static void assigndefault(char *,...);
 static void checkfd(int, enum redirtype);
 
-extern void main(int argc, char *argv[], char *envp[]) {
+static const char id[] = "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $";
+
+extern int main(int argc, char *argv[], char *envp[]) {
 	char *dashsee[2], *dollarzero, *null[1];
 	int c;
 	initprint();
@@ -19,7 +21,7 @@ extern void main(int argc, char *argv[], char *envp[]) {
 	dollarzero = argv[0];
 	rc_pid = getpid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
-	while ((c = rc_getopt(argc, argv, "nolpeivdxsc:")) != -1)
+	while ((c = rc_getopt(argc, argv, "Vnolpeivdxsc:")) != -1)
 		switch (c) {
 		case 'l':
 			dashell = TRUE;
@@ -54,6 +56,9 @@ extern void main(int argc, char *argv[], char *envp[]) {
 		case 'o':
 			dashoh = TRUE;
 			break;
+		case 'V':
+			fprint(1, "%s\n", id);
+			exit(0);
 		case '?':
 			exit(1);
 		}
@@ -97,6 +102,7 @@ quitopts:
 	dasheye = FALSE;
 	doit(TRUE);
 	rc_exit(getstatus());
+	return 0; /* Never really reached. */
 }
 
 static void assigndefault(char *name,...) {

@@ -1,0 +1,531 @@
+Changes since 1.2: (Too many to count!)
+
+A memory stomping bug was fixed (provoked by assigning a variable
+to its old value plus something else).
+
+Better signal handling; a real signal handler which manages a queue
+of pending signals was added.
+
+rc now ignores SIGQUIT and traps SIGINT even in non-interactive
+mode. Thus,
+
+	rc ed.sh
+
+will not do mysterious things if the shell script "ed.sh" calls a
+command like "ed" and then you hit ^C.
+
+rc now opens 0, 1, 2 on /dev/null if they are inherited closed.
+rc -o prevents this.
+
+A couple of stupid O(n^2) string appends were replaced with O(n)
+loops. This should make foo=`{cat /etc/termcap} bar=$^foo a little
+faster :-)
+
+Returning a list of signals from a function is now legal, so "return
+$status" should always work.
+
+The code has been revised, new printing routines have been added.
+
+rc no longer uses redundant braces when exporting functions.
+
+A first stab at a verification suite has been added (trip.rc).
+(someone, please help me make this comprehensive!)
+
+rc -p now does not initialize functions from the environment. This
+should make it easier to write shell scripts that don't need to
+assume anything about the environment.
+
+Inherited ignored signals are now ignored in the current shell and
+passed on ignored to the child processes. whatis -s also reflects
+this information.
+
+A file descriptor leak in the /dev/fd implementation of >{} was
+fixed.
+
+A variable set to '' was not imported from the environment; this
+has been fixed.
+
+Changes since 1.3beta:
+
+New Makefile/config.h setup.
+
+builtin echo may now be conditionally included out, to use a Goldwynism.
+
+builtin exit takes any legal exit status. If the status is not all zeros,
+rc exits with 1. (having "exit sigiot" produce a core dump would be going
+a little far, I think.)
+
+limit does not append a unit after a zero limit; 0g was too confusing.
+
+exec > /nonexistentfile does not cause rc to exit any more.
+
+If a noninteractive rc is started with sigint ignored, rc does not install
+its own signal handler.
+
+error messages produced by rc in a subshell were cleaned up. (rc erroneously
+reset the 'interactive' flag after a fork)
+
+print.c was cleaned up a little; no functionality was changed, but should
+be more portable now.
+
+a bug in rc-1.3beta (not previous versions) was fixed: setting the first
+element of $path to '' caused PATH to be exported as '':etc..
+
+getopt's "illegal option" message was gratuitously changed to something
+less abrupt.
+
+some dead code was removed from input.c
+
+%term was changed to %token in parse.y; apparently newer yacc's don't grok
+%term any more.
+
+a race condition in the signal handler was fixed.
+
+the variable in for() was getting evaluated each time through the loop
+(e.g., for (`{echo i;date>[1=2]} in 1 2 3)echo $i would print the date
+three times). This was cleaned up.
+
+a redundant fork() was removed from walk.c; this showed up when running
+a braced command with a redirection in the background. e.g., {a;b}>c&
+
+man pages for history and rc were cleaned up by david (thanks).
+
+rc set SIGQUIT and SIGTERM to SIG_DFL on background jobs---even when
+trying to do old-style backgrounding (i.e., don't use process groups,
+just ignore SIGINT & SIGQUIT & SIGTERM).
+
+$0 is now changed to the name of the signal when entering a signal
+handler. Thus it's possible to write code like
+
+	fn sigint sigterm sigquit {
+		switch ($0) {
+		case sigint
+			...
+		case sigterm
+			...
+
+wait with no arguments now prints the pid of any and all children
+that died with a signal. e.g.,
+
+	; wait
+	25321: terminated
+	25325: terminated
+
+as opposed to
+
+	; wait
+	terminated
+
+An error saving/restoring state in the input stream code would
+cause rc to exit with the (erroneous) command:
+
+	eval '|[a'
+
+FIFO's were not removed in a backgrounded command, e.g.,
+
+	cat <{echo hi}&
+
+Changes since rc-1.4beta:
+
+getopt was renamed to rc_getopt to avoid libc collisions.
+
+$cdpath with a / in it caused a cd to sometimes have two //'s at the
+front of the path. This is reserved by POSIX, so I changed it to skip
+one of the /'s.
+
+signal handling now emulates sh in the way I described in a previous
+message: the race condition present in older rc's whereby some SIGINTs
+got lost is now gone; any SIGINT received during a wait() is acted upon
+at the end of the wait(), unless of course SIGINT is being deliberately
+ignored.
+
+getopt was renamed to avoid naming conflicts with libc. Also a sound
+move since rc_getopt is no longer quite libc-getopt compatible; I had
+to add in a mechanism for resetting getopt.
+
+signal handler code in fn.c was cleaned up; there were several bugs
+in rc-1.4beta, notably the shell sometimes spawned background jobs
+with SIGTERM ignored. I took the opportunity to make things a little
+cleaner here.
+
+a quasi-memory leak in the code for while() was fixed: a long-running
+while that had rc commands allocating memory in it could cause the
+shell to grow without bounds. I fixed this by placing the while loop
+(*and* test!) inside a new allocation arena each time through the loop.
+
+A new configuration parameter, NOJOB, was added to allow you to force
+v7-style backgrounding (no setpgrp, ignore SIGINT and SIGTERM).
+
+The FIFO code was reworked a little. It should be more robust now---
+FIFOs get removed at the end of the command of the argument list
+that they were on:
+
+		fn foo {echo $*; cat $*}
+		foo<{echo hi}
+
+now works as expected. Also FIFO names are pushed onto the exception
+stack so that their removal occurs in the face of exceptions and so
+on.
+
+A memory leak in treefree() was plugged up --- the root node of a
+function was not getting freed.
+
+Changes since rc-1.4:
+
+General changes:
+
+        Some small memory leaks/uninit references revealed by Purify.
+
+        $bqstatus for querying the exit status of a backquote.
+
+        Globbing through unreadable directories.
+
+        More options to whatis.
+
+        History append which always re-opens the file (avoids
+        inconsistencies over multiple NFS-mounted accesses to
+        $history).
+
+        Support "rc -s".
+
+---------
+
+Makefile:	Added comment referring to README for yacc/malloc problem.
+
+uiltins.c:	Added more options to whatis, protected rlimit prototypes
+		with #ifndef SYSVR4, renamed SIGCHK to sigchk.
+
+except.c:	Patched nl_on_intr printing to happen only in interactive
+		shells.
+
+exec.c:		Added comment explaining nl_on_intr variable, renamed SIGCHK
+		to sigchk.
+
+fn.c:		Replaced by-hand consing of exception stack etc. for signal
+		handler execution with call to funcall(). Replaced fun2str
+		call with call on print routines.
+
+footobar.c:	Got rid of memory leak in get_name(), parenthesize count,
+		flat and var nodes for correctness in unparsing, removed
+		list2str, made get_name use nalloc space, merge in a
+		better parse_var from es.
+
+glob.c:		Split out a test so that closedir is called correctly, renamed
+		SIGCHK to sigchk.
+
+glom.c:		Added bqstatus, renamed SIGCHK to sigchk, removed spurious
+		setsigdefaults, patched uninit memory reference, rename
+		"clear" to "memzero", wait for bq subproc to finish on EINTR.
+
+hash.c:		Added options to function/variable print code.
+
+history/history.c: Added '@' to the list of chars which can precede an
+		ignored '-'.
+
+input.c:	Got rid of tiny memory leak in closefds, got rid of uninit
+		memory reference in popinput, moved nul ignored check into
+		realgchar(), changed history append to always reopen the
+		history file, replaced SIGCHK with sigchk. Freed memory
+		returned by call to readline().
+
+lex.c:		Corrected typo in comment, moved nul character ignore code
+		to input routines.
+
+main.c:		Added -s flag.
+
+nalloc.c:	Added convenience feature to erealloc. (Allow NULL parameter)
+
+print.c:	Changed use of va_start so broken compilers can compile
+		print code.
+
+proto.h:	Added fake memset.
+
+rc.h:		Replaced clear() function prototype with a macro call on
+		memset(), removed SIGCHK, fixed prototypes.
+
+signal.c:	Removed unconditional exit in catcher code, renamed SIGCHK
+		to sigchk.
+
+status.c:	Rewrite sgetstatus breaking out strstatus so that bqstatus
+		can be set from glom routines.
+
+utils.c:	Got rid of clear() (use memset from C library), rename SIGCHK
+		to sigchk.
+
+var.c:	 	Got rid of memory leak in listassign(), converted list2str()
+		call to something using the print routines.
+
+version.c:	New version string.
+
+wait.c:		Got rid of memory leak in rc_fork, renamed SIGCHK to sigchk.
+
+walk.c:		Fixed pre-redirection bug, removed spurious setsigdefaults(),
+		renamed SIGCHK to sigchk.
+
+
+Changes since rc-1.5beta1
+
+  Configuration: rc now uses GNU autoconf.
+
+  Portability: mksignal works on HPUX 10.
+
+  Portability: resources can be (quad_t).
+
+  Bug: if rc was started with SIGCLD == SIG_IGN (e.g. by Solaris's
+  rshd) it would loop.  Fixed by resetting SIGCLD to SIG_DFL if it
+  was SIG_IGN when rc was started.
+
+  Portability: POSIXish systems don't have NGROUPS.
+
+Changes since rc-1.5b2
+
+  Configuration: rc now uses GNU automake.
+
+  Portability: use sigsetjmp() when available.
+
+  Portability: improve tests for quad_t.
+
+  Configuration: don't leave FIFOs in /tmp when configuring.
+
+  Configuration: let configure find `-ltermcap' when using readline.
+
+  Configuration: pick up default path from config.cache.
+
+  Bug: sense of most HAVE_RESTARTABLE_SYSCALLS tests was wrong.
+
+  Bug: print prompts with `-i', even with editline / readline.
+
+  Testing: just say `false' (not `/bin/false').
+
+  Bug: confusion over gid_t versus GETGROUPS_T in which.c.
+
+  Feature: `-V' option added to report version number.
+
+  Configuration: remove version.c; `id' is defined in main.c now.
+
+  Bug: clear list of living children after fork(); `{ ls & wait } |cat'
+  no longer hangs or panics.
+
+  Testing: add regression test for above.
+
+  Tidiness: all the system call wrappers to prevent calls being
+  restarted now live in system-bsd.c.  The configure script decides
+  whether to build system.c or system-bsd.c.  Also, signal.c is more
+  careful to only declare slowbuf if it will be needed.
+
+  Tidiness: similarly, configure decides whether to build execve.c or
+  not.
+
+  Portability: test for ssize_t and use it where available; use long if
+  there's no ssize_t.
+
+  Portability: use sigsetjmp where it's available and appropriate.  If
+  no sigsetjmp, just use sigjmp; this probably fails in a traditional
+  SysV environment.
+
+  Portability: test explicitly for SysV SIGCLD semantics.  Main (and
+  dubious) benefit is that you can now define a function called `sigcld'
+  on systems where there is no signal called SIGCLD!
+
+  Bug: rc has its own memory allocator; don't use malloc directly.
+
+  Bug: the rc_wait() wrapper is only needed on systems which restart
+  system calls.  On Linux, in particular, the wrapper leads to a race
+  which causes rc to hang (or panic in later versions).  Other systems
+  apparently don't exercise this race.
+
+  Bug: waitforall() must return if rc_wait4() returns with errno ==
+  EINTR.  Otherwise, the rc builtin `wait' cannot be interrupted if
+  there are background processes (although apparently only if there is a
+  handler for SIGINT).
+
+  Portability: dreadful hack to track down the real locations of
+  signal.h to find signal names. rc now builds under CygWin32!
+
+  Portability: replace above dreadful hack with mksignal.c, contributed
+  by Vincent Broman.
+
+  Portability: use POSIX wait() macros (WIFEXITED and friends).
+  Unfortunately, POSIX omitted to supply WIFDUMPED, so this doesn't buy
+  a great deal.
+
+  Distribution: remove the dependencies of y.tab.[ch] on parse.y from
+  Makefile.am.  The justification for this is that, unless you're
+  hacking on rc's grammar, there's no reason to use anything other
+  than the distributed files (which were generated with byacc and very
+  lightly edited to silence a few gcc warnings).
+
+  Enhancement: the example in addon.c wasn't very useful, since it
+  depended on files which weren't included with the distribution.  There
+  is now a working, if trivial, example.
+
+  Tidiness: the code was compiled with as many gcc warnings enabled as
+  I could find.  Very few problems turned up.  Some unused function
+  arguments were removed.  Where unused arguments could not be removed
+  (because the function is one of a set that must all have the same
+  prototype), they were renamed to `ignore'.
+
+  Portability: some versions of readline define the name `Function',
+  which rc also uses.  Its use in rc has been renamed to `rc_Function'.
+
+  Documentation: the `history' man page didn't explain what end of line
+  does in editing mode.  It now does.
+
+  Bug: the interaction with readline was broken, particularly with
+  respect to signal handling.  I've incorporated some changes from Tom
+  Culliton which should sort this out.  Unfortunately, we now have 3
+  different code paths for readline 2.1, readline 2.2, and editline :-(.
+
+  Configuration: if you say `--with-readline' or `--with-editline' it is
+  now an error if the appropriate library is not found.
+
+  Bug: rc didn't work on RedHat 5 systems.  This is because of
+  peculiarities in the handling of signals and system calls on this
+  system (the C library attempts to fake restartable system calls).
+  The fix involves testing at configure time for sigaction() and
+  SA_INTERRUPT: if both exist, we set up sys_signal() to be an "always
+  interrupt" wrapper around sigaction().  (If we don't have sigaction(),
+  we use signal() and check for restartable system calls as usual.)
+
+  Portability: on AIX, lconv is defined by the system header files.
+  Rename lconv in print.c to avoid the clash.
+
+  Testing: add a test that `cd' prints the new directory if we are
+  interactive and the directory was found via $cdpath.
+
+1998-07-23
+
+  Testing: fix silly typo in above test.
+
+  Configuration: `--with-vrl' added to support Gert-Jan Vons's readline
+  library.
+
+1998-07-24
+
+  Portability: the autoconf macro AC_FUNC_SETPGRP doesn't work on OSF1: that
+  system supports arguments to setpgrp(), but also has a prototype in
+  <unistd.h> to say that it is void.  Fix this by defining our own
+  RC_FUNC_SETPGRP for now.
+
+  Bug: <sys/wait.h> was included twice in some source files.
+
+  Configuration: automake wants `make distclean' to remove *.tab.c.
+  Rename y.tab.[ch] to parse.[ch] to avoid this.
+
+1998-07-27
+
+  Portability: on Ultrix, `make trip' fails with `malloc: Invalid
+  argument'.  Problem is that getgroups(0, NULL) in which.c returns -1.
+  Add new configure test to check for POSIX getgroups() and fall back to
+  NGROUPS if it's not available.  The magic is done by "getgroups.h".
+
+  Tidiness: extract <sys/wait.h> magic into "wait.h".
+
+1998-10-20
+
+  Tidiness: include prototype for add_history() when doing editline.
+
+  Documentation: document the `-V' flag and mention Linux's
+  /proc/self/fd as alternative to /dev/fd.
+
+1998-10-21
+
+  Bug: shells need to be prepared for bogus applications to have set
+  their input file descriptor to non-blocking, and set it back.
+
+  Tidiness: <sys/types.h> is in "proto.h", so nothing else needs to
+  include it explicitly.
+
+  Documentation: document the ^A bug.
+
+1998-10-22
+
+  Tidiness: makenonblock() was a rather poor choice of name for
+  a function which makes a file descriptor *not* nonblocking :-).
+
+1998-10-26
+
+  Portability: apparently some systems declare `char *basename(const
+  char *)' in system header files.  Changing our basename() (in
+  history.c) to match this prototype allows it to be compiled on such
+  systems, and is harmless.  (Harmless, that is, if no system declares
+  `char *basename(char *)'.)
+
+1998-10-28
+
+  Bug: system-bsd.c needs to include "wait.h".
+
+  Warnings: some versions of gcc warn about "ambiguous" `else' clauses.
+
+  Portability: assigning va_list objects doesn't work everywhere (Linux
+  on the PowerPC, specifically).  Use the C 9x invention va_copy()
+  instead, if it exists, otherwise fall back to assignment.
+
+  Documentation: help HP-UX users by mentioning that you need `cc -Ae'.
+  Also, HP-UX make will build rc in a separate directory.
+
+  Tidiness: remove unused functions from print.c.  Anybody wanting to
+  use this library in another project should follow the pointer in the
+  documentation to an improved version.
+
+1998-10-29
+
+  Bug: the "null character ignored" warning was printed with the wrong
+  line number.  Fix by adding an offset argument to pr_error.
+
+  Portability: work around readline's broken treatment of a non-blocking
+  input file descriptor.
+
+  Testing: add `testing' auxiliary program; use `testing' to generate
+  null character on the fly (since it's a nuisance having a literal
+  null character in trip.rc); reset sigexit in `fn fail'; add test for
+  nonblocking input file descriptor; fix test for cdpath.
+
+  Portability: include <sys/types.h> before <sys/stat.h>.
+
+1998-10-30
+
+  Portability: rename basename() to rc_basename(), since the former is
+  quite widespread, and has a variety of different definitions (none of
+  them, of course, static).
+
+  Portability: work around i386 GCC 2.7.2.3 optimization bug triggered
+  by a (really quite simple) expression in history.c.
+
+1998-12-04
+
+  Bug: a debugging statement was left in history.c by mistake.
+
+  Bug: `history' needs to check for `me' character preceded by `/', as
+  well as all the other options.  An invocation like ../rc-1.5/- no
+  longer loops.
+
+  Documentation: it seems better to have but a single URL in the README
+  file, which indirects to the other places of interest.
+
+1998-12-08
+
+  Portability: use AM_PROG_CC_STDC.  This obviates the need for a
+  special hack on HP-UX.
+
+  Documentation: document all the flags to `whatis'.
+
+1998-12-09
+
+  Tidiness: latest autoconf version has fixed AC_FUNC_SETPGRP, so we
+  no longer need to supply our own.
+
+  Portability: test for va_copy() needs to include <stdarg.h>.
+
+1998-12-10
+
+  Tidiness: move most of the configure.in nastiness into acinclude.m4.
+
+1998-12-11
+
+  Tidiness: the release date now only needs to be changed in one place.
+
+1999-01-05
+
+  Documentation: the Bell Labs rc now has the list flattening operator,
+  but spelt $"foo.

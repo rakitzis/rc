@@ -1,14 +1,9 @@
-#include "rc.h"
-
 #include <errno.h>
-#include <setjmp.h>
-#include <sys/wait.h>
 
-#include "jbwrap.h"
+#include "rc.h"
+#include "wait.h"
 
 bool forked = FALSE;
-
-static pid_t rc_wait(int *);
 
 typedef struct Pid Pid;
 
@@ -21,7 +16,9 @@ static struct Pid {
 
 extern pid_t rc_fork() {
 	Pid *new;
+	struct Pid *p, *q;
 	pid_t pid = fork();
+
 	switch (pid) {
 	case -1:
 		uerror("fork");
@@ -30,6 +27,14 @@ extern pid_t rc_fork() {
 	case 0:
 		forked = TRUE;
 		sigchk();
+		p = plist; q = 0;
+		while (p) {
+			if (q) efree(q);
+			q = p;
+			p = p->n;
+		}
+		if (q) efree(q);
+		plist = 0;
 		return 0;
 	default:
 		new = enew(Pid);
@@ -43,34 +48,44 @@ extern pid_t rc_fork() {
 
 extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
 	Pid *r, *prev;
-	int ret;
-	/* first look for a child which may already have exited */
-again:	for (r = plist, prev = NULL; r != NULL; prev = r, r = r->n)
+
+	/* Find the child on the list. */
+	for (r = plist, prev = NULL; r != NULL; prev = r, r = r->n)
 		if (r->pid == pid)
 			break;
+
+	/* Uh-oh, not there. */
 	if (r == NULL) {
 		errno = ECHILD; /* no children */
 		uerror("wait");
 		*stat = 0x100; /* exit(1) */
 		return -1;
 	}
-	if (r->alive) {
-		while (pid != (ret = rc_wait(stat))) {
-			Pid *q;
-			if (ret < 0) {
-				if (nointr)
-					goto again;
+
+	/* If it's still alive, wait() for it. */
+	while (r->alive) {
+		int ret;
+		Pid *q;
+
+		ret = rc_wait(stat);
+
+		if (ret < 0) {
+			if (errno == ECHILD)
+				panic("lost child");
+			if (nointr)
+				continue;
+			else
 				return ret;
-			}
-			for (q = plist; q != NULL; q = q->n)
-				if (q->pid == ret) {
-					q->alive = FALSE;
-					q->stat = *stat;
-					break;
-				}
 		}
-	} else
-		*stat = r->stat;
+
+		for (q = plist; q != NULL; q = q->n)
+			if (q->pid == ret) {
+				q->alive = FALSE;
+				q->stat = *stat;
+				break;
+			}
+	}
+	*stat = r->stat;
 	if (prev == NULL)
 		plist = r->n; /* remove element from head of list */
 	else
@@ -97,33 +112,16 @@ extern List *sgetapids() {
 
 extern void waitforall() {
 	int stat;
+
 	while (plist != NULL) {
-		int pid = rc_wait4(plist->pid, &stat, FALSE);
+		pid_t pid = rc_wait4(plist->pid, &stat, FALSE);
 		if (pid > 0)
 			setstatus(pid, stat);
-		else
+		else {
 			set(FALSE);
+			if (errno == EINTR)
+				return;
+		}
 		sigchk();
 	}
-}
-
-/*
-   rc_wait: a wait() wrapper that interfaces wait() w/rc signals.
-   Note that the signal queue is not checked in this fn; someone
-   may want to resume the wait() without delivering any signals.
-*/
-
-static pid_t rc_wait(int *stat) {
-	int r;
-	interrupt_happened = FALSE;
-	if (!setjmp(slowbuf.j)) {
-		slow = TRUE;
-		if (!interrupt_happened)
-			r = wait(stat);
-		else
-			r = -1;
-	} else
-		r = -1;
-	slow = FALSE;
-	return r;
 }

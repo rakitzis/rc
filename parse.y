@@ -6,9 +6,7 @@
 
 %{
 #include "rc.h"
-#ifndef lint
-#define lint		/* hush up gcc -Wall, leave out the dumb sccsid's. */
-#endif
+
 static Node *star, *nolist;
 Node *parsetree;	/* not using yylval because bison declares it as an auto */
 %}

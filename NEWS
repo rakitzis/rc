@@ -1,0 +1,50 @@
+Since rc-1.5b2 was released, many fixes have been made to the
+autoconfiguration code, some of them critical.  One problem (which I
+introduced) was found in minutes with ElectricFence: I had spent several
+hours failing to find it with other tools.
+
+Two bugs in rc itself, one of them trivial, were fixed.
+
+rc now uses GNU automake.  Although I feel that automake is sticking
+plaster to mend a broken leg, it has made my job as maintainer easier.
+(Errm, apart from tracking down bugs in automake itself, and Perl, that
+is.)  For people building rc, it's now possible (depending on your
+flavour of `make') to build in a separate directory from the source.
+
+Creeping featurism: rc now has a `-V' switch to report its version
+number.
+
+The detection of signal names has been completely revised.  Vincent
+Broman suggested this, and contributed mksignal.c.
+
+The interaction with readline has been redone, principally to work
+around bugs in the readline library.  Tom Culliton persuaded me of
+the need for this, and his patches to an earlier version of rc became
+readline.c.
+
+I rewrote addon.[ch] to provide a more useful example of adding extra
+builtins.
+
+The rc build system no longer considers running `yacc': parse.y is for
+information only.  The supplied y.tab.[ch] were built with Berkeley
+`yacc', and lightly edited to remove a few gcc warnings.  This idea was
+suggested by Gert-Jan Vons.
+
+Binaries of rc-1.5b4 are typically a few kilobytes smaller than 1.5b2.
+I believe this is due to improved autoconfiguration: we are now much
+more careful only to include code that will be used.
+
+Support for vrl (another lightweight "readline"-style library) was
+added.
+
+rc can now deal with a bogus application that sets its stdin to
+non-blocking mode.
+
+See ChangeLog for more details.
+
+What happened to rc-1.5b3?  There were a couple of releases to people
+who'd found bugs in rc-1.5b2 that were called b3.  To avoid any
+possibility of confusion, I have named this beta release rc-1.5b4.
+
+Tim Goodwin
+1999-01-11

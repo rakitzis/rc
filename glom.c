@@ -1,10 +1,10 @@
 /* glom.c: builds an argument list out of words, variables, etc. */
 
-#include <sys/types.h>
+#include "rc.h"
+
 #include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
-#include "rc.h"
 
 static List *backq(Node *, Node *);
 static List *bqinput(List *, int);
@@ -324,6 +324,12 @@ static List *mkcmdarg(Node *n) {
 
 #elif HAVE_FIFO
 
+#if HAVE_MKFIFO
+/* Have POSIX mkfifo(). */
+#else
+#define mkfifo(n,m) mknod(n, S_IFIFO | m, 0)
+#endif
+
 static List *mkcmdarg(Node *n) {
 	int fd;
 	char *name;
@@ -331,9 +337,10 @@ static List *mkcmdarg(Node *n) {
 	Estack *e = enew(Estack);
 	List *ret = nnew(List);
 	static int fifonumber = 0;
+
 	name = nprint("/tmp/rc%d.%d", getpid(), fifonumber++);
-	if (mknod(name, S_IFIFO | 0666, 0) < 0) {
-		uerror("mknod");
+	if (mkfifo(name, 0666) < 0) {
+		uerror("mkfifo");
 		return NULL;
 	}
 	if (rc_fork() == 0) {
@@ -360,7 +367,7 @@ static List *mkcmdarg(Node *n) {
 #else
 
 static List *mkcmdarg(Node *n) {
-	rc_error("named pipes are not supported");
+	rc_error("command arguments are not supported");
 	return NULL;
 }
 

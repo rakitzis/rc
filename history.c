@@ -16,15 +16,11 @@
 	more than 1k characters long. 
 */
 
+#include "rc.h"
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-static char *id = "@(#) history.c  8/91";
-
-#undef FALSE
-#undef TRUE
-typedef enum { FALSE, TRUE } bool;
+static const char id[] = "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $";
 
 #define CHUNKSIZE 65536
 
@@ -36,9 +32,9 @@ static char **search, *progname, *history;
 static char me;	/* typically ':' or '-' */
 static bool editit = FALSE, printit = FALSE;
 static int nreplace = 0, nsearch = 0;
-static FILE *fp;
+static FILE *histfile;
 
-static void *ealloc(size_t n) {
+void *ealloc(size_t n) {
 	void *p = (void *) malloc(n);
 	if (p == NULL) {
 		perror("malloc");
@@ -47,7 +43,7 @@ static void *ealloc(size_t n) {
 	return p;
 }
 
-static void *erealloc(void *p, size_t n) {
+void *erealloc(void *p, size_t n) {
 	p = (void *) realloc(p, n);
 	if (p == NULL) {
 		perror("realloc");
@@ -60,7 +56,7 @@ static char *newstr() {
 	return ealloc((size_t)1024);
 }
 
-static char *basename(char *s) {
+static char *rc_basename(char *s) {
 	char *t = strrchr(s, '/');
 	return (t == NULL) ? s : t + 1;
 }
@@ -179,7 +175,8 @@ start:
 				continue;	/* skip incrementing s */
 			case '\t':
 				for (;; col++) {
-					if ((*f++ = s<end? *s++ : '\t') == '\t') {
+					*f = s<end? *s++ : '\t';
+					if (*f++ == '\t') {
 						col = col | 07;	/* advance to before next tabstop */
 					}
 					if ((col&07) == 07)	/* stop before tabstop */
@@ -202,8 +199,8 @@ static char *readhistoryfile(char **last) {
 		fprintf(stderr, "$history not set\n");
 		exit(1);
 	}
-	fp = fopen(history, "r+");
-	if (fp == NULL) {
+	histfile = fopen(history, "r+");
+	if (histfile == NULL) {
 		perror(history);
 		exit(1);
 	}
@@ -211,7 +208,7 @@ static char *readhistoryfile(char **last) {
 	size = 0;
 	count = 0;
 	buf = ealloc(size = CHUNKSIZE);
-	while ((nread = fread(buf + count, sizeof (char), size - count, fp)) > 0) {
+	while ((nread = fread(buf + count, sizeof (char), size - count, histfile)) > 0) {
 		count += nread;
 		if (size - count == 0)
 			buf = erealloc(buf, size *= 4);
@@ -260,6 +257,7 @@ again:	s = last;
 			case '`': case '@':
 			case '(': case ')':
 			case '{': case '|':
+			case '/':
 				goto again;
 			default:
 				break;
@@ -272,7 +270,7 @@ int main(int argc, char **argv) {
 	int i;
 	char *s;
 
-	s = progname = basename(argv[0]);
+	s = progname = rc_basename(argv[0]);
 	me = *s++;
 	if (*s == me) {
 		s++;
@@ -321,9 +319,9 @@ next:	s = getcommand();
 		if (s == NULL)
 			goto next;
 	}
-	fseek(fp, 0, 2); /* 2 == end of file. i.e., append command to $history */
-	fprintf(fp, "%s\n", s);
-	fclose(fp);
+	fseek(histfile, 0, 2); /* 2 == end of file. i.e., append command to $history */
+	fprintf(histfile, "%s\n", s);
+	fclose(histfile);
 	if (printit)
 		printf("%s\n", s);
 	else {
@@ -333,7 +331,7 @@ next:	s = getcommand();
 			fprintf(stderr, "%s\n", s);
 		if (shell == NULL)
 			shell = "/bin/sh";
-		execl(shell, basename(shell), "-c", s, NULL);
+		execl(shell, rc_basename(shell), "-c", s, NULL);
 		perror(shell);
 		exit(1);
 	}

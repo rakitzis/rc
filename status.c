@@ -2,6 +2,7 @@
 
 #include "rc.h"
 #include "sigmsgs.h"
+#include "wait.h"
 
 /* status == the wait() value of the last command in the pipeline, or the last command */
 
@@ -33,7 +34,9 @@ extern int getstatus() {
 	if (pipelength > 1)
 		return !istrue();
 	s = statuses[0];
-	return (s&0xff) ? 1 : (s >> 8) & 0xff;
+	if (WIFSIGNALED(s))
+		return 1;
+	return WEXITSTATUS(s);
 }
 
 extern void set(bool code) {
@@ -61,11 +64,12 @@ extern void setstatus(pid_t pid, int i) {
 /* print a message if termination was with a signal, and if the child dumped core. exit on error if -e is set */
 
 extern void statprint(pid_t pid, int i) {
-	if (i & 0xff) {
-		char *msg = ((i & 0x7f) < NUMOFSIGNALS ? signals[i & 0x7f].msg : "");
+	if (WIFSIGNALED(i)) {
+		int t = WTERMSIG(i);
+		char *msg = ((t > 0) && (t < NUMOFSIGNALS) ? signals[WTERMSIG(i)].msg : "");
 		if (pid != -1)
 			fprint(2, "%ld: ", (long)pid);
-		if (i & 0x80) {
+		if (myWIFDUMPED(i)) {
 			if (*msg == '\0')
 				fprint(2, "core dumped\n");
 			else
@@ -97,16 +101,15 @@ extern List *sgetstatus() {
 /* return status as a string (used above and for bqstatus) */
 
 extern char *strstatus(int s) {
-	int t = s & 0x7f;
-
-	if (t != 0) {
-		const char *core = (s & 0x80) ? "+core" : "";
-		if (t < NUMOFSIGNALS && *signals[t].name != '\0')
+	if (WIFSIGNALED(s)) {
+		int t = WTERMSIG(s);
+		const char *core = myWIFDUMPED(s) ? "+core" : "";
+		if ((t > 0) && (t < NUMOFSIGNALS) && *signals[t].name != '\0')
 			return nprint("%s%s", signals[t].name, core);
 		else
 			return nprint("-%d%s", t, core); /* unknown signals are negated */
 	} else
-		return nprint("%d", (s >> 8) & 0xff);
+		return nprint("%d", WEXITSTATUS(s));
 }
 
 extern void ssetstatus(char **av) {

@@ -1,8 +1,8 @@
 /* execve.c: an execve() for geriatric unices without #! */
 
 /*
-   NOTE: this file depends on a hack in footobar.c which places two free spots before
-   av[][] so that execve does not have to call malloc.
+   NOTE: this file depends on a hack in footobar.c which places two free
+   spots before av[][] so that execve does not have to call malloc.
 */
 
 #include <errno.h>
@@ -10,7 +10,7 @@
 
 #define giveupif(x) { if (x) goto fail; }
 
-extern int my_execve(const char *path, const char **av, const char **ev) {
+extern int rc_execve(char *path, char **av, char **ev) {
 	int fd, len, fst, snd, end;
 	bool noarg;
 	char pb[256]; /* arbitrary but generous limit */

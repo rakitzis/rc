@@ -35,7 +35,7 @@
 .\" troff will supply the correct intersentence spacing, but only if
 .\" the sentences end at the end of a line.  Explicit spaces, if given,
 .\" are apparently honored and the normal intersentence spacing is
-.\" supressed.
+.\" suppressed.
 .\"
 .\" DaviD W. Sanderson
 .\"-------
@@ -166,7 +166,7 @@
 rc \- shell
 .SH SYNOPSIS
 .B rc
-.RB [ \-eixvldnpo ]
+.RB [ \-eixvldnpoV ]
 .RB [ \-c
 .IR command ]
 .RI [ arguments ]
@@ -300,6 +300,11 @@ Any further arguments to
 .I rc
 are placed in
 .Cr $* .
+.TP
+.Cr \-V
+This flag causes
+.I rc
+to print a version string to stdout, and exit immediately.
 .PP
 .SH COMMANDS
 A simple command is a sequence of words, separated by white space
@@ -1628,19 +1633,28 @@ is specified,
 .I rc
 waits for all child processes to exit.
 .TP
-\fBwhatis \fR[\fB\-s\fR] [\fB\-\|\-\fR] [\fIname ...\fR]
+\fBwhatis \fR[\fB\-b\fR] \fR[\fB\-f\fR] \fR[\fB\-p\fR] \fR[\fB\-s\fR] \fR[\fB\-v\fR] [\fB\-\|\-\fR] [\fIname ...\fR]
 Prints a definition of the named objects.
-For variables, their values
-are printed; for functions, their definitions are; and for executable
-files, path names are printed.
+For builtins,
+.B builtin
+.I foo
+is printed; for functions, including signal handlers, their definitions
+are printed; for executable files, path names are printed; and for
+variables, their values are printed.
+The options restrict output to builtins, functions, executable
+programs, signal handlers, and variables, respectively.  If no
+.IR name s
+are specified,
+.I rc
+lists all objects of that type.  (This is not permitted for
+.BR -p .)
 Without arguments,
 .B whatis
-prints the values of all shell variables and functions.
-With a
-.Cr \-s
-argument,
-.B whatis
-also prints out a list of available signals and their handlers (if any).
+is equivalent to
+.BR "whatis -fv" ,
+and prints the values of all shell variables and functions.
+.TP
+\&
 Note that
 .B whatis
 output is suitable for input to
@@ -1788,8 +1802,16 @@ The design of this shell has been copied from the
 .I rc
 that Tom Duff wrote at Bell Labs.
 .SH BUGS
-On systems that support
-.Cr /dev/fd ,
+Environment variables that contain the ASCII character SOH (also known
+as '\\001', or CTRL-A) will be split into lists at that character in
+descendant
+.IR rc
+processes.
+.PP
+On modern systems that support
+.Cr /dev/fd
+or
+.Cr /proc/self/fd ,
 .Cr <{foo}
 style redirection is implemented that way.
 However, on other systems it is implemented with named pipes,
@@ -1818,7 +1840,7 @@ notation for flattening should allow for using an arbitrary
 separating character, not just space.
 .PP
 Bug reports should be mailed to
-.Cr "byron@archone.tamu.edu" .
+.Cr "<tjg@star.le.ac.uk>" .
 .SH INCOMPATIBILITIES
 Here is a list of features which distinguish this incarnation of
 .I rc
@@ -1841,12 +1863,19 @@ a backquote must always be followed by a left-brace.
 This restriction is not present for single-word commands in this
 .IR rc .
 .PP
+The list flattening operator,
+.Cr $^foo ,
+is spelt
+.Cr $"foo
+in those versions of the Bell Labs
+.IR rc
+which have it.
+.PP
 The following are all new with this version of
 .IR rc :
 The
 .Cr \-n
 option,
-the list flattening operator,
 here strings (they facilitate exporting of functions
 with here documents into the environment),
 the

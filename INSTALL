@@ -1,0 +1,167 @@
+COMPILING
+
+rc uses GNU autoconf and automake.  The following commands are all you
+need to configure, build, test, and install rc.
+
+    $ sh configure
+    $ make
+    $ make trip
+    # make install
+
+This will build rc in the source directory (see below for details on how
+to build rc in a different directory).
+
+BUILD AND CONFIGURATION OPTIONS
+
+There are lots of options you can give to configure to modify rc's
+behaviour.  You can also select a command line history library to
+link against---see the README file for details of where to find these
+libraries.  For a summary of all options, run `sh configure --help'.
+
+You can specify Makefile variables by setting the corresponding
+environment variables.  For example, you might want to set `CC=cc', to
+prevent configure looking for gcc, or set an initial value for `LIBS',
+as in the example below.  It is a good idea to specify static linking
+(unless you are linking against a dynamic readline library)---if you are
+using gcc, you can do this by setting `CFLAGS=-static'.
+
+Here are the configure options you may want to use, in approximately
+descending order of usefulness.
+
+  --with-editline
+
+  This option tells rc to use the editline package (see the README file
+  for details) to provide EMACS style command line editing and history.
+  If the editline library is not installed in a standard place, you can
+  tell configure where to find it by setting the environment variable
+  LIBS.  For example, the maintainer builds rc by copying libedit.a into
+  the rc build directory and then running this configure command.
+
+    LIBS=-L. sh ../rc-1.5b3/configure --with-editline
+
+  --with-vrl
+
+  This option tells rc to use the vrl package (see the README file for
+  details) to provide EMACS style command line editing and history.  As
+  for `--with-editline', you may need to set the environment variable
+  LIBS appropriately.
+
+  --with-readline
+
+  This option tells rc to use the GNU readline package, which is similar
+  to editline or vrl, but has many more features.  The readline package
+  is over 6 times the size of editline (whether you count lines of code,
+  or the library itself).  As for editline, you can set the environment
+  variable LIBS if your readline library is not installed in a standard
+  place.
+
+    LIBS=-L/usr/gnu/lib sh configure --with-readline
+
+  --with-history
+
+  Use this option if you want to build and install the programs that
+  support a crude history mechanism.
+
+You can't use more than one of `--with-editline', `--with-vrl', and
+`--with-readline' at the same time.  If you have any of these you
+probably don't want to bother with `--with-history'.
+
+  --prefix /path
+
+  By default, `prefix' is /usr/local, which means that `make install'
+  installs rc (and possibly the history programs) in /usr/local/bin, and
+  man pages in /usr/local/man/man1.  Use this option to change where
+  `make install' puts things.
+
+  --disable-builtin-echo
+
+  By default, the `echo' command is builtin to rc for reasons of
+  efficiency and portability (of rc scripts).  It is the only builtin
+  which is not essential, and purists may wish to omit it.  Note that
+  `make trip' will fail if you disable builtin echo and your system's
+  `echo' does not understand `-n' to suppress newline.
+
+  --with-addon
+  --with-addon=foo.c
+  
+  On the other hand, non-purists may wish to add extra builtin commands.
+  An example is included in the files addon.c and addon.h, which will
+  only be built if you specify `--with-addon'.  If your addons are
+  in another file, you can specify that instead (but beware that the
+  interface file is still addon.h).
+
+  --disable-def-interp
+  --enable-def-interp=/bin/foo
+
+  By default, a program that fails with "Exec format error" is handed to
+  /bin/sh.  This does the Right Thing for scripts that start with `:' to
+  indicate that they are sh scripts.  You can disable this behaviour
+  entirely, or specify a different default interpreter.
+
+  --disable-def-path
+  --enable-def-path "/usr/local/bin","/usr/bin"
+
+  By default, if rc is started with no PATH, it uses a default path.
+  The default path is constructed at configure time, and consists
+  of each of the following directories that exist, in order.
+
+      /usr/local/bin /usr/bin /usr/ucb /bin .
+
+  You can disable this, or specify a different default path.  Note that
+  the quote marks (") must be seen by configure; unless you are already
+  using rc, you will probably need to quote them to your shell.
+
+  --disable-job
+
+  By default, rc puts backgrounded processes into a new process group,
+  as though it were a job control shell (it isn't).  This is usually
+  needed to work around bugs in application programs which install
+  signal handlers for the keyboard signals without checking whether the
+  signal was being ignored.  This option disables the default behaviour,
+  making rc behave like a traditional sh.  You are unlikely to want this
+  option on any Unix system.
+
+  --disable-protect-env
+
+  By default, rc encodes special characters in environment variables.
+  This is necessary on all known Unix systems to prevent sh either
+  dying or discarding the variables.  This option disables the default
+  behaviour.  You are unlikely to want this option on any Unix system.
+
+After you've built rc, I recommend that you run it through a test script
+to gain some confidence that all is working well.  Type `make trip' to
+do this.  This will produce some output, and should end with "trip is
+complete".  If the trip instead ends with "trip took a wrong turn..."
+please contact the maintainer.
+
+BUILDING IN ANOTHER DIRECTORY
+
+If you have a suitable `make', you can build rc in a different directory
+from where the sources are held.  This is particularly useful if you
+are building rc for multiple architectures.  All you need do is specify
+the path to the configure script in the first step.  Suitable `make's
+include GNU, HP-UX, and SunOS, but not Irix, nor Ultrix, nor UnixWare.
+
+COMPILATION WARNINGS
+
+If your C compiler is gcc, the option `-Wall' is turned on.  This may
+produce a few warnings.
+
+Warnings about "implicit declaration" of system functions may occur if
+your system's include files are deficient---they are usually harmless.
+
+There is a warning about "variable `n' might be clobbered" in walk.c.
+I'm not sure how serious this warning is, nor how to eliminate it.
+
+On some systems there are warnings about "passing arg 2 of `getgroups'
+from incompatible pointer type" in which.c.  I believe this is due to an
+incorrect declaration of `getgroups()' in those systems' header files.
+
+Any other warnings should be reported to the maintainer.
+
+OLD C
+
+rc needs an ISO C (89) compiler, or at least one that has a reasonable
+understanding of function prototypes, `<stdarg.h>', `void', and
+`volatile'.  If you really need to compile rc with an ancient C
+compiler, please contact the maintainer.

@@ -1,8 +1,7 @@
 /* glob.c: rc's (ugly) globber. This code is not elegant, but it works */
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include "rc.h"
+#include <sys/stat.h>
 
 /* Lifted from autoconf documentation.*/
 #if HAVE_DIRENT_H

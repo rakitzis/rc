@@ -1,7 +1,7 @@
 /* input.c: i/o routines for files and pseudo-files (strings) */
 
 #include <errno.h>
-#include <setjmp.h>
+
 #include "rc.h"
 #include "jbwrap.h"
 
@@ -20,13 +20,7 @@ typedef struct Input {
 
 #define BUFSIZE ((size_t) 256)
 
-#if READLINE
-extern char *readline(char *);
-extern void add_history(char *);
-static char *rlinebuf;
-#endif
-
-char *prompt, *prompt2;
+static char *prompt2;
 bool rcrc;
 
 static int dead(void);
@@ -46,6 +40,10 @@ static void (*realugchar)(int);
 
 int last;
 
+#if EDITLINE || READLINE
+static char *rlinebuf, *prompt;
+#endif
+
 extern int gchar() {
 	int c;
 
@@ -55,7 +53,7 @@ extern int gchar() {
 	}
 
 	while ((c = (*realgchar)()) == '\0')
-		pr_error("warning: null character ignored");
+		pr_error("warning: null character ignored", 0);
 
 	return c;
 }
@@ -68,7 +66,7 @@ static int dead() {
 	return last = EOF;
 }
 
-static void ugdead(int c) {
+static void ugdead(int ignore) {
 	return;
 }
 
@@ -85,42 +83,20 @@ static int stringgchar() {
 	return last = (inbuf[chars_out] == '\0' ? EOF : inbuf[chars_out++]);
 }
 
-/* signal-safe readline wrapper */
-
-#if READLINE
-#ifndef HAVE_RESTARTABLE_SYSCALLS
-static char *rc_readline(char *prompt) {
-	char *r;
-	interrupt_happened = FALSE;
-	if (!setjmp(slowbuf.j)) {
-		slow = TRUE;
-		if (!interrupt_happened)
-			r = readline(prompt);
-		else
-			r = NULL;
-	} else
-		r = NULL;
-	slow = FALSE;
-	if (r == NULL)
-		errno = EINTR;
-	sigchk();
-	return r;
-}
-#else
-#define rc_readline readline
-#endif /* HAVE_RESTARTABLE_SYSCALLS */
-#endif /* READLINE */
-
 /*
-   read a character from a file-descriptor. If GNU readline is defined, add a newline and doctor
-   the buffer to look like a regular fdgchar buffer.
+   read a character from a file-descriptor. If GNU readline is defined,
+   add a newline and doctor the buffer to look like a regular fdgchar
+   buffer.
 */
 
 static int fdgchar() {
+
 	if (chars_out >= chars_in + 2) { /* has the buffer been exhausted? if so, replenish it */
 		while (1) {
-#if READLINE
-			if (interactive && istack->fd == 0) {
+#if EDITLINE || READLINE
+			if (interactive && istack->fd == 0 && isatty(0)) {
+				/* The readline library doesn't handle read() returning EAGAIN. */
+				makeblocking(istack->fd);
 				rlinebuf = rc_readline(prompt);
 				if (rlinebuf == NULL) {
 					chars_in = 0;
@@ -136,9 +112,17 @@ static int fdgchar() {
 				}
 			} else
 #endif
-				{
-				long /*ssize_t*/ r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
-				sigchk();
+			{
+				ssize_t r;
+				do {
+					r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
+					sigchk();
+					if (errno == EAGAIN) {
+						if (!makeblocking(istack->fd))
+							panic("not O_NONBLOCK");
+						errno = EINTR;
+					}
+				} while (r < 0 && errno == EINTR);
 				if (r < 0) {
 					uerror("read");
 					rc_exit(1);
@@ -248,15 +232,17 @@ extern void flushu() {
 
 /* the wrapper loop in rc: prompt for commands until EOF, calling yyparse and walk() */
 
-extern Node *doit(bool execit) {
+extern Node *doit(bool clobberexecit) {
 	bool eof;
+	bool execit ;
 	Jbwrap j;
 	Estack e1, e2;
 	Edata jerror;
 
 	if (dashen)
-		execit = FALSE;
-	setjmp(j.j);
+		clobberexecit = FALSE;
+	execit = clobberexecit;
+	sigsetjmp(j.j, 1);
 	jerror.jb = &j;
 	except(eError, jerror, &e1);
 	for (eof = FALSE; !eof;) {
@@ -279,11 +265,12 @@ extern Node *doit(bool execit) {
 				funcall(arglist);
 			}
 			if ((s = varlookup("prompt")) != NULL) {
-#if READLINE
-				prompt = s->w;
-#else
-				fprint(2, "%s", s->w);
+#if EDITLINE || READLINE
+				if (istack->t == iFd && istack->fd == 0 && isatty(0))
+					prompt = s->w;
+				else
 #endif
+					fprint(2, "%s", s->w);
 				prompt2 = (s->n == NULL ? "" : s->n->w);
 			}
 		}
@@ -360,4 +347,16 @@ extern void closefds() {
 			close(i->fd);
 			i->fd = -1;
 		}
+}
+
+extern void print_prompt2() {
+	lineno++;
+	if (interactive) {
+#if EDITLINE || READLINE
+		if (istack->t == iFd && istack->fd == 0 && isatty(0))
+			prompt = prompt2;
+		else
+#endif
+			fprint(2, "%s", prompt2);
+	}
 }

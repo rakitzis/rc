@@ -10,15 +10,14 @@
 #include "rc.h"
 
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <setjmp.h>
 #include <errno.h>
 
-#include "jbwrap.h"
-#include "sigmsgs.h"
 #include "addon.h"
+#include "jbwrap.h"
 #include "rlimit.h"
-
-extern int umask(int);
+#include "sigmsgs.h"
 
 static void b_break(char **), b_cd(char **), b_eval(char **), b_exit(char **),
 	b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
@@ -55,7 +54,9 @@ static struct {
 	{ b_wait,	"wait" },
 	{ b_whatis,	"whatis" },
 	{ b_dot,	"." },
+#ifdef ADDONS
 	ADDONS
+#endif
 };
 
 extern builtin_t *isbuiltin(char *s) {
@@ -72,7 +73,7 @@ extern void funcall(char **av) {
 	Jbwrap j;
 	Estack e1, e2;
 	Edata jreturn, star;
-	if (setjmp(j.j))
+	if (sigsetjmp(j.j, 1))
 		return;
 	starassign(*av, av+1, TRUE);
 	jreturn.jb = &j;
@@ -97,7 +98,7 @@ static void badnum(char *num) {
 
 /* a dummy command. (exec() performs "exec" simply by not forking) */
 
-extern void b_exec(char **av) {
+extern void b_exec(char **ignore) {
 }
 
 #if RC_ECHO
@@ -244,7 +245,7 @@ static void b_shift(char **av) {
 
 /* dud function */
 
-extern void b_builtin(char **av) {
+extern void b_builtin(char **ignore) {
 }
 
 /* wait for a given process, or all outstanding processes */

@@ -26,7 +26,7 @@ extern void inithandler() {
 	null.type = nBody;
 	null.u[0].p = null.u[1].p = NULL;
 	for (i = 1; i < NUMOFSIGNALS; i++)
-#ifndef HAVE_RESTARTABLE_SYSCALLS
+#if HAVE_SYSV_SIGCLD
 		if (i != SIGCLD)
 #endif
 		if (sighandlers[i] == SIG_IGN)
@@ -133,7 +133,7 @@ static void fn_handler(int s) {
 
 /* A dud signal handler for SIGQUIT and SIGTERM */
 
-static void dud_handler(int s) {
+static void dud_handler(int ignore) {
 }
 
 /*
@@ -143,12 +143,12 @@ static void dud_handler(int s) {
 
 extern void fnassign(char *name, Node *def) {
 	Node *newdef = treecpy(def == NULL ? &null : def, ealloc); /* important to do the treecopy first */
-	Function *new = get_fn_place(name);
+	rc_Function *new = get_fn_place(name);
 	int i;
 	new->def = newdef;
 	new->extdef = NULL;
 	if (strncmp(name, "sig", conststrlen("sig")) == 0) { /* slight optimization */
-#ifndef HAVE_RESTARTABLE_SYSCALLS /* System V machines treat SIGCLD very specially */
+#if HAVE_SYSV_SIGCLD /* System V machines treat SIGCLD very specially */
 		if (streq(name, "sigcld"))
 			rc_error("can't trap SIGCLD");
 #endif
@@ -170,7 +170,7 @@ extern void fnassign(char *name, Node *def) {
 
 extern void fnassign_string(char *extdef) {
 	char *name = get_name(extdef+3); /* +3 to skip over "fn_" */
-	Function *new;
+	rc_Function *new;
 	if (name == NULL)
 		return;
 	new = get_fn_place(name);
@@ -181,7 +181,7 @@ extern void fnassign_string(char *extdef) {
 /* Return a function in Node form, evaluating an entry from the environment if necessary */
 
 extern Node *fnlookup(char *name) {
-	Function *look = lookup_fn(name);
+	rc_Function *look = lookup_fn(name);
 	Node *ret;
 	if (look == NULL)
 		return NULL; /* not found */
@@ -189,7 +189,7 @@ extern Node *fnlookup(char *name) {
 		return look->def;
 	if (look->extdef == NULL) /* function was set to null, e.g., fn foo {} */
 		return &null;
-	ret = parse_fn(name, look->extdef);
+	ret = parse_fn(look->extdef);
 	if (ret == NULL) {
 		efree(look->extdef);
 		look->extdef = NULL;
@@ -202,7 +202,7 @@ extern Node *fnlookup(char *name) {
 /* Return a function in string form (used by makeenv) */
 
 extern char *fnlookup_string(char *name) {
-	Function *look = lookup_fn(name);
+	rc_Function *look = lookup_fn(name);
 
 	if (look == NULL)
 		return NULL;
@@ -243,13 +243,14 @@ extern void fnrm(char *name) {
 extern void whatare_all_signals() {
 	int i;
 	for (i = 1; i < NUMOFSIGNALS; i++)
-		if (*signals[i].name != '\0')
+		if (*signals[i].name != '\0') {
 			if (sighandlers[i] == SIG_IGN)
 				fprint(1, "fn %s {}\n", signals[i].name);
 			else if (sighandlers[i] == fn_handler)
 				fprint(1, "fn %S {%T}\n", signals[i].name, handlers[i]);
 			else
 				fprint(1, "fn %s\n", signals[i].name);
+		}
 }
 
 extern void prettyprint_fn(int fd, char *name, Node *n) {

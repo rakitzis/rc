@@ -184,11 +184,15 @@ These have the syntax:
 pattern is used as a search-limiting pattern also.)
 Substitutions happen on the first match.
 .PP
-Finally, a command may be edited in a crude line-mode fashion:
-The line to be edited is printed out, and below it the user
-supplies modifications to the command:
+Finally, if the program was invoked as
+.RI `` -- ''
+or
+.RI `` --p '',
+a command may be edited in a crude line-mode fashion.  The line to be
+edited is printed out, and below it the user supplies modifications to
+the command.
 .TP
-.B any character
+.B any character except those below
 Replaces the character above.
 .TP
 .B space or tab
@@ -213,6 +217,11 @@ Appends the rest of the typed line.
 .B \-
 Backs up to a previous command satisfying the same matching
 constraints.
+.TP
+.B end of line
+If any changes have been made, the command is printed out again for
+further editing.  If no changes have been made, the command is executed
+or printed, and the program exits.
 .TP
 .B end of file
 If an end-of-file is read from the keyboard by the editor,

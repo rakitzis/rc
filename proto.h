@@ -1,25 +1,42 @@
+/*
+  The idea of this file is to include prototypes for all external
+  functions that rc uses, either by including the appropriate header
+  file, or---for older systems---declaring the functions directly.
+*/
+
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+#include <signal.h>
+
 #if HAVE_QUAD_T
 typedef quad_t align_t;
 #else
 typedef long align_t;
 #endif
 
-/* If you need to change this, please let the maintainer know. */
-#ifndef SIG_ATOMIC_T
-typedef int SIG_ATOMIC_T;
+/*
+  We need <stdarg.h>.  If you really need to build rc on a system which
+  doesn't have it, please contact the maintainer.
+*/
+
+#include <stdarg.h>
+
+/* C 9x specifies a va_copy() macro which should be used for copying
+objects of type va_list.  Of course, most places don't have this yet,
+but where it does exist we need to use it. */
+#ifndef va_copy
+#define va_copy(x,y) (x)=(y)
 #endif
 
 #if STDC_HEADERS
+
 #include <stdlib.h>
-#else
-/* fake stdlib.h */
-extern void exit(int);
-extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
-#endif
-
-#if STDC_HEADERS
 #include <string.h>
-#else
+
+#else /* STDC_HEADERS */
+
 /* fake string.h */
 extern int strncmp(const char *, const char *, size_t);
 extern int strcmp(const char *, const char *);
@@ -32,7 +49,38 @@ extern char *strcat(char *, const char *);
 extern char *strncat(char *, const char *, size_t);
 extern void *memcpy(void *, const void *, size_t);
 extern void *memset(void *, int, size_t);
+
+/* fake stdlib.h */
+extern void exit(int);
+extern void free(void *);
+extern void *malloc(size_t);
+extern void *realloc(void *, size_t);
+extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
+
+#endif /* STDC_HEADERS */
+
+#if HAVE_UNISTD_H
+#include <unistd.h>
 #endif
+
+#if HAVE_SETPGRP
+
+#if SETPGRP_VOID
+/* Smells like POSIX: should all be ok. */
+#else
+/* BSD: fake it. */
+#define setpgid(pid, pgrp) setpgrp(pid, pgrp)
+#define tcsetpgrp(fd, pgrp) ioctl((fd), TIOCSPGRP, &(pgrp))
+#endif
+
+#else /* HAVE_SETPGRP */
+
+/* Nothing doing. */
+#define setpgid()
+#define tcsetpgrp()
+
+#endif /*HAVE_SETPGRP */
+
 
 /* fake errno.h for mips (which doesn't declare errno in errno.h!?!?) */
 #ifdef host_mips

@@ -1,10 +1,9 @@
 /* exec.c */
-#include <signal.h>
 #include <errno.h>
-#include <setjmp.h>
-#include "rc.h"
-#include "jbwrap.h"
+#include <signal.h>
 
+#include "rc.h"
+#include "wait.h"
 /*
    Takes an argument list and does the appropriate thing (calls a
    builtin, calls a function, etc.)
@@ -92,11 +91,7 @@ extern void exec(List *s, bool parent) {
 				return;
 			rc_exit(getstatus());
 		}
-#if HASH_BANG
-		execve(path, (char * const *) av, (char * const *) ev);
-#else
-		my_execve(path, (char * const *) av, (char * const *) ev); /* bogus, huh? */
-#endif
+		rc_execve(path, (char * const *) av, (char * const *) ev);
 
 #ifdef DEFAULTINTERP
 		if (errno == ENOEXEC) {
@@ -105,6 +100,7 @@ extern void exec(List *s, bool parent) {
 			execve(*av, (char * const *) av, (char * const *) ev);
 		}
 #endif
+
 		uerror(*av);
 		rc_exit(1);
 		/* NOTREACHED */
@@ -123,7 +119,7 @@ extern void exec(List *s, bool parent) {
 		   prompt, even though there's a SIGINT in its signal
 		   vector.
 		*/
-		if ((stat & 0xff) == 0)
+		if (WIFEXITED(stat))
 			nl_on_intr = FALSE;
 		sigchk();
 		nl_on_intr = TRUE;

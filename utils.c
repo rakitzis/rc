@@ -7,12 +7,12 @@
 
 /* print error with line number on noninteractive shells (i.e., scripts) */
 
-extern void pr_error(char *s) {
+extern void pr_error(char *s, int offset) {
 	if (s != NULL) {
 		if (interactive)
 			fprint(2, "%s\n", s);
 		else
-			fprint(2, "line %d: %s\n", lineno - 1, s);
+			fprint(2, "line %d: %s\n", lineno + offset, s);
 	}
 }
 
@@ -65,44 +65,6 @@ extern bool isabsolute(char *path) {
 	return path[0] == '/' || (path[0] == '.' && (path[1] == '/' || (path[1] == '.' && path[2] == '/')));
 }
 
-/* signal-safe read and write (for BSD slow devices). writeall also allows partial writes */
-
-extern void writeall(int fd, char *buf, size_t remain) {
-	int i;
-	for (i = 0; remain > 0; buf += i, remain -= i) {
-		interrupt_happened = FALSE;
-		if (!setjmp(slowbuf.j)) {
-			slow = TRUE;
-			if (interrupt_happened)
-				break;
-			else if ((i = write(fd, buf, remain)) <= 0)
-				break; /* abort silently on errors in write() */
-		} else
-			break;
-		slow = FALSE;
-	}
-	slow = FALSE;
-	sigchk();
-}
-
-extern int rc_read(int fd, char *buf, size_t n) {
-	long /*ssize_t*/ r;
-	interrupt_happened = FALSE;
-	if (!setjmp(slowbuf.j)) {
-		slow = TRUE;
-		if (!interrupt_happened)
-			r = read(fd, buf, n);
-		else
-			r = -2;
-	} else
-		r = -2;
-	slow = FALSE;
-	if (r == -2) {
-		errno = EINTR;
-		r = -1;
-	}
-	return r;
-}
 
 /* duplicate a fd and close the old one only if necessary */
 

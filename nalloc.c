@@ -111,8 +111,8 @@ extern void restoreblock(Block *old) {
 /* generic memory allocation functions */
 
 extern void *ealloc(size_t n) {
-	extern void *malloc(size_t);
 	void *p = malloc(n);
+
 	if (p == NULL) {
 		uerror("malloc");
 		rc_exit(1);
@@ -121,8 +121,7 @@ extern void *ealloc(size_t n) {
 }
 
 extern void *erealloc(void *p, size_t n) {
-	extern void *realloc(void *, size_t);
-	if (p == NULL)		/* convenience feature */
+	if (p == NULL)		/* erealloc() has POSIX realloc() semantics */
 		return ealloc(n);
 	if ((p = realloc(p, n)) == NULL) {
 		uerror("realloc");
@@ -132,8 +131,6 @@ extern void *erealloc(void *p, size_t n) {
 }
 
 extern void efree(void *p) {
-	extern void free(void *);
 	if (p != NULL)
 		free(p);
 }
-

@@ -18,11 +18,9 @@ extern void varassign(char *name, List *def, bool stack) {
 	new = get_var_place(name, stack);
 	new->def = newdef;
 	new->extdef = NULL;
-#if READLINE /* need to reset readline() every time TERM or TERMCAP changes */
-	if (interactive && (streq(name, "TERM") || streq(name, "TERMCAP"))) {
-		extern void rl_reset_terminal(char *);
+#if READLINE
+	if (interactive && (streq(name, "TERM") || streq(name, "TERMCAP")))
 		rl_reset_terminal(NULL);
-	}
 #endif
 }
 
@@ -85,7 +83,7 @@ extern List *varlookup(char *name) {
 		return look->def;
 	if (look->extdef == NULL)
 		return NULL; /* variable was set to null, e.g., a=() echo foo */
-	ret = parse_var(name, look->extdef);
+	ret = parse_var(look->extdef);
 	if (ret == NULL) {
 		look->extdef = NULL;
 		return NULL;

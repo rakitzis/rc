@@ -1,7 +1,7 @@
 /* lex.c: rc's lexical analyzer */
 
 #include "rc.h"
-#include "y.tab.h"
+#include "parse.h"
 
 /*
 	Special characters (i.e., "non-word") in rc:
@@ -334,16 +334,6 @@ extern void inityy() {
 		realbuf = ealloc(bufsize);
 	} else if (realbuf == NULL)
 		realbuf = ealloc(bufsize);
-}
-
-extern void print_prompt2() {
-	lineno++;
-#if READLINE
-	prompt = prompt2;
-#else
-	if (interactive)
-		fprint(2, "%s", prompt2);
-#endif
 }
 
 /*

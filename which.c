@@ -9,17 +9,16 @@
 */
 
 #include "rc.h"
+
 #include <errno.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
+
+#include "getgroups.h"
 
 #define X_USR 0100
 #define X_GRP 0010
 #define X_OTH 0001
 #define X_ALL (X_USR|X_GRP|X_OTH)
-
-extern int stat(const char *, struct stat *);
 
 static bool initialized = FALSE;
 static uid_t uid;
@@ -32,7 +31,7 @@ static GETGROUPS_T *gidset;
 /* determine whether gid lies in gidset */
 
 static int ingidset(gid_t g) {
-	gid_t i;
+	int i;
 	for (i = 0; i < ngroups; ++i)
 		if (g == gidset[i])
 			return 1;
@@ -87,12 +86,17 @@ extern char *which(char *name, bool verbose) {
 		uid = geteuid();
 		gid = getegid();
 #if HAVE_GETGROUPS
-		ngroups = getgroups(0, (gid_t *)0);
-		gidset = malloc(ngroups * sizeof(gid_t));
-		if (!gidset)
-			uerror("malloc");
-		else
-			getgroups(ngroups, gidset);
+#if HAVE_POSIX_GETGROUPS
+		ngroups = getgroups(0, (GETGROUPS_T *)0);
+		if (ngroups < 0) {
+			uerror("getgroups");
+			rc_exit(1);
+		}
+#else
+			ngroups = NGROUPS;
+#endif
+		gidset = ealloc(ngroups * sizeof(GETGROUPS_T));
+		getgroups(ngroups, gidset);
 #endif
 	}
 	if (isabsolute(name)) /* absolute pathname? */

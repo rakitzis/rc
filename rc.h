@@ -1,13 +1,4 @@
 #include "config.h"
-
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
 #include "proto.h"
 
 /* datatypes */
@@ -16,31 +7,12 @@
 #undef FALSE
 #undef TRUE
 
-#include <stdarg.h>
-
-#if HAVE_SETPGRP
-
-#if SETPGRP_VOID
-/* Smells like POSIX: should all be ok. */
-#else
-/* BSD: fake it. */
-#define setpgid(pid, pgrp) setpgrp(pid, pgrp)
-#define tcsetpgrp(fd, pgrp) ioctl((fd), TIOCSPGRP, &(pgrp))
-#endif
-
-#else /* HAVE_SETPGRP */
-
-/* Nothing doing. */
-#define setpgid
-#define tcsetpgrp
-
-#endif /*HAVE_SETPGRP */
 
 typedef void builtin_t(char **);
 typedef struct Block Block;
 typedef struct Dup Dup;
 typedef struct Estack Estack;
-typedef struct Function Function;
+typedef struct rc_Function rc_Function;
 typedef struct Hq Hq;
 typedef struct Htab Htab;
 typedef struct Jbwrap Jbwrap;
@@ -130,7 +102,7 @@ struct Rq {
 	struct Rq *n;
 };
 
-struct Function {
+struct rc_Function {
 	Node *def;
 	char *extdef;
 };
@@ -181,7 +153,7 @@ enum {
 #define memzero(s, n) memset(s, 0, n)
 #define enew(x) ((x *) ealloc(sizeof(x)))
 #define ecpy(x) strcpy((char *) ealloc(strlen(x) + 1), x)
-#define lookup_fn(s) ((Function *) lookup(s, fp))
+#define lookup_fn(s) ((rc_Function *) lookup(s, fp))
 #define lookup_var(s) ((Variable *) lookup(s, vp))
 #define nnew(x) ((x *) nalloc(sizeof(x)))
 #define ncpy(x) (strcpy((char *) nalloc(strlen(x) + 1), x))
@@ -194,7 +166,6 @@ enum {
 /* rc prototypes */
 
 /* main.c */
-extern char *prompt, *prompt2;
 extern Rq *redirq;
 extern bool dashdee, dashee, dashvee, dashex, dashell,
 	dasheye, dashen, dashpee, interactive;
@@ -220,11 +191,18 @@ extern void sigint(int);
 extern void exec(List *, bool);
 extern void doredirs(void);
 
+#if HASH_BANG
+#define rc_execve execve
+#else
+/* execve.c */
+extern int my_execve(char *, char **, char **);
+#endif
+
 /* footobar.c */
 extern char **list2array(List *, bool);
 extern char *get_name(char *);
-extern List *parse_var(char *, char *);
-extern Node *parse_fn(char *, char *);
+extern List *parse_var(char *);
+extern Node *parse_fn(char *);
 extern void initprint(void);
 extern void rc_exit(int); /* here for odd reasons; user-defined signal handlers are kept in fn.c */
 
@@ -251,7 +229,7 @@ extern List *word(char *, char *);
 /* hash.c */
 extern Htab *fp, *vp;
 extern void *lookup(char *, Htab *);
-extern Function *get_fn_place(char *);
+extern rc_Function *get_fn_place(char *);
 extern List *varlookup(char *);
 extern Node *fnlookup(char *);
 extern Variable *get_var_place(char *, bool);
@@ -282,6 +260,7 @@ extern int heredoc(int);
 extern int qdoc(Node *, Node *);
 extern Hq *hq;
 
+
 /* input.c */
 extern void initinput(void);
 extern Node *parseline(char *);
@@ -289,6 +268,7 @@ extern int gchar(void);
 extern void ugchar(int);
 extern Node *doit(bool);
 extern void flushu(void);
+extern void print_prompt2(void);
 extern void pushfd(int);
 extern void pushstring(char **, bool);
 extern void popinput(void);
@@ -296,12 +276,12 @@ extern void closefds(void);
 extern int last;
 extern bool rcrc;
 
+
 /* lex.c */
 extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);
 extern void scanerror(char *);
-extern void print_prompt2(void);
 extern const char nw[], dnw[];
 
 /* list.c */
@@ -324,6 +304,7 @@ extern void restoreblock(Block *);
 
 /* open.c */
 extern int rc_open(const char *, redirtype);
+extern bool makeblocking(int);
 
 /* print.c */
 /*
@@ -350,13 +331,48 @@ extern char *nprint(const char *fmt,...);
 	*(f)->buf++ = (c);\
 }
 
-/* y.tab.c (parse.y) */
+/* parse.c (parse.y) */
 extern Node *parsetree;
 extern int yyparse(void);
 extern void initparse(void);
 
+/* readline */
+
+#if READLINE
+
+/* Including the real readline .h files is too complicated, so we just
+declare what we actually use. */
+
+extern void add_history(char *);
+extern char *readline(char *);
+extern int rl_clear_signals(void);
+extern int rl_pending_input;
+extern int rl_reset_terminal(char *);
+
+#if READLINE_OLD
+extern void rl_clean_up_for_exit(void);
+extern void rl_deprep_terminal(void);
+#else
+extern void _rl_clean_up_for_exit(void);
+extern void (*rl_deprep_term_function)(void);
+#endif
+
+extern char *rc_readline(char *);
+
+extern volatile sig_atomic_t rl_active;
+extern struct Jbwrap rl_buf;
+#endif
+
+#if EDITLINE
+extern char *readline(char *);
+extern void add_history(char *);
+#define rc_readline readline
+#endif
+
+
 /* redir.c */
 extern void doredirs(void);
+
 
 /* signal.c */
 extern void initsignal(void);
@@ -364,7 +380,7 @@ extern void catcher(int);
 extern void sigchk(void);
 extern void (*rc_signal(int, void (*)(int)))(int);
 extern void (*sighandlers[])(int);
-extern volatile SIG_ATOMIC_T slow, interrupt_happened;
+
 
 /* status.c */
 extern int istrue(void);
@@ -377,6 +393,23 @@ extern void statprint(pid_t, int);
 extern void ssetstatus(char **);
 extern char *strstatus(int s);
 
+
+/* system.c or system-bsd.c */
+extern void writeall(int, char *, size_t);
+
+#if HAVE_RESTARTABLE_SYSCALLS
+extern int rc_read(int, char *, size_t);
+extern pid_t rc_wait(int *);
+extern Jbwrap slowbuf;
+extern volatile sig_atomic_t slow;
+
+#else /* HAVE_RESTARTABLE_SYSCALLS */
+
+#define rc_read read
+#define rc_wait wait
+#endif /* HAVE_RESTARTABLE_SYSCALLS */
+
+
 /* tree.c */
 extern Node *mk(int /*nodetype*/,...);
 extern Node *treecpy(Node *, void *(*)(size_t));
@@ -385,13 +418,11 @@ extern void treefree(Node *);
 /* utils.c */
 extern bool isabsolute(char *);
 extern int n2u(char *, unsigned int);
-extern int rc_read(int, char *, size_t);
 extern int mvfd(int, int);
 extern int starstrcmp(const void *, const void *);
-extern void pr_error(char *);
+extern void pr_error(char *, int);
 extern void panic(char *);
 extern void uerror(char *);
-extern void writeall(int, char *, size_t);
 
 /* wait.c */
 extern pid_t rc_fork(void);
@@ -403,4 +434,3 @@ extern bool forked;
 /* walk.c */
 extern bool walk(Node *, bool);
 extern bool cond;
-
