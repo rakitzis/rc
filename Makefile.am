@@ -26,7 +26,7 @@ SYSTEM = system.o
 endif
 
 bin_PROGRAMS = rc
-noinst_PROGRAMS = mksignal $(HISTORY)
+noinst_PROGRAMS = mksignal tripping $(HISTORY)
 
 rc_SOURCES = builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c parse.c print.c redir.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c
 
@@ -34,8 +34,6 @@ EXTRA_rc_SOURCES = addon.c execve.c readline.c system.c system-bsd.c
 
 rc_DEPENDENCIES = sigmsgs.o $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
 rc_LDADD = sigmsgs.o $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
-
-mksignal_SOURCES = mksignal.c
 
 noinst_HEADERS = getgroups.h jbwrap.h parse.h proto.h rc.h rlimit.h wait.h
 
@@ -56,7 +54,7 @@ sigmsgs.c sigmsgs.h: mksignal
 #     mv y.tab.c parse.c
 #     mv y.tab.h parse.h
 
-trip: rc
+trip: rc tripping
 	./rc -p < $(srcdir)/trip.rc
 
 install-exec-hook:
