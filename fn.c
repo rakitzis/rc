@@ -143,7 +143,7 @@ static void dud_handler(int s) {
 
 extern void fnassign(char *name, Node *def) {
 	Node *newdef = treecpy(def == NULL ? &null : def, ealloc); /* important to do the treecopy first */
-	Function *new = get_fn_place(name);
+	rc_Function *new = get_fn_place(name);
 	int i;
 	new->def = newdef;
 	new->extdef = NULL;
@@ -170,7 +170,7 @@ extern void fnassign(char *name, Node *def) {
 
 extern void fnassign_string(char *extdef) {
 	char *name = get_name(extdef+3); /* +3 to skip over "fn_" */
-	Function *new;
+	rc_Function *new;
 	if (name == NULL)
 		return;
 	new = get_fn_place(name);
@@ -181,7 +181,7 @@ extern void fnassign_string(char *extdef) {
 /* Return a function in Node form, evaluating an entry from the environment if necessary */
 
 extern Node *fnlookup(char *name) {
-	Function *look = lookup_fn(name);
+	rc_Function *look = lookup_fn(name);
 	Node *ret;
 	if (look == NULL)
 		return NULL; /* not found */
@@ -202,7 +202,7 @@ extern Node *fnlookup(char *name) {
 /* Return a function in string form (used by makeenv) */
 
 extern char *fnlookup_string(char *name) {
-	Function *look = lookup_fn(name);
+	rc_Function *look = lookup_fn(name);
 
 	if (look == NULL)
 		return NULL;
