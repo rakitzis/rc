@@ -166,7 +166,7 @@
 rc \- shell
 .SH SYNOPSIS
 .B rc
-.RB [ \-deilnopsVvx ]
+.RB [ \-deiIlnopsvx ]
 .RB [ \-c
 .IR command ]
 .RI [ arguments ]
@@ -255,7 +255,8 @@ flag is present, or if the input to
 is not from a terminal, then
 .I rc
 will not be in interactive mode.  No prompts will be printed, and
-SIGINT will cause
+.Cr SIGINT
+will cause
 .I rc
 to exit.
 .TP
@@ -270,7 +271,7 @@ is a dash
 then
 .I rc
 will behave as a login shell.
-That is, it will try to run commands present in
+That is, it will run commands from
 .Cr $home/.rcrc ,
 if this file exists, before reading any other input.
 .TP
@@ -348,7 +349,7 @@ of shell functions, builtin commands,
 or as a file in the directories named by
 .Cr $path .
 .SS "Background Tasks"
-A command ending with a
+A command ending with
 .Cr &
 is run in the background; that is,
 the shell returns immediately rather than waiting for the command to
@@ -515,6 +516,7 @@ Note that no spaces may appear in these constructs:
 .Ds
 .Cr "command > [2] file"
 .De
+.PP
 would send the output of the command to a file named
 .Cr [2] ,
 with the intended filename appearing in the command's argument list.
@@ -627,9 +629,7 @@ redirection is implemented with some kind of pipe, and since one cannot
 .IR lseek (2)
 on a pipe, commands that use
 .IR lseek (2)
-will hang.
-For example,
-most versions of
+will hang.  For example, some versions of
 .IR diff (1)
 use
 .IR lseek (2)
@@ -680,7 +680,7 @@ and performs the command as long as the
 .I test
 is true.
 .TP
-.Ci "for (" var " in" " list" ) " cmd"
+.Ci "for (" var " in " list ) " cmd"
 .I rc
 sets
 .I var
@@ -912,9 +912,10 @@ are two very different things.  Assigning the null string to a
 variable is a valid operation, but it does not remove its definition.
 .Ds
 .Cr "null = '' empty = () echo $#null $#empty"
-.Te
+.De
+.PP
 produces the output
-.Ts
+.Ds
 .Cr "1 0"
 .De
 .SS "List Concatenation"
@@ -987,7 +988,7 @@ A list may be assigned to a variable, using the notation:
 .PP
 The special variable
 .Cr *
-may be assigned to using this notation;
+may also be assigned to using this notation;
 .I rc
 has no
 .B set
@@ -999,19 +1000,20 @@ digits, may be used as a variable name.  Any character except
 may be used, but special characters must be quoted.
 All user-defined variables are exported into the environment.
 .PP
-The value of a variable is referenced with the notation:
+The value of a variable is referenced with the dollar
+.Rc ( $ )
+operator:
 .Ds
 .Ci $ var
 .De
 .PP
 Any variable which has not been assigned a value returns the null list,
 .Cr "()" ,
-when referenced.
-In addition, multiple references are allowed:
+when referenced.  Multiple references are allowed:
 .Ds
-.Cr a=foo
-.Cr b=a
-.Cr "echo $$b"
+.Cr "a = foo"
+.Cr "b = a"
+.Cr "echo $ $ b"
 .De
 .PP
 prints
@@ -1070,10 +1072,9 @@ Variables may be subscripted with the notation
 .PP
 where
 .I n
-is a list of integers (origin 1).
-The list of subscripts need
-not be in order or even unique.
-Thus,
+is a list of integers (origin 1).  The opening parenthesis must
+immediately follow the variable name.  The list of subscripts need not
+be in order or even unique.  Thus,
 .Ds
 .Cr "a=(one two three)"
 .Cr "echo $a(3 3 3)"
@@ -1121,14 +1122,15 @@ This returns a single-element list, with the number of elements in
 .Cr $var .
 .SS "Flat Lists"
 In order to create a single-element list from a multi-element list,
-with the components space-separated, use
+with the components space-separated, use the dollar-caret
+.Rc ( $^ )
+operator:
 .Ds
 .Cr $^var
 .De
 .PP
 This is useful when the normal list concatenation rules need to be
-bypassed.
-For example, to append a single period at the end of
+bypassed.  For example, to append a single period at the end of
 .Cr $path ,
 use:
 .Ds
@@ -1497,7 +1499,9 @@ Thus:
 .Cr "fn sigint {}"
 .De
 .PP
-causes SIGINT to be ignored by the shell.
+causes
+.Cr SIGINT
+to be ignored by the shell.
 Only signals that are being ignored are passed on to programs run by
 .IR rc ;
 signal functions are not exported.
@@ -1777,12 +1781,14 @@ This function can shift any variable (except
 .Ds
 .Cr "fn lshift { lshift=$*; *=$$1; shift $lshift(2); $lshift(1)=$* }"
 .De
+.PP
 With this definition in place,
 .Ds
 .Cr "walrus = (shoes ships sealing-wax cabbages kings)"
 .Cr "lshift walrus 3"
 .Cr "whatis walrus"
 .De
+.PP
 prints
 .Ds
 .Cr "walrus=(cabbages kings)"
@@ -1801,11 +1807,13 @@ This function allows the separator to be an arbitrary string.
 .Cr "    echo -n $lflat(2)"
 .Cr "}"
 .De
+.PP
 With this definition in place,
 .Ds
 .Cr "hops=(uunet mcvax ukc tlg)"
 .Cr lflat hops !
 .De
+.PP
 prints (with no final newline)
 .Ds
 .Cr uunet!mcvax!ukc!tlg
