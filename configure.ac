@@ -288,23 +288,42 @@ AC_SUBST(ADDON)
 AC_ARG_WITH(editline, [  --with-editline         Simmule Turner's line editing],
 	AC_CHECK_LIB(edit, readline,
 		AC_DEFINE(EDITLINE) LIBS="$LIBS -ledit",
-		AC_MSG_WARN(editline library not found)))
+		AC_MSG_ERROR(editline library not found)))
 
 dnl Getting readline right is hard.  There are (at least) two incompatible versions,
 dnl and we need to know which one we are using.  There are also two different
 dnl names for the include files.
+rc_readline_ok=yes
 AC_ARG_WITH(readline, [  --with-readline         Bloated GNU line editing], [
-	AC_CHECK_LIB(readline, rl_deprep_terminal, [
-		AC_DEFINE(READLINE)
-		AC_DEFINE(READLINE_OLD)
-	], [
-		AC_CHECK_LIB(readline, readline, [
-			AC_DEFINE(READLINE)
-		], AC_MSG_WARN(readline library not found), -ltermcap)
+	dnl First of all, can we find the library at all?
+	AC_CHECK_LIB(readline, readline, , [
+		rc_readline_err="readline library not found"
+		rc_readline_ok=no
 	], -ltermcap)
-	LIBS="$LIBS -lreadline -ltermcap"
+	dnl Can we find either version of the include files?
 	AC_CHECK_HEADERS(readline.h readline/readline.h)
+	case "$ac_cv_header_readline_h" in
+	no) case "$ac_cv_header_readline_readline_h" in
+		no)
+			rc_readline_err="readline include files not found"
+			rc_readline_ok=no
+			;;
+		esac
+		;;
+	esac
+	dnl If all is ok, set variables and check for version 2.1, otherwise give warning.
+	case "$rc_readline_ok" in
+	no) AC_MSG_ERROR("$rc_readline_err") ;;
+	yes)
+		AC_DEFINE(READLINE)
+		LIBS="$LIBS -lreadline -ltermcap"
+		AC_CHECK_LIB(readline, _rl_clean_up_for_exit, , AC_DEFINE(READLINE_OLD), -ltermcap)
+		;;
+	esac
 ])
 AM_CONDITIONAL(AMC_READLINE, test "${with_readline+set}" = set)
+
+dnl For some reason CPPFLAGS doesn't get propagated.
+AC_SUBST(CPPFLAGS)
 
 AC_OUTPUT(Makefile)
