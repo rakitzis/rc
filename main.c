@@ -2,7 +2,7 @@
 
 #include "rc.h"
 
-bool dashdee, dashee, dashvee, dashex, dashell, dasheye,
+bool dashdee, dashee, dashvee, dashex, dashell, dashEYE, dasheye,
 	dashen, dashpee, dashess, interactive;
 pid_t rc_pid;
 
@@ -19,7 +19,7 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	dollarzero = argv[0];
 	rc_pid = getpid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
-	while ((c = rc_getopt(argc, argv, "c:deilnopsvx")) != -1)
+	while ((c = rc_getopt(argc, argv, "c:deiIlnopsvx")) != -1)
 		switch (c) {
 		case 'c':
 			dashsee[0] = rc_optarg;
@@ -29,6 +29,10 @@ extern int main(int argc, char *argv[], char *envp[]) {
 			break;
 		case 'e':
 			dashee = TRUE;
+			break;
+		case 'I':
+			dashEYE = TRUE;
+			interactive = FALSE;
 			break;
 		case 'i':
 			dasheye = interactive = TRUE;
@@ -59,8 +63,8 @@ extern int main(int argc, char *argv[], char *envp[]) {
 		}
 quitopts:
 	argv += rc_optind;
-	/* use isatty() iff -i is not set, and iff the input is not from a script or -c flags */
-	if (!dasheye && dashsee[0] == NULL && (dashess || *argv == NULL))
+	/* use isatty() iff neither -i nor -I is set, and iff the input is not from a script or -c flags */
+	if (!dasheye && !dashEYE && dashsee[0] == NULL && (dashess || *argv == NULL))
 		interactive = isatty(0);
 	if (!dashoh) {
 		checkfd(0, rFrom);

@@ -679,3 +679,8 @@ Changes since rc-1.5b2
 
   Portability: need special runes for read() returning EIO under job
   control systems.
+
+2000-06-20
+
+  Feature: add `-I' flag (definitively not interactive) for
+  compatibility with Plan 9 rc.
