@@ -364,6 +364,7 @@ extern struct Jbwrap rl_buf;
 
 #if EDITLINE
 extern char *readline(char *);
+extern void add_history(char *);
 #define rc_readline readline
 #endif
 
