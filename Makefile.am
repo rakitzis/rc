@@ -39,7 +39,7 @@ man_MANS = rc.1 $(HISTMAN)
 EXTRA_DIST = addon.c addon.h EXAMPLES history.1 mksignal parse.y rc.1 trip.rc
 
 sigmsgs.c sigmsgs.h: $(srcdir)/mksignal
-	sh $(srcdir)/mksignal @SIGNAL_H@
+	sh $(srcdir)/mksignal '@SIGNAL_H@'
 
 y.tab.c: $(srcdir)/parse.y
 	$(YACC) -d $(srcdir)/parse.y
