@@ -61,6 +61,8 @@ DISTCLEANFILES = sigmsgs.c sigmsgs.h statval.h
 #     mv y.tab.c parse.c
 #     mv y.tab.h parse.h
 
+check: trip
+
 trip: rc tripping
 	./rc -p < $(srcdir)/trip.rc
 
