@@ -64,7 +64,8 @@ extern void setstatus(pid_t pid, int i) {
 
 extern void statprint(pid_t pid, int i) {
 	if (WIFSIGNALED(i)) {
-		char *msg = (WTERMSIG(i) < NUMOFSIGNALS ? signals[WTERMSIG(i)].msg : "");
+		int t = WTERMSIG(i);
+		char *msg = ((t > 0) && (t < NUMOFSIGNALS) ? signals[WTERMSIG(i)].msg : "");
 		if (pid != -1)
 			fprint(2, "%ld: ", (long)pid);
 		if (myWIFDUMPED(i)) {
@@ -99,11 +100,10 @@ extern List *sgetstatus() {
 /* return status as a string (used above and for bqstatus) */
 
 extern char *strstatus(int s) {
-	int t = WTERMSIG(s);
-
-	if (t != 0) {
+	if (WIFSIGNALED(s)) {
+		int t = WTERMSIG(s);
 		const char *core = myWIFDUMPED(s) ? "+core" : "";
-		if (t < NUMOFSIGNALS && *signals[t].name != '\0')
+		if ((t > 0) && (t < NUMOFSIGNALS) && *signals[t].name != '\0')
 			return nprint("%s%s", signals[t].name, core);
 		else
 			return nprint("-%d%s", t, core); /* unknown signals are negated */
