@@ -1,3 +1,6 @@
+#define NDEBUG 1
+#include <assert.h>
+
 #include "config.h"
 #include "proto.h"
 
