@@ -744,3 +744,9 @@ Changes since rc-1.5b2
 
   Bug: more wrongly ordered header file includes (thanks Callum
   Gibson).
+
+2001-11-06
+
+  Portability: rename print.c::utoa() to rc_utoa() to avoid QNX name
+  clash; use "sh -c 'test ...'" in trip.rc for missing standalone
+  `test' on QNX (thanks Stefan Dalibor).
