@@ -733,3 +733,7 @@ Changes since rc-1.5b2
 
   Bug: space vs tab confusion in commented out Makefile rules to
   rebuild parser (thanks Gary Carvell).
+
+2001-10-31
+
+  Release: rc-1.6c4.
