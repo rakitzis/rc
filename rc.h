@@ -194,7 +194,6 @@ extern void sigint(int);
 
 /* exec.c */
 extern void exec(List *, bool);
-extern void doredirs(void);
 
 #if HASH_BANG
 #define rc_execve execve
