@@ -47,7 +47,7 @@ EXTRA_DIST = addon.c addon.h EXAMPLES history.1 parse.y rc.1 trip.rc
 sigmsgs.c sigmsgs.h: ./mksignal
 	./mksignal
 
-y.tab.c: $(srcdir)/parse.y
+y.tab.c y.tab.h: $(srcdir)/parse.y
 	$(YACC) -d $(srcdir)/parse.y
 
 trip: rc
