@@ -127,8 +127,8 @@ sword	: comword
 	| keyword			{ $$ = mk(nWord,$1, NULL); }
 
 word	: sword
-	| word '='			{ $$ = mk(nConcat,$1,mk(nWord,"=",NULL)); }
-	| word '=' sword		{ $$ = mk(nConcat,$1,mk(nConcat,mk(nWord,"=",NULL),$3)); }
+	| word '='			{ if (interactive) { $$ = mk(nConcat,$1,mk(nWord,"=",NULL)); } else { yyerror("syntax error"); YYERROR; } }
+	| word '=' sword		{ if (interactive) { $$ = mk(nConcat,$1,mk(nConcat,mk(nWord,"=",NULL),$3)); } else { yyerror("syntax error"); YYERROR; } }
 	| word '^' sword		{ $$ = mk(nConcat,$1,$3); }
 
 comword	: '$' sword			{ $$ = mk(nVar,$2); }
