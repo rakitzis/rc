@@ -117,8 +117,11 @@ extern void waitforall() {
 		pid_t pid = rc_wait4(plist->pid, &stat, FALSE);
 		if (pid > 0)
 			setstatus(pid, stat);
-		else
+		else {
 			set(FALSE);
+			if (errno == EINTR)
+				return;
+		}
 		sigchk();
 	}
 }
