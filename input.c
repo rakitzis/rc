@@ -122,7 +122,7 @@ system, you lose. */
 					r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
 					sigchk();
 					if (errno == EAGAIN) {
-						makenonblock(istack->fd);
+						makeblocking(istack->fd);
 						errno = EINTR;
 					}
 				} while (r < 0 && errno == EINTR);

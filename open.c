@@ -27,7 +27,7 @@ extern int rc_open(const char *name, redirtype m) {
 /* make a file descriptor non blocking. must only be called after read()
 has returned EAGAIN. */
 
-extern void makenonblock(int fd) {
+extern void makeblocking(int fd) {
 	int flags;
 
 	if ((flags = fcntl(fd, F_GETFL)) == -1) {
