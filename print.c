@@ -21,7 +21,7 @@ static bool name(Format *format, int ignore) { \
 
 Flag(uconv,	FMT_unsigned)
 Flag(hconv,	FMT_short)
-Flag(lconv,	FMT_long)
+Flag(rc_lconv,	FMT_long)
 
 #if HAVE_QUAD_T
 Flag(qconv,	FMT_quad)
@@ -203,7 +203,7 @@ static void inittab(void) {
 
 	fmttab['u'] = uconv;
 	fmttab['h'] = hconv;
-	fmttab['l'] = lconv;
+	fmttab['l'] = rc_lconv;
 	fmttab['#'] = altconv;
 	fmttab['-'] = leftconv;
 	fmttab['.'] = dotconv;
