@@ -32,11 +32,31 @@ extern void writeall(int fd, char *buf, size_t remain) {
 
 extern int rc_read(int fd, char *buf, size_t n) {
 	ssize_t r;
+
 	interrupt_happened = FALSE;
 	if (!sigsetjmp(slowbuf.j, 1)) {
 		slow = TRUE;
 		if (!interrupt_happened)
 			r = read(fd, buf, n);
+		else
+			r = -2;
+	} else
+		r = -2;
+	slow = FALSE;
+	if (r == -2) {
+		errno = EINTR;
+		r = -1;
+	}
+	return r;
+}
+
+static r = -1;
+extern pid_t rc_wait(int *stat) {
+	interrupt_happened = FALSE;
+	if (!sigsetjmp(slowbuf.j, 1)) {
+		slow = TRUE;
+		if (!interrupt_happened)
+			r = wait(stat);
 		else
 			r = -2;
 	} else

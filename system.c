@@ -8,13 +8,3 @@ extern void writeall(int fd, char *buf, size_t remain) {
 			break; /* abort silently on errors in write() */
 	sigchk();
 }
-
-extern int rc_read(int fd, char *buf, size_t n) {
-	return read(fd, buf, n);
-}
-
-#if READLINE
-extern char *rc_readline(char *prompt) {
-	return readline(prompt);
-}
-#endif

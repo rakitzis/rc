@@ -362,14 +362,6 @@ extern Node *parsetree;
 extern int yyparse(void);
 extern void initparse(void);
 
-/* rdwr.c */
-extern void writeall(int, char *, size_t);
-extern int rc_read(int, char *, size_t);
-
-#if READLINE
-extern char *rc_readline(char *prompt);
-#endif
-
 /* redir.c */
 extern void doredirs(void);
 
@@ -391,6 +383,26 @@ extern void setpipestatus(int [], int);
 extern void statprint(pid_t, int);
 extern void ssetstatus(char **);
 extern char *strstatus(int s);
+
+
+/* system.c or system-bsd.c */
+extern void writeall(int, char *, size_t);
+
+#if HAVE_RESTARTABLE_SYSCALLS
+extern int rc_read(int, char *, size_t);
+#if READLINE
+extern char *rc_readline(char *prompt);
+#endif
+
+#else /* HAVE_RESTARTABLE_SYSCALLS */
+#define rc_read read
+#define rc_wait wait
+#if READLINE
+#define rc_readline readline
+#endif
+
+#endif /* HAVE_RESTARTABLE_SYSCALLS */
+
 
 /* tree.c */
 extern Node *mk(int /*nodetype*/,...);

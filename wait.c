@@ -67,7 +67,7 @@ extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
 		int ret;
 		Pid *q;
 
-		ret = wait(stat);
+		ret = rc_wait(stat);
 
 		if (ret < 0) {
 			if (errno == ECHILD)
