@@ -589,3 +589,15 @@ Changes since rc-1.5b2
   be.
 
   Release: rc-1.5b6.
+
+1999-05-19
+
+  Documentation: minor fixes to man page.
+
+1999-05-26
+
+  Tidiness: `make distclean' now removes sigmsgs.[ch].
+
+1995-05-28
+
+  Release: rc-1.6.

@@ -1,46 +1,29 @@
-Since rc-1.5b2 was released, many fixes have been made to the
-autoconfiguration code, some of them critical.  One problem (which I
-introduced) was found in minutes with ElectricFence: I had spent several
-hours failing to find it with other tools.
+Highlights of changes since rc-1.4.  See ChangeLog for further details.
 
-Three bugs in rc itself, one of them trivial, were fixed.
+Portability.  The major change since the last full release is that rc
+now uses GNU autoconf and automake.  Other parts of the build process
+have been tidied up too, so that building rc should now be painless.  It
+has been tested on a wide variety of Unix-like systems.
 
-rc now uses GNU automake.  Although I feel that automake is sticking
-plaster to mend a broken leg, it has made my job as maintainer easier.
-(Errm, apart from tracking down bugs in automake itself, and Perl, that
-is.)  For people building rc, it's now possible (depending on your
-flavour of `make') to build in a separate directory from the source.
+Bug fixes.  The following bugs have been fixed: the interaction with
+readline was not always correct; SIGCLD set to SIG_IGN could cause a
+hang; some obscure pipeline incantations could cause a hang; the `wait'
+builtin could become uninterruptible; an application could crash rc
+by making stdin nonblocking; the `-i' flag didn't work with readline;
+$history didn't work properly over NFS; a few memory leaks; and an off
+by one bug in reporting line numbers of errors.
 
-Creeping featurism: rc now has a `-V' switch to report its version
-number.
+New features.  The following features are new: the `-s' flag, which
+causes rc to read from stdin even if arguments are present; the `-V'
+flag, which prints a version string; $bqstatus which holds the exit
+status of the last backquote command; additional options to the `whatis'
+builtin; and support for vrl, another lightweight readline-style
+library.
 
-The detection of signal names has been completely revised.  Vincent
-Broman suggested this, and contributed mksignal.c.
-
-The interaction with readline has been redone, principally to work
-around bugs in the readline library.  Tom Culliton persuaded me of
-the need for this, and his patches to an earlier version of rc became
-readline.c.
-
-I rewrote addon.[ch] to provide a more useful example of adding extra
-builtins.
-
-The rc build system no longer considers running `yacc': parse.y is for
-information only.  The supplied y.tab.[ch] were built with Berkeley
-`yacc', and lightly edited to remove a few gcc warnings.  This idea was
-suggested by Gert-Jan Vons.
-
-Binaries of rc-1.5b5 are typically a few kilobytes smaller than 1.5b2.
-I believe this is due to improved autoconfiguration: we are now much
-more careful only to include code that will be used.
-
-Support for vrl (another lightweight "readline"-style library) was
-added.
-
-rc can now deal with a bogus application that sets its stdin to
-non-blocking mode.
-
-See ChangeLog for more details.
+What happened to rc-1.5?  A number of beta releases were made with names
+like rc-1.5b2, which might suggest improvements over rc-1.5.  To avoid
+any possibility of confusion, I decided to name this release rc-1.6
+instead.
 
 Tim Goodwin
-1999-01-27
+1999-05-26

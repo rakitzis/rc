@@ -161,7 +161,7 @@
 .if !"\\$4"" .Xf \\$2 \\$1 "\\$3\\f\\$1\\$4\\*(Xi" "\\$5" "\\$6" "\\$7" "\\$8" "\\$9"
 .if "\\$4"" \\$3\fR\s10
 ..
-.TH RC 1 "1999-05-12"
+.TH RC 1 "1999-05-28"
 .SH NAME
 rc \- shell
 .SH SYNOPSIS
@@ -293,8 +293,9 @@ to run in a protected mode, whereby it becomes more difficult for
 an
 .I rc
 script to be subverted by placing false commands in the environment.
-(Note that this presence of this flag does NOT mean that it is safe to
-run setuid
+(Note that the presence of this flag does
+.I not
+mean that it is safe to run setuid
 .I rc
 scripts; the usual caveats about the setuid bit still apply.)
 .TP
@@ -308,7 +309,7 @@ placed in
 .Cr \-V
 This flag causes
 .I rc
-to print a version string to stdout, and exit immediately.
+to print a version string to standard output, and exit immediately.
 .TP
 .Cr \-v
 This flag causes
@@ -463,6 +464,16 @@ and the standard input may be taken from a file with
 .Cr "command < file"
 .De
 .PP
+Redirections can appear anywhere in the line: the word
+following the redirection symbol is the filename and must be
+quoted if it contains spaces or other special characters.
+These are all equivalent.
+.Ds
+.Cr "echo 1 2 3 > foo"
+.Cr "> foo echo 1 2 3"
+.Cr "echo 1 2 > foo 3"
+.De
+.PP
 File descriptors other than 0 and 1 may be specified also.
 For example, to redirect standard error to a file, use:
 .Ds
@@ -477,6 +488,17 @@ to the same file, use
 .Cr "command > file >[2=1]"
 .De
 .PP
+As in
+.IR sh ,
+redirections are processed from left to right.  Thus this sequence
+.Ds
+.Cr "command >[2=1] > file"
+.De
+.PP
+is usually a mistake.  It first duplicates standard error to standard
+output; then redirects standard output to a file, leaving standard error
+wherever standard output originally was.
+.PP
 To close a file descriptor that may be open, use
 .Ci >[ n =]\fR.
 For example, to
@@ -484,6 +506,14 @@ close file descriptor 7:
 .Ds
 .Cr "command >[7=]"
 .De
+.PP
+Note that no spaces may appear in these constructs:
+.Ds
+.Cr "command > [2] file"
+.De
+would send the output of the command to a file named
+.Cr [2] ,
+with the intended filename appearing in the command's argument list.
 .PP
 In order to place the output of a command at the end of an already
 existing file, use:
@@ -499,6 +529,12 @@ with the use of
 .Ds
 .Cr "command << 'eof-marker'"
 .De
+.PP
+Subsequent lines form the standard input of
+the command, till a line containing just the
+marker, in this case
+.Cr eof-marker ,
+is encountered.
 .PP
 If the end-of-file marker is enclosed in quotes,
 then no variable substitution occurs inside the here document.
@@ -524,7 +560,7 @@ Additionally,
 .I rc
 supports ``here strings'', which are like here documents,
 except that input is taken directly from a string on the command line.
-Its use is illustrated here:
+Their use is illustrated here:
 .Ds
 .Cr "cat <<< 'this is a here string' | wc"
 .De
@@ -559,6 +595,9 @@ use:
 .Cr "command |[2] wc"
 .De
 .PP
+As with file redirections, no spaces may occur in the construct specifying
+numbered file descriptors.
+.PP
 The exit status of a pipeline is considered true if and only if every
 command in the pipeline exits true.
 .SS "Commands as Arguments"
@@ -579,7 +618,7 @@ does it like this:
 .De
 .PP
 compares the output of the two commands in braces.
-A note: since this form of
+Note: since this form of
 redirection is implemented with some kind of pipe, and since one cannot
 .IR lseek (2)
 on a pipe, commands that use
