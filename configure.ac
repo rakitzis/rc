@@ -11,11 +11,14 @@ AC_ARG_PROGRAM
 
 AC_DEFINE(RELDATE, "1998-12-04")
 
+dnl Find a standard C compiler
+AC_PROG_CC
+AM_PROG_CC_STDC
+
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
 dnl -Wmissing-prototypes', and checked that all the warnings generated
 dnl are harmless.
-AC_PROG_CC
 case "$GCC" in
 yes) CFLAGS="-Wall $CFLAGS" ;;
 esac
