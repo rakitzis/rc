@@ -3,9 +3,11 @@
    Support for signal handlers is also found here.
 */
 
+#include "rc.h"
+
 #include <signal.h>
 #include <errno.h>
-#include "rc.h"
+
 #include "sigmsgs.h"
 
 static void fn_handler(int), dud_handler(int);
