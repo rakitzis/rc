@@ -7,12 +7,12 @@
 
 /* print error with line number on noninteractive shells (i.e., scripts) */
 
-extern void pr_error(char *s) {
+extern void pr_error(char *s, int offset) {
 	if (s != NULL) {
 		if (interactive)
 			fprint(2, "%s\n", s);
 		else
-			fprint(2, "line %d: %s\n", lineno - 1, s);
+			fprint(2, "line %d: %s\n", lineno + offset, s);
 	}
 }
 

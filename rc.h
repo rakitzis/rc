@@ -304,7 +304,7 @@ extern void restoreblock(Block *);
 
 /* open.c */
 extern int rc_open(const char *, redirtype);
-extern void makeblocking(int);
+extern bool makeblocking(int);
 
 /* print.c */
 /*
@@ -331,7 +331,7 @@ extern char *nprint(const char *fmt,...);
 	*(f)->buf++ = (c);\
 }
 
-/* y.tab.c (parse.y) */
+/* parse.c (parse.y) */
 extern Node *parsetree;
 extern int yyparse(void);
 extern void initparse(void);
@@ -420,7 +420,7 @@ extern bool isabsolute(char *);
 extern int n2u(char *, unsigned int);
 extern int mvfd(int, int);
 extern int starstrcmp(const void *, const void *);
-extern void pr_error(char *);
+extern void pr_error(char *, int);
 extern void panic(char *);
 extern void uerror(char *);
 
