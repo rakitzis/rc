@@ -10,6 +10,10 @@ void out0(void) {
 	putchar('\n');
 }
 
+void ctrl_a(void) {
+	puts("a\001ab\002b");
+}
+
 void makenonblock(void) {
 	int flags;
 
@@ -24,6 +28,9 @@ int main(int argc, char **argv) {
 	switch(argv[1][0]) {
 	case '0':
 		out0();
+		break;
+	case 'a':
+		ctrl_a();
 		break;
 	case 'n':
 		makenonblock();
