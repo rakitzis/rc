@@ -423,14 +423,7 @@ static void b_newpgrp(char **av) {
 /* Berkeley limit support was cleaned up by Paul Haahr. */
 
 #if HAVE_SETRLIMIT
-typedef struct Suffix Suffix;
-struct Suffix {
-	const Suffix *next;
-	long amount;
-	char *name;
-};
-
-static const Suffix
+static const struct Suffix
 	kbsuf = { NULL, 1024, "k" },
 	mbsuf = { &kbsuf, 1024*1024, "m" },
 	gbsuf = { &mbsuf, 1024*1024*1024, "g" },
@@ -439,32 +432,39 @@ static const Suffix
 	htsuf = { &mtsuf, 60*60, "h" };
 #define	SIZESUF &gbsuf
 #define	TIMESUF &htsuf
-#define	NOSUF ((Suffix *) NULL)  /* for RLIMIT_NOFILE on SunOS 4.1 */
+#define	NOSUF ((struct Suffix *) NULL)  /* for RLIMIT_NOFILE on SunOS 4.1 */
 
-typedef struct {
-	char *name;
-	int flag;
-	const Suffix *suffix;
-} Limit;
-static const Limit limits[] = {
+static const struct Limit limits[] = {
 	{ "cputime",		RLIMIT_CPU,	TIMESUF },
 	{ "filesize",		RLIMIT_FSIZE,	SIZESUF },
 	{ "datasize",		RLIMIT_DATA,	SIZESUF },
 	{ "stacksize",		RLIMIT_STACK,	SIZESUF },
 	{ "coredumpsize",	RLIMIT_CORE,	SIZESUF },
-#ifdef RLIMIT_RSS /* SysVr4 does not have this */
-	{ "memoryuse",		RLIMIT_RSS,	SIZESUF },
-#endif
-#ifdef RLIMIT_VMEM /* instead, they have this! */
-	{ "vmemory",		RLIMIT_VMEM,	SIZESUF },
-#endif
-#ifdef RLIMIT_NOFILE  /* SunOS 4.1 adds a limit on file descriptors */
+#ifdef RLIMIT_NOFILE  /* SUSv2, but not universal */
 	{ "descriptors",	RLIMIT_NOFILE,	NOSUF },
+#endif
+#ifdef RLIMIT_AS /* SUSv2, but not universal */
+	{ "memoryuse",		RLIMIT_AS,	SIZESUF },
+#endif
+#if defined(RLIMIT_VMEM) && !defined(RLIMIT_AS) /* old name for AS */
+	{ "memoryuse",		RLIMIT_VMEM,	SIZESUF },
+#endif
+#ifdef RLIMIT_RSS
+	{ "memoryrss",		RLIMIT_RSS,	SIZESUF },
+#endif
+#ifdef RLIMIT_NPROC
+	{ "maxproc",		RLIMIT_NPROC,	NOSUF },
+#endif
+#ifdef RLIMIT_MEMLOCK
+	{ "memorylocked",	RLIMIT_MEMLOCK,	SIZESUF },
+#endif
+#ifdef RLIMIT_LOCKS
+	{ "filelocks",		RLIMIT_LOCKS,	NOSUF },
 #endif
 	{ NULL, 0, NULL }
 };
 
-static void printlimit(const Limit *limit, bool hard) {
+static void printlimit(const struct Limit *limit, bool hard) {
 	struct rlimit rlim;
 	rlim_t lim;
 	getrlimit(limit->flag, &rlim);
@@ -475,7 +475,7 @@ static void printlimit(const Limit *limit, bool hard) {
 	if (lim == RLIM_INFINITY)
 		fprint(1, "%s \tunlimited\n", limit->name);
 	else {
-		const Suffix *suf;
+		const struct Suffix *suf;
 		for (suf = limit->suffix; suf != NULL; suf = suf->next)
 			if (lim % suf->amount == 0 && (lim != 0 || suf->amount > 1)) {
 				lim /= suf->amount;
@@ -485,30 +485,39 @@ static void printlimit(const Limit *limit, bool hard) {
 	}
 }
 
-static rlim_t parselimit(const Limit *limit, char *s) {
+static bool parselimit(const struct Limit *resource, rlim_t *limit, char *s) {
 	char *t;
 	int len = strlen(s);
-	long lim = 1;
-	const Suffix *suf = limit->suffix;
-	if (streq(s, "unlimited"))
-		return RLIM_INFINITY;
+	const struct Suffix *suf = resource->suffix;
+
+	*limit = 1;
+	if (streq(s, "unlimited")) {
+		*limit = RLIM_INFINITY;
+		return TRUE;
+	}
 	if (suf == TIMESUF && (t = strchr(s, ':')) != NULL) {
+		int min, sec;
 		*t++ = '\0';
-		lim = 60 * a2u(s) + a2u(t);
+		min = a2u(s); sec = a2u(t);
+		if (min == -1 || sec == -1) return FALSE;
+		*limit = 60 * min + sec;
 	} else {
+		int n;
 		for (; suf != NULL; suf = suf->next)
 			if (streq(suf->name, s + len - strlen(suf->name))) {
 				s[len - strlen(suf->name)] = '\0';
-				lim *= suf->amount;
+				*limit *= suf->amount;
 				break;
 			}
-		lim *= a2u(s);
+		n = a2u(s);
+		if (n == -1) return FALSE;
+		*limit *= n;
 	}
-	return lim;
+	return TRUE;
 }
 
 static void b_limit(char **av) {
-	const Limit *lp = limits;
+	const struct Limit *lp = limits;
 	bool hard = FALSE;
 	if (*++av != NULL && streq(*av, "-h")) {
 		av++;
@@ -532,9 +541,9 @@ static void b_limit(char **av) {
 		printlimit(lp, hard);
 	else {
 		struct rlimit rlim;
-		long pl;
+		rlim_t pl;
 		getrlimit(lp->flag, &rlim);
-		if ((pl = parselimit(lp, *av)) < 0) {
+		if (!parselimit(lp, &pl, *av)) {
 			fprint(2, "bad limit\n");
 			set(FALSE);
 			return;

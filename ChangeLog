@@ -757,3 +757,14 @@ Changes since rc-1.5b2
   more examples.
 
   Release: rc-1.6c5.
+
+2001-11-23
+
+  Bug: parselimit() was broken in various ways (thanks Chris
+  Siebenmann).
+
+2002-02-08
+
+  Bug: yet more wrongly ordered header file includes.
+
+  Release: rc-1.6c6.

@@ -161,7 +161,7 @@
 .if !"\\$4"" .Xf \\$2 \\$1 "\\$3\\f\\$1\\$4\\*(Xi" "\\$5" "\\$6" "\\$7" "\\$8" "\\$9"
 .if "\\$4"" \\$3\fR\s10
 ..
-.TH RC 1 "2001-11-20"
+.TH RC 1 "2002-02-08"
 .SH NAME
 rc \- shell
 .SH SYNOPSIS
@@ -1273,11 +1273,6 @@ prints
 .Cr "bqstatus=1"
 .De
 .TP
-.Cr bqstatus
-The exit status of the
-.I rc
-forked to execute the most recent backquote substitution.
-.TP
 .Cr cdpath
 A list of directories to search for the target of a
 .B cd
@@ -1429,9 +1424,9 @@ The first element of this list variable is a string which identifies this
 version of
 .IR rc .
 The second element is a string which can be found by
-.IR ident
+.B ident
 and
-.IR "sccs what" .
+.BR "sccs what" .
 .PP
 The values of
 .Cr "$path" ,

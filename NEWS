@@ -7,12 +7,13 @@ Bug fixes.  A number of bugs have been fixed.  The serious ones were:
 a core dump, triggered by `~ () '*''; premature exit, triggered by
 sourcing a file which could be open()ed but not read() (such as a
 directory on many systems); uninterruptible looping, triggered by
-semantic errors in `fn prompt'.
+semantic errors in `fn prompt'; deficiencies in the `limit' builtin.
 
 New features.  The following features are new: the `$version' variable
 replaces the `-V' flag; the `-I' flag (definitively not interactive)
 was added for compatibility with the Plan 9 rc; ASCII SOH (^A) is now
-handled transparently.
+handled transparently; support for large files; support for more
+limits.
 
 Documentation.  Distributions of this rc used to include a PostScript
 paper given by Tom Duff to the UKUUG, describing the Plan 9 rc.  This
@@ -21,4 +22,4 @@ the web, both in its original PostScript version, and an updated HTML
 version.
 
 Tim Goodwin
-2001-10-05
+2002-02-08

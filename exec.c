@@ -7,6 +7,11 @@
 
 #include "wait.h"
 
+#include <errno.h>
+#include <signal.h>
+
+#include "wait.h"
+
 #include "rc.h"
 #include "wait.h"
 /*

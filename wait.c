@@ -1,6 +1,5 @@
 #include <errno.h>
 
-#include "rc.h"
 #include "wait.h"
 
 bool forked = FALSE;

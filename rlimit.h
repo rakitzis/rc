@@ -39,4 +39,15 @@ typedef long rlim_t;
 #define RLIMIT_NOFILE RLIMIT_OFILE
 #endif
 
+struct Suffix {
+	const struct Suffix *next;
+	long amount;
+	char *name;
+};
+
+struct Limit {
+	char *name;
+	int flag;
+	const struct Suffix *suffix;
+};
 #endif /* HAVE_SETRLIMIT */
