@@ -1,1 +1,1 @@
-const char id[] = "@(#)rc version 1.5betadev-1, 1/9/94.";
+const char id[] = "@(#)rc version 1.5b2, 1997-07-01.";

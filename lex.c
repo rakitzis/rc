@@ -20,7 +20,7 @@
 	it declared in rc.h)
 */
 
-#define BUFSIZE ((SIZE_T) 1000)	/*	malloc hates power of 2 buffers? */
+#define BUFSIZE ((size_t) 1000)	/*	malloc hates power of 2 buffers? */
 #define BUFMAX (8 * BUFSIZE)	/* 	How big the buffer can get before we re-allocate the
 					space at BUFSIZE again. Premature optimization? Maybe.
 				*/
@@ -55,7 +55,7 @@ const char dnw[] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
-static SIZE_T bufsize = BUFSIZE;
+static size_t bufsize = BUFSIZE;
 static char *realbuf = NULL;
 static bool newline = FALSE;
 static bool errset = FALSE;
@@ -73,7 +73,7 @@ extern int yylex() {
 	static bool dollar = FALSE;
 	bool saw_meta = FALSE;
 	int c;
-	SIZE_T i;			/* The purpose of all these local assignments is to	*/
+	size_t i;			/* The purpose of all these local assignments is to	*/
 	const char *meta;		/* allow optimizing compilers like gcc to load these	*/
 	char *buf = realbuf;		/* values into registers. On a sparc this is a		*/
 	YYSTYPE *y = &yylval;		/* win, in code size *and* execution time		*/
@@ -338,7 +338,7 @@ extern void inityy() {
 
 extern void print_prompt2() {
 	lineno++;
-#ifdef READLINE
+#if READLINE
 	prompt = prompt2;
 #else
 	if (interactive)

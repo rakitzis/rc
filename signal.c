@@ -19,7 +19,7 @@ extern void catcher(int s) {
 	}
 	signal(s, catcher);
 	interrupt_happened = TRUE;
-#ifndef SVSIGS
+#ifndef HAVE_RESTARTABLE_SYSCALLS
 	if (slow)
 		longjmp(slowbuf.j, 1);
 #endif
@@ -70,4 +70,11 @@ extern void initsignal() {
 			signal(i, h);
 		sighandlers[i] = h;
 	}
+
+#ifdef SIGCLD
+	/* Ensure that SIGCLD is not SIG_IGN.  Solaris's rshd does this.  :-( */
+	h = signal(SIGCLD, SIG_DFL);
+	if (h != SIG_IGN)
+		signal(SIGCLD, h);
+#endif
 }

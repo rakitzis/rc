@@ -1,4 +1,13 @@
 #include "config.h"
+
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include "proto.h"
 
 /* datatypes */
@@ -8,6 +17,24 @@
 #undef TRUE
 
 #include <stdarg.h>
+
+#if HAVE_SETPGRP
+
+#if SETPGRP_VOID
+/* Smells like POSIX: should all be ok. */
+#else
+/* BSD: fake it. */
+#define setpgid(pid, pgrp) setpgrp(pid, pgrp)
+#define tcsetpgrp(fd, pgrp) ioctl((fd), TIOCSPGRP, &(pgrp))
+#endif
+
+#else /* HAVE_SETPGRP */
+
+/* Nothing doing. */
+#define setpgid
+#define tcsetpgrp
+
+#endif /*HAVE_SETPGRP */
 
 typedef void builtin_t(char **);
 typedef struct Block Block;
@@ -126,20 +153,21 @@ struct Format {
 	/* for the buffer maintainence routines */
 	char *buf, *bufbegin, *bufend;
 	int flushed;
-	void (*grow)(Format *, SIZE_T);
+	void (*grow)(Format *, size_t);
 	union { int n; void *p; } u;
 };
 
 /* Format->flags values */
 enum {
-	FMT_long	= 1,		/* %l */
-	FMT_short	= 2,		/* %h */
-	FMT_unsigned	= 4,		/* %u */
-	FMT_zeropad	= 8,		/* %0 */
-	FMT_leftside	= 16,		/* %- */
-	FMT_altform	= 32,		/* %# */
-	FMT_f1set	= 64,		/* %<n> */
-	FMT_f2set	= 128		/* %.<n> */
+	FMT_quad	= 1,		/* %q */
+	FMT_long	= 2,		/* %l */
+	FMT_short	= 4,		/* %h */
+	FMT_unsigned	= 8,		/* %u */
+	FMT_zeropad	= 16,		/* %0 */
+	FMT_leftside	= 32,		/* %- */
+	FMT_altform	= 64,		/* %# */
+	FMT_f1set	= 128,		/* %<n> */
+	FMT_f2set	= 256		/* %.<n> */
 };
 
 /* macros */
@@ -158,7 +186,7 @@ enum {
 #define nnew(x) ((x *) nalloc(sizeof(x)))
 #define ncpy(x) (strcpy((char *) nalloc(strlen(x) + 1), x))
 #ifndef offsetof
-#define offsetof(t, m) ((SIZE_T) (((char *) &((t *) 0)->m) - (char *)0))
+#define offsetof(t, m) ((size_t) (((char *) &((t *) 0)->m) - (char *)0))
 #endif
 #define streq(x, y) (*(x) == *(y) && strcmp(x, y) == 0)
 #define conststrlen(x) (sizeof (x) - 1)
@@ -170,7 +198,7 @@ extern char *prompt, *prompt2;
 extern Rq *redirq;
 extern bool dashdee, dashee, dashvee, dashex, dashell,
 	dasheye, dashen, dashpee, interactive;
-extern int rc_pid;
+extern pid_t rc_pid;
 extern int lineno;
 
 /* builtins.c */
@@ -278,19 +306,19 @@ extern const char nw[], dnw[];
 
 /* list.c */
 extern void listfree(List *);
-extern List *listcpy(List *, void *(*)(SIZE_T));
-extern SIZE_T listlen(List *);
+extern List *listcpy(List *, void *(*)(size_t));
+extern size_t listlen(List *);
 extern int listnel(List *);
 
 /* match.c */
 extern bool match(char *, char *, char *);
 
 /* alloc.c */
-extern void *ealloc(SIZE_T);
-extern void *erealloc(void *, SIZE_T);
+extern void *ealloc(size_t);
+extern void *erealloc(void *, size_t);
 extern void efree(void *);
 extern Block *newblock(void);
-extern void *nalloc(SIZE_T);
+extern void *nalloc(size_t);
 extern void nfree(void);
 extern void restoreblock(Block *);
 
@@ -306,7 +334,7 @@ extern Conv fmtinstall(int, Conv);
 extern bool (*fmtinstall(int, bool (*)(Format *, int)))(Format *, int);
 extern int printfmt(Format *, const char *);
 extern int fmtprint(Format *, const char *,...);
-extern void fmtappend(Format *, const char *, SIZE_T);
+extern void fmtappend(Format *, const char *, size_t);
 extern void fmtcat(Format *, const char *);
 extern int fprint(int fd, const char *fmt,...);
 extern char *mprint(const char *fmt,...);
@@ -318,7 +346,7 @@ extern char *nprint(const char *fmt,...);
 */
 #define	fmtputc(f, c) {\
 	if ((f)->buf >= (f)->bufend)\
-		(*(f)->grow)((f), (SIZE_T)1);\
+		(*(f)->grow)((f), (size_t)1);\
 	*(f)->buf++ = (c);\
 }
 
@@ -342,32 +370,32 @@ extern volatile SIG_ATOMIC_T slow, interrupt_happened;
 extern int istrue(void);
 extern int getstatus(void);
 extern void set(bool);
-extern void setstatus(int, int);
+extern void setstatus(pid_t, int);
 extern List *sgetstatus(void);
 extern void setpipestatus(int [], int);
-extern void statprint(int, int);
+extern void statprint(pid_t, int);
 extern void ssetstatus(char **);
 extern char *strstatus(int s);
 
 /* tree.c */
 extern Node *mk(int /*nodetype*/,...);
-extern Node *treecpy(Node *, void *(*)(SIZE_T));
+extern Node *treecpy(Node *, void *(*)(size_t));
 extern void treefree(Node *);
 
 /* utils.c */
 extern bool isabsolute(char *);
 extern int n2u(char *, unsigned int);
-extern int rc_read(int, char *, SIZE_T);
+extern int rc_read(int, char *, size_t);
 extern int mvfd(int, int);
 extern int starstrcmp(const void *, const void *);
 extern void pr_error(char *);
 extern void panic(char *);
 extern void uerror(char *);
-extern void writeall(int, char *, SIZE_T);
+extern void writeall(int, char *, size_t);
 
 /* wait.c */
-extern int rc_fork(void);
-extern int rc_wait4(int, int *, bool);
+extern pid_t rc_fork(void);
+extern pid_t rc_wait4(pid_t, int *, bool);
 extern List *sgetapids(void);
 extern void waitforall(void);
 extern bool forked;

@@ -12,7 +12,8 @@ sed '	s/\/\*[ 	]*//
 	s/([@*+!]) //
 	s/[ 	]*([a-zA-Z,->& ]*)[ 	]*//
 	s/^[ 	]*\#[ 	]*define/\#define/
-	s/[ 	]*signal$//' $1 |
+	s/[ 	]*signal$//
+	s/_SIG/SIG/g' $1 |
 awk '
 	BEGIN {
 		# assign to nomesg["SIGNAME"] to suppress a long message

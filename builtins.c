@@ -7,17 +7,16 @@
 	because of a bad umask.
 */
 
+#include "rc.h"
+
 #include <sys/ioctl.h>
 #include <setjmp.h>
 #include <errno.h>
-#include "rc.h"
+
 #include "jbwrap.h"
 #include "sigmsgs.h"
-#ifndef NOLIMITS
-#include <sys/time.h>
-#include <sys/resource.h>
-#endif
 #include "addon.h"
+#include "rlimit.h"
 
 extern int umask(int);
 
@@ -25,10 +24,11 @@ static void b_break(char **), b_cd(char **), b_eval(char **), b_exit(char **),
 	b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
 	b_wait(char **), b_whatis(char **);
 
-#ifndef NOLIMITS
+#if HAVE_SETRLIMIT
 static void b_limit(char **);
 #endif
-#ifndef NOECHO
+
+#if RC_ECHO
 static void b_echo(char **);
 #endif
 
@@ -39,13 +39,13 @@ static struct {
 	{ b_break,	"break" },
 	{ b_builtin,	"builtin" },
 	{ b_cd,		"cd" },
-#ifndef NOECHO
+#if RC_ECHO
 	{ b_echo,	"echo" },
 #endif
 	{ b_eval,	"eval" },
 	{ b_exec,	"exec" },
 	{ b_exit,	"exit" },
-#ifndef NOLIMITS
+#if HAVE_SETRLIMIT
 	{ b_limit,	"limit" },
 #endif
 	{ b_newpgrp,	"newpgrp" },
@@ -100,7 +100,7 @@ static void badnum(char *num) {
 extern void b_exec(char **av) {
 }
 
-#ifndef NOECHO
+#if RC_ECHO
 /* echo -n omits a newline. echo -- -n echos '-n' */
 
 static void b_echo(char **av) {
@@ -121,7 +121,7 @@ static void b_echo(char **av) {
 static void b_cd(char **av) {
 	List *s, nil;
 	char *path = NULL;
-	SIZE_T t, pathlen = 0;
+	size_t t, pathlen = 0;
 	if (*++av == NULL) {
 		s = varlookup("home");
 		*av = (s == NULL) ? "/" : s->w;
@@ -250,7 +250,8 @@ extern void b_builtin(char **av) {
 /* wait for a given process, or all outstanding processes */
 
 static void b_wait(char **av) {
-	int stat, pid;
+	int stat;
+	pid_t pid;
 	if (av[1] == NULL) {
 		waitforall();
 		return;
@@ -414,15 +415,13 @@ static void b_newpgrp(char **av) {
 		arg_count("newpgrp");
 		return;
 	}
-	setpgrp(rc_pid, rc_pid);
-#ifdef TIOCSPGRP
-	ioctl(2, TIOCSPGRP, &rc_pid);
-#endif
+	setpgid(rc_pid, rc_pid); /* XXX check return value */
+	tcsetpgrp(2, rc_pid); /* XXX check return value */
 }
 
 /* Berkeley limit support was cleaned up by Paul Haahr. */
 
-#ifndef NOLIMITS
+#if HAVE_SETRLIMIT
 typedef struct Suffix Suffix;
 struct Suffix {
 	const Suffix *next;
@@ -464,14 +463,9 @@ static const Limit limits[] = {
 	{ NULL, 0, NULL }
 };
 
-#ifndef SYSVR4
-extern int getrlimit(int, struct rlimit *);
-extern int setrlimit(int, struct rlimit *);
-#endif
-
 static void printlimit(const Limit *limit, bool hard) {
 	struct rlimit rlim;
-	long lim;
+	rlim_t lim;
 	getrlimit(limit->flag, &rlim);
 	if (hard)
 		lim = rlim.rlim_max;
@@ -486,11 +480,11 @@ static void printlimit(const Limit *limit, bool hard) {
 				lim /= suf->amount;
 				break;
 			}
-		fprint(1, "%s \t%d%s\n", limit->name, lim, (suf == NULL || lim == 0) ? "" : suf->name);
+		fprint(1, RLIM_FMT, limit->name, (RLIM_CONV)lim, (suf == NULL || lim == 0) ? "" : suf->name);
 	}
 }
 
-static long parselimit(const Limit *limit, char *s) {
+static rlim_t parselimit(const Limit *limit, char *s) {
 	char *t;
 	int len = strlen(s);
 	long lim = 1;

@@ -67,7 +67,7 @@ extern bool isabsolute(char *path) {
 
 /* signal-safe read and write (for BSD slow devices). writeall also allows partial writes */
 
-extern void writeall(int fd, char *buf, SIZE_T remain) {
+extern void writeall(int fd, char *buf, size_t remain) {
 	int i;
 	for (i = 0; remain > 0; buf += i, remain -= i) {
 		interrupt_happened = FALSE;
@@ -85,7 +85,7 @@ extern void writeall(int fd, char *buf, SIZE_T remain) {
 	sigchk();
 }
 
-extern int rc_read(int fd, char *buf, SIZE_T n) {
+extern int rc_read(int fd, char *buf, size_t n) {
 	long /*ssize_t*/ r;
 	interrupt_happened = FALSE;
 	if (!setjmp(slowbuf.j)) {

@@ -65,7 +65,7 @@ extern Node *mk(int /*nodetype*/ t,...) {
 
 /* copy a tree to malloc space. Used when storing the definition of a function */
 
-extern Node *treecpy(Node *s, void *(*alloc)(SIZE_T)) {
+extern Node *treecpy(Node *s, void *(*alloc)(size_t)) {
 	Node *n;
 	if (s == NULL)
 		return NULL;
@@ -83,7 +83,7 @@ extern Node *treecpy(Node *s, void *(*alloc)(SIZE_T)) {
 		n = (*alloc)(offsetof(Node, u[2]));
 		n->u[0].s = strcpy((char *) (*alloc)(strlen(s->u[0].s) + 1), s->u[0].s);
 		if (s->u[1].s != NULL) {
-			SIZE_T i = strlen(s->u[0].s);
+			size_t i = strlen(s->u[0].s);
 			n->u[1].s = (*alloc)(i);
 			memcpy(n->u[1].s, s->u[1].s, i);
 		} else
