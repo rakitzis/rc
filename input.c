@@ -280,7 +280,7 @@ extern Node *doit(bool execit) {
 			}
 			if ((s = varlookup("prompt")) != NULL) {
 #if READLINE
-				if (istack->fd == 0)
+				if (istack->t == iFd && istack->fd == 0)
 					prompt = s->w;
 				else
 #endif
@@ -367,11 +367,10 @@ extern void print_prompt2() {
 	lineno++;
 	if (interactive) {
 #if READLINE
-		if (istack->fd == 0)
+		if (istack->t == iFd && istack->fd == 0)
 			prompt = prompt2;
 		else
 #endif
 			fprint(2, "%s", prompt2);
 	}
 }
-
