@@ -1,12 +1,12 @@
 AC_INIT(rc.h)
 
 dnl Automake stuff.
-AM_INIT_AUTOMAKE(rc, 1.5s19980721)
+AM_INIT_AUTOMAKE(rc, 1.5s19980723)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_PROGRAM
 
-AC_DEFINE(RELDATE, "1998-07-21")
+AC_DEFINE(RELDATE, "1998-07-23")
 
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
@@ -310,8 +310,8 @@ AC_ARG_WITH(editline, [  --with-editline         Simmule Turner's line editing],
 		AC_MSG_ERROR(editline library not found)))
 
 AC_ARG_WITH(vrl, [  --with-vrl              Gert-Jan Vons's line editing],
-	AC_CHECK_LIB(readline, readline,
-		AC_DEFINE(EDITLINE) LIBS="$LIBS -lreadline -ltermcap",
+	AC_CHECK_LIB(vrl, readline,
+		AC_DEFINE(EDITLINE) LIBS="$LIBS -lvrl -ltermcap",
 		AC_MSG_ERROR(vrl library not found), -ltermcap))
 
 dnl There are (at least) two incompatible versions of readline, and we
