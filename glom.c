@@ -340,7 +340,7 @@ static List *mkcmdarg(Node *n) {
 
 	name = nprint("/tmp/rc%d.%d", getpid(), fifonumber++);
 	if (mkfifo(name, 0666) < 0) {
-		uerror("mknod");
+		uerror("mkfifo");
 		return NULL;
 	}
 	if (rc_fork() == 0) {
