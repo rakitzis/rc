@@ -12,7 +12,8 @@
 
 extern void exec(List *s, bool parent) {
 	char **av, **ev = NULL;
-	int pid, stat;
+	int stat;
+	pid_t pid;
 	builtin_t *b;
 	char *path = NULL;
 	bool didfork, returning, saw_exec, saw_builtin;
@@ -91,16 +92,17 @@ extern void exec(List *s, bool parent) {
 				return;
 			rc_exit(getstatus());
 		}
-#ifdef NOEXECVE
-		my_execve(path, (const char **) av, (const char **) ev); /* bogus, huh? */
+#if HASH_BANG
+		execve(path, (char * const *) av, (char * const *) ev);
 #else
-		execve(path, (const char **) av, (const char **) ev);
+		my_execve(path, (char * const *) av, (char * const *) ev); /* bogus, huh? */
 #endif
+
 #ifdef DEFAULTINTERP
 		if (errno == ENOEXEC) {
 			*av = path;
 			*--av = DEFAULTINTERP;
-			execve(*av, (const char **) av, (const char **) ev);
+			execve(*av, (char * const *) av, (char * const *) ev);
 		}
 #endif
 		uerror(*av);
