@@ -318,7 +318,7 @@ submatch 'cdpath='''' cd frobnatz' 'couldn''t cd to frobnatz' 'cd to frobnatz su
 submatch 'wait 1 2 3' 'too many arguments to wait' 'arg count'
 $rc -c 'wait 1' >[2]/dev/null && fail wait 1
 
-sleep 5&
+sleep 3&
 expect $apid
 echo $apids
 wait
@@ -569,3 +569,15 @@ eof
 # Believe it or not, I broke root directory globbing in rc-1.6b1.
 x=/*
 ~ '/*' $^x && fail root directory globbing
+
+# fn sigexit should be cleared in children
+
+x = ()
+expect nonesuch not found
+x = `{true | nonesuch}; if (~ $x trip) fail sigexit in children
+x = `{ < /dev/null wc |grep xxx }; if (~ $x trip) fail sigexit in children
+x = `{{ wc | wc } < /dev/null }; if (~ $x trip) fail sigexit in children
+
+# core dumps in glob.c
+~ () '*' && fail globber problem
+~ () '**' && fail globber problem

@@ -665,3 +665,12 @@ Changes since rc-1.5b2
   available on the web.
 
   Release: rc-1.6b2.
+
+2000-04-19
+
+  Bug: isatty() tests in input.c are relevant to any fd, not just 0.
+  Now `. -i /dev/tty' works right.
+
+  Bug: fn sigexit wasn't always cleared in child shells.
+
+  Bug: `~ () '*'' dumped core.
