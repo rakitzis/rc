@@ -10,16 +10,12 @@ typedef int SIG_ATOMIC_T;
 #endif
 
 #if STDC_HEADERS
-#include <stdlib.h>
-#else
-/* fake stdlib.h */
-extern void exit(int);
-extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
-#endif
 
-#if STDC_HEADERS
 #include <string.h>
-#else
+#include <stdlib.h>
+
+#else /* STDC_HEADERS */
+
 /* fake string.h */
 extern int strncmp(const char *, const char *, size_t);
 extern int strcmp(const char *, const char *);
@@ -32,7 +28,12 @@ extern char *strcat(char *, const char *);
 extern char *strncat(char *, const char *, size_t);
 extern void *memcpy(void *, const void *, size_t);
 extern void *memset(void *, int, size_t);
-#endif
+
+/* fake stdlib.h */
+extern void exit(int);
+extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
+
+#endif /* STDC_HEADERS */
 
 /* fake errno.h for mips (which doesn't declare errno in errno.h!?!?) */
 #ifdef host_mips
