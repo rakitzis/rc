@@ -757,3 +757,9 @@ Changes since rc-1.5b2
   more examples.
 
   Release: rc-1.6c5.
+
+2001-11-23
+
+  Bug: parselimit() was broken in various ways (thanks Chris
+  Siebenmann).
+

@@ -485,7 +485,7 @@ static void printlimit(const struct Limit *limit, bool hard) {
 	}
 }
 
-static rlim_t parselimit(const struct Limit *resource, rlim_t *limit, char *s) {
+static bool parselimit(const struct Limit *resource, rlim_t *limit, char *s) {
 	char *t;
 	int len = strlen(s);
 	const struct Suffix *suf = resource->suffix;
