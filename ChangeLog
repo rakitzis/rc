@@ -435,3 +435,5 @@ Changes since rc-1.5b2
 
   Tidiness: <sys/types.h> is in "proto.h", so nothing else needs to
   include it explicitly.
+
+  Documentation: document the ^A bug.
