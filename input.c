@@ -280,10 +280,11 @@ extern Node *doit(bool execit) {
 			}
 			if ((s = varlookup("prompt")) != NULL) {
 #if READLINE
-				prompt = s->w;
-#else
-				fprint(2, "%s", s->w);
+				if (istack->fd == 0)
+					prompt = s->w;
+				else
 #endif
+					fprint(2, "%s", s->w);
 				prompt2 = (s->n == NULL ? "" : s->n->w);
 			}
 		}
@@ -361,3 +362,16 @@ extern void closefds() {
 			i->fd = -1;
 		}
 }
+
+extern void print_prompt2() {
+	lineno++;
+	if (interactive) {
+#if READLINE
+		if (istack->fd == 0)
+			prompt = prompt2;
+		else
+#endif
+			fprint(2, "%s", prompt2);
+	}
+}
+

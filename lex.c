@@ -336,16 +336,6 @@ extern void inityy() {
 		realbuf = ealloc(bufsize);
 }
 
-extern void print_prompt2() {
-	lineno++;
-#if READLINE
-	prompt = prompt2;
-#else
-	if (interactive)
-		fprint(2, "%s", prompt2);
-#endif
-}
-
 /*
    Scan in a pair of integers for redirections like >[2=1]. CLOSED represents a closed file
    descriptor (i.e., >[2=]) and UNSET represents an undesignated file descriptor (e.g.,

@@ -300,6 +300,7 @@ extern int gchar(void);
 extern void ugchar(int);
 extern Node *doit(bool);
 extern void flushu(void);
+extern void print_prompt2(void);
 extern void pushfd(int);
 extern void pushstring(char **, bool);
 extern void popinput(void);
@@ -312,7 +313,6 @@ extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);
 extern void scanerror(char *);
-extern void print_prompt2(void);
 extern const char nw[], dnw[];
 
 /* list.c */
