@@ -230,7 +230,8 @@ extern void initenv(char **envp) {
 
 static bool var_exportable(char *s) {
 	static char *notforexport[] = {
-		"apid", "apids", "ifs", "path", "pid", "version", "*"
+		"apid", "apids", "cdpath", "home", "ifs",
+		"path", "pid", "version", "*"
 	};
 	int i;
 	for (i = 0; i < arraysize(notforexport); i++)
