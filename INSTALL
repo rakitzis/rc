@@ -9,7 +9,7 @@ need to configure, build, test, and install rc.
     # make install
 
 This will build rc in the source directory (see below for details on how
-to build rc in a different directory).  
+to build rc in a different directory).
 
 BUILD AND CONFIGURATION OPTIONS
 
@@ -21,7 +21,9 @@ libraries.  For a summary of all options, run `sh configure --help'.
 You can specify Makefile variables by setting the corresponding
 environment variables.  For example, you might want to set `CC=cc', to
 prevent configure looking for gcc, or set an initial value for `LIBS',
-as in the example below.
+as in the example below.  It is a good idea to specify static linking
+(unless you are linking against a dynamic readline library)---if you are
+using gcc, you can do this by setting `CFLAGS=-static'.
 
 Here are the configure options you may want to use, in approximately
 descending order of usefulness.
@@ -55,7 +57,7 @@ descending order of usefulness.
 
 You can't use `--with-editline' and `--with-readline' together, of course,
 and if you have either of those you probably don't want to bother with
-`--enable-history'.
+`--with-history'.
 
   --prefix /path
 
@@ -66,9 +68,11 @@ and if you have either of those you probably don't want to bother with
 
   --disable-builtin-echo
 
-  By default, the `echo' command is builtin to rc for efficiency reasons.
-  It is the only builtin which is not essential, and purists may wish
-  to omit it.
+  By default, the `echo' command is builtin to rc for reasons of
+  efficiency and portability (of rc scripts).  It is the only builtin
+  which is not essential, and purists may wish to omit it.  Note that
+  `make trip' will fail if you disable builtin echo and your system's
+  `echo' does not understand `-n' to suppress newline.
 
   --with-addon
   --with-addon=foo.c
@@ -130,6 +134,23 @@ from where the sources are held.  This is particularly useful if you
 are building rc for multiple architectures.  All you need do is specify
 the path to the configure script in the first step.  Suitable `make's
 include GNU, and SunOS, but not Irix, nor UnixWare.
+
+COMPILATION WARNINGS
+
+If your C compiler is gcc, the option `-Wall' is turned on.  This may
+produce a few warnings.
+
+Warnings about "implicit declaration" of system functions may occur if
+your system's include files are deficient---they are usually harmless.
+
+There is a warning about "variable `n' might be clobbered" in walk.c.
+I'm not sure how serious this warning is, nor how to eliminate it.
+
+On some systems there are warnings about "passing arg 2 of `getgroups'
+from incompatible pointer type" in which.c.  I believe this is due to an
+incorrect declaration of `getgroups()' in those systems' header files.
+
+Any other warnings should be reported to the maintainer.
 
 OLD C
 
