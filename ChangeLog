@@ -638,6 +638,10 @@ Changes since rc-1.5b2
   don't export `path'.
 
   Portability: add /usr/bsd to default default path.
-
+
   Documentation: failing to search $path for a `.' command is at least
   an incompatibility with Tenth Edition rc, and probably a bug.
+
+1999-11-10
+
+  Release: rc-1.6b1.
