@@ -1,7 +1,6 @@
 /* input.c: i/o routines for files and pseudo-files (strings) */
 
 #include <errno.h>
-#include <setjmp.h>
 
 #include "rc.h"
 #include "jbwrap.h"
@@ -122,6 +121,10 @@ system, you lose. */
 				do {
 					r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
 					sigchk();
+					if (errno == EAGAIN) {
+						makenonblock(istack->fd);
+						errno = EINTR;
+					}
 				} while (r < 0 && errno == EINTR);
 				if (r < 0) {
 					uerror("read");
