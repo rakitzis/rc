@@ -216,12 +216,8 @@ static List *doglob(char *w, char *m) {
 	p = pattern;
 	md = metadir;
 	mp = metapattern;
-	if (*s == '/')
-		while (*s == '/')
-			*d++ = *s++, *md++ = *m++;
-	else
-		while (*s != '/' && *s != '\0')
-			*d++ = *s++, *md++ = *m++; /* get first directory component */
+	while (*s != '/' && *s != '\0')
+		*d++ = *s++, *md++ = *m++; /* get first directory component */
 	*d = '\0';
 	/*
 	   Special case: no slashes in the pattern, i.e., open the current directory.

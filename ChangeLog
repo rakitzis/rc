@@ -607,3 +607,8 @@ Changes since rc-1.5b2
   Portability: the proposed C 9x __va_copy() macro is called that, not
   va_copy(), as I thought.  Furthermore, it is defined to be a macro, so
   we don't need to use autoconf to check for it.
+
+1999-10-11
+
+  Bug: absolute globs don't need special case in doglob().  Avoids
+  creating path names like `//tmp', which is a UNC path under CygWin.
