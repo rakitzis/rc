@@ -41,14 +41,18 @@ noinst_HEADERS = group.h jbwrap.h proto.h rc.h rlimit.h y.tab.h
 
 BUILT_SOURCES = sigmsgs.c y.tab.c
 
-
 EXTRA_DIST = addon.c addon.h EXAMPLES history.1 parse.y rc.1 trip.rc
 
 sigmsgs.c sigmsgs.h: ./mksignal
 	./mksignal
 
-y.tab.c y.tab.h: $(srcdir)/parse.y
-	$(YACC) -d $(srcdir)/parse.y
+# Of course, y.tab.c and y.tab.h depend on parse.y.  However, unless
+# you're hacking on rc's grammar, it's not useful to have this
+# dependency expressed, since the distributed y.tab.[ch] (generated with
+# byacc, and *very* lightly edited to remove a couple of gcc warnings)
+# are portable (I hope).
+#y.tab.c y.tab.h: $(srcdir)/parse.y
+#	$(YACC) -d $(srcdir)/parse.y
 
 trip: rc
 	./rc -p < $(srcdir)/trip.rc
