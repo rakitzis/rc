@@ -12,7 +12,7 @@ semantic errors in `fn prompt'.
 New features.  The following features are new: the `$version' variable
 replaces the `-V' flag; the `-I' flag (definitively not interactive)
 was added for compatibility with the Plan 9 rc; ASCII SOH (^A) is now
-handled transparently.
+handled transparently; support for large files.
 
 Documentation.  Distributions of this rc used to include a PostScript
 paper given by Tom Duff to the UKUUG, describing the Plan 9 rc.  This
@@ -21,4 +21,4 @@ the web, both in its original PostScript version, and an updated HTML
 version.
 
 Tim Goodwin
-2001-10-05
+2001-11-20
