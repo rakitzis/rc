@@ -37,6 +37,8 @@ static int ingidset(gid_t g) {
 			return 1;
 	return 0;
 }
+#else
+#define ingidset(g) (FALSE)
 #endif
 
 /*
@@ -56,11 +58,7 @@ static bool rc_access(char *path, bool verbose) {
 		mask = X_ALL;
 	else if (uid == st.st_uid)
 		mask = X_USR;
-#if HAVE_GETGROUPS
 	else if (gid == st.st_gid || ingidset(st.st_gid))
-#else
-	else if (gid == st.st_gid)
-#endif
 		mask = X_GRP;
 	else
 		mask = X_OTH;
@@ -93,10 +91,12 @@ extern char *which(char *name, bool verbose) {
 			rc_exit(1);
 		}
 #else
-			ngroups = NGROUPS;
+		ngroups = NGROUPS;
 #endif
-		gidset = ealloc(ngroups * sizeof(GETGROUPS_T));
-		getgroups(ngroups, gidset);
+		if (ngroups) {	
+			gidset = ealloc(ngroups * sizeof(GETGROUPS_T));
+			getgroups(ngroups, gidset);
+		}
 #endif
 	}
 	if (isabsolute(name)) /* absolute pathname? */
