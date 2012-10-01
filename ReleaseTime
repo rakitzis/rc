@@ -1,0 +1,7 @@
+#! /usr/bin/sed 1d
+ChangeLog
+NEWS
+README
+RELDATE
+configure.ac
+rc.1

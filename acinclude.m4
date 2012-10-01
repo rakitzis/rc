@@ -1,6 +1,6 @@
 dnl This macro sets HAVE_POSIX_GETGROUPS if the
 dnl getgroups() function accepts a zero first argument.
-AC_DEFUN(RC_FUNC_GETGROUPS, [
+AC_DEFUN([RC_FUNC_GETGROUPS], [
 	AC_CACHE_CHECK(for POSIX getgroups, rc_cv_func_posix_getgroups, AC_TRY_RUN([
 #include <sys/types.h>
 #include <unistd.h>
