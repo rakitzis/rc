@@ -51,12 +51,12 @@ if (false) {					# WARNING: this differs from sh
 umask 0
 > $tmp
 x=`{ls -l $tmp}
-if (!~ $x(1) '-rw-rw-rw-') fail umask 0 produced incorrect result: $x(1)
+if (!~ $x(1) -rw-rw-rw-*) fail umask 0 produced incorrect result: $x(1)
 rm -f $tmp
 umask 027
 > $tmp
 y=`{ls -l $tmp}
-if (!~ $y(1) '-rw-r-----') fail umask 027 produced incorrect file: $y(1)
+if (!~ $y(1) -rw-r-----*) fail umask 027 produced incorrect file: $y(1)
 rm -f $tmp
 if (!~ `umask 027) fail umask reported bad value: `umask
 
@@ -382,7 +382,7 @@ chmod a-x /tmp/noexec.$pid
 $rc -c /tmp/noexec.$pid >[2]/dev/null && fail /tmp/noexec.$pid is found!?
 rm /tmp/noexec.$pid
 
-submatch 'path='''' frobnatz' 'frobnatz not found' 'search error'
+submatch 'path='''' frobnatz' 'rc: cannot find `frobnatz''' 'search error'
 
 {path=() /bin/sh -c 'exit 0'} || fail abs pathname with path set to null
 
@@ -564,7 +564,7 @@ x=/*
 # fn sigexit should be cleared in children
 
 x = ()
-expect nonesuch not found
+expect rc: cannot find '`nonesuch'''
 x = `{true | nonesuch}; if (~ $x trip) fail sigexit in children
 x = `{ < /dev/null wc |grep xxx }; if (~ $x trip) fail sigexit in children
 x = `{{ wc | wc } < /dev/null }; if (~ $x trip) fail sigexit in children
@@ -575,7 +575,7 @@ x = `{{ wc | wc } < /dev/null }; if (~ $x trip) fail sigexit in children
 
 # check for ctrl-a bug
 x=`{./tripping a}
-# ~ `{$rc -c 'echo $x'} $x || fail ctrl-a bug detected
+~ `{$rc -c 'echo $x'} $x || fail ctrl-a bug detected
 
 # check for hilarious quoting bug introduced while fixing ctrl-a
 x=('#' '#' '#')

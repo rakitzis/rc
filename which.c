@@ -70,22 +70,25 @@ static bool rc_access(char *path, bool verbose) {
 	return FALSE;
 }
 
+/* 2012-10-01 I don't know where this routine came from. Obviously I can
+ * see what it's doing, and were it implemented properly it might be a
+ * good thing. */
 static char *protect(char *in) {
-  char *out = ealloc(strlen(in) * 2 + 1);
-  
-  int i;
-  int p = 0;
+	char *out = ealloc(strlen(in) * 2 + 1);
 
-  for (i = 0; i < strlen(in); ++i) {
-    if (isprint(in[i])) {
-      out[p++] = in[i];
-      ++p;
-    } else {
-      out[p++] = '\\';
-      out[p++] = '?';
-    }
-  }
-  return out; /* XXXX */
+	int i;
+	int p = 0;
+
+	for (i = 0; i < strlen(in); ++i) {
+		if (isprint(in[i])) {
+			out[p++] = in[i];
+		} else {
+			out[p++] = '\\';
+			out[p++] = '?';
+		}
+	}
+	out[p] = '\0';
+	return out; /* XXXX */
 }
 		    
 /* return a full pathname by searching $path, and by checking the status of the file */
