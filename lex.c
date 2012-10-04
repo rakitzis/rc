@@ -329,9 +329,9 @@ extern void yyerror(const char *s) {
 			tok = "end of line";
 		else
 			tok = nprint((lastchar < 32 || lastchar > 126) ? "(decimal %d)" : "'%c'", lastchar);
-		fprint(2, "line %d: %s near %s\n", lineno - (lastchar == '\n'), s, tok);
+		fprint(2, "rc: line %d: %s near %s\n", lineno - (lastchar == '\n'), s, tok);
 	} else
-		fprint(2, "%s\n", s);
+		fprint(2, "rc: %s\n", s);
 }
 
 extern void scanerror(char *s) {

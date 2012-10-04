@@ -70,25 +70,17 @@ static bool rc_access(char *path, bool verbose) {
 	return FALSE;
 }
 
-/* 2012-10-01 I don't know where this routine came from. Obviously I can
- * see what it's doing, and were it implemented properly it might be a
- * good thing. */
+/* replace non-printing characters with question marks in a freshly
+ * allocated string */
 static char *protect(char *in) {
-	char *out = ealloc(strlen(in) * 2 + 1);
-
+	int l = strlen(in);
+	char *out = ealloc(l + 1);
 	int i;
-	int p = 0;
 
-	for (i = 0; i < strlen(in); ++i) {
-		if (isprint(in[i])) {
-			out[p++] = in[i];
-		} else {
-			out[p++] = '\\';
-			out[p++] = '?';
-		}
-	}
-	out[p] = '\0';
-	return out; /* XXXX */
+	for (i = 0; i < l; ++i)
+		out[i] = isprint(in[i]) ? in[i] : '?';
+	out[i] = '\0';
+	return out;
 }
 		    
 /* return a full pathname by searching $path, and by checking the status of the file */
@@ -140,7 +132,10 @@ extern char *which(char *name, bool verbose) {
 		if (rc_access(test, FALSE))
 			return test;
 	}
-	if (verbose)
-		fprint(2, "rc: cannot find `%s'\n", protect(name));
+	if (verbose) {
+		char *n = protect(name);
+		fprint(2, "rc: cannot find `%s'\n", n);
+		efree(n);
+	}
 	return NULL;
 }
