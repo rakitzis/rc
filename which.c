@@ -134,7 +134,7 @@ extern char *which(char *name, bool verbose) {
 	}
 	if (verbose) {
 		char *n = protect(name);
-		fprint(2, "rc: cannot find `%s'\n", n);
+		fprint(2, RC "cannot find `%s'\n", n);
 		efree(n);
 	}
 	return NULL;

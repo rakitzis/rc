@@ -88,12 +88,12 @@ extern void funcall(char **av) {
 }
 
 static void arg_count(char *name) {
-	fprint(2, "too many arguments to %s\n", name);
+	fprint(2, RC "too many arguments to %s\n", name);
 	set(FALSE);
 }
 
 static void badnum(char *num) {
-	fprint(2, "%s is a bad number\n", num);
+	fprint(2, RC "`%s' is a bad number\n", num);
 	set(FALSE);
 }
 

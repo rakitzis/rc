@@ -4,6 +4,8 @@
 
 #include <assert.h>
 
+#define RC "rc: "
+
 /* datatypes */
 
 #define ENV_SEP '\001'

@@ -63,7 +63,7 @@ if (!~ `umask 027) fail umask reported bad value: `umask
 submatch 'umask bad' 'bad umask' 'bad umask'
 submatch 'umask -027' 'bad umask' 'bad umask'
 submatch 'umask 999999' 'bad umask' 'bad umask'
-submatch 'umask hi there' 'too many arguments to umask' 'umask arg count'
+submatch 'umask hi there' 'rc: too many arguments to umask' 'umask arg count'
 
 if (!~ `umask 027) fail bad umask changed umask value to `umask
 
@@ -85,8 +85,8 @@ rm -f 1 2
 expect error from cat, closing stdin
 cat >[0=]
 
-submatch 'cat>(1 2 3)' 'multi-word filename in redirection' 'redirection error'
-submatch 'cat>()' 'null filename in redirection' 'redirection error'
+submatch 'cat>(1 2 3)' 'rc: multi-word filename in redirection' 'redirection error'
+submatch 'cat>()' 'rc: null filename in redirection' 'redirection error'
 
 #
 # blow the input stack
@@ -226,9 +226,9 @@ bar
 if (!~ $i 3)
 	fail return inside loop inside function failed
 
-submatch return 'return outside of function' 'return outside of function'
-submatch 'break 1' 'too many arguments to break' 'break arg count'
-submatch break 'break outside of loop' 'break outside of loop'
+submatch return 'rc: return outside of function' 'return outside of function'
+submatch 'break 1' 'rc: too many arguments to break' 'break arg count'
+submatch break 'rc: break outside of loop' 'break outside of loop'
 
 for (i in 1 2 3 4 5)
 	if (~ $i 2)
@@ -236,7 +236,7 @@ for (i in 1 2 3 4 5)
 if (!~ $i 2)
 	fail break out of loop
 
-submatch 'wait foo' 'foo is a bad number' 'bogus argument to wait'
+submatch 'wait foo' 'rc: `foo'' is a bad number' 'bogus argument to wait'
 
 if (~ `{echo -n} ?)
 	fail echo -n
@@ -303,7 +303,7 @@ if (~ `{whatis limit >[2]/dev/null} builtin) {
 
 fn cd
 
-submatch 'cd a b c' 'too many arguments to cd' 'cd arg count'
+submatch 'cd a b c' 'rc: too many arguments to cd' 'cd arg count'
 $rc -c 'cdpath=() cd /frobnatz' >[2]/dev/null && fail 'cd to /frobnatz succeeded!?'
 submatch 'cdpath='''' cd frobnatz' 'couldn''t cd to frobnatz' 'cd to frobnatz succeeded!?'
 
@@ -315,7 +315,7 @@ submatch 'cdpath='''' cd frobnatz' 'couldn''t cd to frobnatz' 'cd to frobnatz su
 # wait
 #
 
-submatch 'wait 1 2 3' 'too many arguments to wait' 'arg count'
+submatch 'wait 1 2 3' 'rc: too many arguments to wait' 'wait arg count'
 $rc -c 'wait 1' >[2]/dev/null && fail wait 1
 
 sleep 3&
@@ -509,8 +509,8 @@ switch (nothing) {
 
 ~ $i frobnatz || fail match '*' in switch
 
-submatch '()=()' 'null variable name' 'assignment diagnostic'
-submatch 'fn () {eval}' 'null function name' 'assigning null function name'
+submatch '()=()' 'rc: null variable name' 'assignment diagnostic'
+submatch 'fn () {eval}' 'rc: null function name' 'assigning null function name'
 
 #
 # prompt
