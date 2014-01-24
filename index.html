@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Rc : rc shell -- independent re-implementation for Unix of the Plan 9 shell (from circa 1992)" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Rc</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/rakitzis/rc">View on GitHub</a>
+
+          <h1 id="project_title">Rc</h1>
+          <h2 id="project_tagline">rc shell -- independent re-implementation for Unix of the Plan 9 shell (from circa 1992)</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/rakitzis/rc/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/rakitzis/rc/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>
+<a name="the-rc-shell" class="anchor" href="#the-rc-shell"><span class="octicon octicon-link"></span></a>The rc shell</h3>
+
+<p>Rc was written by Tom Duff for Plan 9. It is a re-working of the shell to obey a well-specified grammar (implemented with yacc). Rc scans its input once, and so shell expansion of variable names becomes simple to explain and to understand. There is also only one form of quoting: single quotes. Here is an example:</p>
+
+<pre><code>; foo='/User Information' # typical Mac filename with spaces in it
+; ls $foo
+AirPort Extreme and Bluetooth Regulatory Certification.pdf
+ENERGY STAR.pdf
+The FreeType Project License.rtf
+;
+</code></pre>
+
+<p>This repository contains my own re-implementation of rc for Unix. I wrote this shell in the early 90s, long before Plan 9 was released into the wild. It's subtly different from the Plan 9 shell, but it has received widespread use and so the code is (apparently) bug-free. I'm uploading it to github so that it has somewhere to live -- it does not seem to be archived anywhere else on the web right now.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Rc maintained by <a href="https://github.com/rakitzis">rakitzis</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
