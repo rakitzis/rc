@@ -237,7 +237,7 @@ extern void popinput() {
 }
 
 
-/* flush input characters upto newline. Used by scanerror() */
+/* flush input characters up to newline. Used by scanerror() */
 
 extern void skiptonl() {
 	int c;

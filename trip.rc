@@ -4,9 +4,10 @@
 rc=$0
 echo tripping $rc $version
 
+tmpdir=''
 fn fail {
 	echo >[1=2] trip took a wrong turn: $*
-	rm -f $tmp
+	rm -rf $tmpdir
 	fn sigexit
 	exit 1
 }
@@ -23,8 +24,8 @@ fn sigexit sigint sigquit sigsegv
 fn sigexit {
 	echo trip complete
 }
-tmp=/tmp/trip.$pid
-rm -f $tmp
+tmpdir=`{ mktemp -t -d rc-trip.XXXXXX }
+tmp=$tmpdir/tmp
 nl='
 '
 
@@ -111,7 +112,7 @@ eval eval eval eval eval eval eval eval eval eval eval echo hi
 # heredocs and herestrings
 #
 
-bigfile=/tmp/big.$pid
+bigfile=$tmpdir/big.$pid
 od $rc | sed 5000q > $bigfile
 abc=(this is a)
 x=()
@@ -155,19 +156,19 @@ expect warning
 $rc $tmp
 rm -f $tmp
 
-echo here_is_a_really_long_word.It_has_got_to_be_longer_than_1000_characters_for_the_lexical_analyzers_buffer_to_overflow_but_that_should_not_be_too_difficult_to_do.Let_me_start_writing_some_Lewis_Carroll.Twas_brillig_and_the_slithy_toves,Did_gyre_and_gimble_in_the_wabe.All_mimsy_were_the_borogoves,And_the_mome-raths_outgrabe.Beware_the_Jabberwock_my_son,The_jaws_that_bite,the_claws_that_catch.Beware_the_Jub-jub_bird,and_shun_The_frumious_Bandersnatch.He_took_his_vorpal_sword_in_hand,Long_time_the_manxome_foe_he_sought,So_rested_he_by_the_Tumtum_tree,And_stood_awhile_in_thought.And_as_in_uffish_thought_he_stood,The_Jabberwock,with_eyes_of_flame,Came_whiffling_through_the_tulgey_wood,And_burbled_as_it_came.One_two,one_two.And_through_and_through_The_vorpal_blade_went_snicker-snack.He_left_it_dead_and_with_its_head,He_went_galumphing_back.And_hast_thou_slain_the_Jabberwock?Come_to_my_arms,my_beamish_boy,Oh_frabjous_day.Callooh_callay.He_chortled_in_his_joy.Twas_brillig,and_the_slithy_toves,Did_gyre_and_gimble_in_the_wabe,All_mimsy_were_the_borogoves,And_the_mome-raths_outgrabe. > /tmp/$pid.lw
+echo here_is_a_really_long_word.It_has_got_to_be_longer_than_1000_characters_for_the_lexical_analyzers_buffer_to_overflow_but_that_should_not_be_too_difficult_to_do.Let_me_start_writing_some_Lewis_Carroll.Twas_brillig_and_the_slithy_toves,Did_gyre_and_gimble_in_the_wabe.All_mimsy_were_the_borogoves,And_the_mome-raths_outgrabe.Beware_the_Jabberwock_my_son,The_jaws_that_bite,the_claws_that_catch.Beware_the_Jub-jub_bird,and_shun_The_frumious_Bandersnatch.He_took_his_vorpal_sword_in_hand,Long_time_the_manxome_foe_he_sought,So_rested_he_by_the_Tumtum_tree,And_stood_awhile_in_thought.And_as_in_uffish_thought_he_stood,The_Jabberwock,with_eyes_of_flame,Came_whiffling_through_the_tulgey_wood,And_burbled_as_it_came.One_two,one_two.And_through_and_through_The_vorpal_blade_went_snicker-snack.He_left_it_dead_and_with_its_head,He_went_galumphing_back.And_hast_thou_slain_the_Jabberwock?Come_to_my_arms,my_beamish_boy,Oh_frabjous_day.Callooh_callay.He_chortled_in_his_joy.Twas_brillig,and_the_slithy_toves,Did_gyre_and_gimble_in_the_wabe,All_mimsy_were_the_borogoves,And_the_mome-raths_outgrabe. > $tmpdir/$pid.lw
 
-echo 'here_is_a_really_long_word.It_has_got_to_be_longer_than_1000_characters_for_the_lexical_analyzers_buffer_to_overflow_but_that_should_not_be_too_difficult_to_do.Let_me_start_writing_some_Lewis_Carroll.Twas_brillig_and_the_slithy_toves,Did_gyre_and_gimble_in_the_wabe.All_mimsy_were_the_borogoves,And_the_mome-raths_outgrabe.Beware_the_Jabberwock_my_son,The_jaws_that_bite,the_claws_that_catch.Beware_the_Jub-jub_bird,and_shun_The_frumious_Bandersnatch.He_took_his_vorpal_sword_in_hand,Long_time_the_manxome_foe_he_sought,So_rested_he_by_the_Tumtum_tree,And_stood_awhile_in_thought.And_as_in_uffish_thought_he_stood,The_Jabberwock,with_eyes_of_flame,Came_whiffling_through_the_tulgey_wood,And_burbled_as_it_came.One_two,one_two.And_through_and_through_The_vorpal_blade_went_snicker-snack.He_left_it_dead_and_with_its_head,He_went_galumphing_back.And_hast_thou_slain_the_Jabberwock?Come_to_my_arms,my_beamish_boy,Oh_frabjous_day.Callooh_callay.He_chortled_in_his_joy.Twas_brillig,and_the_slithy_toves,Did_gyre_and_gimble_in_the_wabe,All_mimsy_were_the_borogoves,And_the_mome-raths_outgrabe.' > /tmp/$pid.lq
+echo 'here_is_a_really_long_word.It_has_got_to_be_longer_than_1000_characters_for_the_lexical_analyzers_buffer_to_overflow_but_that_should_not_be_too_difficult_to_do.Let_me_start_writing_some_Lewis_Carroll.Twas_brillig_and_the_slithy_toves,Did_gyre_and_gimble_in_the_wabe.All_mimsy_were_the_borogoves,And_the_mome-raths_outgrabe.Beware_the_Jabberwock_my_son,The_jaws_that_bite,the_claws_that_catch.Beware_the_Jub-jub_bird,and_shun_The_frumious_Bandersnatch.He_took_his_vorpal_sword_in_hand,Long_time_the_manxome_foe_he_sought,So_rested_he_by_the_Tumtum_tree,And_stood_awhile_in_thought.And_as_in_uffish_thought_he_stood,The_Jabberwock,with_eyes_of_flame,Came_whiffling_through_the_tulgey_wood,And_burbled_as_it_came.One_two,one_two.And_through_and_through_The_vorpal_blade_went_snicker-snack.He_left_it_dead_and_with_its_head,He_went_galumphing_back.And_hast_thou_slain_the_Jabberwock?Come_to_my_arms,my_beamish_boy,Oh_frabjous_day.Callooh_callay.He_chortled_in_his_joy.Twas_brillig,and_the_slithy_toves,Did_gyre_and_gimble_in_the_wabe,All_mimsy_were_the_borogoves,And_the_mome-raths_outgrabe.' > $tmpdir/$pid.lq
 
-if (!~ ``(){cat /tmp/$pid.lw} ``(){cat /tmp/$pid.lq})
+if (!~ ``(){cat $tmpdir/$pid.lw} ``(){cat $tmpdir/$pid.lq})
 	fail expected long string and long word to be identical
-if (! x=`{wc -c /tmp/$pid.lw} ~ $x(1) 1088)
+if (! x=`{wc -c $tmpdir/$pid.lw} ~ $x(1) 1088)
 	fail expected long word to be 1088 bytes
-if (! x=`{wc -c /tmp/$pid.lq} ~ $x(1) 1088)
+if (! x=`{wc -c $tmpdir/$pid.lq} ~ $x(1) 1088)
 	fail expected long quote to be 1088 bytes
 
-rm /tmp/$pid.lw
-rm /tmp/$pid.lq
+rm $tmpdir/$pid.lw
+rm $tmpdir/$pid.lq
 
 submatch 'echo hi |[2' 'rc: expected ''='' or '']'' after digit' 'scan error'
 submatch 'echo hi |[92=]' 'rc: expected digit after ''=''' 'scan error'
@@ -329,9 +330,9 @@ if (~ `` '' {wait} ?)
 #
 # matching
 #
-touch /tmp/abc.$pid /tmp/bbc.$pid
-mkdir /tmp/dir.$pid /tmp/dip.$pid
-touch /tmp/dir.$pid/^(a b c) /tmp/dip.$pid/^(a b c)
+touch $tmpdir/abc.$pid $tmpdir/bbc.$pid
+mkdir $tmpdir/dir.$pid $tmpdir/dip.$pid
+touch $tmpdir/dir.$pid/^(a b c) $tmpdir/dip.$pid/^(a b c)
 
 if (!~ 123 [~x]?[0-9])
 	fail match
@@ -352,18 +353,18 @@ if (~ x [y])
 if (~ x x?)
 	fail too many characters in pattern
 
-sh -c 'test -f /////tmp//////a?c.'^$pid || fail glob with many slashes
-if (!~ /////tmp//////a*.$pid /////tmp//////a?c.$pid)
+sh -c 'test -f /////$tmpdir//////a?c.'^$pid || fail glob with many slashes
+if (!~ /////$tmpdir//////a*.$pid /////$tmpdir//////a?c.$pid)
 	fail glob with many slashes
-if (!~ ////tmp////di?.$pid////* ////tmp////dir.$pid////*b*)
+if (!~ ////$tmpdir////di?.$pid////* ////$tmpdir////dir.$pid////*b*)
 	fail glob with more slashes
-if (! @{cd /; ~ */a*.$pid tmp/a*})
+if (! @{cd $tmpdir; ~ *.$pid/a d*/*})
 	fail glob in current directory
-if (!~ /tmp/?bc.$pid /tmp/bbc.$pid)
+if (!~ $tmpdir/?bc.$pid $tmpdir/bbc.$pid)
 	fail match of bbc.$pid against '('abc.$pid bbc.$pid')'
 
-rm /tmp/abc.$pid /tmp/bbc.$pid
-rm -rf /tmp/dir.$pid /tmp/dip.$pid
+rm $tmpdir/abc.$pid $tmpdir/bbc.$pid
+rm -rf $tmpdir/dir.$pid $tmpdir/dip.$pid
 
 #
 # signals
@@ -377,10 +378,10 @@ fn sigint
 #
 $rc -c /frobnatz >[2]/dev/null && fail 'search error'
 
-touch /tmp/noexec.$pid
-chmod a-x /tmp/noexec.$pid
-$rc -c /tmp/noexec.$pid >[2]/dev/null && fail /tmp/noexec.$pid is found!?
-rm /tmp/noexec.$pid
+touch $tmpdir/noexec.$pid
+chmod a-x $tmpdir/noexec.$pid
+$rc -c $tmpdir/noexec.$pid >[2]/dev/null && fail $tmpdir/noexec.$pid is found!?
+rm $tmpdir/noexec.$pid
 
 submatch 'path='''' frobnatz' 'rc: cannot find `frobnatz''' 'search error'
 
@@ -409,15 +410,15 @@ if (~ `` '' . ?*)
 if (~ `` '' {. -i} ?*)
 	fail null dot -i
 
-cat > /tmp/dot.$pid << eof
+cat > $tmpdir/dot.$pid << eof
 echo hi
 eof
 
-prompt=';' if (!~ `` '' {. -i /tmp/dot.$pid>[2=1]} ';hi'^$nl';')
+prompt=';' if (!~ `` '' {. -i $tmpdir/dot.$pid>[2=1]} ';hi'^$nl';')
 	fail dot -i
-submatch .' '/tmp/dot.$pid hi dot
+submatch .' '$tmpdir/dot.$pid hi dot
 
-rm /tmp/dot.$pid
+rm $tmpdir/dot.$pid
 
 $rc -c '. /frobnatz' >[2]/dev/null && fail 'dot of a nonexistent file'
 
@@ -522,19 +523,19 @@ fn prompt
 #
 # history
 #
-history=/tmp/hist.$pid prompt='' echo 'history=()' | $rc -i
+history=$tmpdir/hist.$pid prompt='' echo 'history=()' | $rc -i
 
-if (!~ `{cat /tmp/hist.$pid} 'history=()')
+if (!~ `{cat $tmpdir/hist.$pid} 'history=()')
 	fail output to history file
 
-history=/tmp/hist.$pid prompt='' echo 'history=()' | $rc -i
+history=$tmpdir/hist.$pid prompt='' echo 'history=()' | $rc -i
 
-if (!~ `` () {cat /tmp/hist.$pid} 'history=()
+if (!~ `` () {cat $tmpdir/hist.$pid} 'history=()
 history=()
 ')
 	fail append to history file
 
-rm /tmp/hist.$pid
+rm $tmpdir/hist.$pid
 
 if (!~ `{history=/frobnatz/foo prompt='' echo eval | $rc -i >[2=1]} ?*)
 	fail accessing bad history file
@@ -588,9 +589,11 @@ fn x {echo x.y $(x.y)}
 ' || fail sneaky parens bug
 
 # before rc-1.7.1, certain glob patterns could fail on broken symlinks
-mkdir $tmp.qux
-ln -s /frobnatz $tmp.qux/foo
-x=$tmp.qux/foo*
-~ $x $tmp.qux/foo || { rm -rf $tmp.qux; fail broken symlink globbing }
-x=$tmp.qux*/foo
-~ $x $tmp.qux/foo || { rm -rf $tmp.qux; fail broken symlink globbing }
+mkdir $tmpdir/qux
+ln -s /frobnatz $tmpdir/qux/foo
+x=$tmpdir/qux/foo*
+~ $x $tmpdir/qux/foo || { rm -rf $tmpdir/qux; fail broken symlink globbing }
+x=$tmpdir/qux*/foo
+~ $x $tmpdir/qux/foo || { rm -rf $tmpdir/qux; fail broken symlink globbing }
+
+rm -rf $tmpdir

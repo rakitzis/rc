@@ -126,7 +126,7 @@ struct Format {
 	/* for the formatting routines */
 	va_list args;
 	long flags, f1, f2;
-	/* for the buffer maintainence routines */
+	/* for the buffer maintenance routines */
 	char *buf, *bufbegin, *bufend;
 	int flushed;
 	void (*grow)(Format *, size_t);
