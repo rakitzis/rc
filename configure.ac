@@ -1,14 +1,13 @@
-dnl Get things going...
-AC_INIT(rc.h)
+dnl Our package name, version, ...
+AC_INIT([rc], [1.7.2])
 
-RELDATE=`cat $srcdir/RELDATE`
+dnl ... and release date
+RELDATE=`date -I`
 AC_DEFINE_UNQUOTED(RELDATE, "$RELDATE", [Release date])
 
-dnl Automake stuff.
-dnl Use this one for snapshots...
-AM_INIT_AUTOMAKE(rc, 1.7s`echo $RELDATE |sed 's/-//g'`)
-dnl ...and this one for releases
-dnl AM_INIT_AUTOMAKE(rc, 1.7.1)
+dnl Get things going...
+AC_CONFIG_SRCDIR([rc.h])
+AM_INIT_AUTOMAKE
 
 AM_CONFIG_HEADER(config.h)
 

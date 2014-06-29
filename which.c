@@ -10,6 +10,7 @@
 
 #include "rc.h"
 
+#include <ctype.h>
 #include <errno.h>
 #include <sys/stat.h>
 

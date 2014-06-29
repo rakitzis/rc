@@ -2,7 +2,7 @@ extern bool editing;
 
 extern void *edit_begin(int fd);
 
-extern char *edit_alloc(void *, int *);
+extern char *edit_alloc(void *, size_t *);
 extern void edit_free(void *);
 
 extern void edit_prompt(void *, char *);

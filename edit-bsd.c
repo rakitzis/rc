@@ -42,7 +42,7 @@ static void edit_catcher(int sig) {
 	rc_raise(eError);
 }
 
-char *edit_alloc(void *cookie, int *count) {
+char *edit_alloc(void *cookie, size_t *count) {
 	const char *r;
 	HistEvent he;
 	struct cookie *c = cookie;

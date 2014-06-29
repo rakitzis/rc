@@ -13,7 +13,7 @@ void *edit_begin(int fd) {
 	return NULL;
 }
 
-char *edit_alloc(void *cookie, int *count) {
+char *edit_alloc(void *cookie, size_t *count) {
 	assert(0); /* should never be called */
 	return NULL;
 }
