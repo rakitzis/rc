@@ -12,9 +12,10 @@ and $version are now exported if they are inherited from the
 environment when rc starts.  EIO handling is now enabled for readline
 too.  A few bogosities in the history program were fixed.
 
-New features.  None - this is a bugfix release.
+New features. Filename completion with GNU readline now quotes special
+characters.
 
 Documentation.  Minor updates only.
 
 Toby Goodwin
-2003-07-17
+2014-08-31
