@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <readline/rltypedefs.h>
 
 #include "edit.h"
 
@@ -18,6 +19,8 @@ void *edit_begin(int fd) {
 	struct cookie *c;
 
 	rl_catch_signals = 0;
+	rl_completer_quote_characters = "'";
+	rl_filename_quote_characters = "\t\n !#$&'()*;<=>?@[\\]^`{|}~";
 
 	hist = varlookup("history");
 	if (hist != NULL)
