@@ -585,7 +585,7 @@ eval z^`{whatis -v x}
 
 # parens bypass quote detector bug
 fn x {echo x.y $(x.y)}
-~ ``''{whatis -f x} 'fn x {echo x.y $''x.y''}
+~ ``''{whatis -f x} 'fn x {echo x.y $(x^.y)}
 ' || fail sneaky parens bug
 
 # before rc-1.7.1, certain glob patterns could fail on broken symlinks

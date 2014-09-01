@@ -11,7 +11,8 @@ Bug fixes. Fix for CVE-2014-1936. Broken symlinks now glob correctly.
 The variables $prompt and $version are now exported if they are
 inherited from the environment when rc starts. EIO handling is now
 enabled for readline too. A few bogosities in the history program were
-fixed.
+fixed. A regression introduced by the fix for the $(a.b) quoting bug was
+fixed, and that bug was correctly fixed.
 
 New features. Filename completion with GNU readline now quotes special
 characters.
@@ -19,4 +20,4 @@ characters.
 Documentation. Minor updates only.
 
 Toby Goodwin
-2014-08-31
+2014-09-01
