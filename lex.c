@@ -201,7 +201,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		c = gchar();
 		if (c == '#')
 			return COUNT;
-		if (c == '^')
+		if (c == '^' || c == '"')
 			return FLAT;
 		ugchar(c);
 		return '$';
