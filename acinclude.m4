@@ -1,6 +1,6 @@
 dnl This macro sets HAVE_POSIX_GETGROUPS if the
 dnl getgroups() function accepts a zero first argument.
-AC_DEFUN(RC_FUNC_GETGROUPS, [
+AC_DEFUN([RC_FUNC_GETGROUPS], [
 	AC_CACHE_CHECK(for POSIX getgroups, rc_cv_func_posix_getgroups, AC_TRY_RUN([
 #include <sys/types.h>
 #include <unistd.h>
@@ -16,7 +16,7 @@ int main(void) {
 
 dnl We can't use AC_CHECK_FUNCS for sigsetjmp(), since it's a macro in
 dnl some places.
-AC_DEFUN(RC_FUNC_SIGSETJMP, [
+AC_DEFUN([RC_FUNC_SIGSETJMP], [
 	AC_CACHE_CHECK(for sigsetjmp, rc_cv_sigsetjmp,
 		AC_TRY_LINK([
 #include <setjmp.h>
@@ -30,7 +30,7 @@ sigsetjmp(e, 1);
 ])
 
 dnl Similarly, AC_CHECK_FUNCS doesn't find strerror() on NetBSD.
-AC_DEFUN(RC_FUNC_STRERROR, [
+AC_DEFUN([RC_FUNC_STRERROR], [
 	AC_CACHE_CHECK(for strerror, rc_cv_strerror,
 		AC_TRY_LINK([
 #include <string.h>
@@ -43,7 +43,7 @@ strerror(0);
 ])
 
 dnl HPUX needs _KERNEL defined to pick up RLIMIT_foo defines.  (Why?)
-AC_DEFUN(RC_NEED_KERNEL, [
+AC_DEFUN([RC_NEED_KERNEL], [
 	AC_CACHE_CHECK(if _KERNEL is required for RLIMIT defines, rc_cv_kernel_rlimit,
 		AC_TRY_COMPILE([
 #include <sys/types.h>
@@ -66,7 +66,7 @@ f = RLIMIT_DATA;
 ])
 
 dnl Look for rlim_t in sys/types.h and sys/resource.h
-AC_DEFUN(RC_TYPE_RLIM_T, [
+AC_DEFUN([RC_TYPE_RLIM_T], [
 	AC_CACHE_CHECK(for rlim_t, rc_cv_have_rlim_t,
 		AC_EGREP_CPP(rlim_t, [
 #include <sys/types.h>
@@ -118,7 +118,7 @@ main(){
 
 
 dnl Check type of sig_atomic_t.
-AC_DEFUN(RC_TYPE_SIG_ATOMIC_T, [
+AC_DEFUN([RC_TYPE_SIG_ATOMIC_T], [
 	AC_CACHE_CHECK(for sig_atomic_t, rc_cv_sig_atomic_t,
 		AC_EGREP_HEADER(sig_atomic_t, signal.h,
 			rc_cv_sig_atomic_t=yes, rc_cv_sig_atomic_t=no))
@@ -135,7 +135,7 @@ dnl semantics, but if the parent calls wait() before the child calls
 dnl exit(), wait() returns with the PID of the child as normal.  (Real
 dnl SysV waits for all children to exit, then returns with ECHILD.)
 dnl Anyway, this is why the `sleep(1)' is there.
-AC_DEFUN(RC_SYS_V_SIGCLD, [
+AC_DEFUN([RC_SYS_V_SIGCLD], [
 	AC_CACHE_CHECK(for SysV SIGCLD semantics, rc_cv_sysv_sigcld,
 		AC_TRY_RUN([
 #include <errno.h>
@@ -165,7 +165,7 @@ int main(void) {
 
 
 dnl Do we have /dev/fd or /proc/self/fd?
-AC_DEFUN(RC_SYS_DEV_FD, [
+AC_DEFUN([RC_SYS_DEV_FD], [
 	AC_CACHE_CHECK(for /dev/fd, rc_cv_sys_dev_fd,
 		if test -d /dev/fd && test -r /dev/fd/0; then
 			rc_cv_sys_dev_fd=yes
@@ -179,7 +179,7 @@ AC_DEFUN(RC_SYS_DEV_FD, [
 
 
 dnl Can mknod make FIFOs?
-AC_DEFUN(RC_SYS_MKNOD_FIFO, [
+AC_DEFUN([RC_SYS_MKNOD_FIFO], [
 	AC_CACHE_CHECK(for mknod FIFOs, rc_cv_sys_fifo,
 		AC_TRY_RUN([
 #include <sys/types.h>
@@ -196,7 +196,7 @@ main() {
 ])
 
 dnl Where is tgetent()?
-AC_DEFUN(RC_LIB_TGETENT, [
+AC_DEFUN([RC_LIB_TGETENT], [
 	AC_CHECK_LIB(termcap, tgetent,
 		rc_lib_tgetent=-ltermcap,
 		AC_CHECK_LIB(ncurses, tgetent,

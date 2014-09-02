@@ -1,15 +1,15 @@
-This is release rc-1.7.1.
+This is release rc-1.7.2.
 
 See COPYING for copying information.  All files are
 
-   Copyright 1991, 2001, 2002, 2003 Byron Rakitzis.
+   Copyright 1991, 2001, 2002, 2003, 2014 Byron Rakitzis.
 
 See INSTALL for build and installation information.
 
 
 BUGS
 
-Send bug reports to <tjg@star.le.ac.uk>.  If a core dump is generated,
+Send bug reports to <toby@paccrat.org>.  If a core dump is generated,
 sending a backtrace will help a great deal.  You can get a backtrace
 like this.
 
@@ -35,4 +35,4 @@ WWW
 
 More information on releases of rc can be found at this web page.
 
-    http://www.star.le.ac.uk/~tjg/rc/
+    http://tobold.org/article/rc

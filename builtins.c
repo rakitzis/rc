@@ -15,6 +15,7 @@
 #include <errno.h>
 
 #include "addon.h"
+#include "input.h"
 #include "jbwrap.h"
 #include "rlimit.h"
 #include "sigmsgs.h"
@@ -87,12 +88,12 @@ extern void funcall(char **av) {
 }
 
 static void arg_count(char *name) {
-	fprint(2, "too many arguments to %s\n", name);
+	fprint(2, RC "too many arguments to %s\n", name);
 	set(FALSE);
 }
 
 static void badnum(char *num) {
-	fprint(2, "%s is a bad number\n", num);
+	fprint(2, RC "`%s' is a bad number\n", num);
 	set(FALSE);
 }
 
@@ -389,18 +390,13 @@ extern void b_dot(char **av) {
 		return;
 	fd = rc_open(*av, rFrom);
 	if (fd < 0) {
-		if (rcrc) /* on rc -l, don't flag nonexistence of .rcrc */
-			rcrc = FALSE;
-		else {
-			uerror(*av);
-			set(FALSE);
-		}
+		uerror(*av);
+		set(FALSE);
 		return;
 	}
-	rcrc = FALSE;
 	starassign(*av, av+1, TRUE);
-	pushfd(fd);
 	interactive = i;
+	pushfd(fd);
 	star.name = "*";
 	except(eVarstack, star, &e);
 	doit(TRUE);

@@ -830,3 +830,27 @@ Changes since rc-1.5b2
 2003-07-22
 
   Release: rc-1.7.1.
+
+2003-09-24
+
+  Tidiness: minor improvements to input.c.
+
+2014-02-26
+
+  Bug: fix for CVE-2014-1936 from Jakub Wilk.
+
+2014-06-29
+
+  Documentation: update email and web addresses.
+
+2014-08-31
+
+  Feature: support quoting for filename completion in GNU readline.
+
+2014-09-01
+
+  Bug: quoting of glob characters was broken (thanks Christian
+  Neukirchen); fix the "sneaky parens" bug properly (thanks Wolfgang
+  Zekoll).
+
+  Feature: allow $"x as a synonym for $^x

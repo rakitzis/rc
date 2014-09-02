@@ -143,7 +143,7 @@ static List *dmatch(char *d, char *p, char *m) {
 }
 
 /*
-   lglob() globs a pattern agains a list of directory roots. e.g., (/tmp /usr /bin) "*"
+   lglob() globs a pattern against a list of directory roots. e.g., (/tmp /usr /bin) "*"
    will return a list with all the files in /tmp, /usr, and /bin. NULL on no match.
    slashcount indicates the number of slashes to stick between the directory and the
    matched name. e.g., for matching ////tmp/////foo*

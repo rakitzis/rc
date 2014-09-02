@@ -4,6 +4,10 @@
 
 #include <assert.h>
 
+#define RC "rc: "
+
+#include <assert.h>
+
 /* datatypes */
 
 #define ENV_SEP '\001'
@@ -45,10 +49,6 @@ typedef enum ecodes {
 typedef enum bool {
 	FALSE, TRUE
 } bool;
-
-typedef enum inputtype {
-	iFd, iString
-} inputtype;
 
 typedef enum redirtype {
 	rFrom, rCreate, rAppend, rHeredoc, rHerestring
@@ -128,7 +128,7 @@ struct Format {
 	/* for the formatting routines */
 	va_list args;
 	long flags, f1, f2;
-	/* for the buffer maintainence routines */
+	/* for the buffer maintenance routines */
 	char *buf, *bufbegin, *bufend;
 	int flushed;
 	void (*grow)(Format *, size_t);
@@ -172,8 +172,7 @@ enum {
 
 /* main.c */
 extern Rq *redirq;
-extern bool dashdee, dashee, dashvee, dashex, dashell,
-	dasheye, dashen, dashpee, interactive;
+extern bool dashdee, dashee, dashvee, dashex, dasheye, dashen, dashpee, interactive;
 extern pid_t rc_pid;
 extern int lineno;
 
@@ -265,23 +264,6 @@ extern int heredoc(int);
 extern int qdoc(Node *, Node *);
 extern Hq *hq;
 
-
-/* input.c */
-extern void initinput(void);
-extern Node *parseline(char *);
-extern int gchar(void);
-extern void ugchar(int);
-extern Node *doit(bool);
-extern void flushu(void);
-extern void print_prompt2(void);
-extern void pushfd(int);
-extern void pushstring(char **, bool);
-extern void popinput(void);
-extern void closefds(void);
-extern int lastchar;
-extern bool rcrc;
-
-
 /* lex.c */
 extern bool quotep(char *, bool);
 extern int yylex(void);
@@ -344,38 +326,8 @@ extern int yyparse(void);
 extern void initparse(void);
 
 /* readline */
-
-#if READLINE
-
-/* Including the real readline .h files is too complicated, so we just
-declare what we actually use. */
-
-extern void add_history(char *);
-extern char *readline(char *);
-extern int rl_clear_signals(void);
-extern int rl_pending_input;
-extern int rl_reset_terminal(char *);
-
-#if READLINE_OLD
-extern void rl_clean_up_for_exit(void);
-extern void rl_deprep_terminal(void);
-#else
-extern void _rl_clean_up_for_exit(void);
-extern void (*rl_deprep_term_function)(void);
-#endif
-
-extern char *rc_readline(char *);
-
 extern volatile sig_atomic_t rl_active;
 extern struct Jbwrap rl_buf;
-#endif
-
-#if EDITLINE
-extern char *readline(char *);
-extern void add_history(char *);
-#define rc_readline readline
-#endif
-
 
 /* redir.c */
 extern void doredirs(void);
@@ -386,6 +338,7 @@ extern void initsignal(void);
 extern void catcher(int);
 extern void sigchk(void);
 extern void (*rc_signal(int, void (*)(int)))(int);
+extern void (*sys_signal(int, void (*)(int)))(int);
 extern void (*sighandlers[])(int);
 
 

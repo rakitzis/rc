@@ -1,6 +1,8 @@
 /* lex.c: rc's lexical analyzer */
 
 #include "rc.h"
+
+#include "input.h"
 #include "parse.h"
 
 /*
@@ -33,6 +35,7 @@ static void getpair(int);
 
 int lineno;
 
+/* lookup table for non-word characters */
 const char nw[] = {
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,
@@ -44,6 +47,7 @@ const char nw[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
+/* lookup table for non-word characters in variable names */
 const char dnw[] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
@@ -53,6 +57,18 @@ const char dnw[] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+};
+
+/* lookup table for quotable characters: nw + glob metachars */
+const char q[] = {
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
 static size_t bufsize = BUFSIZE;
@@ -74,7 +90,7 @@ extern bool quotep(char *s, bool dollar) {
 	unsigned char c;
 	const char *meta;
 
-	meta = dollar ? dnw : nw;
+	meta = dollar ? dnw : q;
 	while ((c = *s++))
 		if (meta[c])
 			return TRUE;
@@ -95,14 +111,14 @@ extern int yylex() {
 	}
 	/* rc variable-names may contain only alnum, '*' and '_', so use dnw if we are scanning one. */
 	meta = (dollar ? dnw : nw);
-	dollar = FALSE;
 	if (newline) {
-		--lineno; /* slight space optimization; print_prompt2() always increments lineno */
-		print_prompt2();
+		--lineno; /* slight space optimization; nextline() always increments lineno */
+		nextline();
 		newline = FALSE;
 	}
 top:	while ((c = gchar()) == ' ' || c == '\t')
 		w = NW;
+	if (c != '(') dollar = FALSE;
 	if (c == EOF)
 		return END;
 	if (!meta[(unsigned char) c]) {	/* it's a word or keyword. */
@@ -118,7 +134,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		} while ((c = gchar()) != EOF && !meta[(unsigned char) c]);
 		while (c == '\\') {
 			if ((c = gchar()) == '\n') {
-				print_prompt2();
+				nextline();
 				c = ' '; /* Pretend a space was read */
 				break;
 			} else {
@@ -185,7 +201,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		c = gchar();
 		if (c == '#')
 			return COUNT;
-		if (c == '^')
+		if (c == '^' || c == '"')
 			return FLAT;
 		ugchar(c);
 		return '$';
@@ -196,7 +212,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		while ((c = gchar()) != '\'' || (c = gchar()) == '\'') {
 			buf[i++] = c;
 			if (c == '\n')
-				print_prompt2();
+				nextline();
 			if (c == EOF) {
 				w = NW;
 				scanerror("eof in quoted string");
@@ -213,7 +229,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		return WORD;
 	case '\\':
 		if ((c = gchar()) == '\n') {
-			print_prompt2();
+			nextline();
 			goto top; /* Pretend it was just another space. */
 		}
 		ugchar(c);
@@ -223,7 +239,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		i = 0;
 		goto bs;
 	case '(':
-		if (w == RW) /* SUB's happen only after real words, not keyowrds, so if () and while () work */
+		if (w == RW) /* SUB's happen only after real words, not keywords, so if () and while () work */
 			c = SUB;
 		w = NW;
 		return c;
@@ -327,13 +343,13 @@ extern void yyerror(const char *s) {
 			tok = "end of line";
 		else
 			tok = nprint((lastchar < 32 || lastchar > 126) ? "(decimal %d)" : "'%c'", lastchar);
-		fprint(2, "line %d: %s near %s\n", lineno - (lastchar == '\n'), s, tok);
+		fprint(2, "rc: line %d: %s near %s\n", lineno - (lastchar == '\n'), s, tok);
 	} else
-		fprint(2, "%s\n", s);
+		fprint(2, "rc: %s\n", s);
 }
 
 extern void scanerror(char *s) {
-	flushu(); /* flush upto newline */
+	skiptonl(); /* flush upto newline */
 	yyerror(s);
 	errset = prerror = TRUE;
 }

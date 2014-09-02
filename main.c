@@ -2,11 +2,15 @@
 
 #include "rc.h"
 
-bool dashdee, dashee, dashvee, dashex, dashell, dashEYE, dasheye,
-	dashen, dashpee, dashess, interactive;
+#include <errno.h>
+
+#include "input.h"
+
+bool dashdee, dashee, dashvee, dashex, dasheye,
+	dashen, dashpee, interactive;
 pid_t rc_pid;
 
-static bool dashoh;
+static bool dashEYE, dashell, dashoh, dashess;
 
 static void assigndefault(char *,...);
 static void checkfd(int, enum redirtype);
@@ -86,6 +90,28 @@ quitopts:
 	null[0] = NULL;
 	starassign(dollarzero, null, FALSE); /* assign $0 to $* */
 	inithandler();
+
+	if (dashell) {
+		char *rcrc;
+		int fd;
+
+		rcrc = concat(varlookup("home"), word("/.rcrc", NULL))->w;
+		fd = rc_open(rcrc, rFrom);
+		if (fd == -1) {
+			if (errno != ENOENT)
+				uerror(rcrc);
+		} else {
+			bool push_interactive;
+
+			pushfd(fd);
+			push_interactive = interactive;
+			interactive = FALSE;
+			doit(TRUE);
+			interactive = push_interactive;
+			close(fd);
+		}
+	}
+
 	if (dashsee[0] != NULL || dashess) {	/* input from  -c or -s? */
 		if (*argv != NULL)
 			starassign(dollarzero, argv, FALSE);

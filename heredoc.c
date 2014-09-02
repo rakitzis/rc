@@ -2,6 +2,8 @@
 
 #include "rc.h"
 
+#include "input.h"
+
 struct Hq {
 	Node *doc;
 	char *name;
@@ -40,7 +42,7 @@ static char *readheredoc(char *eof) {
 		bufend = &buf[bufsize]; \
 	}
 	for (;;) {
-		print_prompt2();
+		nextline();
 		for (s = (unsigned char *) eof; (c = gchar()) == *s; s++)
 			;
 		if (*s == '\0' && (c == '\n' || c == EOF)) {
@@ -142,7 +144,7 @@ extern int qdoc(Node *name, Node *n) {
 	Hq *new, **prev;
 	if (name->type != nWord) {
 		yyerror("eof-marker not a single literal word");
-		flushu();
+		skiptonl();
 		return FALSE;
 	}
 	for (prev = &hq; (new = *prev) != NULL; prev = &new->n)

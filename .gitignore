@@ -1,0 +1,14 @@
+*~
+.deps/
+Makefile
+autom4te.cache/
+config.h
+config.log
+config.status
+configure
+depcomp
+missing
+sigmsgs.c
+sigmsgs.h
+stamp-h1
+statval.h

@@ -81,7 +81,7 @@ extern Node *treecpy(Node *s, void *(*alloc)(size_t)) {
 		n->u[2].i = s->u[2].i;
 		break;
 	case nWord:
-		n = (*alloc)(offsetof(Node, u[2]));
+		n = (*alloc)(offsetof(Node, u[3]));
 		n->u[0].s = strcpy((char *) (*alloc)(strlen(s->u[0].s) + 1), s->u[0].s);
 		if (s->u[1].s != NULL) {
 			size_t i = strlen(s->u[0].s);
@@ -89,6 +89,7 @@ extern Node *treecpy(Node *s, void *(*alloc)(size_t)) {
 			memcpy(n->u[1].s, s->u[1].s, i);
 		} else
 			n->u[1].s = NULL;
+		n->u[2].i = s->u[2].i;
 		break;
 	case nBang: case nNowait: case nCase:
 	case nCount: case nFlat: case nRmfn: case nSubshell: case nVar:

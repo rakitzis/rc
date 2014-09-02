@@ -5,6 +5,8 @@
 
 #include "rc.h"
 
+#include "input.h"
+
 /* protect an exported name from brain-dead shells */
 
 #if PROTECT_ENV
@@ -73,7 +75,8 @@ static bool Tconv(Format *f, int ignore) {
 	case nForin:	fmtprint(f, "for(%T in %T)%T", n->u[0].p, n->u[1].p, n->u[2].p); break;
 	case nVarsub:	fmtprint(f, "$%T(%T)", n->u[0].p, n->u[1].p);		break;
 	case nWord:
-		fmtprint(f, quotep(n->u[0].s, dollar) ? "%#S" : "%S", n->u[0].s);
+		fmtprint(f, n->u[2].i && quotep(n->u[0].s, dollar) ?
+				"%#S" : "%S", n->u[0].s);
 		break;
 	case nLappend: {
 		static bool inlist;

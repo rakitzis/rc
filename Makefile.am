@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
+EDIT=@EDIT@
+
 if AMC_HISTORY
 man_MANS = rc.1 history.1
 HISTORY = history
@@ -9,10 +11,6 @@ endif
 
 if AMC_NO_HASHBANG
 EXECVE = execve.o
-endif
-
-if AMC_READLINE
-READLINE = readline.o
 endif
 
 if AMC_RESTART
@@ -26,12 +24,12 @@ noinst_PROGRAMS = mksignal mkstatval tripping $(HISTORY)
 
 rc_SOURCES = builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c parse.c print.c redir.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c
 
-EXTRA_rc_SOURCES = addon.c execve.c readline.c system.c system-bsd.c
+EXTRA_rc_SOURCES = addon.c edit-bsd.c edit-gnu.c edit-null.c execve.c system.c system-bsd.c
 
-rc_DEPENDENCIES = sigmsgs.o $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
-rc_LDADD = sigmsgs.o $(ADDON) $(EXECVE) $(READLINE) $(SYSTEM)
+rc_DEPENDENCIES = sigmsgs.o $(ADDON) $(EDIT) $(EXECVE) $(SYSTEM)
+rc_LDADD = sigmsgs.o $(ADDON) $(EDIT) $(EXECVE) $(SYSTEM)
 
-noinst_HEADERS = getgroups.h jbwrap.h parse.h proto.h rc.h rlimit.h stat.h wait.h
+noinst_HEADERS = edit.h getgroups.h input.h jbwrap.h parse.h proto.h rc.h rlimit.h stat.h wait.h
 
 BUILT_SOURCES = sigmsgs.c
 

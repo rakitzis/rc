@@ -1,20 +1,23 @@
-Highlights of changes since rc-1.7.  See ChangeLog for further details.
+Highlights of changes since rc-1.7. See ChangeLog for further details.
 
-Portability.  A fix to the autoconfiguration means that the nasty
-longjmp() code is now omitted for all modern Unix systems; previously
-rc only did the Right Thing on Linux.  The test for large files in
-trip.rc was removed, as this causes indigestion on file systems that
-don't support sparse files (the configuration and implementation of
-large file support is still present of course).
+Portability. A fix to the autoconfiguration means that the nasty
+longjmp() code is now omitted for all modern Unix systems; previously rc
+only did the Right Thing on Linux. The test for large files in trip.rc
+was removed, as this causes indigestion on file systems that don't
+support sparse files (the configuration and implementation of large file
+support is still present of course).
 
-Bug fixes.  Broken symlinks now glob correctly. The variables $prompt
-and $version are now exported if they are inherited from the
-environment when rc starts.  EIO handling is now enabled for readline
-too.  A few bogosities in the history program were fixed.
+Bug fixes. Fix for CVE-2014-1936. Broken symlinks now glob correctly.
+The variables $prompt and $version are now exported if they are
+inherited from the environment when rc starts. EIO handling is now
+enabled for readline too. A few bogosities in the history program were
+fixed. A regression introduced by the fix for the $(a.b) quoting bug was
+fixed, and that bug was correctly fixed.
 
-New features.  None - this is a bugfix release.
+New features. Filename completion with GNU readline now quotes special
+characters.
 
-Documentation.  Minor updates only.
+Documentation. Minor updates only.
 
-Tim Goodwin
-2003-07-17
+Toby Goodwin
+2014-09-01

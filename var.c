@@ -2,6 +2,8 @@
 
 #include "rc.h"
 
+#include "input.h"
+
 static void colonassign(char *, List *, bool);
 static void listassign(char *, List *, bool);
 static int hasalias(char *);
@@ -19,10 +21,8 @@ extern void varassign(char *name, List *def, bool stack) {
 	new->def = newdef;
 	new->extdef = NULL;
 	set_exportable(name, TRUE);
-#if READLINE
-	if (interactive && (streq(name, "TERM") || streq(name, "TERMCAP")))
-		rl_reset_terminal(NULL);
-#endif
+	if (streq(name, "TERM") || streq(name, "TERMCAP"))
+		termchange();
 }
 
 /* assign a variable in string form. Check to see if it is aliased (e.g., PATH and path) */

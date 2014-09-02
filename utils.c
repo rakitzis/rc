@@ -12,9 +12,9 @@
 extern void pr_error(char *s, int offset) {
 	if (s != NULL) {
 		if (interactive)
-			fprint(2, "%s\n", s);
+			fprint(2, RC "%s\n", s);
 		else
-			fprint(2, "line %d: %s\n", lineno + offset, s);
+			fprint(2, RC "line %d: %s\n", lineno + offset, s);
 	}
 }
 
@@ -27,9 +27,9 @@ extern void uerror(char *s) {
 	if (!err) err = "unknown error";
 
 	if (s)
-		fprint(2, "%s: %s\n", s, err);
+		fprint(2, RC "%s: %s\n", s, err);
 	else
-		fprint(2, "%s\n", err);
+		fprint(2, RC "%s\n", err);
 }
 
 /* Die horribly. This should never get called. Please let me know if it does. */

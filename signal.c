@@ -9,7 +9,7 @@
 #include "jbwrap.h"
 
 #if HAVE_SIGACTION
-static void (*sys_signal(int signum, void (*handler)(int)))(int) {
+void (*sys_signal(int signum, void (*handler)(int)))(int) {
 	struct sigaction new, old;
 
 	new.sa_handler = handler;
@@ -19,7 +19,9 @@ static void (*sys_signal(int signum, void (*handler)(int)))(int) {
 	return old.sa_handler;
 }
 #else
-#define sys_signal(sig, func) (signal((sig), (func)))
+void (*sys_signal(int signum, void (*handler)(int)))(int) {
+	return signal(signum, handler);
+}
 #endif
 
 void (*sighandlers[NUMOFSIGNALS])(int);
@@ -32,11 +34,6 @@ extern void catcher(int s) {
 		caught[s] = 1;
 	}
 	sys_signal(s, catcher);
-
-#if READLINE
-	if (rl_active)
-		siglongjmp(rl_buf.j, s);
-#endif /* READLINE */
 
 #if HAVE_RESTARTABLE_SYSCALLS
 	if (slow) {
@@ -73,13 +70,11 @@ extern void (*rc_signal(int s, void (*h)(int)))(int) {
 	void (*old)(int);
 	sigchk();
 	old = sighandlers[s];
-	if (h == SIG_DFL || h == SIG_IGN) {
-		sighandlers[s] = h;
+	sighandlers[s] = h;
+	if (h == SIG_DFL || h == SIG_IGN)
 		sys_signal(s, h);
-	} else {
-		sighandlers[s] = h;
+	else
 		sys_signal(s, catcher);
-	}
 	return old;
 }
 

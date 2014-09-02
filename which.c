@@ -1,7 +1,7 @@
 /* which.c: check to see if a file is executable.
 
    This function was originally written with Maarten Litmaath's which.c as
-   a template, but was changed in order to accomodate the possibility of
+   a template, but was changed in order to accommodate the possibility of
    rc's running setuid or the possibility of executing files not in the
    primary group. Much of this file has been re-vamped by Paul Haahr.
    I re-re-vamped the functions that Paul supplied to correct minor bugs
@@ -10,6 +10,7 @@
 
 #include "rc.h"
 
+#include <ctype.h>
 #include <errno.h>
 #include <sys/stat.h>
 
@@ -70,6 +71,19 @@ static bool rc_access(char *path, bool verbose) {
 	return FALSE;
 }
 
+/* replace non-printing characters with question marks in a freshly
+ * allocated string */
+static char *protect(char *in) {
+	int l = strlen(in);
+	char *out = ealloc(l + 1);
+	int i;
+
+	for (i = 0; i < l; ++i)
+		out[i] = isprint(in[i]) ? in[i] : '?';
+	out[i] = '\0';
+	return out;
+}
+		    
 /* return a full pathname by searching $path, and by checking the status of the file */
 
 extern char *which(char *name, bool verbose) {
@@ -119,7 +133,10 @@ extern char *which(char *name, bool verbose) {
 		if (rc_access(test, FALSE))
 			return test;
 	}
-	if (verbose)
-		fprint(2, "%s not found\n", name);
+	if (verbose) {
+		char *n = protect(name);
+		fprint(2, RC "cannot find `%s'\n", n);
+		efree(n);
+	}
 	return NULL;
 }

@@ -4,79 +4,55 @@
 
 #include <errno.h>
 
+#include "edit.h"
+#include "input.h"
 #include "jbwrap.h"
 
-/*
-   NB: character unget is supported for up to two characters, but NOT
-   in the case of EOF. Since EOF does not fit in a char, it is easiest
-   to support only one unget of EOF.
-*/
+/* How many characters can we unget? */
+enum { UNGETSIZE = 2 };
+
+typedef enum inputtype {
+	iFd, iString, iEdit
+} inputtype;
 
 typedef struct Input {
+	bool saved;
 	inputtype t;
+	int fd, index, read, ungetcount, lineno, last;
 	char *ibuf;
-	int fd, index, read, lineno, last;
-	bool saved, eofread;
+	void *cookie;
+	int ungetbuf[UNGETSIZE];
+	int (*gchar)(void);
 } Input;
 
 #define BUFSIZE ((size_t) 256)
 
-static char *prompt2;
-bool rcrc;
-
-static int dead(void);
-static int fdgchar(void);
-static int stringgchar(void);
-static void history(void);
-static void ugdead(int);
-static void pushcommon(void);
-
 static char *inbuf;
 static size_t istacksize, chars_out, chars_in;
-static bool eofread = FALSE, save_lineno = TRUE;
+static bool save_lineno = TRUE;
 static Input *istack, *itop;
-
-static int (*realgchar)(void);
-static void (*realugchar)(int);
 
 int lastchar;
 
-#if EDITLINE || READLINE
-static char *rlinebuf, *prompt;
-#endif
+static char *prompt, *prompt2;
+
+extern void ugchar(int c) {
+	assert(istack->ungetcount < UNGETSIZE);
+	istack->ungetbuf[istack->ungetcount++] = c;
+}
 
 extern int gchar() {
 	int c;
 
-	if (eofread) {
-		eofread = FALSE;
-		return lastchar = EOF;
-	}
+	if (istack->ungetcount)
+		return lastchar = istack->ungetbuf[--istack->ungetcount];
 
-	while ((c = (*realgchar)()) == '\0')
+	while ((c = (*istack->gchar)()) == '\0')
 		pr_error("warning: null character ignored", 0);
 
 	return c;
 }
 
-extern void ugchar(int c) {
-	(*realugchar)(c);
-}
-
-static int dead() {
-	return lastchar = EOF;
-}
-
-static void ugdead(int ignore) {
-	return;
-}
-
-static void ugalive(int c) {
-	if (c == EOF)
-		eofread = TRUE;
-	else
-		inbuf[--chars_out] = c;
-}
 
 /* get the next character from a string. */
 
@@ -84,81 +60,110 @@ static int stringgchar() {
 	return lastchar = (inbuf[chars_out] == '\0' ? EOF : inbuf[chars_out++]);
 }
 
-/*
-   read a character from a file-descriptor. If GNU readline is defined,
-   add a newline and doctor the buffer to look like a regular fdgchar
-   buffer.
-*/
 
-static int fdgchar() {
+/* write last command out to a file if interactive && $history is set */
 
-	if (chars_out >= chars_in + 2) { /* has the buffer been exhausted? if so, replenish it */
-		while (1) {
-#if EDITLINE || READLINE
-			if (interactive && istack->t == iFd && isatty(istack->fd)) {
-				/* The readline library doesn't handle
-				 * read() returning EAGAIN or EIO. */
-				makeblocking(istack->fd);
-				makesamepgrp(istack->fd);
-				rlinebuf = rc_readline(prompt);
-				if (rlinebuf == NULL) {
-					chars_in = 0;
-				} else {
-					if (*rlinebuf != '\0')
-						add_history(rlinebuf);
-					chars_in = strlen(rlinebuf) + 1;
-					efree(inbuf);
-					inbuf = ealloc(chars_in + 3);
-					strcpy(inbuf+2, rlinebuf);
-					strcat(inbuf+2, "\n");
-					efree(rlinebuf);
-				}
-			} else
-#endif
-			{
-				ssize_t r;
-				do {
-					r = rc_read(istack->fd, inbuf + 2, BUFSIZE);
-					sigchk();
-					switch (errno) {
-					case EAGAIN:
-						if (!makeblocking(istack->fd))
-							panic("not O_NONBLOCK");
-						errno = EINTR;
-						break;
-					case EIO:
-						if (makesamepgrp(istack->fd))
-							errno = EINTR;
-						else
-							errno = EIO;
-						break;
-					}
-				} while (r < 0 && errno == EINTR);
-				if (r < 0) {
-					uerror("read");
-					rc_raise(eError);
-				}
-				chars_in = (size_t) r;
+static void history() {
+	List *hist;
+	size_t a;
+
+	if (!interactive || (hist = varlookup("history")) == NULL)
+		return;
+
+	for (a = 0; a < chars_in; a++) {
+		char c = inbuf[a];
+
+		/* skip empty lines and comments */
+		if (c == '#' || c == '\n')
+			break;
+
+		/* line matches [ \t]*[^#\n] so it's ok to write out */
+		if (c != ' ' && c != '\t') {
+			char *name = hist->w;
+			int fd = rc_open(name, rAppend);
+			if (fd < 0)
+				uerror(name);
+			else {
+				writeall(fd, inbuf, chars_in);
+				close(fd);
 			}
 			break;
 		}
+	}
+}
+
+
+/* read a character from a file descriptor */
+
+static int fdgchar() {
+	if (chars_out >= chars_in) { /* replenish empty buffer */
+		ssize_t r;
+		do {
+			r = rc_read(istack->fd, inbuf, BUFSIZE);
+			sigchk();
+			if (r == -1)
+				switch (errno) {
+				case EAGAIN:
+					if (!makeblocking(istack->fd))
+						panic("not O_NONBLOCK");
+					errno = EINTR;
+					break;
+				case EIO:
+					if (makesamepgrp(istack->fd))
+						errno = EINTR;
+					else
+						errno = EIO;
+					break;
+				}
+		} while (r < 0 && errno == EINTR);
+		if (r < 0) {
+			uerror("read");
+			rc_raise(eError);
+		}
+		chars_in = (size_t) r;
 		if (chars_in == 0)
 			return lastchar = EOF;
-		chars_out = 2;
+		chars_out = 0;
 		if (dashvee)
-			writeall(2, inbuf + 2, chars_in);
+			writeall(2, inbuf, chars_in);
 		history();
 	}
+
 	return lastchar = inbuf[chars_out++];
 }
+
+/* read a character from a line-editing file descriptor */
+
+static int editgchar() {
+	if (chars_out >= chars_in) { /* replenish empty buffer */
+		edit_free(istack->cookie);
+		inbuf = edit_alloc(istack->cookie, &chars_in);
+		if (inbuf == NULL) {
+			chars_in = 0;
+			fprint(2, "exit\n");
+			return lastchar = EOF;
+		}
+
+		chars_out = 0;
+		if (dashvee)
+			writeall(2, inbuf, chars_in);
+		history();
+	}
+
+	return lastchar = inbuf[chars_out++];
+}
+
+void termchange(void) {
+	if (istack->t == iEdit)
+		edit_reset(istack->cookie);
+}
+
 
 /* set up the input stack, and put a "dead" input at the bottom, so that yyparse will always read eof */
 
 extern void initinput() {
 	istack = itop = ealloc(istacksize = 256 * sizeof (Input));
-	istack->t = iFd;
-	istack->fd = -1;
-	realugchar = ugalive;
+	ugchar(EOF);
 }
 
 /* push an input source onto the stack. set up a new input buffer, and set gchar() */
@@ -171,54 +176,56 @@ static void pushcommon() {
 	istack->lineno = lineno;
 	istack->saved = save_lineno;
 	istack->last = lastchar;
-	istack->eofread = eofread;
 	istack++;
 	idiff = istack - itop;
 	if (idiff >= istacksize / sizeof (Input)) {
 		itop = erealloc(itop, istacksize *= 2);
 		istack = itop + idiff;
 	}
-	realugchar = ugalive;
-	chars_out = 2;
+	chars_out = 0;
 	chars_in = 0;
+	istack->ungetcount = 0;
 }
 
 extern void pushfd(int fd) {
 	pushcommon();
-	istack->t = iFd;
 	save_lineno = TRUE;
 	istack->fd = fd;
-	realgchar = fdgchar;
-	inbuf = ealloc(BUFSIZE + 2);
 	lineno = 1;
+	if (editing && interactive && isatty(fd)) {
+		istack->t = iEdit;
+		istack->gchar = editgchar;
+		istack->cookie = edit_begin(fd);
+	} else {
+		istack->t = iFd;
+		istack->gchar = fdgchar;
+		inbuf = ealloc(BUFSIZE);
+	}
 }
 
 extern void pushstring(char **a, bool save) {
 	pushcommon();
 	istack->t = iString;
 	save_lineno = save;
-	inbuf = mprint("..%A", a);
-	realgchar = stringgchar;
+	inbuf = mprint("%A", a);
+	istack->gchar = stringgchar;
 	if (save_lineno)
 		lineno = 1;
 	else
 		--lineno;
 }
 
-/* remove an input source from the stack. restore the right kind of getchar (string,fd) etc. */
+
+/* remove an input source from the stack. restore associated variables etc. */
 
 extern void popinput() {
-	if (istack->t == iFd)
+	if (istack->t == iEdit)
+		edit_end(istack->cookie);
+	if (istack->t == iFd || istack->t == iEdit)
 		close(istack->fd);
 	efree(inbuf);
 	--istack;
-	realgchar = (istack->t == iString ? stringgchar : fdgchar);
-	if (istack->t == iFd && istack->fd == -1) { /* top of input stack */
-		realgchar = dead;
-		realugchar = ugdead;
-	}
 	lastchar = istack->last;
-	eofread = istack->eofread;
 	inbuf = istack->ibuf;
 	chars_out = istack->index;
 	chars_in = istack->read;
@@ -229,9 +236,10 @@ extern void popinput() {
 	save_lineno = istack->saved;
 }
 
-/* flush input characters upto newline. Used by scanerror() */
 
-extern void flushu() {
+/* flush input characters up to newline. Used by scanerror() */
+
+extern void skiptonl() {
 	int c;
 	if (lastchar == '\n' || lastchar == EOF)
 		return;
@@ -240,6 +248,7 @@ extern void flushu() {
 	if (c == EOF)
 		ugchar(c);
 }
+
 
 /* the wrapper loop in rc: prompt for commands until EOF, calling yyparse and walk() */
 
@@ -259,17 +268,11 @@ extern Node *doit(bool clobberexecit) {
 	for (eof = FALSE; !eof;) {
 		Edata block;
 		Estack e2;
+
 		block.b = newblock();
 		except(eArena, block, &e2);
 		sigchk();
-		if (dashell) {
-			char *fname[3];
-			fname[1] = concat(varlookup("home"), word("/.rcrc", NULL))->w;
-			fname[2] = NULL;
-			rcrc = TRUE;
-			dashell = FALSE;
-			b_dot(fname);
-		}
+
 		if (interactive) {
 			List *s;
 			if (!dashen && fnlookup("prompt") != NULL) {
@@ -282,15 +285,20 @@ extern Node *doit(bool clobberexecit) {
 				}
 				died = FALSE;
 			}
-			if ((s = varlookup("prompt")) != NULL) {
-#if EDITLINE || READLINE
-				if (istack->t == iFd && isatty(istack->fd))
-					prompt = s->w;
+			s = varlookup("prompt");
+			if (s != NULL) {
+				prompt = s->w;
+				if (s->n != NULL)
+					prompt2 = s->n->w;
 				else
-#endif
-					fprint(2, "%s", s->w);
-				prompt2 = (s->n == NULL ? "" : s->n->w);
+					prompt2 = "";
+			} else {
+				prompt = prompt2 = "";
 			}
+			if (istack->t == iFd)
+				fprint(2, "%s", prompt);
+			else if (istack->t == iEdit)
+				edit_prompt(istack->cookie, prompt);
 		}
 		inityy();
 		if (yyparse() == 1 && execit)
@@ -312,7 +320,7 @@ extern Node *doit(bool clobberexecit) {
 /* parse a function imported from the environment */
 
 extern Node *parseline(char *extdef) {
-	int i = interactive;
+	bool i = interactive;
 	char *in[2];
 	Node *fun;
 	in[0] = extdef;
@@ -322,38 +330,6 @@ extern Node *parseline(char *extdef) {
 	fun = doit(FALSE);
 	interactive = i;
 	return fun;
-}
-
-/* write last command out to a file if interactive && $history is set */
-
-static void history() {
-	List *hist;
-	size_t a;
-
-	if (!interactive || (hist = varlookup("history")) == NULL)
-		return;
-
-	for (a = 0; a < chars_in; a++) {
-		char c = inbuf[a+2];
-
-		/* skip empty lines and comments */
-		if (c == '#' || c == '\n')
-			break;
-
-		/* line matches [ \t]*[^#\n] so it's ok to write out */
-		if (c != ' ' && c != '\t') {
-			char *name = hist->w;
-			int fd = rc_open(name, rAppend);
-			if (fd < 0) {
-				uerror(name);
-				varrm(name, TRUE);
-			} else {
-				writeall(fd, inbuf + 2, chars_in);
-				close(fd);
-			}
-			break;
-		}
-	}
 }
 
 /* close file descriptors after a fork() */
@@ -367,14 +343,14 @@ extern void closefds() {
 		}
 }
 
-extern void print_prompt2() {
+/* print (or set) prompt(2) */
+
+extern void nextline() {
 	lineno++;
 	if (interactive) {
-#if EDITLINE || READLINE
-		if (istack->t == iFd && isatty(istack->fd))
-			prompt = prompt2;
-		else
-#endif
+		if (istack->t == iFd)
 			fprint(2, "%s", prompt2);
+		else if (istack->t == iEdit)
+			edit_prompt(istack->cookie, prompt2);
 	}
 }
