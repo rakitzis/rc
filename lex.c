@@ -349,7 +349,7 @@ extern void yyerror(const char *s) {
 }
 
 extern void scanerror(char *s) {
-	skiptonl(); /* flush upto newline */
+	skiptonl(); /* flush up to newline */
 	yyerror(s);
 	errset = prerror = TRUE;
 }
