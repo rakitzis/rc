@@ -858,3 +858,9 @@ Changes since rc-1.5b2
 2015-04-03
 
   Packaging: the rc.spec file was very out-of-date.
+
+2015-04-04
+
+  Portability: the comment from 1999-08-19 may well have been true at
+  the time, but the final version of the C99 standard called varargs
+  copying macro va_copy().
