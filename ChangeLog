@@ -854,3 +854,7 @@ Changes since rc-1.5b2
   Zekoll).
 
   Feature: allow $"x as a synonym for $^x
+
+2015-04-03
+
+  Packaging: the rc.spec file was very out-of-date.
