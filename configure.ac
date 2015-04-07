@@ -170,21 +170,30 @@ AC_SUBST(ADDON)
 
 
 EDIT=edit-null.o
-AC_ARG_WITH(edit, [  --with-edit=(bsd,edit,gnu,vrl)  Command line editing library], [
+AC_ARG_WITH(edit, [  --with-edit=(edit,editline,readline,vrl)  Command line editing library], [
 	case $withval in
 	yes)
 		AC_MSG_ERROR(must specify which library)
 		# might consider searching
 		;;
-	bsd)
-		EDIT=edit-bsd.o
+	no|null)
+		;;
+	edit|bsd)
+		EDIT=edit-edit.o
 		RC_LIB_TGETENT
 		AC_CHECK_LIB(edit, el_init, [
 			LIBS="$LIBS -ledit $rc_lib_tgetent"
+		], AC_MSG_ERROR(edit library not found), $rc_lib_tgetent)
+		;;
+	editline)
+		EDIT=edit-editline.o
+		RC_LIB_TGETENT
+		AC_CHECK_LIB(editline, el_ring_bell, [
+			LIBS="$LIBS -leditline $rc_lib_tgetent"
 		], AC_MSG_ERROR(editline library not found), $rc_lib_tgetent)
 		;;
-	gnu)
-		EDIT=edit-gnu.o
+	readline|gnu)
+		EDIT=edit-readline.o
 		RC_LIB_TGETENT
 		AC_CHECK_LIB(readline, readline, [
 			LIBS="$LIBS -lreadline $rc_lib_tgetent"
@@ -196,10 +205,12 @@ AC_ARG_WITH(edit, [  --with-edit=(bsd,edit,gnu,vrl)  Command line editing librar
 			rl_catch_signals = 0;
 		], [], AC_MSG_ERROR(readline >= 4.0 not found))
 		;;
-	no|null)
-		;;
-	edit|vrl)
-		EDIT=edit-$withval.o
+	vrl)
+		EDIT=edit-vrl.o
+		RC_LIB_TGETENT
+		AC_CHECK_LIB(vrl, iline_peekch, [
+			LIBS="$LIBS -lvrl $rc_lib_tgetent"
+		], AC_MSG_ERROR(vrl library not found), $rc_lib_tgetent)
 		;;
 	*)
 		AC_MSG_ERROR(unknown editing library $withval)
