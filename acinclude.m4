@@ -197,11 +197,14 @@ main() {
 
 dnl Where is tgetent()?
 AC_DEFUN([RC_LIB_TGETENT], [
-	AC_CHECK_LIB(termcap, tgetent,
-		rc_lib_tgetent=-ltermcap,
-		AC_CHECK_LIB(ncurses, tgetent,
-			rc_lib_tgetent=-lncurses,
-			AC_MSG_ERROR(tgetent not found)
+	AC_CHECK_LIB(tinfo, tgetent,
+		rc_lib_tgetent=-ltinfo,
+		AC_CHECK_LIB(termcap, tgetent,
+			rc_lib_tgetent=-ltermcap,
+			AC_CHECK_LIB(ncurses, tgetent,
+				rc_lib_tgetent=-lncurses,
+				AC_MSG_ERROR(tgetent not found)
+			)
 		)
 	)
 ])
