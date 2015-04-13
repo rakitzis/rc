@@ -9,11 +9,10 @@ dnl Get things going...
 AC_CONFIG_SRCDIR([rc.h])
 AM_INIT_AUTOMAKE
 
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 
 dnl Find a standard C compiler
 AC_PROG_CC
-AM_PROG_CC_STDC
 
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
