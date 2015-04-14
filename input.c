@@ -163,6 +163,7 @@ void termchange(void) {
 
 extern void initinput() {
 	istack = itop = ealloc(istacksize = 256 * sizeof (Input));
+	istack->ungetcount = 0;
 	ugchar(EOF);
 }
 
