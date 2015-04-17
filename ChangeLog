@@ -855,6 +855,8 @@ Changes since rc-1.5b2
 
   Feature: allow $"x as a synonym for $^x
 
+  Release: rc-1.7.2.
+
 2015-04-03
 
   Packaging: the rc.spec file was very out-of-date.
