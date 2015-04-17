@@ -33,7 +33,7 @@ noinst_HEADERS = edit.h getgroups.h input.h jbwrap.h parse.h proto.h rc.h rlimit
 
 BUILT_SOURCES = sigmsgs.c
 
-EXTRA_DIST = EXAMPLES RELDATE addon.c addon.h history.1 parse.y rc.1 trip.rc
+EXTRA_DIST = EXAMPLES addon.c addon.h history.1 parse.y rc.1 trip.rc
 
 sigmsgs.c sigmsgs.h: mksignal
 	./mksignal
@@ -44,8 +44,6 @@ status.o: statval.h
 
 statval.h: mkstatval
 	./mkstatval > statval.h
-
-CONFIGURE_DEPENDENCIES = RELDATE
 
 DISTCLEANFILES = sigmsgs.c sigmsgs.h statval.h
 
