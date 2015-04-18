@@ -7,17 +7,19 @@ was removed, as this causes indigestion on file systems that don't
 support sparse files (the configuration and implementation of large file
 support is still present of course).
 
-Bug fixes. Fix for CVE-2014-1936. Broken symlinks now glob correctly.
-The variables $prompt and $version are now exported if they are
-inherited from the environment when rc starts. EIO handling is now
-enabled for readline too. A few bogosities in the history program were
-fixed. A regression introduced by the fix for the $(a.b) quoting bug was
-fixed, and that bug was correctly fixed.
+Bug fixes. Fix a use of uninitialized memory. Fix for CVE-2014-1936.
+Broken symlinks now glob correctly.  The variables $prompt and $version
+are now exported if they are inherited from the environment when rc
+starts. EIO handling is now enabled for readline too. A few bogosities
+in the history program were fixed. A regression introduced by the fix
+for the $(a.b) quoting bug was fixed, and that bug was correctly fixed.
 
-New features. Filename completion with GNU readline now quotes special
-characters.
+New features. Added $"x as a synonym for $^x. Minimal support for
+various alternative line editing libraries. Filename completion with GNU
+readline now quotes special characters.
 
-Documentation. Minor updates only.
+Documentation. Licence updated to use exactly the text of the zlib-
+with-acknowledgement licence.
 
 Toby Goodwin
-2014-09-01
+2015-04-20
