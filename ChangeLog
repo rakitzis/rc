@@ -867,6 +867,12 @@ Changes since rc-1.5b2
   the time, but the final version of the C99 standard called varargs
   copying macro va_copy().
 
+2015-04-07
+
+  Portability: look in -ltinfo for tgetent.
+
+  Packaging: various autoconf / automake updates and tweaks.
+
 2015-04-14
 
   Bug: in initinput(), the call ugchar(EOF) used the ungetcount member
@@ -874,3 +880,13 @@ Changes since rc-1.5b2
   Johnson for finding this, Robert Scheck for reporting it, and Uli
   Drepper for implementing MALLOC_PERTURB_, a cheap way to find uses of
   uninitialized memory.
+
+2015-04-18
+
+  Licensing: tweaked to match exactly the "zlib with acknowledgement"
+  license which is used by nunit and is already approved by various
+  distros.
+
+2015-04-20
+
+  Release: rc-1.7.3.
