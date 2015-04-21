@@ -1,5 +1,7 @@
-The current maintainer of rc is Toby Goodwin <toby@paccrat.org>.  Please
-send all bug reports to him.
+The current maintainer of rc is Toby Goodwin <toby@paccrat.org>. Please
+send all bug reports to him, or via github:
+
+  https://github.com/rakitzis/rc/issues
 
 This shell was written by me, Byron Rakitzis, but kudos go to Paul Haahr
 for letting me know what a shell should do and for contributing certain

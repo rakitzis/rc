@@ -23,11 +23,11 @@ typedef long align_t;
 
 #include <stdarg.h>
 
-/* C 9x specifies a __va_copy() macro which should be used for copying
-objects of type va_list.  Of course, most places don't have this yet,
-but where it does exist we need to use it. */
-#ifndef __va_copy
-#define __va_copy(x,y) (x)=(y)
+/* C 99 specifies a va_copy() macro to be used for copying
+objects of type va_list. If this doesn't exist, hope that simple
+assignment works. */
+#ifndef va_copy
+#define va_copy(x,y) (x)=(y)
 #endif
 
 #if STDC_HEADERS

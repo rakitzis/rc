@@ -1,6 +1,6 @@
 %define name rc
-%define version 1.7.1
-%define release 1
+%define version 1.7.2
+%define release 3
 
 Summary:	rc - the Plan 9 and Tenth Edition shell
 Name:	%name
@@ -8,8 +8,10 @@ Version:	%version
 Release:	%release
 Group:	Shells
 License:	distributable
-Source0:	http://www.libra-aries-books.co.uk/software/rc/release/%name-%version.tar.gz
+Source0:	http://static.tobold.org/rc/rc-1.7.2.tar.gz
 Buildroot:	/var/tmp/%{name}-rpmroot
+BuildRequires:	autoconf
+BuildRequires:	readline-devel
 
 %description
 This is a reimplementation for Unix, by Byron Rakitzis, of the Plan 9
@@ -20,7 +22,7 @@ shell, but with a much cleaner syntax.
 %setup
 
 %build
-sh configure --with-readline --prefix "$RPM_BUILD_ROOT" --mandir "$RPM_BUILD_ROOT/usr/share/man"
+sh configure --with-edit=gnu --prefix "$RPM_BUILD_ROOT" --mandir "$RPM_BUILD_ROOT/usr/share/man"
 make
 
 %install

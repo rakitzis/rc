@@ -24,7 +24,7 @@ noinst_PROGRAMS = mksignal mkstatval tripping $(HISTORY)
 
 rc_SOURCES = builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c parse.c print.c redir.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c
 
-EXTRA_rc_SOURCES = addon.c edit-bsd.c edit-gnu.c edit-null.c execve.c system.c system-bsd.c
+EXTRA_rc_SOURCES = addon.c edit-edit.c edit-editline.c edit-null.c edit-readline.c edit-vrl.c execve.c system.c system-bsd.c
 
 rc_DEPENDENCIES = sigmsgs.o $(ADDON) $(EDIT) $(EXECVE) $(SYSTEM)
 rc_LDADD = sigmsgs.o $(ADDON) $(EDIT) $(EXECVE) $(SYSTEM)
@@ -33,7 +33,7 @@ noinst_HEADERS = edit.h getgroups.h input.h jbwrap.h parse.h proto.h rc.h rlimit
 
 BUILT_SOURCES = sigmsgs.c
 
-EXTRA_DIST = EXAMPLES RELDATE addon.c addon.h history.1 parse.y rc.1 trip.rc
+EXTRA_DIST = EXAMPLES addon.c addon.h history.1 parse.y rc.1 trip.rc
 
 sigmsgs.c sigmsgs.h: mksignal
 	./mksignal
@@ -44,8 +44,6 @@ status.o: statval.h
 
 statval.h: mkstatval
 	./mkstatval > statval.h
-
-CONFIGURE_DEPENDENCIES = RELDATE
 
 DISTCLEANFILES = sigmsgs.c sigmsgs.h statval.h
 

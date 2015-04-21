@@ -1,5 +1,5 @@
 dnl Our package name, version, ...
-AC_INIT([rc], [1.7.2])
+AC_INIT([rc], [1.7.3])
 
 dnl ... and release date
 RELDATE=`date -I`
@@ -9,11 +9,10 @@ dnl Get things going...
 AC_CONFIG_SRCDIR([rc.h])
 AM_INIT_AUTOMAKE
 
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 
 dnl Find a standard C compiler
 AC_PROG_CC
-AM_PROG_CC_STDC
 
 dnl If we're using gcc, specify `-Wall'.  I've also checked the code
 dnl with `-pedantic -W -Wall -Wpointer-arith -Wstrict-prototypes
@@ -170,21 +169,30 @@ AC_SUBST(ADDON)
 
 
 EDIT=edit-null.o
-AC_ARG_WITH(edit, [  --with-edit=(bsd,edit,gnu,vrl)  Command line editing library], [
+AC_ARG_WITH(edit, [  --with-edit=(edit,editline,readline,vrl)  Command line editing library], [
 	case $withval in
 	yes)
 		AC_MSG_ERROR(must specify which library)
 		# might consider searching
 		;;
-	bsd)
-		EDIT=edit-bsd.o
+	no|null)
+		;;
+	edit|bsd)
+		EDIT=edit-edit.o
 		RC_LIB_TGETENT
 		AC_CHECK_LIB(edit, el_init, [
 			LIBS="$LIBS -ledit $rc_lib_tgetent"
+		], AC_MSG_ERROR(edit library not found), $rc_lib_tgetent)
+		;;
+	editline)
+		EDIT=edit-editline.o
+		RC_LIB_TGETENT
+		AC_CHECK_LIB(editline, el_ring_bell, [
+			LIBS="$LIBS -leditline $rc_lib_tgetent"
 		], AC_MSG_ERROR(editline library not found), $rc_lib_tgetent)
 		;;
-	gnu)
-		EDIT=edit-gnu.o
+	readline|gnu)
+		EDIT=edit-readline.o
 		RC_LIB_TGETENT
 		AC_CHECK_LIB(readline, readline, [
 			LIBS="$LIBS -lreadline $rc_lib_tgetent"
@@ -196,10 +204,12 @@ AC_ARG_WITH(edit, [  --with-edit=(bsd,edit,gnu,vrl)  Command line editing librar
 			rl_catch_signals = 0;
 		], [], AC_MSG_ERROR(readline >= 4.0 not found))
 		;;
-	no|null)
-		;;
-	edit|vrl)
-		EDIT=edit-$withval.o
+	vrl)
+		EDIT=edit-vrl.o
+		RC_LIB_TGETENT
+		AC_CHECK_LIB(vrl, iline_peekch, [
+			LIBS="$LIBS -lvrl $rc_lib_tgetent"
+		], AC_MSG_ERROR(vrl library not found), $rc_lib_tgetent)
 		;;
 	*)
 		AC_MSG_ERROR(unknown editing library $withval)
