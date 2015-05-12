@@ -896,3 +896,6 @@ Changes since rc-1.5b2
   Licensing: due to GPL compatibility concerns, the license is changed
   again to the "zlib" license. (N.B. This license change was agreed and
   approved by Byron Rakitzis, who is the copyright holder.)
+
+  Testing: swap arguments to mktemp to be kinder to NetBSD (thanks Piotr
+  Meyer).

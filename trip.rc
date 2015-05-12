@@ -24,7 +24,7 @@ fn sigexit sigint sigquit sigsegv
 fn sigexit {
 	echo trip complete
 }
-tmpdir=`{ mktemp -t -d rc-trip.XXXXXX }
+tmpdir=`{ mktemp -d -t rc-trip.XXXXXX }
 tmp=$tmpdir/tmp
 nl='
 '
