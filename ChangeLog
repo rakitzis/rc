@@ -890,3 +890,16 @@ Changes since rc-1.5b2
 2015-04-20
 
   Release: rc-1.7.3.
+
+2015-05-12
+
+  Licensing: due to GPL compatibility concerns, the license is changed
+  again to the "zlib" license. (N.B. This license change was agreed and
+  approved by Byron Rakitzis, who is the copyright holder.)
+
+  Testing: swap arguments to mktemp to be kinder to NetBSD (thanks Piotr
+  Meyer).
+
+2015-05-13
+
+  Release: rc-1.7.4.

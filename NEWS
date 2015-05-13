@@ -18,8 +18,7 @@ New features. Added $"x as a synonym for $^x. Minimal support for
 various alternative line editing libraries. Filename completion with GNU
 readline now quotes special characters.
 
-Documentation. Licence updated to use exactly the text of the zlib-
-with-acknowledgement licence.
+Documentation. Licence updated to the zlib licence.
 
 Toby Goodwin
-2015-04-20
+2015-05-13
