@@ -1,6 +1,6 @@
-This is release rc-1.7.3.
+This is release rc-1.7.4.
 
-See COPYING for copying information.  All files are
+See COPYING for copying information. All files are
 
    Copyright 1991, 1999, 2001-2003, 2014, 2015 Byron Rakitzis.
 
@@ -9,8 +9,8 @@ See INSTALL for build and installation information.
 
 BUGS
 
-Send bug reports to <toby@paccrat.org>.  If a core dump is generated,
-sending a backtrace will help a great deal.  You can get a backtrace
+Send bug reports to <toby@paccrat.org>. If a core dump is generated,
+sending a backtrace will help a great deal. You can get a backtrace
 like this.
 
 	; gdb rc core
@@ -25,7 +25,7 @@ make rc; this information is extremely valuable.
 FEEPING CREATURISM
 
 See the end of the man page, under "INCOMPATIBILITIES" for (known?)
-differences from the "real" rc.  Most of these changes were necessary
+differences from the "real" rc. Most of these changes were necessary
 to get rc to work in a reasonable fashion on a real (i.e. commercial,
 non-Labs) Unix system; a few were changes motivated by concern about
 some inadequacies in the original design.

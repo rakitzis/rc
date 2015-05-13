@@ -1,5 +1,5 @@
 dnl Our package name, version, ...
-AC_INIT([rc], [1.7.3])
+AC_INIT([rc], [1.7.4])
 
 dnl ... and release date
 RELDATE=`date -I`
