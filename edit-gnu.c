@@ -1,38 +1,84 @@
 #include "rc.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <readline/readline.h>
+#include <readline/history.h>
 
-#include "jbwrap.h"
+#include "edit.h"
 
-struct Jbwrap rl_buf;
-volatile sig_atomic_t rl_active;
+bool editing = 1;
 
-void edit_init(void *ignored) {
+struct cookie {
+	char *buffer;
+};
+
+void *edit_begin(int fd) {
+	List *hist;
+	struct cookie *c;
+
 	rl_catch_signals = 0;
+
+	hist = varlookup("history");
+	if (hist != NULL)
+		if (read_history(hist->w) != 0 && errno != ENOENT) /* ignore if missing */
+			uerror(hist->w);
+
+	c = ealloc(sizeof *c);
+	c->buffer = NULL;
+	return c;
 }
 
-char *edit_getline(void *ignored, char *prompt) {
-	char *r = NULL;
-	int s;
-
-	if ((s = sigsetjmp(rl_buf.j, 1)) == 0) {
-		rl_active = TRUE;
-		r = readline(prompt);
-	} else {
-		rl_free_line_state();
-		rl_cleanup_after_signal();
-		rl_active = FALSE;
-		rc_raise(eError);
-	}
-
-	if (r) {
-		r = erealloc(r, strlen(r) + 2); /* 1 for \n + 1 for \0 */
-		strcat(r, "\n");
-	}
-	return r;
+static void edit_catcher(int sig) {
+	write(2, "\n", 1);
+	rc_raise(eError);
 }
 
-void edit_free(void *ignored, void *buffer) {
-	efree(buffer);
+static char *prompt;
+
+char *edit_alloc(void *cookie, int *count) {
+	struct cookie *c = cookie;
+	void (*oldint)(int), (*oldquit)(int);
+
+	oldint = sys_signal(SIGINT, edit_catcher);
+	oldquit = sys_signal(SIGQUIT, edit_catcher);
+
+	c->buffer = readline(prompt);
+
+	sys_signal(SIGINT, oldint);
+	sys_signal(SIGQUIT, oldquit);
+
+	if (c->buffer) {
+		*count = strlen(c->buffer);
+		if (*count)
+			add_history(c->buffer);
+		c->buffer[*count] = '\n';
+		++*count; /* include the \n */
+	}
+	return c->buffer;
+}
+
+void edit_prompt(void *cookie, char *pr) {
+	prompt = pr;
+}
+
+void edit_free(void *cookie) {
+	struct cookie *c = cookie;
+
+	efree(c->buffer);
+	/* Set c->buffer to NULL, allowing us to "overfree" it.  This
+	   is a bit of a kludge, but it's otherwise hard to deal with
+	   the case where a signal causes an early return from
+	   readline. */
+	c->buffer = NULL;
+}
+
+void edit_end(void *cookie) {
+	struct cookie *c = cookie;
+
+	efree(c);
+}
+
+void edit_reset(void *cookie) {
+	rl_reset_terminal(NULL);
 }

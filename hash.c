@@ -315,14 +315,3 @@ extern void whatare_all_vars(bool showfn, bool showvar) {
 			if (fp[i].name != NULL && fp[i].name != dead)
 				prettyprint_fn(1, fp[i].name, fnlookup(fp[i].name));
 }
-
-/* fake getenv() for readline() follows: */
-
-#if EDITLINE || READLINE
-extern char *getenv(const char *name) {
-	List *s;
-	if (name == NULL || vp == NULL || (s = varlookup((char *) name)) == NULL)
-		return NULL;
-	return s->w;
-}
-#endif

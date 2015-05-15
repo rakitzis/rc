@@ -99,8 +99,8 @@ extern int yylex() {
 	meta = (dollar ? dnw : nw);
 	dollar = FALSE;
 	if (newline) {
-		--lineno; /* slight space optimization; print_prompt2() always increments lineno */
-		print_prompt2();
+		--lineno; /* slight space optimization; nextline() always increments lineno */
+		nextline();
 		newline = FALSE;
 	}
 top:	while ((c = gchar()) == ' ' || c == '\t')
@@ -120,7 +120,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		} while ((c = gchar()) != EOF && !meta[(unsigned char) c]);
 		while (c == '\\') {
 			if ((c = gchar()) == '\n') {
-				print_prompt2();
+				nextline();
 				c = ' '; /* Pretend a space was read */
 				break;
 			} else {
@@ -198,7 +198,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		while ((c = gchar()) != '\'' || (c = gchar()) == '\'') {
 			buf[i++] = c;
 			if (c == '\n')
-				print_prompt2();
+				nextline();
 			if (c == EOF) {
 				w = NW;
 				scanerror("eof in quoted string");
@@ -215,7 +215,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		return WORD;
 	case '\\':
 		if ((c = gchar()) == '\n') {
-			print_prompt2();
+			nextline();
 			goto top; /* Pretend it was just another space. */
 		}
 		ugchar(c);

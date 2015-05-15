@@ -395,8 +395,8 @@ extern void b_dot(char **av) {
 		return;
 	}
 	starassign(*av, av+1, TRUE);
-	pushfd(fd);
 	interactive = i;
+	pushfd(fd);
 	star.name = "*";
 	except(eVarstack, star, &e);
 	doit(TRUE);

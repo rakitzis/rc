@@ -70,6 +70,24 @@ static bool rc_access(char *path, bool verbose) {
 	return FALSE;
 }
 
+static char *protect(char *in) {
+  char *out = ealloc(strlen(in) * 2 + 1);
+  
+  int i;
+  int p = 0;
+
+  for (i = 0; i < strlen(in); ++i) {
+    if (isprint(in[i])) {
+      out[p++] = in[i];
+      ++p;
+    } else {
+      out[p++] = '\\';
+      out[p++] = '?';
+    }
+  }
+  return out; /* XXXX */
+}
+		    
 /* return a full pathname by searching $path, and by checking the status of the file */
 
 extern char *which(char *name, bool verbose) {
@@ -120,6 +138,6 @@ extern char *which(char *name, bool verbose) {
 			return test;
 	}
 	if (verbose)
-		fprint(2, "%s not found\n", name);
+		fprint(2, "rc: cannot find `%s'\n", protect(name));
 	return NULL;
 }

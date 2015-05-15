@@ -2056,8 +2056,15 @@ The
 .Cr limit
 builtin silently ignores extra arguments.
 .PP
+Backquote substitution never produces empty strings - multiple
+consecutive occurrences of the separator are treated the same as a
+single occurrence.
+.Ds
+.Cr "ifs=! { x = `{echo -n a!!b}; whatis x }"
+.Cr "x=(a b) # NOT x=(a '' b)"
+.PP
 Bug reports should be mailed to
-.Cr "<tjg@star.le.ac.uk>" .
+.Cr "<tjg@ast.cam.ac.uk>" .
 .SH INCOMPATIBILITIES
 Here is a list of features which distinguish this incarnation of
 .I rc

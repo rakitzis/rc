@@ -42,7 +42,7 @@ static char *readheredoc(char *eof) {
 		bufend = &buf[bufsize]; \
 	}
 	for (;;) {
-		print_prompt2();
+		nextline();
 		for (s = (unsigned char *) eof; (c = gchar()) == *s; s++)
 			;
 		if (*s == '\0' && (c == '\n' || c == EOF)) {
