@@ -8,7 +8,7 @@
 
 bool dashdee, dashee, dashvee, dashex, dasheye,
 	dashen, dashpee, interactive;
-pid_t rc_pid;
+pid_t rc_pid, rc_ppid;
 
 static bool dashEYE, dashell, dashoh, dashess;
 
@@ -21,7 +21,8 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	initprint();
 	dashsee[0] = dashsee[1] = NULL;
 	dollarzero = argv[0];
-	rc_pid = getpid();
+	rc_pid  = getpid();
+	rc_ppid = getppid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
 	while ((c = rc_getopt(argc, argv, "c:deiIlnopsvx")) != -1)
 		switch (c) {
@@ -83,6 +84,7 @@ quitopts:
 	assigndefault("path", DEFAULTPATH, (void *)0);
 #endif
 	assigndefault("pid", nprint("%d", rc_pid), (void *)0);
+	assigndefault("ppid", nprint("%d", rc_ppid), (void *)0);
 	assigndefault("prompt", "; ", "", (void *)0);
 	assigndefault("version", VERSION, "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $", (void *)0);
 	initenv(envp);
