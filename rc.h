@@ -6,8 +6,6 @@
 
 #define RC "rc: "
 
-#define WORKING_DIR_VAR_NAME "pwd"
-
 /* datatypes */
 
 #define ENV_SEP '\001'

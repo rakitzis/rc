@@ -89,7 +89,7 @@ quitopts:
 		char b[4097];
 		const char* ret = getcwd(b, (sizeof(b)/sizeof(b[0]))-1);
 		if (ret) {
-			assigndefault(WORKING_DIR_VAR_NAME, nprint("%s", b), (void*)0);
+			assigndefault("pwd", nprint("%s", b), (void*)0);
 		} 
 	} 
 	assigndefault("prompt", "; ", "", (void *)0);

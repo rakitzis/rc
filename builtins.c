@@ -126,7 +126,7 @@ static void update_cwd_var(void)
   if (ret) {
     val.w = nprint("%s", b);
     val.n = NULL;
-    varassign(WORKING_DIR_VAR_NAME, &val, FALSE);
+    varassign("pwd", &val, FALSE);
   }
 }
 
