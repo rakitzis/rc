@@ -85,6 +85,13 @@ quitopts:
 #endif
 	assigndefault("pid", nprint("%d", rc_pid), (void *)0);
 	assigndefault("ppid", nprint("%d", rc_ppid), (void *)0);
+	{
+		char b[4097];
+		const char* ret = getcwd(b, (sizeof(b)/sizeof(b[0]))-1);
+		if (ret) {
+			assigndefault(WORKING_DIR_VAR_NAME, nprint("%s", b), (void*)0);
+		} 
+	} 
 	assigndefault("prompt", "; ", "", (void *)0);
 	assigndefault("version", VERSION, "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $", (void *)0);
 	initenv(envp);

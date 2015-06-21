@@ -118,6 +118,19 @@ static void b_echo(char **av) {
 }
 #endif
 
+static void update_cwd_var(void)
+{
+  char b[4097];
+  List val;
+  const char* ret = getcwd(b, (sizeof(b)/sizeof(b[0]))-1);
+  if (ret) {
+    val.w = nprint("%s", b);
+    val.n = NULL;
+    varassign(WORKING_DIR_VAR_NAME, &val, FALSE);
+  }
+}
+
+
 /* cd. traverse $cdpath if the directory given is not an absolute pathname */
 
 static void b_cd(char **av) {
@@ -135,8 +148,10 @@ static void b_cd(char **av) {
 		if (chdir(*av) < 0) {
 			set(FALSE);
 			uerror(*av);
-		} else
+		} else {
+			update_cwd_var();
 			set(TRUE);
+		}
 	} else {
 		s = varlookup("cdpath");
 		if (s == NULL) {
@@ -158,6 +173,7 @@ static void b_cd(char **av) {
 				path = *av;
 			}
 			if (chdir(path) >= 0) {
+				update_cwd_var();
 				set(TRUE);
 				if (interactive && *s->w != '\0' && !streq(s->w, "."))
 					fprint(1, "%s\n", path);
