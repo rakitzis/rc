@@ -2,7 +2,7 @@ dnl Our package name, version, ...
 AC_INIT([rc], [1.7.4])
 
 dnl ... and release date
-RELDATE=`date -I`
+RELDATE=`date +%Y-%m-%d`
 AC_DEFINE_UNQUOTED(RELDATE, "$RELDATE", [Release date])
 
 dnl Get things going...
