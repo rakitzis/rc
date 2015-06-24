@@ -169,7 +169,7 @@ AC_SUBST(ADDON)
 
 
 EDIT=edit-null.o
-AC_ARG_WITH(edit, [  --with-edit=(edit,editline,readline,vrl)  Command line editing library], [
+AC_ARG_WITH(edit, [  --with-edit=(edit,editline,readline,vrl,linenoise)  Command line editing library], [
 	case $withval in
 	yes)
 		AC_MSG_ERROR(must specify which library)
@@ -211,6 +211,11 @@ AC_ARG_WITH(edit, [  --with-edit=(edit,editline,readline,vrl)  Command line edit
 			LIBS="$LIBS -lvrl $rc_lib_tgetent"
 		], AC_MSG_ERROR(vrl library not found), $rc_lib_tgetent)
 		;;
+        linenoise)
+                EDIT="edit-linenoise.o linenoise.o"
+                AC_CHECK_FILES([linenoise.h linenoise.c],,
+                   AC_MSG_ERROR(linenoise source files not found))
+                ;;
 	*)
 		AC_MSG_ERROR(unknown editing library $withval)
 		;;
