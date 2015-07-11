@@ -211,6 +211,7 @@ int main(void) {
     if (!outf) barf("could not open sigmsgs.h for writing");
     fprintf(outf, "typedef struct {\n");
     fprintf(outf, "\tchar *name, *msg;\n");
+    fprintf(outf, "\tint signum;\n");
     fprintf(outf, "} Sigmsgs;\n");
     fprintf(outf, "extern Sigmsgs signals[];\n");
     fprintf(outf, "#define NUMOFSIGNALS %d\n", maxsig+1);
@@ -220,19 +221,20 @@ int main(void) {
     if (!outf) barf("could not open sigmsgs.c for writing");
     fprintf(outf, "#include \"sigmsgs.h\"\n\n");
     fprintf(outf, "Sigmsgs signals[] = {\n");
-    fprintf(outf, "\t{\"\",\t\"\"},\n");
+    fprintf(outf, "\t{\"\",\t\"\",0},\n");
 
     /* yes, we could avoid the quadratic searching with an aux array. fap. */
     for (s = 1; s <= maxsig; ++s) {
         for (snp = signamings; snp->signo && snp->signo != s; ++snp)
-	    /* */;
-	if (snp->signo)
-	    fprintf(outf, "\t{\"%s\",\t\"%s\"},\n",
-		    snp->signame, snp->sigmsg);
-	else
-	    fprintf(outf, "\t{\"sigunknown%d\",\t\"unknown signal %d\"},\n",
-		    s, s);
+            /* */;
+          if (snp->signo)
+  	          fprintf(outf, "\t{\"%s\",\t\"%s\", %d},\n",
+  		                snp->signame, snp->sigmsg, snp->signo);
+          else
+              fprintf(outf, "\t{\"sigunknown%d\",\t\"unknown signal %d\", 0},\n",
+  		                  s, s);
     }
+    fprintf(outf, "\t{0,\t0,\t-1},\n");
     fprintf(outf, "};\n");
     if (fclose(outf) == EOF) barf("could not fclose sigmsgs.c after writing");
     return 0;

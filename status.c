@@ -40,6 +40,10 @@ extern int getstatus() {
 	return WEXITSTATUS(s);
 }
 
+extern void setN(int code) {
+  setstatus(-1, code << 8);
+}
+
 extern void set(bool code) {
 	setstatus(-1, code ? STATUS0 : STATUS1);
 }

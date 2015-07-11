@@ -18,14 +18,14 @@
    Builtins report their exit status using set(TRUE) or set(FALSE).
 
 */
-
+#define RC_ADDON 1
 #if RC_ADDON
 
 #define ADDONS \
-	{ b_sum,	"+" }, \
-	{ b_prod, "x" },
+	{ b_kill,     "kill" }, \
+	{ b_let,      "let" },
 
-extern void b_sum(char **av);
-extern void b_prod(char **av);
+extern void b_kill(char **av);
+extern void b_let(char **av);
 
 #endif
