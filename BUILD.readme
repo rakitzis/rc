@@ -1,0 +1,12 @@
+To get hardened executable change:
+
+From
+CFLAGS = -Wall -g -O2
+to
+CFLAGS = -Wall -g -O2       -fPIE  -fstack-protector
+
+From
+LDFLAGS = 
+to
+LDFLAGS = -pie -Wl,-z,now,-zrelro
+
