@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <setjmp.h>
 #include <errno.h>
+#include <limits.h>
 
 #include "addon.h"
 #include "input.h"
@@ -120,7 +121,7 @@ static void b_echo(char **av) {
 
 static void update_cwd_var(void)
 {
-  char b[4097];
+  char b[PATH_MAX+1];
   List val;
   const char* ret = getcwd(b, (sizeof(b)/sizeof(b[0]))-1);
   if (ret) {

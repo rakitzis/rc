@@ -1,4 +1,5 @@
 /* main.c: handles initialization of rc and command line options */
+#include <limits.h>
 
 #include "rc.h"
 
@@ -86,7 +87,7 @@ quitopts:
 	assigndefault("pid", nprint("%d", rc_pid), (void *)0);
 	assigndefault("ppid", nprint("%d", rc_ppid), (void *)0);
 	{
-		char b[4097];
+		char b[PATH_MAX+1];
 		const char* ret = getcwd(b, (sizeof(b)/sizeof(b[0]))-1);
 		if (ret) {
 			assigndefault("pwd", nprint("%s", b), (void*)0);
