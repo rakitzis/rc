@@ -320,7 +320,15 @@ extern char *nprint(const char *fmt,...);
 
 /* parse.c (parse.y) */
 extern Node *parsetree;
-extern int yyparse(void);
+
+/*extern int yyparse(void);*/
+
+/* 'int (*yylex)(YYSTYPE*)' or 'int (*yylex)()' */
+#define YYPARSE_PARAM_TYPE int
+#define YYPARSE_PARAM (*yylex)()
+/* #define YYPARSE_PARAM_ARG YYPARSE_PARAM_TYPE YYPARSE_PARAM */
+extern int yyparse(YYPARSE_PARAM_TYPE YYPARSE_PARAM);
+
 extern void initparse(void);
 
 /* readline */
@@ -393,3 +401,4 @@ extern bool forked;
 /* walk.c */
 extern bool walk(Node *, bool);
 extern bool cond;
+
