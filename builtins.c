@@ -37,6 +37,7 @@ static struct {
 	builtin_t *p;
 	char *name;
 } builtins[] = {
+	{ b_dot,	"." },
 	{ b_break,	"break" },
 	{ b_builtin,	"builtin" },
 	{ b_cd,		"cd" },
@@ -46,6 +47,10 @@ static struct {
 	{ b_eval,	"eval" },
 	{ b_exec,	"exec" },
 	{ b_exit,	"exit" },
+#ifdef ADDONS
+	{ b_kill,     "kill" },  /* ADDONN */
+	{ b_let,      "let" },  /* ADDONN */
+#endif
 #if HAVE_SETRLIMIT
 	{ b_limit,	"limit" },
 #endif
@@ -55,10 +60,6 @@ static struct {
 	{ b_umask,	"umask" },
 	{ b_wait,	"wait" },
 	{ b_whatis,	"whatis" },
-	{ b_dot,	"." },
-#ifdef ADDONS
-	ADDONS
-#endif
 };
 
 extern builtin_t *isbuiltin(char *s) {
