@@ -8,5 +8,5 @@ CFLAGS = -Wall -g -O2       -fPIE  -fstack-protector
 From
 LDFLAGS = 
 to
-LDFLAGS = -pie -Wl,-z,now,-zrelro
+LDFLAGS = -pie -Wl,-z,now,-z,relro
 

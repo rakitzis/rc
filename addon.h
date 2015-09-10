@@ -18,12 +18,8 @@
    Builtins report their exit status using set(TRUE) or set(FALSE).
 
 */
-#define RC_ADDON 1
-#if RC_ADDON
 
-#define ADDONS \
-	{ b_kill,     "kill" }, \
-	{ b_let,      "let" },
+#if RC_ADDON
 
 extern void b_kill(char **av);
 extern void b_let(char **av);

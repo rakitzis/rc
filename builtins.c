@@ -47,7 +47,7 @@ static struct {
 	{ b_eval,	"eval" },
 	{ b_exec,	"exec" },
 	{ b_exit,	"exit" },
-#ifdef ADDONS
+#ifdef RC_ADDON
 	{ b_kill,     "kill" },  /* ADDONN */
 	{ b_let,      "let" },  /* ADDONN */
 #endif
