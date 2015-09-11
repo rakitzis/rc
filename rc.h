@@ -321,13 +321,18 @@ extern char *nprint(const char *fmt,...);
 /* parse.c (parse.y) */
 extern Node *parsetree;
 
-/*extern int yyparse(void);*/
-
-/* 'int (*yylex)(YYSTYPE*)' or 'int (*yylex)()' */
-#define YYPARSE_PARAM_TYPE int
-#define YYPARSE_PARAM (*yylex)()
+#if 0
+extern int yyparse(void);
+#else
+typedef int (*lexer_ptr)(void);
+/* or 
+typedef int (*lexer_ptr)(YYSTYPE*);
+*/
+#define YYPARSE_PARAM_TYPE lexer_ptr
+#define YYPARSE_PARAM yylex
 /* #define YYPARSE_PARAM_ARG YYPARSE_PARAM_TYPE YYPARSE_PARAM */
 extern int yyparse(YYPARSE_PARAM_TYPE YYPARSE_PARAM);
+#endif
 
 extern void initparse(void);
 
