@@ -19,13 +19,14 @@ struct LetLex {
 
 static int LetParser(struct LetLex*);
 #define letparse(a)  LetParser(struct LetLex *lex)
+#define letparse_r(a)  LetParser(struct LetLex *lex)
 #define letlex(a)  LetLexer(lex, &letlval)
 
 %}
 
 
 %union {
-	letValue m_Val;
+    letValue m_Val;
 }
 
 /* Non-terminals */
@@ -61,43 +62,43 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
     | expr '^' expr { $$ = $1 ^ $3; } ;
     | expr '&' expr     { $$ = $1 & $3; } ;
     | expr EQEQ expr { $$ = ($1 == $3); }
-	| expr NEQ expr  { $$ = ($1 != $3); }
-	| expr '>' expr { $$ = $1 > $3; }
-	| expr '<' expr { $$ = $1 < $3; }
+    | expr NEQ expr  { $$ = ($1 != $3); }
+    | expr '>' expr { $$ = $1 > $3; }
+    | expr '<' expr { $$ = $1 < $3; }
     | expr LEQ expr { $$ = $1 <= $3; }
-	| expr GEQ expr { $$ = $1 >= $3; }
-	| expr LSHIFT expr 
-		{ letValue v3 = $3;
-		  $$ = (v3 >= 0) ? ($1 << v3) : ($1 >> (-v3));
-		}
-	| expr RSHIFT expr
-		{ letValue v3 = $3; 
-		  $$ = (v3>=0) ? ($1 >> v3) : ($1 << (-v3));
-		}
-	| expr '+' expr { $$ = $1 + $3; }
+    | expr GEQ expr { $$ = $1 >= $3; }
+    | expr LSHIFT expr 
+        { letValue v3 = $3;
+          $$ = (v3 >= 0) ? ($1 << v3) : ($1 >> (-v3));
+        }
+    | expr RSHIFT expr
+        { letValue v3 = $3; 
+          $$ = (v3>=0) ? ($1 >> v3) : ($1 << (-v3));
+        }
+    | expr '+' expr { $$ = $1 + $3; }
     | expr '-' expr { $$ = $1 - $3; }
-	| expr '*' expr    { $$ = $1 * $3; }
-	| expr '/' expr
-		{ long v3 = $3;
-		  if (v3 == 0) { leterror("Division by 0"); }
-		  $$ = $1 / (v3);
-		}
-	| expr '%' expr
-		{ long v3 = $3;
-		  if (v3 == 0) { leterror("Module by 0"); }
-		  $$ = $1 % (v3);
-		}
-	| expr '@' expr
-		{ long v3 = $3;
-		  if (v3 < 0) { leterror("Negative power"); }
-		  $$ = letpwr($1, v3);
-		}
+    | expr '*' expr    { $$ = $1 * $3; }
+    | expr '/' expr
+        { long v3 = $3;
+          if (v3 == 0) { leterror("Division by 0"); }
+          $$ = $1 / (v3);
+        }
+    | expr '%' expr
+        { long v3 = $3;
+          if (v3 == 0) { leterror("Module by 0"); }
+          $$ = $1 % (v3);
+        }
+    | expr '@' expr
+        { long v3 = $3;
+          if (v3 < 0) { leterror("Negative power"); }
+          $$ = letpwr($1, v3);
+        }
      | '(' expr ')'    { $$ = $2; }
-	 |  NUMBER { 
+     |  NUMBER { 
           letValue v = $1;
          $$ = v; 
      }
-	 ;
+     ;
 
 %%
 
@@ -238,7 +239,7 @@ int LetDoParse (
 static int leterror (
   const char *s)
 {
-  printf("let: %s\n", s);
+  fprint(2, "let: %s\n", s);
   longjmp(jbuf, 1);
   return 0;
 }

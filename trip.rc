@@ -118,6 +118,11 @@ fn testManyLets { numEntries=() {
 }}
 testManyLets
 
+expect syntax error from let
+if (let aX '2 << 3 << 1') {
+  fail let was supposed to have syntax error
+}
+
 
 #
 # umask
@@ -145,6 +150,7 @@ if (!~ `umask 027) fail bad umask changed umask value to `umask
 #
 # redirections
 #
+echo abcdefg
 
 fn bytes { for (i) x=`{wc -c $i} echo $x(1) }
 echo foo > foo > bar
