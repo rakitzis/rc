@@ -105,12 +105,12 @@ fn testManyLets { numEntries=() {
   )
   numEntries=$#*
 
-  if (~ $#* 0) {
-    break
-  } else if (~ $#* 1) {
-    fail let test has $numEntries, should be even.
-  } else {
-    while (! ~ $#* 0) {
+  while (~ 0 0) {
+    if (~ $#* 0) {
+      break
+    } else if (~ $#* 1) {
+      fail let test has $numEntries, should be even.
+    } else {
       testOneLet $1 $2
       shift 2
     }
@@ -120,6 +120,10 @@ testManyLets
 
 expect syntax error from let
 if (let aX '2 << 3 << 1') {
+  fail let was supposed to have syntax error
+}
+expect syntax error from let
+if (let aX '88889 >> 3 >> 1') {
   fail let was supposed to have syntax error
 }
 
@@ -150,7 +154,6 @@ if (!~ `umask 027) fail bad umask changed umask value to `umask
 #
 # redirections
 #
-echo abcdefg
 
 fn bytes { for (i) x=`{wc -c $i} echo $x(1) }
 echo foo > foo > bar

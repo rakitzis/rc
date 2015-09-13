@@ -34,11 +34,8 @@
 extern int printf(const char *, ...);
 
 typedef int Token;
-#if 1
 typedef long letValue;
-extern int LetDoParse(char *s, letValue *);
-/* extern letValue letResult; */
-#endif
+
 
 struct LetLex {
   const char *m_Buf;
@@ -46,16 +43,20 @@ struct LetLex {
   Token m_LastToken;
 };
 
-static int LetParser(struct LetLex*);
+
 #define letparse(a)  LetParser(struct LetLex *lex)
 #define letparse_r(a)  LetParser(struct LetLex *lex)
 #define letlex(a)  LetLexer(lex, &letlval)
+static int leterror(const char *s);
+extern int LetDoParse(char *s, letValue *);
 
-#line 28 "let.y"
+
+static letValue letResult;
+#line 29 "let.y"
 typedef union YYSTYPE {
     letValue m_Val;
 } YYSTYPE;
-#line 59 "let.tab.c"
+#line 60 "let.tab.c"
 
 enum YYtoken {
   YYEOF = 0,
@@ -340,154 +341,15 @@ static const char* const letrule[] = {
 
 #define YYINITSTACKSIZE 500
 #define yystacksize YYSTACKSIZE
-#line 104 "let.y"
+#line 105 "let.y"
+
+/*
+*/
+static Token LetLexer(struct LetLex *lex, YYSTYPE* letlval);
+static letValue letpwr(letValue a, letValue b);
 
 
-
-/******************************************************/
-/******************************************************/
-static letValue letResult;
-
-
-
-/******************************************************/
-
-static letValue letpwr (
-  letValue a,
-  letValue b)
-{
-  letValue z = 1;   /* z*a^b = A^B */
-  while (b > 0) {
-    if (b & 1) { /* odd */
-      /* z*a^b = z*a * a^(b-1) */
-      --b;
-      z *= a;
-    } else {
-      /* z*a^(2k) = z * (a^2)^k */
-      b /= 2;
-      a *= a;
-    }
-  }
-  return z;
-}
-/******************************************************/
-static Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
-{
-  const char *p;
-  Token tok;
-  int c;
-
-  if (lex->m_LastToken != BAD_TOKEN) {
-    tok = lex->m_LastToken;
-    lex->m_LastToken = BAD_TOKEN;
-    return tok;
-  }
-  p = lex->m_Current;
-  while (*p == ' ' || *p == '\t') {
-    p++;
-  }
-  switch (*p) {
-  case '+': case '-': case '*': case '/': case '%':
-  case '^': case '(': case ')':
-  case '@':
-    tok = (Token) (*p);
-    p++;
-    break;
-
-  case '|': case '&':
-    c = *p++;
-    if (*p == c) {
-       tok = (c == '|' ? LET_OROR : LET_ANDAND);
-       p++; 
-    } else {
-       tok = (Token)(c);
-    }
-    break;
-
-  case '<': case '>':
-    c = *p++;
-    if (*p == '=') {
-      tok = (c == '<' ? LEQ : GEQ);
-      p++;
-    } else if (c == *p) {
-      tok = (c == '<' ? LSHIFT : RSHIFT);
-      p++;
-    } else {
-      tok = (Token) (c);
-    }
-    break;
-
-  case '!': case '=':
-    c = *p++;
-    if (*p == '=') {
-      tok = ((c == '=') ? EQEQ : NEQ);
-      p++;
-    } else {
-      tok = BAD_TOKEN;
-    }
-    break;
-
-  case '0': case '1': case '2': case '3': case '4': 
-  case '5': case '6': case '7': case '8': case '9': 
-    {
-        letValue val = 0;
-        while ('0' <= *p && *p <= '9') {
-          val = 10 * val + (*p++ -'0');
-        }
-        letlval->m_Val = val;
-        tok = NUMBER;
-    }
-    break;
-  case '\0':
-    tok = 0;
-    break;
-  default:
-    tok = BAD_TOKEN;
-    break;
-  }
-  lex->m_Current = p;
-  return tok;
-} /* LetLexer */
-
-/******************************************************/
-#include "setjmp.h"
-
-static jmp_buf jbuf;
-
-/******************************************************/
-int LetDoParse (
-  char *s,
-  letValue *r)
-{
-  int status;
-  struct LetLex lex;
-
-  if (setjmp(jbuf)) {
-    return -1;
-  }
-  lex.m_Current = lex.m_Buf = s;
-  lex.m_LastToken = BAD_TOKEN;
-
-  status = LetParser(&lex);
-  *r = letResult;
-  return status;
-}
-
-/******************************************************/
-
-
-static int leterror (
-  const char *s)
-{
-  fprint(2, "let: %s\n", s);
-  longjmp(jbuf, 1);
-  return 0;
-}
-/******************************************************/
-/******************************************************/
-
-
-#line 491 "let.tab.c"
+#line 353 "let.tab.c"
 #ifndef lint
 static const char yysccsid[] = "@(#)yaccpar 1.9 (Berkeley) 10/31/2009";
 #endif
@@ -884,110 +746,110 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 57 "let.y"
+#line 58 "let.y"
 { letResult = yyvsp[0].m_Val; }
 break;
 case 2:
-#line 59 "let.y"
+#line 60 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val || yyvsp[0].m_Val; }
 break;
 case 3:
-#line 60 "let.y"
+#line 61 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val && yyvsp[0].m_Val; }
 break;
 case 4:
-#line 61 "let.y"
+#line 62 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val | yyvsp[0].m_Val; }
 break;
 case 5:
-#line 62 "let.y"
+#line 63 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val ^ yyvsp[0].m_Val; }
 break;
 case 6:
-#line 63 "let.y"
+#line 64 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val & yyvsp[0].m_Val; }
 break;
 case 7:
-#line 64 "let.y"
+#line 65 "let.y"
 { yyval.m_Val = (yyvsp[-2].m_Val == yyvsp[0].m_Val); }
 break;
 case 8:
-#line 65 "let.y"
+#line 66 "let.y"
 { yyval.m_Val = (yyvsp[-2].m_Val != yyvsp[0].m_Val); }
 break;
 case 9:
-#line 66 "let.y"
+#line 67 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val > yyvsp[0].m_Val; }
 break;
 case 10:
-#line 67 "let.y"
+#line 68 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val < yyvsp[0].m_Val; }
 break;
 case 11:
-#line 68 "let.y"
+#line 69 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val <= yyvsp[0].m_Val; }
 break;
 case 12:
-#line 69 "let.y"
+#line 70 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val >= yyvsp[0].m_Val; }
 break;
 case 13:
-#line 71 "let.y"
+#line 72 "let.y"
 { letValue v3 = yyvsp[0].m_Val;
           yyval.m_Val = (v3 >= 0) ? (yyvsp[-2].m_Val << v3) : (yyvsp[-2].m_Val >> (-v3));
         }
 break;
 case 14:
-#line 75 "let.y"
+#line 76 "let.y"
 { letValue v3 = yyvsp[0].m_Val; 
           yyval.m_Val = (v3>=0) ? (yyvsp[-2].m_Val >> v3) : (yyvsp[-2].m_Val << (-v3));
         }
 break;
 case 15:
-#line 78 "let.y"
+#line 79 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val + yyvsp[0].m_Val; }
 break;
 case 16:
-#line 79 "let.y"
+#line 80 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val - yyvsp[0].m_Val; }
 break;
 case 17:
-#line 80 "let.y"
+#line 81 "let.y"
 { yyval.m_Val = yyvsp[-2].m_Val * yyvsp[0].m_Val; }
 break;
 case 18:
-#line 82 "let.y"
+#line 83 "let.y"
 { long v3 = yyvsp[0].m_Val;
           if (v3 == 0) { leterror("Division by 0"); }
           yyval.m_Val = yyvsp[-2].m_Val / (v3);
         }
 break;
 case 19:
-#line 87 "let.y"
+#line 88 "let.y"
 { long v3 = yyvsp[0].m_Val;
           if (v3 == 0) { leterror("Module by 0"); }
           yyval.m_Val = yyvsp[-2].m_Val % (v3);
         }
 break;
 case 20:
-#line 92 "let.y"
+#line 93 "let.y"
 { long v3 = yyvsp[0].m_Val;
           if (v3 < 0) { leterror("Negative power"); }
           yyval.m_Val = letpwr(yyvsp[-2].m_Val, v3);
         }
 break;
 case 21:
-#line 96 "let.y"
+#line 97 "let.y"
 { yyval.m_Val = yyvsp[-1].m_Val; }
 break;
 case 22:
-#line 97 "let.y"
+#line 98 "let.y"
 { 
           letValue v = yyvsp[0].m_Val;
          yyval.m_Val = v; 
      }
 break;
-#line 991 "let.tab.c"
+#line 853 "let.tab.c"
     default:
         break;
     }
