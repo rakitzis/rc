@@ -1,37 +1,102 @@
 #ifndef lint
-static char yysccsid[] = "@(#)yaccpar 1.9 (Berkeley) 02/21/93";
+static const char yysccsid[] = "@(#)yaccpar	1.9 (Berkeley) 02/21/93";
 #endif
 
-#define yyclearin (yychar = YYEMPTY)
-#define yyerrok (yyerrflag=0)
-#define YYRECOVERING (yyerrflag!=0)
-#define yyparse letparse
-#define yylex letlex
-#define yyerror leterror
-#define yychar letchar
-#define yyval letval
-#define yylval letlval
-#define yydebug letdebug
-#define yynerrs letnerrs
-#define yyerrflag leterrflag
-#define yyss letss
-#define yyssp letssp
-#define yyvs letvs
-#define yyvsp letvsp
-#define yylhs letlhs
-#define yylen letlen
-#define yydefred letdefred
-#define yydgoto letdgoto
-#define yysindex letsindex
-#define yyrindex letrindex
-#define yygindex letgindex
-#define yytable lettable
-#define yycheck letcheck
-#define yyname letname
-#define yyrule letrule
+#define YYBYACC 1
+#define YYMAJOR 1
+#define YYMINOR 9
+#define YYPATCH 20130304
+
+#define YYEMPTY        (-1)
+#define yyclearin      (yychar = YYEMPTY)
+#define yyerrok        (yyerrflag = 0)
+#define YYRECOVERING() (yyerrflag != 0)
+
+
+#ifndef yyparse
+#define yyparse    letparse
+#endif /* yyparse */
+
+#ifndef yylex
+#define yylex      letlex
+#endif /* yylex */
+
+#ifndef yyerror
+#define yyerror    leterror
+#endif /* yyerror */
+
+#ifndef yychar
+#define yychar     letchar
+#endif /* yychar */
+
+#ifndef yyval
+#define yyval      letval
+#endif /* yyval */
+
+#ifndef yylval
+#define yylval     letlval
+#endif /* yylval */
+
+#ifndef yydebug
+#define yydebug    letdebug
+#endif /* yydebug */
+
+#ifndef yynerrs
+#define yynerrs    letnerrs
+#endif /* yynerrs */
+
+#ifndef yyerrflag
+#define yyerrflag  leterrflag
+#endif /* yyerrflag */
+
+#ifndef yylhs
+#define yylhs      letlhs
+#endif /* yylhs */
+
+#ifndef yylen
+#define yylen      letlen
+#endif /* yylen */
+
+#ifndef yydefred
+#define yydefred   letdefred
+#endif /* yydefred */
+
+#ifndef yydgoto
+#define yydgoto    letdgoto
+#endif /* yydgoto */
+
+#ifndef yysindex
+#define yysindex   letsindex
+#endif /* yysindex */
+
+#ifndef yyrindex
+#define yyrindex   letrindex
+#endif /* yyrindex */
+
+#ifndef yygindex
+#define yygindex   letgindex
+#endif /* yygindex */
+
+#ifndef yytable
+#define yytable    lettable
+#endif /* yytable */
+
+#ifndef yycheck
+#define yycheck    letcheck
+#endif /* yycheck */
+
+#ifndef yyname
+#define yyname     letname
+#endif /* yyname */
+
+#ifndef yyrule
+#define yyrule     letrule
+#endif /* yyrule */
 #define YYPREFIX "let"
-#define YYSTYPE LETSTYPE
-#line 9 "let.y"
+
+#define YYPURE 0
+
+#line 4 "let.y"
 
 extern int printf(const char *, ...);
 
@@ -52,218 +117,256 @@ static int LetParser(struct LetLex*);
 #define letparse(a)  LetParser(struct LetLex *lex)
 #define letlex(a)  LetLexer(lex, &letlval)
 
-#line 32 "let.y"
+#line 27 "let.y"
+#ifdef YYSTYPE
+#undef  YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
+#endif
+#ifndef YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
 typedef union {
 	letValue m_Val;
 } YYSTYPE;
-#line 59 "let.tab.c"
-enum LETtoken {
-  LET_OROR = 257,
-  LET_ANDAND = 258,
-  EQEQ = 259,
-  NEQ = 260,
-  LEQ = 261,
-  GEQ = 262,
-  LSHIFT = 263,
-  RSHIFT = 264,
-  NUMBER = 265,
-  END_TOKEN = 266,
-  BAD_TOKEN = 267
+#endif /* !YYSTYPE_IS_DECLARED */
+#line 131 "let.tab.c"
+
+/* compatibility with bison */
+#ifdef YYPARSE_PARAM
+/* compatibility with FreeBSD */
+# ifdef YYPARSE_PARAM_TYPE
+#  define YYPARSE_DECL() yyparse(YYPARSE_PARAM_TYPE YYPARSE_PARAM)
+# else
+#  define YYPARSE_DECL() yyparse(void *YYPARSE_PARAM)
+# endif
+#else
+# define YYPARSE_DECL() yyparse(void)
+#endif
+
+/* Parameters sent to lex. */
+#ifdef YYLEX_PARAM
+# define YYLEX_DECL() yylex(void *YYLEX_PARAM)
+# define YYLEX yylex(YYLEX_PARAM)
+#else
+# define YYLEX_DECL() yylex(void)
+# define YYLEX yylex()
+#endif
+
+/* Parameters sent to yyerror. */
+#ifndef YYERROR_DECL
+#define YYERROR_DECL() yyerror(const char *s)
+#endif
+#ifndef YYERROR_CALL
+#define YYERROR_CALL(msg) yyerror(msg)
+#endif
+
+extern int YYPARSE_DECL();
+
+#define LET_OROR 257
+#define LET_ANDAND 258
+#define EQEQ 259
+#define NEQ 260
+#define LEQ 261
+#define GEQ 262
+#define LSHIFT 263
+#define RSHIFT 264
+#define NUMBER 265
+#define END_TOKEN 266
+#define BAD_TOKEN 267
+#define YYERRCODE 256
+static const short letlhs[] = {                          -1,
+    0,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+    1,    1,
 };
-static const short letlhs[] = {                                        -1,
-    0,    1,    1,    2,    2,    3,    3,    4,    4,    5,
-    5,    6,    6,    6,    7,    7,    7,    7,    7,    8,
-    8,    8,   10,   10,   10,   11,   11,   11,    9,    9,
-    9,   12,   12,   12,   12,   13,   13,   14,   14,
+static const short letlen[] = {                           2,
+    1,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+    3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+    3,    1,
 };
-static const short letlen[] = {                                         2,
-    1,    1,    3,    1,    3,    1,    3,    1,    3,    1,
-    3,    1,    3,    3,    1,    3,    3,    3,    3,    1,
-    3,    3,    1,    3,    3,    1,    2,    2,    1,    3,
-    3,    1,    3,    3,    3,    1,    3,    3,    1,
+static const short letdefred[] = {                        0,
+   22,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,   21,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,
 };
-static const short letdefred[] = {                                      0,
-   39,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-   10,    0,    0,   20,    0,    0,   32,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-   38,    0,    0,    0,    0,   11,   13,   14,    0,    0,
-   21,   22,    0,    0,    0,    0,    0,   33,   34,   35,
-   37,    0,    0,    0,    0,
+static const short letdgoto[] = {                         3,
+    4,
 };
-static const short letdgoto[] = {                                       5,
-    6,    7,    8,    9,   10,   11,   12,   13,   55,   14,
-   15,   16,   17,   18,
+static const short letsindex[] = {                      -36,
+    0,  -36,    0,  373,  183,  -36,  -36,  -36,  -36,  -36,
+  -36,  -36,  -36,  -36,  -36,  -36,  -36,  -36,  -36,  -36,
+  -36,  -36,  -36,  -36,    0,  389,  417,  428,  306,  361,
+  -29,  -29,  456,  456,  456,  456,  153,  153,  -32,  -32,
+  -64,  -64,  -64,  -64,
 };
-static const short letsindex[] = {                                    -40,
-    0,  -38,  -38,  -40,    0, -253, -251, -111,  -66,   -8,
-    0, -227,  -50,    0,  -19,  -31,    0,  -28,  -31,  -31,
-   10,  -40,  -40,  -40,  -40,  -40,  -40,  -40,  -40,  -40,
-  -40,  -40,  -40,  -40,  -38,  -38,  -38,  -38,  -38,  -38,
-    0, -251, -111,  -66,   -8,    0,    0,    0, -229, -229,
-    0,    0, -229, -229,  -14,  -31,  -14,    0,    0,    0,
-    0,  -38,  -38,  -31,  -31,
+static const short letrindex[] = {                        0,
+    0,    0,    0,    2,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,   27,   21,   60,  107,  142,
+  144,  156,   99,  124,  128,  133,   79,  116,   51,   67,
+    1,   12,   28,   40,
 };
-static const short letrindex[] = {                                      0,
-    0,    0,    0,    0,    0,    8,   25,  135,  194,  326,
-    0,  350,   85,    0,   76,    9,    0,    1,   17,   27,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,  101,  137,  203,  348,    0,    0,    0,  122,  127,
-    0,    0,  199,  283,  102,   37,  112,    0,    0,    0,
-    0,    0,    0,   45,   53,
+static const short letgindex[] = {                        0,
+  536,
 };
-static const short letgindex[] = {                                     52,
-    0,   35,   36,   40,   56,   41,   13,  -15,   48,   42,
-    0,  155,  -17,    0,
+#define YYTABLESIZE 720
+static const short lettable[] = {                        24,
+   17,    1,    0,    2,   23,    0,    0,   23,    0,   21,
+    0,   18,   21,   19,   22,   20,    0,   22,    0,    0,
+    3,    0,    0,    0,    0,    0,    2,   19,    0,    0,
+   13,   24,   14,    0,   24,    0,    0,   17,   17,   20,
+    0,   17,   17,   17,    0,   17,    0,   17,   18,   18,
+   15,    0,   18,   18,   18,    0,   18,    0,   18,    4,
+   17,    3,   17,    0,   19,   19,   16,    2,   19,   19,
+   19,   18,   19,   18,   19,    0,   20,   20,   13,    0,
+   20,   20,   20,    0,   20,    0,   20,   19,   15,   19,
+    0,   15,    0,   15,   17,   15,    0,    0,   10,   20,
+    4,   20,    0,    0,   16,   18,    5,   16,    0,   16,
+   15,   16,   15,    0,    0,   14,   13,    0,    0,   13,
+    0,   19,    0,    9,   17,    0,   16,   11,   16,    0,
+    0,    0,   12,   20,    0,   18,   10,    0,   13,   10,
+   13,    6,    0,    7,   15,    0,    0,    5,    0,    0,
+    0,   19,    0,   14,    0,    8,   14,    0,    0,    0,
+   16,    9,    0,   20,    9,   11,    0,    0,   11,    0,
+   12,    0,   13,   12,   15,   14,    0,   14,    0,    6,
+    0,    7,    6,    4,    7,    0,    0,    0,    0,   23,
+   16,    0,   10,    8,   21,   19,    8,   20,    0,   22,
+    5,    0,   13,    0,    0,    0,    0,    0,    0,   14,
+    0,    0,    0,    0,    0,    0,   24,    9,    0,   23,
+   10,   11,   10,   25,   21,   19,   12,   20,    1,   22,
+    5,   15,   16,   17,   18,    6,    0,    7,    0,   14,
+    0,    0,   13,    0,   14,    0,   24,    9,    0,    8,
+    0,   11,    0,    0,    0,    0,   12,   17,   17,   17,
+   17,   17,   17,   17,   17,    6,    0,    7,   18,   18,
+   18,   18,   18,   18,   18,   18,    9,    3,    3,    8,
+    0,    0,    0,    2,   19,   19,   19,   19,   19,   19,
+   19,   19,    0,    0,    0,    0,   20,   20,   20,   20,
+   20,   20,   20,   20,    0,    0,    8,   15,   15,   15,
+   15,   15,   15,   15,   15,    0,    4,    4,    0,    0,
+    0,    0,    0,   16,   16,   16,   16,   16,   16,   16,
+   16,    0,    0,    0,    0,   13,   13,   13,   13,   13,
+   13,    0,   23,   10,    0,    0,    0,   21,   19,    0,
+   20,    0,   22,    0,    0,   10,   10,   10,   10,    0,
+    0,    0,    0,    5,    5,   13,    0,   14,    0,   24,
+    0,    0,   14,   14,   14,   14,   14,   14,    0,    0,
+    9,    9,    9,    9,   11,   11,   11,   11,    0,   12,
+   12,   12,   12,    0,    0,    0,    0,   23,    6,    6,
+    7,    7,   21,   19,    0,   20,    0,   22,    0,   23,
+   10,    0,    8,    8,   21,   19,    0,   20,    0,   22,
+   13,    0,   14,    0,   24,   23,   10,    0,    0,    0,
+   21,   19,   13,   20,   14,   22,   24,    0,    0,    6,
+    7,   11,   12,   15,   16,   17,   18,    0,   13,    0,
+   14,    0,   24,   23,   10,    0,    0,    0,   21,   19,
+    0,   20,    0,   22,   23,   10,    9,    0,    0,   21,
+   19,    0,   20,    0,   22,    0,   13,    0,   14,    0,
+   24,    0,    9,    0,    0,    0,    0,   13,    0,   14,
+    0,   24,   23,    0,    0,    0,    8,   21,   19,    0,
+   20,    0,   22,    0,    0,    0,    0,    0,    0,    0,
+    9,    0,    8,    0,    0,    0,    0,    0,    0,   24,
+    0,    9,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    5,    0,    0,
+    8,   26,   27,   28,   29,   30,   31,   32,   33,   34,
+   35,   36,   37,   38,   39,   40,   41,   42,   43,   44,
+    0,    0,    0,    0,   11,   12,   15,   16,   17,   18,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,   11,
+   12,   15,   16,   17,   18,    0,    0,    0,    0,    6,
+    7,   11,   12,   15,   16,   17,   18,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    7,   11,   12,   15,
+   16,   17,   18,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,   11,   12,   15,   16,   17,
+   18,    0,    0,    0,    0,    0,   11,   12,   15,   16,
+   17,   18,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,   17,   18,
 };
-static const short lettable[] = {                                       4,
-   36,    4,    2,   22,    3,   39,   23,    1,   26,   34,
-   37,   33,   24,   49,   50,   38,   28,   53,   54,   58,
-   59,   60,   61,   35,    2,   36,   27,   25,   62,   26,
-   63,   27,   28,   31,   32,   40,   29,   36,   36,   47,
-   48,   36,   36,   36,   30,   36,   26,   36,    1,   26,
-   41,   26,   31,   26,   28,   21,   42,   28,   43,   28,
-   36,   28,   36,   44,   27,    2,   46,   27,   26,   27,
-   26,   27,   51,   52,   29,   23,   28,   29,   28,   29,
-   45,   29,   30,   57,   15,   30,   27,   30,   27,   30,
-   31,    0,    0,   31,   36,   31,   29,   31,   29,    0,
-    3,   24,   26,    0,   30,    0,   30,    0,    0,    0,
-   28,   25,   31,   23,   31,    0,   23,    0,    0,    0,
-   27,   18,   15,    0,   36,   15,   19,    0,    0,    0,
-   29,    0,   26,    0,    4,   23,    5,   23,   30,   24,
-   28,    3,   24,    0,    0,    0,   31,    0,    0,   25,
-   27,    0,   25,    0,    0,    0,   19,   20,    0,   18,
-   29,   24,   18,   24,   19,    0,    0,   19,   30,   23,
-    0,   25,    0,   25,    0,    4,   31,    5,   15,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,   56,
-   56,    0,    0,    6,    0,   24,    0,    0,   16,   23,
-    0,    0,    7,    0,    0,   25,    0,    0,   15,    0,
-   29,   30,   31,   32,    0,   18,   64,   65,    0,    0,
-   19,    0,    0,    0,    1,   24,    1,    0,    0,    0,
-    0,    0,    0,    0,    6,   25,   16,    0,    0,   16,
-    0,    0,    0,    7,    0,   18,    0,    0,    0,    0,
-   19,    0,    0,    0,    0,    0,    0,   36,   36,   36,
-   36,   36,   36,   36,   36,   26,   26,   26,   26,   26,
-   26,   26,   26,   28,   28,   28,   28,   28,   28,   28,
-   28,    2,   17,   27,   27,   27,   27,   27,   27,   27,
-   27,    0,   16,   29,   29,   29,   29,   29,   29,   29,
-   29,   30,   30,   30,   30,   30,   30,   30,   30,   31,
-   31,   31,   31,   31,   31,   31,   31,    6,    0,    0,
-   17,    0,   16,   17,    0,    8,    7,    0,    0,    0,
-    0,    0,   23,   23,   23,   23,   23,   23,   23,   23,
-    0,   15,   15,   15,   15,    0,    0,    9,    0,   12,
-    0,    0,    0,    0,    0,    0,    0,    3,   24,   24,
-   24,   24,   24,   24,   24,   24,    8,    0,   25,   25,
-   25,   25,   25,   25,   25,   25,   17,    0,   18,   18,
-   18,   18,    0,   19,   19,   19,   19,   12,    9,    0,
-   12,    4,    4,    5,    5,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,   17,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    8,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    9,    0,   12,    0,    0,    0,    0,    0,    8,
-    6,    6,    0,    0,    0,   16,   16,   16,   16,    7,
-    7,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    9,    0,   12,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,   17,
-   17,   17,   17,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    8,    8,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    9,    9,   12,   12,
+static const short letcheck[] = {                        64,
+    0,    0,   -1,   40,   37,   -1,   -1,   37,   -1,   42,
+   -1,    0,   42,   43,   47,   45,   -1,   47,   -1,   -1,
+    0,   -1,   -1,   -1,   -1,   -1,    0,    0,   -1,   -1,
+   60,   64,   62,   -1,   64,   -1,   -1,   37,   38,    0,
+   -1,   41,   42,   43,   -1,   45,   -1,   47,   37,   38,
+    0,   -1,   41,   42,   43,   -1,   45,   -1,   47,    0,
+   60,   41,   62,   -1,   37,   38,    0,   41,   41,   42,
+   43,   60,   45,   62,   47,   -1,   37,   38,    0,   -1,
+   41,   42,   43,   -1,   45,   -1,   47,   60,   38,   62,
+   -1,   41,   -1,   43,   94,   45,   -1,   -1,    0,   60,
+   41,   62,   -1,   -1,   38,   94,    0,   41,   -1,   43,
+   60,   45,   62,   -1,   -1,    0,   38,   -1,   -1,   41,
+   -1,   94,   -1,    0,  124,   -1,   60,    0,   62,   -1,
+   -1,   -1,    0,   94,   -1,  124,   38,   -1,   60,   41,
+   62,    0,   -1,    0,   94,   -1,   -1,   41,   -1,   -1,
+   -1,  124,   -1,   38,   -1,    0,   41,   -1,   -1,   -1,
+   94,   38,   -1,  124,   41,   38,   -1,   -1,   41,   -1,
+   38,   -1,   94,   41,  124,   60,   -1,   62,   -1,   38,
+   -1,   38,   41,  124,   41,   -1,   -1,   -1,   -1,   37,
+  124,   -1,   94,   38,   42,   43,   41,   45,   -1,   47,
+   94,   -1,  124,   -1,   -1,   -1,   -1,   -1,   -1,   94,
+   -1,   -1,   -1,   -1,   -1,   -1,   64,   94,   -1,   37,
+   38,   94,  124,   41,   42,   43,   94,   45,  265,   47,
+  124,  261,  262,  263,  264,   94,   -1,   94,   -1,  124,
+   -1,   -1,   60,   -1,   62,   -1,   64,  124,   -1,   94,
+   -1,  124,   -1,   -1,   -1,   -1,  124,  257,  258,  259,
+  260,  261,  262,  263,  264,  124,   -1,  124,  257,  258,
+  259,  260,  261,  262,  263,  264,   94,  257,  258,  124,
+   -1,   -1,   -1,  257,  257,  258,  259,  260,  261,  262,
+  263,  264,   -1,   -1,   -1,   -1,  257,  258,  259,  260,
+  261,  262,  263,  264,   -1,   -1,  124,  257,  258,  259,
+  260,  261,  262,  263,  264,   -1,  257,  258,   -1,   -1,
+   -1,   -1,   -1,  257,  258,  259,  260,  261,  262,  263,
+  264,   -1,   -1,   -1,   -1,  257,  258,  259,  260,  261,
+  262,   -1,   37,   38,   -1,   -1,   -1,   42,   43,   -1,
+   45,   -1,   47,   -1,   -1,  257,  258,  259,  260,   -1,
+   -1,   -1,   -1,  257,  258,   60,   -1,   62,   -1,   64,
+   -1,   -1,  257,  258,  259,  260,  261,  262,   -1,   -1,
+  257,  258,  259,  260,  257,  258,  259,  260,   -1,  257,
+  258,  259,  260,   -1,   -1,   -1,   -1,   37,  257,  258,
+  257,  258,   42,   43,   -1,   45,   -1,   47,   -1,   37,
+   38,   -1,  257,  258,   42,   43,   -1,   45,   -1,   47,
+   60,   -1,   62,   -1,   64,   37,   38,   -1,   -1,   -1,
+   42,   43,   60,   45,   62,   47,   64,   -1,   -1,  257,
+  258,  259,  260,  261,  262,  263,  264,   -1,   60,   -1,
+   62,   -1,   64,   37,   38,   -1,   -1,   -1,   42,   43,
+   -1,   45,   -1,   47,   37,   38,   94,   -1,   -1,   42,
+   43,   -1,   45,   -1,   47,   -1,   60,   -1,   62,   -1,
+   64,   -1,   94,   -1,   -1,   -1,   -1,   60,   -1,   62,
+   -1,   64,   37,   -1,   -1,   -1,  124,   42,   43,   -1,
+   45,   -1,   47,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   94,   -1,  124,   -1,   -1,   -1,   -1,   -1,   -1,   64,
+   -1,   94,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,    2,   -1,   -1,
+  124,    6,    7,    8,    9,   10,   11,   12,   13,   14,
+   15,   16,   17,   18,   19,   20,   21,   22,   23,   24,
+   -1,   -1,   -1,   -1,  259,  260,  261,  262,  263,  264,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,  259,
+  260,  261,  262,  263,  264,   -1,   -1,   -1,   -1,  257,
+  258,  259,  260,  261,  262,  263,  264,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,  258,  259,  260,  261,
+  262,  263,  264,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,  259,  260,  261,  262,  263,
+  264,   -1,   -1,   -1,   -1,   -1,  259,  260,  261,  262,
+  263,  264,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,  263,  264,
 };
-static const short letcheck[] = {                                      40,
-    0,   40,   43,  257,   45,   37,  258,    0,    0,   60,
-   42,   62,  124,   29,   30,   47,    0,   33,   34,   37,
-   38,   39,   40,   43,    0,   45,    0,   94,   43,   38,
-   45,  259,  260,  263,  264,   64,    0,   37,   38,   27,
-   28,   41,   42,   43,    0,   45,   38,   47,   41,   41,
-   41,   43,    0,   45,   38,    4,   22,   41,   23,   43,
-   60,   45,   62,   24,   38,   41,   26,   41,   60,   43,
-   62,   45,   31,   32,   38,    0,   60,   41,   62,   43,
-   25,   45,   38,   36,    0,   41,   60,   43,   62,   45,
-   38,   -1,   -1,   41,   94,   43,   60,   45,   62,   -1,
-    0,    0,   94,   -1,   60,   -1,   62,   -1,   -1,   -1,
-   94,    0,   60,   38,   62,   -1,   41,   -1,   -1,   -1,
-   94,    0,   38,   -1,  124,   41,    0,   -1,   -1,   -1,
-   94,   -1,  124,   -1,    0,   60,    0,   62,   94,   38,
-  124,   41,   41,   -1,   -1,   -1,   94,   -1,   -1,   38,
-  124,   -1,   41,   -1,   -1,   -1,    2,    3,   -1,   38,
-  124,   60,   41,   62,   38,   -1,   -1,   41,  124,   94,
-   -1,   60,   -1,   62,   -1,   41,  124,   41,   94,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   35,
-   36,   -1,   -1,    0,   -1,   94,   -1,   -1,    0,  124,
-   -1,   -1,    0,   -1,   -1,   94,   -1,   -1,  124,   -1,
-  261,  262,  263,  264,   -1,   94,   62,   63,   -1,   -1,
-   94,   -1,   -1,   -1,  265,  124,  265,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   41,  124,   38,   -1,   -1,   41,
-   -1,   -1,   -1,   41,   -1,  124,   -1,   -1,   -1,   -1,
-  124,   -1,   -1,   -1,   -1,   -1,   -1,  257,  258,  259,
-  260,  261,  262,  263,  264,  257,  258,  259,  260,  261,
-  262,  263,  264,  257,  258,  259,  260,  261,  262,  263,
-  264,  257,    0,  257,  258,  259,  260,  261,  262,  263,
-  264,   -1,   94,  257,  258,  259,  260,  261,  262,  263,
-  264,  257,  258,  259,  260,  261,  262,  263,  264,  257,
-  258,  259,  260,  261,  262,  263,  264,  124,   -1,   -1,
-   38,   -1,  124,   41,   -1,    0,  124,   -1,   -1,   -1,
-   -1,   -1,  257,  258,  259,  260,  261,  262,  263,  264,
-   -1,  257,  258,  259,  260,   -1,   -1,    0,   -1,    0,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,  257,  257,  258,
-  259,  260,  261,  262,  263,  264,   41,   -1,  257,  258,
-  259,  260,  261,  262,  263,  264,   94,   -1,  257,  258,
-  259,  260,   -1,  257,  258,  259,  260,   38,   41,   -1,
-   41,  257,  258,  257,  258,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,  124,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   94,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   94,   -1,   94,   -1,   -1,   -1,   -1,   -1,  124,
-  257,  258,   -1,   -1,   -1,  257,  258,  259,  260,  257,
-  258,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,  124,   -1,  124,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,  257,
-  258,  259,  260,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,  257,  258,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,  257,  258,  257,  258,
-};
+#define YYFINAL 3
 #ifndef YYDEBUG
 #define YYDEBUG 0
 #endif
-enum YYconsts {
-  /* yacc version */
-  YYBYACC     = 1,
-  YYMAJOR     = 1,
-  YYMINOR     = 9,
-  /* special states */
-  YYSTART     = 0,
-  YYFINAL     = 5,
-  /* special tokens */
-  YYEOF       = 0,
-  YYEMPTY     = (-1),
-  YYMAXTOKEN  = 267,
-  YYERRCODE   = 256,
-  /* tables */
-  YYTABLESIZE = 608
-};
+#define YYMAXTOKEN 267
 #if YYDEBUG
-static const char* const letname[] = {
+static const char *yyname[] = {
+
 "end-of-file",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,"'%'","'&'",0,"'('","')'","'*'","'+'",0,"'-'",0,"'/'",0,0,0,0,0,0,0,0,0,0,
 0,0,"'<'",0,"'>'",0,"'@'",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -271,66 +374,71 @@ static const char* const letname[] = {
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,"LET_OROR","LET_ANDAND","EQEQ","NEQ","LEQ","GEQ","LSHIFT","RSHIFT",
-"NUMBER","END_TOKEN","BAD_TOKEN",
+0,0,0,0,0,0,0,0,0,"LET_OROR","LET_ANDAND","EQEQ","NEQ","LEQ","GEQ","LSHIFT",
+"RSHIFT","NUMBER","END_TOKEN","BAD_TOKEN",
 };
-static const char* const letrule[] = {
-"$accept : expr",
-"expr : logor",
-"logor : logand",
-"logor : logor LET_OROR logand",
-"logand : bitor",
-"logand : logand LET_ANDAND bitor",
-"bitor : bitxor",
-"bitor : bitor '|' bitxor",
-"bitxor : bitand",
-"bitxor : bitxor '^' bitand",
-"bitand : eq",
-"bitand : bitand '&' eq",
-"eq : cmp",
-"eq : cmp EQEQ cmp",
-"eq : cmp NEQ cmp",
-"cmp : shift",
-"cmp : shift '>' shift",
-"cmp : shift '<' shift",
-"cmp : shift LEQ shift",
-"cmp : shift GEQ shift",
-"shift : sadd",
-"shift : shift LSHIFT sadd",
-"shift : shift RSHIFT sadd",
-"sadd : fmult",
-"sadd : fmult '+' add",
-"sadd : fmult '-' add",
-"fmult : mult",
-"fmult : '-' mult",
-"fmult : '+' mult",
-"add : mult",
-"add : add '+' mult",
-"add : add '-' mult",
-"mult : pow",
-"mult : mult '*' pow",
-"mult : mult '/' pow",
-"mult : mult '%' pow",
-"pow : unit",
-"pow : unit '@' pow",
-"unit : '(' expr ')'",
-"unit : NUMBER",
+static const char *yyrule[] = {
+"$accept : top",
+"top : expr",
+"expr : expr LET_OROR expr",
+"expr : expr LET_ANDAND expr",
+"expr : expr '|' expr",
+"expr : expr '^' expr",
+"expr : expr '&' expr",
+"expr : expr EQEQ expr",
+"expr : expr NEQ expr",
+"expr : expr '>' expr",
+"expr : expr '<' expr",
+"expr : expr LEQ expr",
+"expr : expr GEQ expr",
+"expr : expr LSHIFT expr",
+"expr : expr RSHIFT expr",
+"expr : expr '+' expr",
+"expr : expr '-' expr",
+"expr : expr '*' expr",
+"expr : expr '/' expr",
+"expr : expr '%' expr",
+"expr : expr '@' expr",
+"expr : '(' expr ')'",
+"expr : NUMBER",
+
 };
 #endif
+
+int      yydebug;
+int      yynerrs;
+
+int      yyerrflag;
+int      yychar;
+YYSTYPE  yyval;
+YYSTYPE  yylval;
+
+/* define the initial stack-sizes */
 #ifdef YYSTACKSIZE
 #undef YYMAXDEPTH
-#define YYMAXDEPTH YYSTACKSIZE
+#define YYMAXDEPTH  YYSTACKSIZE
 #else
 #ifdef YYMAXDEPTH
 #define YYSTACKSIZE YYMAXDEPTH
 #else
-#define YYSTACKSIZE 500
-#define YYMAXDEPTH 500
+#define YYSTACKSIZE 10000
+#define YYMAXDEPTH  500
 #endif
 #endif
 
-#define yystacksize YYSTACKSIZE
-#line 144 "let.y"
+#define YYINITSTACKSIZE 500
+
+typedef struct {
+    unsigned stacksize;
+    short    *s_base;
+    short    *s_mark;
+    short    *s_last;
+    YYSTYPE  *l_base;
+    YYSTYPE  *l_mark;
+} YYSTACKDATA;
+/* variables for the parser stack */
+static YYSTACKDATA yystack;
+#line 103 "let.y"
 
 
 
@@ -477,37 +585,74 @@ static int leterror (
 /******************************************************/
 
 
-#line 480 "let.tab.c"
-#define YYABORT goto yyabort
+#line 588 "let.tab.c"
+
+#if YYDEBUG
+#include <stdio.h>		/* needed for printf */
+#endif
+
+#include <stdlib.h>	/* needed for malloc, etc */
+#include <string.h>	/* needed for memset */
+
+/* allocate initial stack or double stack size, up to YYMAXDEPTH */
+static int yygrowstack(YYSTACKDATA *data)
+{
+    int i;
+    unsigned newsize;
+    short *newss;
+    YYSTYPE *newvs;
+
+    if ((newsize = data->stacksize) == 0)
+        newsize = YYINITSTACKSIZE;
+    else if (newsize >= YYMAXDEPTH)
+        return -1;
+    else if ((newsize *= 2) > YYMAXDEPTH)
+        newsize = YYMAXDEPTH;
+
+    i = (int) (data->s_mark - data->s_base);
+    newss = (short *)realloc(data->s_base, newsize * sizeof(*newss));
+    if (newss == 0)
+        return -1;
+
+    data->s_base = newss;
+    data->s_mark = newss + i;
+
+    newvs = (YYSTYPE *)realloc(data->l_base, newsize * sizeof(*newvs));
+    if (newvs == 0)
+        return -1;
+
+    data->l_base = newvs;
+    data->l_mark = newvs + i;
+
+    data->stacksize = newsize;
+    data->s_last = data->s_base + newsize - 1;
+    return 0;
+}
+
+#if YYPURE || defined(YY_NO_LEAKS)
+static void yyfreestack(YYSTACKDATA *data)
+{
+    free(data->s_base);
+    free(data->l_base);
+    memset(data, 0, sizeof(*data));
+}
+#else
+#define yyfreestack(data) /* nothing */
+#endif
+
+#define YYABORT  goto yyabort
 #define YYREJECT goto yyabort
 #define YYACCEPT goto yyaccept
-#define YYERROR goto yyerrlab
+#define YYERROR  goto yyerrlab
 
-#ifndef YYPARSE_PARAM_ARG
-#define YYPARSE_PARAM_ARG void
-#endif
-
-int yyparse(YYPARSE_PARAM_ARG)
+int
+YYPARSE_DECL()
 {
+    int yym, yyn, yystate;
 #if YYDEBUG
-    int yydebug;
-#endif
-    int yynerrs = 0;
-    int yyerrflag = 0;
-    int yychar = 0;
-    short *yyssp = 0;
-    YYSTYPE *yyvsp = 0;
-    YYSTYPE yyval;
-    YYSTYPE yylval;
-    short yyss[YYSTACKSIZE];
-    YYSTYPE yyvs[YYSTACKSIZE];
+    const char *yys;
 
-    register int yym, yyn, yystate;
-#if YYDEBUG
-    register const char *yys;
-    extern char *getenv(const char*);
-
-    if ((yys = getenv("YYDEBUG")))
+    if ((yys = getenv("YYDEBUG")) != 0)
     {
         yyn = *yys;
         if (yyn >= '0' && yyn <= '9')
@@ -518,27 +663,29 @@ int yyparse(YYPARSE_PARAM_ARG)
     yynerrs = 0;
     yyerrflag = 0;
     yychar = YYEMPTY;
+    yystate = 0;
 
-    yyssp = yyss;
-    yyvsp = yyvs;
-    yystate = YYSTART;
-    *yyssp = yystate;
+#if YYPURE
+    memset(&yystack, 0, sizeof(yystack));
+#endif
+
+    if (yystack.s_base == NULL && yygrowstack(&yystack)) goto yyoverflow;
+    yystack.s_mark = yystack.s_base;
+    yystack.l_mark = yystack.l_base;
+    yystate = 0;
+    *yystack.s_mark = 0;
 
 yyloop:
-    if ((yyn = yydefred[yystate]))
-        goto yyreduce;
+    if ((yyn = yydefred[yystate]) != 0) goto yyreduce;
     if (yychar < 0)
     {
-        if ((yychar = yylex(&yylval)) < 0)
-             yychar = YYEOF;
+        if ((yychar = YYLEX) < 0) yychar = 0;
 #if YYDEBUG
         if (yydebug)
         {
             yys = 0;
-            if (yychar <= YYMAXTOKEN)
-                yys = yyname[yychar];
-            if (!yys)
-                yys = "illegal-symbol";
+            if (yychar <= YYMAXTOKEN) yys = yyname[yychar];
+            if (!yys) yys = "illegal-symbol";
             printf("%sdebug: state %d, reading %d (%s)\n",
                     YYPREFIX, yystate, yychar, yys);
         }
@@ -552,15 +699,15 @@ yyloop:
             printf("%sdebug: state %d, shifting to state %d\n",
                     YYPREFIX, yystate, yytable[yyn]);
 #endif
-        if (yyssp >= yyss + yystacksize - 1)
+        if (yystack.s_mark >= yystack.s_last && yygrowstack(&yystack))
         {
             goto yyoverflow;
         }
-        *++yyssp = yystate = yytable[yyn];
-        *++yyvsp = yylval;
+        yystate = yytable[yyn];
+        *++yystack.s_mark = yytable[yyn];
+        *++yystack.l_mark = yylval;
         yychar = YYEMPTY;
-        if (yyerrflag > 0)
-            --yyerrflag;
+        if (yyerrflag > 0)  --yyerrflag;
         goto yyloop;
     }
     if ((yyn = yyrindex[yystate]) && (yyn += yychar) >= 0 &&
@@ -569,39 +716,36 @@ yyloop:
         yyn = yytable[yyn];
         goto yyreduce;
     }
-    if (yyerrflag)
-        goto yyinrecovery;
-#ifdef lint
-    goto yynewerror;
-#endif
-yynewerror:
+    if (yyerrflag) goto yyinrecovery;
+
     yyerror("syntax error");
-#ifdef lint
+
     goto yyerrlab;
-#endif
+
 yyerrlab:
     ++yynerrs;
+
 yyinrecovery:
     if (yyerrflag < 3)
     {
         yyerrflag = 3;
         for (;;)
         {
-            if ((yyn = yysindex[*yyssp]) && (yyn += YYERRCODE) >= 0 &&
+            if ((yyn = yysindex[*yystack.s_mark]) && (yyn += YYERRCODE) >= 0 &&
                     yyn <= YYTABLESIZE && yycheck[yyn] == YYERRCODE)
             {
 #if YYDEBUG
                 if (yydebug)
                     printf("%sdebug: state %d, error recovery shifting\
- to state %d\n", YYPREFIX, *yyssp, yytable[yyn]);
+ to state %d\n", YYPREFIX, *yystack.s_mark, yytable[yyn]);
 #endif
-                if (yyssp >= yyss + yystacksize - 1)
+                if (yystack.s_mark >= yystack.s_last && yygrowstack(&yystack))
                 {
                     goto yyoverflow;
                 }
                 yystate = yytable[yyn];
-                *++yyssp = yystate;
-                *++yyvsp = yylval;
+                *++yystack.s_mark = yytable[yyn];
+                *++yystack.l_mark = yylval;
                 goto yyloop;
             }
             else
@@ -609,27 +753,23 @@ yyinrecovery:
 #if YYDEBUG
                 if (yydebug)
                     printf("%sdebug: error recovery discarding state %d\n",
-                            YYPREFIX, *yyssp);
+                            YYPREFIX, *yystack.s_mark);
 #endif
-                if (yyssp <= yyss)
-                    goto yyabort;
-                --yyssp;
-                --yyvsp;
+                if (yystack.s_mark <= yystack.s_base) goto yyabort;
+                --yystack.s_mark;
+                --yystack.l_mark;
             }
         }
     }
     else
     {
-        if (yychar == YYEOF)
-            goto yyabort;
+        if (yychar == 0) goto yyabort;
 #if YYDEBUG
         if (yydebug)
         {
             yys = 0;
-            if (yychar <= YYMAXTOKEN)
-                yys = yyname[yychar];
-            if (!yys)
-                yys = "illegal-symbol";
+            if (yychar <= YYMAXTOKEN) yys = yyname[yychar];
+            if (!yys) yys = "illegal-symbol";
             printf("%sdebug: state %d, error recovery discards token %d (%s)\n",
                     YYPREFIX, yystate, yychar, yys);
         }
@@ -637,6 +777,7 @@ yyinrecovery:
         yychar = YYEMPTY;
         goto yyloop;
     }
+
 yyreduce:
 #if YYDEBUG
     if (yydebug)
@@ -644,140 +785,123 @@ yyreduce:
                 YYPREFIX, yystate, yyn, yyrule[yyn]);
 #endif
     yym = yylen[yyn];
-    if (yym >= 1) { /* For zero length rules, avoid $$ = $1. */
-        yyval = yyvsp[1-yym];
-    }
+    if (yym)
+        yyval = yystack.l_mark[1-yym];
+    else
+        memset(&yyval, 0, sizeof yyval);
     switch (yyn)
     {
 case 1:
-#line 45 "let.y"
-{ letResult = yyval.m_Val = yyvsp[0].m_Val; }
+#line 56 "let.y"
+	{ letResult = yystack.l_mark[0].m_Val; }
+break;
+case 2:
+#line 58 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val || yystack.l_mark[0].m_Val; }
 break;
 case 3:
-#line 49 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val || yyvsp[0].m_Val; }
+#line 59 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val && yystack.l_mark[0].m_Val; }
+break;
+case 4:
+#line 60 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val | yystack.l_mark[0].m_Val; }
 break;
 case 5:
-#line 53 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val && yyvsp[0].m_Val; }
+#line 61 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val ^ yystack.l_mark[0].m_Val; }
+break;
+case 6:
+#line 62 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val & yystack.l_mark[0].m_Val; }
 break;
 case 7:
-#line 57 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val | yyvsp[0].m_Val; }
+#line 63 "let.y"
+	{ yyval.m_Val = (yystack.l_mark[-2].m_Val == yystack.l_mark[0].m_Val); }
+break;
+case 8:
+#line 64 "let.y"
+	{ yyval.m_Val = (yystack.l_mark[-2].m_Val != yystack.l_mark[0].m_Val); }
 break;
 case 9:
-#line 61 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val ^ yyvsp[0].m_Val; }
+#line 65 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val > yystack.l_mark[0].m_Val; }
+break;
+case 10:
+#line 66 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val < yystack.l_mark[0].m_Val; }
 break;
 case 11:
-#line 65 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val & yyvsp[0].m_Val; }
+#line 67 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val <= yystack.l_mark[0].m_Val; }
+break;
+case 12:
+#line 68 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val >= yystack.l_mark[0].m_Val; }
 break;
 case 13:
-#line 69 "let.y"
-{ yyval.m_Val = (yyvsp[-2].m_Val == yyvsp[0].m_Val); }
+#line 70 "let.y"
+	{ letValue v3 = yystack.l_mark[0].m_Val;
+		  yyval.m_Val = (v3 >= 0) ? (yystack.l_mark[-2].m_Val << v3) : (yystack.l_mark[-2].m_Val >> (-v3));
+		}
 break;
 case 14:
-#line 70 "let.y"
-{ yyval.m_Val = (yyvsp[-2].m_Val != yyvsp[0].m_Val); }
+#line 74 "let.y"
+	{ letValue v3 = yystack.l_mark[0].m_Val; 
+		  yyval.m_Val = (v3>=0) ? (yystack.l_mark[-2].m_Val >> v3) : (yystack.l_mark[-2].m_Val << (-v3));
+		}
+break;
+case 15:
+#line 77 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val + yystack.l_mark[0].m_Val; }
 break;
 case 16:
-#line 74 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val > yyvsp[0].m_Val; }
+#line 78 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val - yystack.l_mark[0].m_Val; }
 break;
 case 17:
-#line 75 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val < yyvsp[0].m_Val; }
+#line 79 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-2].m_Val * yystack.l_mark[0].m_Val; }
 break;
 case 18:
-#line 76 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val <= yyvsp[0].m_Val; }
+#line 81 "let.y"
+	{ long v3 = yystack.l_mark[0].m_Val;
+		  if (v3 == 0) { leterror("Division by 0"); }
+		  yyval.m_Val = yystack.l_mark[-2].m_Val / (v3);
+		}
 break;
 case 19:
-#line 77 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val >= yyvsp[0].m_Val; }
+#line 86 "let.y"
+	{ long v3 = yystack.l_mark[0].m_Val;
+		  if (v3 == 0) { leterror("Module by 0"); }
+		  yyval.m_Val = yystack.l_mark[-2].m_Val % (v3);
+		}
+break;
+case 20:
+#line 91 "let.y"
+	{ long v3 = yystack.l_mark[0].m_Val;
+		  if (v3 < 0) { leterror("Negative power"); }
+		  yyval.m_Val = letpwr(yystack.l_mark[-2].m_Val, v3);
+		}
 break;
 case 21:
-#line 82 "let.y"
-{ letValue v3 = yyvsp[0].m_Val;
-		  yyval.m_Val = (v3 >= 0) ? (yyvsp[-2].m_Val << v3) : (yyvsp[-2].m_Val >> (-v3));
-		}
+#line 95 "let.y"
+	{ yyval.m_Val = yystack.l_mark[-1].m_Val; }
 break;
 case 22:
-#line 86 "let.y"
-{ letValue v3 = yyvsp[0].m_Val; 
-		  yyval.m_Val = (v3>=0) ? (yyvsp[-2].m_Val >> v3) : (yyvsp[-2].m_Val << (-v3));
-		}
-break;
-case 24:
-#line 92 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val + yyvsp[0].m_Val; }
-break;
-case 25:
-#line 93 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val - yyvsp[0].m_Val; }
-break;
-case 27:
-#line 97 "let.y"
-{ yyval.m_Val = - yyvsp[0].m_Val; }
-break;
-case 28:
-#line 98 "let.y"
-{ yyval.m_Val = + yyvsp[0].m_Val; }
-break;
-case 30:
-#line 102 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val + yyvsp[0].m_Val; }
-break;
-case 31:
-#line 103 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val - yyvsp[0].m_Val; }
-break;
-case 33:
-#line 115 "let.y"
-{ yyval.m_Val = yyvsp[-2].m_Val * yyvsp[0].m_Val; }
-break;
-case 34:
-#line 117 "let.y"
-{ long v3 = yyvsp[0].m_Val;
-		  if (v3 == 0) { leterror("Division by 0"); }
-		  yyval.m_Val = yyvsp[-2].m_Val / (v3);
-		}
-break;
-case 35:
-#line 122 "let.y"
-{ long v3 = yyvsp[0].m_Val;
-		  if (v3 == 0) { leterror("Module by 0"); }
-		  yyval.m_Val = yyvsp[-2].m_Val % (v3);
-		}
-break;
-case 37:
-#line 130 "let.y"
-{ long v3 = yyvsp[0].m_Val;
-		  if (v3 < 0) { leterror("Negative power"); }
-		  yyval.m_Val = letpwr(yyvsp[-2].m_Val, v3);
-		}
-break;
-case 38:
-#line 136 "let.y"
-{ yyval.m_Val = yyvsp[-1].m_Val; }
-break;
-case 39:
-#line 137 "let.y"
-{ 
-          letValue v = yyvsp[0].m_Val;
+#line 96 "let.y"
+	{ 
+          letValue v = yystack.l_mark[0].m_Val;
          yyval.m_Val = v; 
      }
 break;
-#line 772 "let.tab.c"
-    default:
-        break;
+#line 898 "let.tab.c"
     }
-    yyssp -= yym;
-    yystate = *yyssp;
-    yyvsp -= yym;
+    yystack.s_mark -= yym;
+    yystate = *yystack.s_mark;
+    yystack.l_mark -= yym;
     yym = yylhs[yyn];
-    if (yystate == YYSTART && yym == 0)
+    if (yystate == 0 && yym == 0)
     {
 #if YYDEBUG
         if (yydebug)
@@ -785,27 +909,23 @@ break;
  state %d\n", YYPREFIX, YYFINAL);
 #endif
         yystate = YYFINAL;
-        *++yyssp = YYFINAL;
-        *++yyvsp = yyval;
+        *++yystack.s_mark = YYFINAL;
+        *++yystack.l_mark = yyval;
         if (yychar < 0)
         {
-            if ((yychar = yylex(&yylval)) < 0)
-                yychar = YYEOF;
+            if ((yychar = YYLEX) < 0) yychar = 0;
 #if YYDEBUG
             if (yydebug)
             {
                 yys = 0;
-                if (yychar <= YYMAXTOKEN)
-                    yys = yyname[yychar];
-                if (!yys)
-                    yys = "illegal-symbol";
+                if (yychar <= YYMAXTOKEN) yys = yyname[yychar];
+                if (!yys) yys = "illegal-symbol";
                 printf("%sdebug: state %d, reading %d (%s)\n",
                         YYPREFIX, YYFINAL, yychar, yys);
             }
 #endif
         }
-        if (yychar == YYEOF)
-            goto yyaccept;
+        if (yychar == 0) goto yyaccept;
         goto yyloop;
     }
     if ((yyn = yygindex[yym]) && (yyn += yystate) >= 0 &&
@@ -816,19 +936,24 @@ break;
 #if YYDEBUG
     if (yydebug)
         printf("%sdebug: after reduction, shifting from state %d \
-to state %d\n", YYPREFIX, *yyssp, yystate);
+to state %d\n", YYPREFIX, *yystack.s_mark, yystate);
 #endif
-    if (yyssp >= yyss + yystacksize - 1)
+    if (yystack.s_mark >= yystack.s_last && yygrowstack(&yystack))
     {
         goto yyoverflow;
     }
-    *++yyssp = yystate;
-    *++yyvsp = yyval;
+    *++yystack.s_mark = (short) yystate;
+    *++yystack.l_mark = yyval;
     goto yyloop;
+
 yyoverflow:
     yyerror("yacc stack overflow");
+
 yyabort:
+    yyfreestack(&yystack);
     return (1);
+
 yyaccept:
+    yyfreestack(&yystack);
     return (0);
 }

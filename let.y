@@ -27,108 +27,72 @@ static int LetParser(struct LetLex*);
 %union {
 	letValue m_Val;
 }
-%type <m_Val> expr logor logand bitor bitxor bitand eq cmp shift add 
-%type <m_Val> sadd fmult mult pow unit
 
-%token LET_OROR LET_ANDAND EQEQ NEQ LEQ GEQ LSHIFT RSHIFT 
+/* Non-terminals */
+%type <m_Val> expr
+
+/* Tokens */
+%left LET_OROR
+%left LET_ANDAND
+%left '|'
+%left '^'
+%left '&'
+%nonassoc EQEQ NEQ 
+%nonassoc '<' '>' LEQ GEQ
+%nonassoc LSHIFT RSHIFT 
+%left '+' '-'
+%left '*' '/' '%'
+%right '@'
+
+
 %token <m_Val> NUMBER
 %token END_TOKEN BAD_TOKEN
 
-%start expr
+
+
+%start top
 
 %%
-expr	: logor   { letResult = $$ = $1; }
-	;
+top: expr   { letResult = $1; } ;
 
-logor	: logand 
-	| logor LET_OROR logand    { $$ = $1 || $3; }
-	;
-
-logand	: bitor 
-	| logand LET_ANDAND  bitor { $$ = $1 && $3; }
-	;
-
-bitor	: bitxor 
-	| bitor '|' bitxor  { $$ = $1 | $3; }
-	;
-
-bitxor	: bitand 
-	| bitxor '^' bitand { $$ = $1 ^ $3; }
-	;
-
-bitand	: eq 
-	| bitand '&' eq     { $$ = $1 & $3; }
-	;
-
-eq	: cmp 
-	| cmp EQEQ cmp { $$ = ($1 == $3); }
-	| cmp NEQ cmp  { $$ = ($1 != $3); }
-	;
-
-cmp	: shift 
-	| shift '>' shift { $$ = $1 > $3; }
-	| shift '<' shift { $$ = $1 < $3; }
-        | shift LEQ shift { $$ = $1 <= $3; }
-	| shift GEQ shift { $$ = $1 >= $3; }
-	;
-
-shift	: sadd 
-	| shift LSHIFT sadd 
+expr: expr LET_OROR expr    { $$ = $1 || $3; }
+    | expr LET_ANDAND  expr { $$ = $1 && $3; }
+    | expr '|' expr  { $$ = $1 | $3; } ;
+    | expr '^' expr { $$ = $1 ^ $3; } ;
+    | expr '&' expr     { $$ = $1 & $3; } ;
+    | expr EQEQ expr { $$ = ($1 == $3); }
+	| expr NEQ expr  { $$ = ($1 != $3); }
+	| expr '>' expr { $$ = $1 > $3; }
+	| expr '<' expr { $$ = $1 < $3; }
+    | expr LEQ expr { $$ = $1 <= $3; }
+	| expr GEQ expr { $$ = $1 >= $3; }
+	| expr LSHIFT expr 
 		{ letValue v3 = $3;
 		  $$ = (v3 >= 0) ? ($1 << v3) : ($1 >> (-v3));
 		}
-	| shift RSHIFT sadd
+	| expr RSHIFT expr
 		{ letValue v3 = $3; 
 		  $$ = (v3>=0) ? ($1 >> v3) : ($1 << (-v3));
 		}
-	;
-
-sadd	: fmult
-	| fmult '+' add { $$ = $1 + $3; }
-	| fmult '-' add { $$ = $1 - $3; }
-	;
-
-fmult	: mult
-	| '-' mult { $$ = - $2; }
-	| '+' mult { $$ = + $2; }
-	;
-
-add	: mult
-	| add '+' mult { $$ = $1 + $3; }
-        | add '-' mult { $$ = $1 - $3; }
-	;
-
-/*
-presign	:
-		{ $$ = 1; }
-	| '+'   { $$ = 1; }
-	| '-'   { $$ = -1; }
-	;
-*/
-
-mult	: pow 
-	| mult '*' pow    { $$ = $1 * $3; }
-	| mult '/' pow
+	| expr '+' expr { $$ = $1 + $3; }
+    | expr '-' expr { $$ = $1 - $3; }
+	| expr '*' expr    { $$ = $1 * $3; }
+	| expr '/' expr
 		{ long v3 = $3;
 		  if (v3 == 0) { leterror("Division by 0"); }
 		  $$ = $1 / (v3);
 		}
-	| mult '%' pow
+	| expr '%' expr
 		{ long v3 = $3;
 		  if (v3 == 0) { leterror("Module by 0"); }
 		  $$ = $1 % (v3);
 		}
-	;
-
-pow	: unit 
-	| unit '@' pow
+	| expr '@' expr
 		{ long v3 = $3;
 		  if (v3 < 0) { leterror("Negative power"); }
 		  $$ = letpwr($1, v3);
 		}
-	;
-
-unit : '(' expr ')'    { $$ = $2; }
+     | '(' expr ')'    { $$ = $2; }
 	 |  NUMBER { 
           letValue v = $1;
          $$ = v; 
@@ -172,12 +136,12 @@ static Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
   Token tok;
   int c;
 
-  if (lex->last_token != BAD_TOKEN) {
-    tok = lex->last_token;
-    lex->last_token = BAD_TOKEN;
+  if (lex->m_LastToken != BAD_TOKEN) {
+    tok = lex->m_LastToken;
+    lex->m_LastToken = BAD_TOKEN;
     return tok;
   }
-  p = lex->current;
+  p = lex->m_Current;
   while (*p == ' ' || *p == '\t') {
     p++;
   }
@@ -229,7 +193,7 @@ static Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
         while ('0' <= *p && *p <= '9') {
           val = 10 * val + (*p++ -'0');
         }
-        letlval->val = val;
+        letlval->m_Val = val;
         tok = NUMBER;
     }
     break;
@@ -240,7 +204,7 @@ static Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
     tok = BAD_TOKEN;
     break;
   }
-  lex->current = p;
+  lex->m_Current = p;
   return tok;
 } /* LetLexer */
 
@@ -260,8 +224,8 @@ int LetDoParse (
   if (setjmp(jbuf)) {
     return -1;
   }
-  lex.current = lex.buf = s;
-  lex.last_token = BAD_TOKEN;
+  lex.m_Current = lex.m_Buf = s;
+  lex.m_LastToken = BAD_TOKEN;
 
   status = LetParser(&lex);
   *r = letResult;
