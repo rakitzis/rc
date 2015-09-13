@@ -6,11 +6,13 @@
 
 #if RC_ADDON
 
+#include "let.h"
+
 /******************************************************/
 /******************************************************/
 
+LetValue letResult;
 
-#include "let.tab.c"
 
 #define KILL_USAGE "usage: kill [-signame|-signum] pid\n"
 #define CHECK(cond, msg) if (cond) { fprint(2, (msg)); set(FALSE); return; }
@@ -153,20 +155,15 @@ returnLabel:
   return;
 }
 
-/*
-#include "let.tab.c"
-*/
 
 
 
 
 /******************************************************/
 
-static letValue letpwr (
-  letValue a,
-  letValue b)
+LetValue letpwr(LetValue a, LetValue b)
 {
-  letValue z = 1;   /* z*a^b = A^B */
+  LetValue z = 1;   /* z*a^b = A^B */
   while (b > 0) {
     if (b & 1) { /* odd */
       /* z*a^b = z*a * a^(b-1) */
@@ -181,7 +178,7 @@ static letValue letpwr (
   return z;
 }
 /******************************************************/
-static Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
+Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
 {
   const char *p;
   Token tok;
@@ -240,7 +237,7 @@ static Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
   case '0': case '1': case '2': case '3': case '4': 
   case '5': case '6': case '7': case '8': case '9': 
     {
-        letValue val = 0;
+        LetValue val = 0;
         while ('0' <= *p && *p <= '9') {
           val = 10 * val + (*p++ -'0');
         }
@@ -265,9 +262,7 @@ static Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
 static jmp_buf jbuf;
 
 /******************************************************/
-int LetDoParse (
-  char *s,
-  letValue *r)
+int LetDoParse(char *s, LetValue *r)
 {
   int status;
   struct LetLex lex;
@@ -286,8 +281,7 @@ int LetDoParse (
 /******************************************************/
 
 
-static int leterror (
-  const char *s)
+int leterror(const char *s)
 {
   fprint(2, "let: %s\n", s);
   longjmp(jbuf, 1);

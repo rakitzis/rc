@@ -4,30 +4,21 @@
 
 extern int printf(const char *, ...);
 
-typedef int Token;
-typedef long letValue;
+#include "let.h"
 
 
-struct LetLex {
-  const char *m_Buf;
-  const char *m_Current;
-  Token m_LastToken;
-};
 
 
 #define letparse(a)  LetParser(struct LetLex *lex)
 #define letparse_r(a)  LetParser(struct LetLex *lex)
 #define letlex(a)  LetLexer(lex, &letlval)
-static int leterror(const char *s);
-extern int LetDoParse(char *s, letValue *);
 
 
-static letValue letResult;
 %}
 
 
 %union {
-    letValue m_Val;
+    LetValue m_Val;
 }
 
 /* Non-terminals */
@@ -50,6 +41,7 @@ static letValue letResult;
 %token <m_Val> NUMBER
 %token END_TOKEN BAD_TOKEN
 
+%pure-parser
 
 
 %start top
@@ -69,11 +61,11 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
     | expr LEQ expr { $$ = $1 <= $3; }
     | expr GEQ expr { $$ = $1 >= $3; }
     | expr LSHIFT expr 
-        { letValue v3 = $3;
+        { LetValue v3 = $3;
           $$ = (v3 >= 0) ? ($1 << v3) : ($1 >> (-v3));
         }
     | expr RSHIFT expr
-        { letValue v3 = $3; 
+        { LetValue v3 = $3; 
           $$ = (v3>=0) ? ($1 >> v3) : ($1 << (-v3));
         }
     | expr '+' expr { $$ = $1 + $3; }
@@ -96,7 +88,7 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
         }
      | '(' expr ')'    { $$ = $2; }
      |  NUMBER { 
-          letValue v = $1;
+          LetValue v = $1;
          $$ = v; 
      }
      ;
@@ -105,7 +97,5 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
 
 /*
 */
-static Token LetLexer(struct LetLex *lex, YYSTYPE* letlval);
-static letValue letpwr(letValue a, letValue b);
 
 

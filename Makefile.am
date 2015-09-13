@@ -2,6 +2,9 @@
 
 EDIT=@EDIT@
 
+AM_CFLAGS=-fPIE  -fstack-protector
+AM_LDFLAGS=-pie -Wl,-z,now,-z,relro
+
 if AMC_HISTORY
 man_MANS = rc.1 history.1
 HISTORY = history
@@ -22,7 +25,7 @@ endif
 bin_PROGRAMS = rc
 noinst_PROGRAMS = mksignal mkstatval tripping $(HISTORY)
 
-rc_SOURCES = builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c parse.c print.c redir.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c
+rc_SOURCES = builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c hash.c heredoc.c input.c lex.c list.c main.c match.c nalloc.c open.c parse.c let.tab.c print.c redir.c signal.c status.c tree.c utils.c var.c wait.c walk.c which.c
 
 EXTRA_rc_SOURCES = addon.c edit-edit.c edit-editline.c edit-null.c edit-readline.c edit-vrl.c execve.c system.c system-bsd.c
 
@@ -47,6 +50,7 @@ statval.h: mkstatval
 
 DISTCLEANFILES = sigmsgs.c sigmsgs.h statval.h
 
+# YACC=byacc
 # Of course, parse.c and parse.h depend on parse.y.  However, unless
 # you're hacking on rc's grammar, it's not useful to have this
 # dependency expressed, since the distributed parse.[ch] (generated with
@@ -56,6 +60,10 @@ DISTCLEANFILES = sigmsgs.c sigmsgs.h statval.h
 #	$(YACC) -d $(srcdir)/parse.y
 #	mv y.tab.c parse.c
 #	mv y.tab.h parse.h
+#
+## Similarly for let.
+#let.tab.c: $(srcdir)/let.y
+#	$(YACC) -d -b let -p let $(srcdir)/let.y
 
 check: trip
 
