@@ -118,13 +118,12 @@ fn testManyLets { numEntries=() {
 }}
 testManyLets
 
-expect syntax error from let
-if (let aX '2 << 3 << 1') {
-  fail let was supposed to have syntax error
-}
-expect syntax error from let
-if (let aX '88889 >> 3 >> 1') {
-  fail let was supposed to have syntax error
+nonassoc_ops=( '<<'  '>>'  '=='  '!='  '<' '>'  '<=' '>=' )
+for (op in $nonassoc_ops) {
+  expect syntax error from let on operator $op
+  if (let aX '2 '$op' 3 '$op' 1') {
+    fail let was supposed to have syntax error
+  }
 }
 
 
