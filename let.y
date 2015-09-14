@@ -30,11 +30,12 @@ extern int printf(const char *, ...);
 %left '|'
 %left '^'
 %left '&'
-%nonassoc EQEQ NEQ 
-%nonassoc '<' '>' LEQ GEQ
-%nonassoc LSHIFT RSHIFT 
+%left EQEQ NEQ 
+%left '<' '>' LEQ GEQ
+%left LSHIFT RSHIFT 
 %left '+' '-'
 %left '*' '/' '%'
+%right '!' '~' UNARY_PLUSMINUS
 %right '@'
 
 
@@ -81,16 +82,17 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
           if (v3 == 0) { leterror("Module by 0"); }
           $$ = $1 % (v3);
         }
+    | '!' expr  { $$ = !$2; }
+    | '~' expr  { $$ = ~$2; }
+    | '-' expr %prec UNARY_PLUSMINUS { $$ = -$2; }
+    | '+' expr %prec UNARY_PLUSMINUS { $$ = +$2; }
     | expr '@' expr
         { long v3 = $3;
           if (v3 < 0) { leterror("Negative power"); }
           $$ = letpwr($1, v3);
         }
      | '(' expr ')'    { $$ = $2; }
-     |  NUMBER { 
-          LetValue v = $1;
-         $$ = v; 
-     }
+     |  NUMBER { $$ = $1; }
      ;
 
 %%

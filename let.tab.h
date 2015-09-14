@@ -6,9 +6,10 @@
 #define GEQ 262
 #define LSHIFT 263
 #define RSHIFT 264
-#define NUMBER 265
-#define END_TOKEN 266
-#define BAD_TOKEN 267
+#define UNARY_PLUSMINUS 265
+#define NUMBER 266
+#define END_TOKEN 267
+#define BAD_TOKEN 268
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
