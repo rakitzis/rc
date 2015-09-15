@@ -48,8 +48,8 @@ static struct {
 	{ b_exec,	"exec" },
 	{ b_exit,	"exit" },
 #ifdef RC_ADDON
-	{ b_kill,     "kill" },  /* ADDONN */
-	{ b_let,      "let" },  /* ADDONN */
+	{ b_kill,	"kill" },
+	{ b_let,	"let" },
 #endif
 #if HAVE_SETRLIMIT
 	{ b_limit,	"limit" },
