@@ -65,7 +65,6 @@ static struct {
 extern builtin_t *isbuiltin(char *s) {
 	const char s0 = s[0];
 	int i = 0, j = sizeof(builtins)/sizeof(builtins[0]);
-	int foundIdx = -1;
 
 	while (i < j) {
 		const int m = (i + j)/2;
@@ -82,20 +81,11 @@ extern builtin_t *isbuiltin(char *s) {
 			} else if (r < 0) {  /* b[m] < s   */
 				i = m + 1;
 			} else {             /* b[m] = s   */
-				foundIdx = m; /* this will go away */
-				break;        /* this will go away */
 				return builtins[m].p;
 			}
 		}
 	}
 
-	for (i = 0; i < arraysize(builtins); i++)
-		if (streq(builtins[i].name, s)) {
-			assert(foundIdx >= 0 && foundIdx == i);
-			return builtins[i].p;
-		}
-
-	assert(foundIdx < 0);  /* This will go away */
 	return NULL;
 }
 
