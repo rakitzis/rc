@@ -337,6 +337,9 @@ Pwd=`/bin/pwd cdpath=/ { # some local assignments
 	cd $Pwd
 	if (!~ `/bin/pwd `{sh -c 'cd $Pwd; /bin/pwd'})
 		fail could not cd to current directory!
+	if (!~ $Pwd $pwd) {
+		fail 'Pwd('$Pwd') != pwd ('$pwd')' 
+	}
 }
 
 # Test that cd to a directory found via cdpath produces output
