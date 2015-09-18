@@ -202,6 +202,7 @@ extern void delete_var(char *s, bool stack) {
 		} else {
 			vp[h].name = dead;
 		}
+
 		vp[h].p = NULL;
 	}
 }
