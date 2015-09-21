@@ -195,6 +195,7 @@ extern void delete_var(char *s, bool stack) {
 		}
 	} else { /* needs to be removed from the hash table */
 		efree(v);
+		vp[h].p = NULL; /* vp[hp].p == v */
 		efree(vp[h].name);
 		if (vp[(h+1)&(vsize-1)].name == NULL) {
 			--vused;
@@ -202,8 +203,6 @@ extern void delete_var(char *s, bool stack) {
 		} else {
 			vp[h].name = dead;
 		}
-
-		vp[h].p = NULL;
 	}
 }
 
