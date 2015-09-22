@@ -194,9 +194,12 @@ Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
     p++;
   }
   switch (*p) {
-  case '+': case '-': case '*': case '/': case '%':
-  case '^': case '(': case ')':
+  case '^':
+  case '+': case '-':
+  case '*': case '/': case '%':
+  case '~':
   case '@':
+  case '(': case ')':
     tok = (Token) (*p);
     p++;
     break;
