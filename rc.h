@@ -119,7 +119,10 @@ struct Variable {
 
 struct Htab {
 	char *name;
-	void *p;
+  union {
+    rc_Function *f;
+    Variable *v;
+  } u;
 };
 
 struct Format {
@@ -156,8 +159,6 @@ enum {
 #define memzero(s, n) memset(s, 0, n)
 #define enew(x) ((x *) ealloc(sizeof(x)))
 #define ecpy(x) strcpy((char *) ealloc(strlen(x) + 1), x)
-#define lookup_fn(s) ((rc_Function *) lookup(s, fp))
-#define lookup_var(s) ((Variable *) lookup(s, vp))
 #define nnew(x) ((x *) nalloc(sizeof(x)))
 #define ncpy(x) (strcpy((char *) nalloc(strlen(x) + 1), x))
 #ifndef offsetof
@@ -229,7 +230,6 @@ extern List *word(char *, char *);
 
 /* hash.c */
 extern Htab *fp, *vp;
-extern void *lookup(char *, Htab *);
 extern rc_Function *get_fn_place(char *);
 extern List *varlookup(char *);
 extern Node *fnlookup(char *);
@@ -256,6 +256,8 @@ extern void whatare_all_vars(bool, bool);
 extern void whatare_all_signals(void);
 extern void prettyprint_var(int, char *, List *);
 extern void prettyprint_fn(int, char *, Node *);
+extern rc_Function *lookup_fn(const char* s);
+extern Variable * lookup_var(const char* s);
 
 /* heredoc.c */
 extern int heredoc(int);

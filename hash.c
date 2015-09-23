@@ -13,8 +13,8 @@
 
 static bool var_exportable(char *);
 static bool fn_exportable(char *);
-static int hash(char *, int);
-static int find(char *, Htab *, int);
+static int hash(const char *, int);
+static int find(const char *, Htab *, int);
 static void free_fn(rc_Function *);
 
 Htab *fp;
@@ -43,7 +43,7 @@ extern void inithash() {
 
 /* hash function courtesy of paul haahr */
 
-static int hash(char *s, int size) {
+static int hash(const char *s, int size) {
 	int c, n = 0;
 	while (1) {
 		ADV();
@@ -86,7 +86,7 @@ static bool rehash(Htab *ht) {
 				j &= (newsize - 1);
 			}
 			newhtab[j].name = ht[i].name;
-			newhtab[j].p = ht[i].p;
+			newhtab[j].u = ht[i].u;
 		}
 	if (ht == fp) {
 		fused = newused;
@@ -104,7 +104,7 @@ static bool rehash(Htab *ht) {
 #define varfind(s) find(s, vp, vsize)
 #define fnfind(s) find(s, fp, fsize)
 
-static int find(char *s, Htab *ht, int size) {
+static int find(const char *s, Htab *ht, int size) {
 	int h = hash(s, size);
 	while (ht[h].name != NULL && !streq(ht[h].name, s)) {
 		h++;
@@ -113,9 +113,14 @@ static int find(char *s, Htab *ht, int size) {
 	return h;
 }
 
-extern void *lookup(char *s, Htab *ht) {
-	int h = find(s, ht, ht == fp ? fsize : vsize);
-	return (ht[h].name == NULL) ? NULL : ht[h].p;
+extern rc_Function *lookup_fn(const char *s) {
+	int h = find(s, fp, fsize);
+	return (fp[h].name == NULL) ? NULL : fp[h].u.f;
+}
+
+extern Variable *lookup_var(const char *s) {
+	int h = find(s, vp, vsize);
+	return (vp[h].name == NULL) ? NULL : vp[h].u.v;
 }
 
 extern rc_Function *get_fn_place(char *s) {
@@ -126,10 +131,10 @@ extern rc_Function *get_fn_place(char *s) {
 			h = fnfind(s);
 		fused++;
 		fp[h].name = ecpy(s);
-		fp[h].p = enew(rc_Function);
+		fp[h].u.f = enew(rc_Function);
 	} else
-		free_fn(fp[h].p);
-	return fp[h].p;
+		free_fn(fp[h].u.f);
+	return fp[h].u.f;
 }
 
 extern Variable *get_var_place(char *s, bool stack) {
@@ -143,16 +148,16 @@ extern Variable *get_var_place(char *s, bool stack) {
 			h = varfind(s);
 		vused++;
 		vp[h].name = ecpy(s);
-		vp[h].p = enew(Variable);
-		((Variable *)vp[h].p)->n = NULL;
-		return vp[h].p;
+		vp[h].u.v = enew(Variable);
+		vp[h].u.v->n = NULL;
+		return vp[h].u.v;
 	} else {
 		if (stack) {	/* increase the stack by 1 */
 			new = enew(Variable);
-			new->n = vp[h].p;
-			return vp[h].p = new;
+			new->n = vp[h].u.v;
+			return vp[h].u.v = new;
 		} else {	/* trample the top of the stack */
-			new = vp[h].p;
+			new = vp[h].u.v;
 			efree(new->extdef);
 			listfree(new->def);
 			return new;
@@ -165,8 +170,8 @@ extern void delete_fn(char *s) {
 	if (fp[h].name == NULL)
 		return; /* not found */
 	env_dirty = TRUE;
-	free_fn(fp[h].p);
-	efree(fp[h].p);
+	free_fn(fp[h].u.f);
+	efree(fp[h].u.f);
 	efree(fp[h].name);
 	if (fp[(h+1)&(fsize-1)].name == NULL) {
 		--fused;
@@ -182,12 +187,12 @@ extern void delete_var(char *s, bool stack) {
 	if (vp[h].name == NULL)
 		return; /* not found */
 	env_dirty = TRUE;
-	v = vp[h].p;
+	v = vp[h].u.v;
 	efree(v->extdef);
 	listfree(v->def);
 	if (v->n != NULL) { /* This is the top of a stack */
 		if (stack) { /* pop */
-			vp[h].p = v->n;
+			vp[h].u.v = v->n;
 			efree(v);
 		} else { /* else just empty */
 			v->extdef = NULL;
@@ -195,7 +200,7 @@ extern void delete_var(char *s, bool stack) {
 		}
 	} else { /* needs to be removed from the hash table */
 		efree(v);
-		vp[h].p = NULL; /* vp[hp].p == v */
+		vp[h].u.v = NULL; /* vp[hp].u.v == v */
 		efree(vp[h].name);
 		if (vp[(h+1)&(vsize-1)].name == NULL) {
 			--vused;
