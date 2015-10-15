@@ -230,19 +230,19 @@ extern List *word(char *, char *);
 
 /* hash.c */
 extern Htab *fp, *vp;
-extern rc_Function *get_fn_place(char *);
-extern List *varlookup(char *);
+extern rc_Function *get_fn_place(const char *);
+extern List *varlookup(const char *);
 extern Node *fnlookup(char *);
-extern Variable *get_var_place(char *, bool);
+extern Variable *get_var_place(const char *, bool);
 extern bool varassign_string(char *);
 extern char **makeenv(void);
 extern char *fnlookup_string(char *);
-extern char *varlookup_string(char *);
+extern char *varlookup_string(const char *);
 extern void alias(char *, List *, bool);
 extern void starassign(char *, char **, bool);
-extern void delete_fn(char *);
-extern void delete_var(char *, bool);
-extern void fnassign(char *, Node *);
+extern void delete_fn(const char *);
+extern void delete_var(const char *, bool);
+extern void fnassign(const char *, Node *);
 extern void fnassign_string(char *);
 extern void fnrm(char *);
 extern void initenv(char **);
@@ -391,7 +391,7 @@ extern void treefree(Node *);
 
 /* utils.c */
 extern bool isabsolute(char *);
-extern int n2u(char *, unsigned int);
+extern int n2u(const char *, unsigned int);
 extern int mvfd(int, int);
 extern int starstrcmp(const void *, const void *);
 extern void pr_error(char *, int);

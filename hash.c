@@ -11,10 +11,10 @@
 #include "rc.h"
 #include "sigmsgs.h"
 
-static bool var_exportable(char *);
-static bool fn_exportable(char *);
+static bool var_exportable(const char *);
+static bool fn_exportable(const char *);
 static int hash(const char *, int);
-static int find(const char *, Htab *, int);
+static int find(const char *, const Htab *, int);
 static void free_fn(rc_Function *);
 
 Htab *fp;
@@ -24,7 +24,7 @@ static char **env;
 static int bozosize;
 static int envsize;
 static bool env_dirty = TRUE;
-static char *dead = "";
+static char * const dead = "";
 
 #define HASHSIZE 64 /* rc was debugged with HASHSIZE == 2; 64 is about right for normal use */
 
@@ -104,7 +104,7 @@ static bool rehash(Htab *ht) {
 #define varfind(s) find(s, vp, vsize)
 #define fnfind(s) find(s, fp, fsize)
 
-static int find(const char *s, Htab *ht, int size) {
+static int find(const char *s, const Htab *ht, int size) {
 	int h = hash(s, size);
 	while (ht[h].name != NULL && !streq(ht[h].name, s)) {
 		h++;
@@ -123,7 +123,7 @@ extern Variable *lookup_var(const char *s) {
 	return (vp[h].name == NULL) ? NULL : vp[h].u.v;
 }
 
-extern rc_Function *get_fn_place(char *s) {
+extern rc_Function *get_fn_place(const char *s) {
 	int h = fnfind(s);
 	env_dirty = TRUE;
 	if (fp[h].name == NULL) {
@@ -137,7 +137,7 @@ extern rc_Function *get_fn_place(char *s) {
 	return fp[h].u.f;
 }
 
-extern Variable *get_var_place(char *s, bool stack) {
+extern Variable *get_var_place(const char *s, bool stack) {
 	Variable *new;
 	int h = varfind(s);
 
@@ -165,7 +165,7 @@ extern Variable *get_var_place(char *s, bool stack) {
 	}
 }
 
-extern void delete_fn(char *s) {
+extern void delete_fn(const char *s) {
 	int h = fnfind(s);
 	if (fp[h].name == NULL)
 		return; /* not found */
@@ -181,7 +181,7 @@ extern void delete_fn(char *s) {
 	}
 }
 
-extern void delete_var(char *s, bool stack) {
+extern void delete_var(const char *s, bool stack) {
 	int h = varfind(s);
 	Variable *v;
 	if (vp[h].name == NULL)
@@ -258,7 +258,7 @@ void set_exportable(char *s, bool b) {
 			maybeexport[i].flag = b;
 }
 
-static bool var_exportable(char *s) {
+static bool var_exportable(const char *s) {
 	int i;
 	for (i = 0; i < arraysize(neverexport); i++)
 		if (streq(s, neverexport[i]))
@@ -269,7 +269,7 @@ static bool var_exportable(char *s) {
 	return TRUE;
 }
 
-static bool fn_exportable(char *s) {
+static bool fn_exportable(const char *s) {
 	int i;
 	if (strncmp(s, "sig", conststrlen("sig")) == 0) { /* small speed hack */
 		for (i = 0; i < NUMOFSIGNALS; i++)

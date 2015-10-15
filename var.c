@@ -59,7 +59,7 @@ extern bool varassign_string(char *extdef) {
    associated with $status)
 */
 
-extern List *varlookup(char *name) {
+extern List *varlookup(const char *name) {
 	Variable *look;
 	List *ret, *l;
 	int sub;
@@ -102,7 +102,7 @@ extern List *varlookup(char *name) {
 
 /* lookup a variable in external (string) form, converting if necessary. Used by makeenv() */
 
-extern char *varlookup_string(char *name) {
+extern char *varlookup_string(const char *name) {
 	Variable *look;
 	look = lookup_var(name);
 	if (look == NULL)
