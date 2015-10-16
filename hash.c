@@ -199,8 +199,8 @@ extern void delete_var(const char *s, bool stack) {
 			v->def = NULL;
 		}
 	} else { /* needs to be removed from the hash table */
-		efree(v);
 		vp[h].u.v = NULL; /* vp[hp].u.v == v */
+		efree(v);
 		efree(vp[h].name);
 		if (vp[(h+1)&(vsize-1)].name == NULL) {
 			--vused;
