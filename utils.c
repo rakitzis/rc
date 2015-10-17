@@ -45,7 +45,7 @@ extern void panic(char *s) {
 
 /* ascii -> unsigned conversion routines. -1 indicates conversion error. */
 
-extern int n2u(char *s, unsigned int base) {
+extern int n2u(const char *s, unsigned int base) {
 	unsigned int i;
 	for (i = 0; *s != '\0'; s++) {
 		unsigned int j = (unsigned int) *s - '0';
