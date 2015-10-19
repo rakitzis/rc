@@ -1,3 +1,7 @@
+1. -----------------------------------------------------
+let is builtin, so must configure with 'configure --with-addon'
+
+2. -----------------------------------------------------
 To get hardened executable change:
 
 From
