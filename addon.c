@@ -6,6 +6,8 @@
 
 #if RC_ADDON
 
+#define JMPBUF  0
+
 #include "let.h"
 
 /******************************************************/
@@ -260,9 +262,11 @@ Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
 } /* LetLexer */
 
 /******************************************************/
+#if JMPBUF
 #include "setjmp.h"
 
 static jmp_buf jbuf;
+#endif
 
 /******************************************************/
 int LetDoParse(char *s, LetValue *r)
@@ -270,9 +274,11 @@ int LetDoParse(char *s, LetValue *r)
   int status;
   struct LetLex lex;
 
+#if JMPBUF
   if (setjmp(jbuf)) {
     return -1;
   }
+#endif
   lex.m_Current = lex.m_Buf = s;
   lex.m_LastToken = BAD_TOKEN;
 
@@ -287,7 +293,9 @@ int LetDoParse(char *s, LetValue *r)
 int leterror(const char *s)
 {
   fprint(2, "let: %s\n", s);
+#if JMPBUF
   longjmp(jbuf, 1);
+#endif
   return 0;
 }
 /******************************************************/
