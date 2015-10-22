@@ -20,7 +20,9 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	char *dashsee[2], *dollarzero, *null[1];
 	int c;
 	initprint();
-	assert(q_builtins_ordered());
+	if (! q_builtins_ordered()) {
+		panic("Builtins data structure not ordered");
+	}
 	dashsee[0] = dashsee[1] = NULL;
 	dollarzero = argv[0];
 	rc_pid  = getpid();
