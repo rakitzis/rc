@@ -179,6 +179,7 @@ extern int lineno;
 extern builtin_t *isbuiltin(char *);
 extern void b_exec(char **), funcall(char **), b_dot(char **), b_builtin(char **);
 extern char *which(char *, bool);
+extern bool q_builtins_ordered(void);
 
 /* except.c */
 extern bool nl_on_intr;

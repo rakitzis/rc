@@ -62,6 +62,18 @@ static struct {
 	{ b_whatis,	"whatis" },
 };
 
+extern bool q_builtins_ordered(void)
+{
+	int i = 0, N = sizeof(builtins)/sizeof(builtins[0]);
+
+	for (i = 0; i < N-1; ++i) {
+		if (strcmp(builtins[i].name, builtins[i+1].name) >= 0) {
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
 extern builtin_t *isbuiltin(char *s) {
 	const char s0 = s[0];
 	int i = 0, j = sizeof(builtins)/sizeof(builtins[0]);
