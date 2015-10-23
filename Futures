@@ -1,0 +1,12 @@
+I18N.
+
+Offer more control over what rc prints about commands (e.g. a way to
+allow EPIPE to generate an error).
+
+Faster; smaller; cheaper.
+
+Dynamically load readline and friends.
+
+Make --disable-def-interp the default.
+
+Allow builtin wait more than one argument.
