@@ -90,7 +90,7 @@ static bool Tconv(Format *f, int ignore) {
 		break;
 	}
 	case nCount: case nFlat: case nVar: {
-		char *lp = "", *rp = "";
+		const char *lp = "", *rp = "";
 		Node *n0 = n->u[0].p;
 
 		if (n0->type != nWord)

@@ -35,7 +35,7 @@ static void b_echo(char **);
 
 static struct {
 	builtin_t *p;
-	char *name;
+	const char *name;
 } builtins[] = {
 	{ b_dot,	"." },
 	{ b_break,	"break" },
