@@ -121,11 +121,11 @@ top:	sigchk();
 			except(eArena, block, &e2);
 			walk(n->u[1].p, TRUE);
 			testtrue = walk(n->u[0].p, TRUE);
-			unexcept(); /* eArena */
+			unexcept(eArena);
 			cond = TRUE;
 		} while (testtrue);
 		cond = oldcond;
-		unexcept(); /* eBreak */
+		unexcept(eBreak);
 		break;
 	}
 	case nForin: {
@@ -143,9 +143,9 @@ top:	sigchk();
 			block.b = newblock();
 			except(eArena, block, &e2);
 			walk(n->u[2].p, TRUE);
-			unexcept(); /* eArena */
+			unexcept(eArena);
 		}
-		unexcept(); /* eBreak */
+		unexcept(eBreak);
 		break;
 	}
 	case nSubshell:
@@ -239,7 +239,7 @@ top:	sigchk();
 				except(eVarstack, var, &e);
 				walk(n->u[1].p, parent);
 				varrm(v->w, TRUE);
-				unexcept(); /* eVarstack */
+				unexcept(eVarstack);
 			}
 		} else
 			panic("unexpected node in preredir section of walk");

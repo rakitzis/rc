@@ -28,7 +28,8 @@ extern void except(ecodes e, Edata data, Estack *ex) {
 
 /* remove an exception, restore last interactive value */
 
-extern void unexcept() {
+extern void unexcept(ecodes e) {
+	assert(e == estack->e);
 	switch (estack->e) {
 	default:
 		break;

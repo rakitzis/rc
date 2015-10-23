@@ -116,8 +116,8 @@ extern void funcall(char **av) {
 	except(eVarstack, star, &e2);
 	walk(treecpy(fnlookup(*av), nalloc), TRUE);
 	varrm("*", TRUE);
-	unexcept(); /* eVarstack */
-	unexcept(); /* eReturn */
+	unexcept(eVarstack);
+	unexcept(eReturn);
 }
 
 static void arg_count(char *name) {
@@ -450,7 +450,7 @@ extern void b_dot(char **av) {
 	except(eVarstack, star, &e);
 	doit(TRUE);
 	varrm("*", TRUE);
-	unexcept(); /* eVarstack */
+	unexcept(eVarstack);
 	interactive = old_i;
 }
 
