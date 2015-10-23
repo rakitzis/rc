@@ -234,7 +234,7 @@ extern void initenv(char **envp) {
 		}
 }
 
-static char *neverexport[] = {
+static const char *neverexport[] = {
 	"apid", "apids", "bqstatus", "cdpath", "home",
 	"ifs", "path", "pid", "ppid", "pwd", "status", "*"
 };
@@ -243,7 +243,7 @@ static char *neverexport[] = {
 if they've been explicitly set; maybeexport[n].flag is TRUE if this
 has occurred. */
 struct nameflag {
-	char *name;
+	const char *name;
 	bool flag;
 };
 static struct nameflag maybeexport[] = {
