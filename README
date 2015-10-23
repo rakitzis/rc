@@ -1,4 +1,18 @@
-This is release rc-1.7.4.
+rc - a shell
+============
+
+This is rc, the Plan 9 shell, reimplemented for Unix by Byron Rakitzis.
+
+The original rc was designed and implemented by Tom Duff at Bell Labs.
+It has a small feature set similar to a traditional Bourne shell, but
+with a much cleaner and simpler syntax. Among other things, this makes
+rc much better than Bourne-compatible shells at handling filenames which
+contain spaces. Thus, writing rc scripts is less error-prone than
+writing sh scripts.
+
+This reimplementation of rc can be linked with GNU readline, BSD
+libedit, or similar line editing libraries, to make a pleasant
+interactive shell.
 
 See COPYING for copying information. All files are
 
@@ -6,33 +20,7 @@ See COPYING for copying information. All files are
 
 See INSTALL for build and installation information.
 
+The current maintainer is Toby Goodwin[1]. Please contact him with any
+problems, questions, bug reports, or suggestions.
 
-BUGS
-
-Send bug reports to <toby@paccrat.org>. If a core dump is generated,
-sending a backtrace will help a great deal. You can get a backtrace
-like this.
-
-	; gdb rc core
-	(gdb) where
-	<<<BACKTRACE INFO>>>
-	(gdb)
-
-Also, always report the machine, OS (`uname -a'), and compiler used to
-make rc; this information is extremely valuable.
-
-
-FEEPING CREATURISM
-
-See the end of the man page, under "INCOMPATIBILITIES" for (known?)
-differences from the "real" rc. Most of these changes were necessary
-to get rc to work in a reasonable fashion on a real (i.e. commercial,
-non-Labs) Unix system; a few were changes motivated by concern about
-some inadequacies in the original design.
-
-
-WWW
-
-More information on releases of rc can be found at this web page.
-
-    http://tobold.org/article/rc
+[1] mailto:toby@paccrat.org
