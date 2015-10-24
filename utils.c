@@ -9,7 +9,7 @@
 
 /* print error with line number on noninteractive shells (i.e., scripts) */
 
-extern void pr_error(char *s, int offset) {
+extern void pr_error(const char *s, int offset) {
 	if (s != NULL) {
 		if (interactive)
 			fprint(2, RC "%s\n", s);
@@ -20,7 +20,7 @@ extern void pr_error(char *s, int offset) {
 
 /* our perror */
 
-extern void uerror(char *s) {
+extern void uerror(const char *s) {
 	char *err;
 
 	err = strerror(errno);
@@ -36,7 +36,7 @@ extern void uerror(char *s) {
 
 #define PANICMSG "rc panic: "
 
-extern void panic(char *s) {
+extern void panic(const char *s) {
 	write(2, PANICMSG, conststrlen(PANICMSG));
 	write(2, s, strlen(s));
 	write(2, "!\n", 2);

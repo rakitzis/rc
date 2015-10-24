@@ -120,7 +120,7 @@ extern void funcall(char **av) {
 	unexcept(eReturn);
 }
 
-static void arg_count(char *name) {
+static void arg_count(const char *name) {
 	fprint(2, RC "too many arguments to %s\n", name);
 	set(FALSE);
 }
@@ -139,7 +139,7 @@ extern void b_exec(char **ignore) {
 /* echo -n omits a newline. echo -- -n echos '-n' */
 
 static void b_echo(char **av) {
-	char *format = "%A\n";
+	const char *format = "%A\n";
 	if (*++av != NULL) {
 		if (streq(*av, "-n"))
                 	format = "%A", av++;

@@ -183,7 +183,7 @@ extern void fnassign_string(char *extdef) {
 
 /* Return a function in Node form, evaluating an entry from the environment if necessary */
 
-extern Node *fnlookup(char *name) {
+extern Node *fnlookup(const char *name) {
 	rc_Function *look = lookup_fn(name);
 	Node *ret;
 	if (look == NULL)
@@ -204,7 +204,7 @@ extern Node *fnlookup(char *name) {
 
 /* Return a function in string form (used by makeenv) */
 
-extern char *fnlookup_string(char *name) {
+extern char *fnlookup_string(const char *name) {
 	rc_Function *look = lookup_fn(name);
 
 	if (look == NULL)

@@ -251,7 +251,7 @@ static struct nameflag maybeexport[] = {
 	{ "version", FALSE }
 };
 
-void set_exportable(char *s, bool b) {
+void set_exportable(const char *s, bool b) {
 	int i;
 	for (i = 0; i < arraysize(maybeexport); ++i)
 		if (maybeexport[i].flag != b && streq(s, maybeexport[i].name))

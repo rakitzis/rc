@@ -44,9 +44,15 @@ typedef enum ecodes {
 	eError, eBreak, eReturn, eVarstack, eArena, eFifo, eFd
 } ecodes;
 
+#ifdef __cplusplus
+typedef enum Bool {
+	FALSE, TRUE
+} Bool;
+#else
 typedef enum bool {
 	FALSE, TRUE
 } bool;
+#endif
 
 typedef enum redirtype {
 	rFrom, rCreate, rAppend, rHeredoc, rHerestring
@@ -57,7 +63,7 @@ typedef bool (*Conv)(Format *, int);
 union Edata {
 	Jbwrap *jb;
 	Block *b;
-	char *name;
+	const char *name;
 	int fd;
 };
 
@@ -188,7 +194,7 @@ extern void pop_cmdarg(bool);
 extern void rc_raise(ecodes);
 extern void except(ecodes, Edata, Estack *);
 extern void unexcept(ecodes e);
-extern void rc_error(char *);
+extern void rc_error(const char *);
 extern void sigint(int);
 
 /* exec.c */
@@ -203,14 +209,14 @@ extern int my_execve(char *, char **, char **);
 
 /* footobar.c */
 extern char **list2array(List *, bool);
-extern char *get_name(char *);
+extern char *get_name(const char *);
 extern List *parse_var(char *);
 extern Node *parse_fn(char *);
 extern void initprint(void);
 extern void rc_exit(int); /* here for odd reasons; user-defined signal handlers are kept in fn.c */
 
 /* getopt.c */
-extern int rc_getopt(int, char **, char *);
+extern int rc_getopt(int, char **, const char *);
 
 extern int rc_optind, rc_opterr, rc_optopt;
 extern char *rc_optarg;
@@ -233,11 +239,11 @@ extern List *word(char *, char *);
 extern Htab *fp, *vp;
 extern rc_Function *get_fn_place(const char *);
 extern List *varlookup(const char *);
-extern Node *fnlookup(char *);
+extern Node *fnlookup(const char *);
 extern Variable *get_var_place(const char *, bool);
-extern bool varassign_string(char *);
+extern bool varassign_string(const char *);
 extern char **makeenv(void);
-extern char *fnlookup_string(char *);
+extern char *fnlookup_string(const char *);
 extern char *varlookup_string(const char *);
 extern void alias(char *, List *, bool);
 extern void starassign(char *, char **, bool);
@@ -248,11 +254,11 @@ extern void fnassign_string(char *);
 extern void fnrm(char *);
 extern void initenv(char **);
 extern void inithash(void);
-extern void set_exportable(char *, bool);
+extern void set_exportable(const char *, bool);
 extern void setsigdefaults(bool);
 extern void inithandler(void);
-extern void varassign(char *, List *, bool);
-extern void varrm(char *, bool);
+extern void varassign(const char *, List *, bool);
+extern void varrm(const char *, bool);
 extern void whatare_all_vars(bool, bool);
 extern void whatare_all_signals(void);
 extern void prettyprint_var(int, char *, List *);
@@ -395,9 +401,9 @@ extern bool isabsolute(char *);
 extern int n2u(const char *, unsigned int);
 extern int mvfd(int, int);
 extern int starstrcmp(const void *, const void *);
-extern void pr_error(char *, int);
-extern void panic(char *);
-extern void uerror(char *);
+extern void pr_error(const char *, int);
+extern void panic(const char *);
+extern void uerror(const char *);
 
 /* wait.c */
 extern pid_t rc_fork(void);

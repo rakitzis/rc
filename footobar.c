@@ -195,7 +195,7 @@ extern char **list2array(List *s, bool print) {
 
 /* figure out the name of a variable given an environment string. */
 
-extern char *get_name(char *s) {
+extern char *get_name(const char *s) {
 	char *eq = strchr(s, '=');
 	char *r, *result;
 	int c;
