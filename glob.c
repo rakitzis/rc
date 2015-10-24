@@ -21,7 +21,7 @@
 # endif
 #endif
 
-static List *dmatch(char *, char *, char *);
+static List *dmatch(const char *, char *, char *);
 static List *doglob(char *, char *);
 static List *lglob(List *, char *, char *, size_t);
 static List *sort(List *);
@@ -85,7 +85,7 @@ extern List *glob(List *s) {
 
 /* Matches a pattern p against the contents of directory d */
 
-static List *dmatch(char *d, char *p, char *m) {
+static List *dmatch(const char *d, char *p, char *m) {
 	bool matched;
 	List *top, *r;
 	static DIR *dirp;
