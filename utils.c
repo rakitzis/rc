@@ -64,7 +64,7 @@ extern int starstrcmp(const void *s1, const void *s2) {
 
 /* tests to see if pathname begins with "/", "./", or "../" */
 
-extern bool isabsolute(char *path) {
+extern bool isabsolute(const char *path) {
 	return path[0] == '/' || (path[0] == '.' && (path[1] == '/' || (path[1] == '.' && path[2] == '/')));
 }
 

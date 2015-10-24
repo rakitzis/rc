@@ -219,7 +219,7 @@ extern char *fnlookup_string(const char *name) {
    handler, restore the signal handler to its default value.
 */
 
-extern void fnrm(char *name) {
+extern void fnrm(const char *name) {
 	int i;
 	for (i = 1; i < NUMOFSIGNALS; i++)
 		if (streq(signals[i].name, name)) {
@@ -256,6 +256,6 @@ extern void whatare_all_signals() {
 		}
 }
 
-extern void prettyprint_fn(int fd, char *name, Node *n) {
+extern void prettyprint_fn(int fd, const char *name, Node *n) {
 	fprint(fd, "fn %S {%T}\n", name, n);
 }

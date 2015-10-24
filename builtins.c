@@ -74,7 +74,7 @@ extern bool q_builtins_ordered(void)
 	return TRUE;
 }
 
-extern builtin_t *isbuiltin(char *s) {
+extern builtin_t *isbuiltin(const char *s) {
 	const char s0 = s[0];
 	int i = 0, j = sizeof(builtins)/sizeof(builtins[0]);
 
@@ -125,7 +125,7 @@ static void arg_count(const char *name) {
 	set(FALSE);
 }
 
-static void badnum(char *num) {
+static void badnum(const char *num) {
 	fprint(2, RC "`%s' is a bad number\n", num);
 	set(FALSE);
 }
@@ -330,7 +330,7 @@ static void b_wait(char **av) {
 #define not(b)	((b)^TRUE)
 #define show(b)	(not(eff|vee|pee|bee|ess)|(b))
 
-static bool issig(char *s) {
+static bool issig(const char *s) {
 	int i;
 	for (i = 0; i < NUMOFSIGNALS; i++)
 		if (streq(s, signals[i].name))
@@ -344,7 +344,7 @@ static void b_whatis(char **av) {
 	int i, ac, c;
 	List *s;
 	Node *n;
-	char *e;
+	const char *e;
 	for (rc_optind = ac = 0; av[ac] != NULL; ac++)
 		; /* count the arguments for getopt */
 	ess = eff = vee = pee = bee = FALSE;
