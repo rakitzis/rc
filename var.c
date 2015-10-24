@@ -6,9 +6,9 @@
 
 static void colonassign(const char *, List *, bool);
 static void listassign(const char *, List *, bool);
-static int hasalias(const const char *);
+static int hasalias(const char *);
 
-static char *const aliases[] = {
+static const char *const aliases[] = {
 	"home", "HOME", "path", "PATH", "cdpath", "CDPATH"
 };
 
@@ -198,7 +198,7 @@ static int hasalias(const char *name) {
 
 /* alias a variable to its lowercase equivalent. function pointers are used to specify the conversion function */
 
-extern void alias(char *name, List *s, bool stack) {
+extern void alias(const char *name, List *s, bool stack) {
 	static void (*vectors[])(const char *, List *, bool) = {
 		varassign, varassign, colonassign, listassign, colonassign, listassign
 	};
