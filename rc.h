@@ -245,7 +245,7 @@ extern bool varassign_string(const char *);
 extern char **makeenv(void);
 extern char *fnlookup_string(const char *);
 extern char *varlookup_string(const char *);
-extern void alias(char *, List *, bool);
+extern void alias(const char *, List *, bool);
 extern void starassign(char *, char **, bool);
 extern void delete_fn(const char *);
 extern void delete_var(const char *, bool);

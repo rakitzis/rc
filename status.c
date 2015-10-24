@@ -71,7 +71,7 @@ extern void setstatus(pid_t pid, int i) {
 extern void statprint(pid_t pid, int i) {
 	if (WIFSIGNALED(i)) {
 		int t = WTERMSIG(i);
-		char *msg = ((t > 0) && (t < NUMOFSIGNALS) ? signals[WTERMSIG(i)].msg : "");
+		const char *msg = ((t > 0) && (t < NUMOFSIGNALS) ? signals[WTERMSIG(i)].msg : "");
 		if (pid != -1)
 			fprint(2, "%ld: ", (long)pid);
 		if (myWIFDUMPED(i)) {

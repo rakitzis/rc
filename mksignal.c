@@ -210,7 +210,8 @@ int main(void) {
     outf = fopen("sigmsgs.h", "w");
     if (!outf) barf("could not open sigmsgs.h for writing");
     fprintf(outf, "typedef struct {\n");
-    fprintf(outf, "\tchar *name, *msg;\n");
+    fprintf(outf, "\tchar *name;\n");
+    fprintf(outf, "\tconst char *msg;\n");
     fprintf(outf, "\tint signum;\n");
     fprintf(outf, "} Sigmsgs;\n");
     fprintf(outf, "extern Sigmsgs signals[];\n");
