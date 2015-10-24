@@ -329,7 +329,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 }
 
 extern void yyerror(const char *s) {
-	char *tok;
+	const char *tok;
 	if (prerror) { /* don't print "syntax error" if there's a more informative scanerror */
 		prerror = FALSE;
 		return;

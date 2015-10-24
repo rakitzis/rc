@@ -48,6 +48,7 @@ typedef enum ecodes {
 typedef enum Bool {
 	FALSE, TRUE
 } Bool;
+#define new New
 #else
 typedef enum bool {
 	FALSE, TRUE
