@@ -276,7 +276,7 @@ extern bool quotep(char *, bool);
 extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);
-extern void scanerror(char *);
+extern void scanerror(const char *);
 extern const char nw[], dnw[];
 
 /* list.c */

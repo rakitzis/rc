@@ -10,7 +10,7 @@ char    *rc_optarg;
 extern int rc_getopt(int argc, char **argv, const char *opts) {
         static int sp = 1;
 	int c;
-	char *cp;
+	const char *cp;
 	if (rc_optind == 0) /* reset rc_getopt() */
 		rc_optind = sp = 1;
 	if (sp == 1) {
