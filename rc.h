@@ -126,10 +126,10 @@ struct Variable {
 
 struct Htab {
 	char *name;
-  union {
-    rc_Function *f;
-    Variable *v;
-  } u;
+	union {
+		rc_Function *f;
+		Variable *v;
+	} u;
 };
 
 struct Format {
