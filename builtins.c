@@ -196,7 +196,7 @@ static void b_cd(char **av) {
 			if (s != &nil && *s->w != '\0') {
 				t = strlen(*av) + strlen(s->w) + 2;
 				if (t > pathlen)
-					path = nalloc(pathlen = t);
+					path = nnew_arr(char, pathlen = t);
 				strcpy(path, s->w);
 				if (!streq(s->w, "/")) /* "//" is special to POSIX */
 					strcat(path, "/");

@@ -44,7 +44,7 @@ extern bool varassign_string(const char *extdef) {
 	}
 	new = get_var_place(name, FALSE);
 	new->def = NULL;
-	new->extdef = ealloc(strlen(extdef) + 1);
+	new->extdef = enew_arr(char, strlen(extdef) + 1);
 	strcpy(new->extdef, extdef);
 	if (i != -1)
 		alias(name, varlookup(name), FALSE);

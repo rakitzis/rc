@@ -165,8 +165,10 @@ enum {
 #define arraysize(a) ((int)(sizeof(a)/sizeof(*a)))
 #define memzero(s, n) memset(s, 0, n)
 #define enew(x) ((x *) ealloc(sizeof(x)))
+#define enew_arr(x,n) ((x *) ealloc((n)*sizeof(x)))
 #define ecpy(x) strcpy((char *) ealloc(strlen(x) + 1), x)
 #define nnew(x) ((x *) nalloc(sizeof(x)))
+#define nnew_arr(x,n) ((x *) nalloc((n)*sizeof(x)))
 #define ncpy(x) (strcpy((char *) nalloc(strlen(x) + 1), x))
 #ifndef offsetof
 #define offsetof(t, m) ((size_t) (((char *) &((t *) 0)->m) - (char *)0))

@@ -25,7 +25,7 @@ static void getblock(size_t n) {
 			fl = r->n;
 	} else {		/* else allocate a new block */
 		r = enew(Block);
-		r->mem = ealloc(r->size = alignto(n, BLOCKSIZE));
+		r->mem = enew_arr(char, r->size = alignto(n, BLOCKSIZE));
 	}
 	r->used = 0;
 	r->n = ul;

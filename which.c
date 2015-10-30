@@ -75,7 +75,7 @@ static bool rc_access(const char *path, bool verbose) {
  * allocated string */
 static char *protect(char *in) {
 	int l = strlen(in);
-	char *out = ealloc(l + 1);
+	char *out = enew_arr(char, l + 1);
 	int i;
 
 	for (i = 0; i < l; ++i)
@@ -108,7 +108,7 @@ extern char *which(char *name, bool verbose) {
 		ngroups = NGROUPS;
 #endif
 		if (ngroups) {	
-			gidset = ealloc(ngroups * sizeof(GETGROUPS_T));
+			gidset = enew_arr(GETGROUPS_T, ngroups);
 			getgroups(ngroups, gidset);
 		}
 #endif
@@ -120,7 +120,7 @@ extern char *which(char *name, bool verbose) {
 		size_t need = strlen(path->w) + len + 2; /* one for null terminator, one for the '/' */
 		if (testlen < need) {
 			efree(test);
-			test = ealloc(testlen = need);
+			test = enew_arr(char, testlen = need);
 		}
 		if (*path->w == '\0') {
 			strcpy(test, name);

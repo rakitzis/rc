@@ -200,7 +200,7 @@ extern void pushfd(int fd) {
 	} else {
 		istack->t = iFd;
 		istack->gchar = fdgchar;
-		inbuf = ealloc(BUFSIZE);
+		inbuf = enew_arr(char, BUFSIZE);
 	}
 }
 
