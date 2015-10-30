@@ -184,7 +184,8 @@ extern char **list2array(List *s, bool print) {
 	   Allocate 3 extra spots (2 for the fake execve & 1 for defaulting to
 	   sh) and hide these from exec().
 	*/
-	argv = av = (char **) nalloc((listnel(s) + 4) * sizeof *av) + 3;
+	argv = av = nnew_arr(char*, (listnel(s) + 4)) + 3;
+
 	while (s != NULL) {
 		*av++ = s->w;
 		s = s->n;
