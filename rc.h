@@ -165,10 +165,10 @@ enum {
 #define arraysize(a) ((int)(sizeof(a)/sizeof(*a)))
 #define memzero(s, n) memset(s, 0, n)
 #define enew(x) ((x *) ealloc(sizeof(x)))
-#define enew_arr(x,n) ((x *) ealloc((n)*sizeof(x)))
+#define enew_arr(T,n) ((T *) ealloc((n)*sizeof(T)))
 #define ecpy(x) strcpy((char *) ealloc(strlen(x) + 1), x)
 #define nnew(x) ((x *) nalloc(sizeof(x)))
-#define nnew_arr(x,n) ((x *) nalloc((n)*sizeof(x)))
+#define nnew_arr(T,n) ((T *) nalloc((n)*sizeof(T)))
 #define ncpy(x) (strcpy((char *) nalloc(strlen(x) + 1), x))
 #ifndef offsetof
 #define offsetof(t, m) ((size_t) (((char *) &((t *) 0)->m) - (char *)0))
@@ -297,6 +297,7 @@ extern bool match(char *, char *, char *);
 /* alloc.c */
 extern void *ealloc(size_t);
 extern void *erealloc(void *, size_t);
+#define erenew_arr(T,oldp,n) ((T *) erealloc(oldp,(n)*sizeof(T)))
 extern void efree(void *);
 extern Block *newblock(void);
 extern void *nalloc(size_t);

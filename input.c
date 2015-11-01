@@ -162,7 +162,7 @@ void termchange(void) {
 /* set up the input stack, and put a "dead" input at the bottom, so that yyparse will always read eof */
 
 extern void initinput() {
-	istack = itop = ealloc(istacksize = 256 * sizeof(Input));
+	istack = itop = enew_arr(Input, istacksize = 256);
 	istack->ungetcount = 0;
 	ugchar(EOF);
 }
@@ -179,8 +179,8 @@ static void pushcommon() {
 	istack->last = lastchar;
 	istack++;
 	idiff = istack - itop;
-	if (idiff >= istacksize / sizeof(Input)) {
-		itop   = erealloc(itop, istacksize *= 2);
+	if (idiff >= istacksize) {
+		itop   = erenew_arr(Input, itop, (istacksize *= 2));
 		istack = itop + idiff;
 	}
 	chars_out = 0;
