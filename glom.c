@@ -58,13 +58,13 @@ extern List *concat(List *s1, List *s2) {
 		size_t x = strlen(s1->w);
 		size_t y = strlen(s2->w);
 		size_t z = x + y + 1;
-		r->w = nalloc(z);
+		r->w = nnew_arr(char, z);
 		strcpy(r->w, s1->w);
 		strcat(r->w, s2->w);
 		if (s1->m == NULL && s2->m == NULL) {
 			r->m = NULL;
 		} else {
-			r->m = nalloc(z);
+			r->m = nnew_arr(char, z);
 			if (s1->m == NULL)
 				memzero(r->m, x);
 			else
@@ -117,7 +117,7 @@ extern List *flatten(List *s) {
 	if (s == NULL || s->n == NULL)
 		return s;
 	r = nnew(List);
-	f = r->w = nalloc(listlen(s) + 1);
+	f = r->w = nnew_arr(char, listlen(s) + 1);
 	r->m = NULL; /* flattened lists come from variables, so no meta */
 	r->n = NULL;
 	strcpy(f, s->w);
@@ -187,7 +187,7 @@ static List *bqinput(List *ifs, int fd) {
 			isifs[*(unsigned char *)s] = TRUE;
 	remain = bufsize = BUFSIZE;
 	top = r = nnew(List);
-	r->w = end = nalloc(bufsize + 1);
+	r->w = end = nnew_arr(char, bufsize + 1);
 	r->m = NULL;
 	state = 0;
 	prev = NULL;
@@ -198,7 +198,7 @@ static List *bqinput(List *ifs, int fd) {
 			char *buf;
 			while (bufsize < m + BUFSIZE)
 				bufsize *= 2;
-			buf = nalloc(bufsize + 1);
+			buf = nnew_arr(char, bufsize + 1);
 			memcpy(buf, r->w, m);
 			r->w = buf;
 			end = &buf[m];

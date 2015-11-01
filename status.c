@@ -138,7 +138,7 @@ extern void ssetstatus(char **av) {
 			} 
 			else {
 				size_t len = strlen(signals[k].name);
-				if (strncmp(signals[k].name, av[i], len) == 0 && streq(av[i] + len, "+core")) {
+				if (strncmp_fast(signals[k].name, av[i], len) == 0 && streq(av[i] + len, "+core")) {
 					statuses[l - i] = k + 0x80;
 					found = TRUE;
 					break;

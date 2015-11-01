@@ -169,7 +169,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		if (saw_meta) {
 			char *r, *s;
 
-			y->word.m = nalloc(strlen(buf) + 1);
+			y->word.m = nnew_arr(char, strlen(buf) + 1);
 			for (r = buf, s = y->word.m; *r != '\0'; r++, s++)
 				*s = (*r == '?' || *r == '[' || *r == '*');
 		} else {
@@ -362,9 +362,9 @@ extern void inityy() {
 	if (bufsize > BUFMAX && realbuf != NULL) {
 		efree(realbuf);
 		bufsize = BUFSIZE;
-		realbuf = ealloc(bufsize);
+		realbuf = enew_arr(char, bufsize);
 	} else if (realbuf == NULL)
-		realbuf = ealloc(bufsize);
+		realbuf = enew_arr(char, bufsize);
 }
 
 /*

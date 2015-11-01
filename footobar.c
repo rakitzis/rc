@@ -184,7 +184,8 @@ extern char **list2array(List *s, bool print) {
 	   Allocate 3 extra spots (2 for the fake execve & 1 for defaulting to
 	   sh) and hide these from exec().
 	*/
-	argv = av = (char **) nalloc((listnel(s) + 4) * sizeof *av) + 3;
+	argv = av = nnew_arr(char*, (listnel(s) + 4)) + 3;
+
 	while (s != NULL) {
 		*av++ = s->w;
 		s = s->n;
@@ -202,7 +203,7 @@ extern char *get_name(const char *s) {
 	
 	if (eq == NULL)
 		return NULL;
-	r = result = nalloc(eq - s + 1);
+	r = result = nnew_arr(char, eq - s + 1);
 	while (1)
 		switch (c = *s++) {
 		case '=':
@@ -257,7 +258,7 @@ extern List *parse_var(char *extdef) {
 		else
 			first = new;
 		last = new;
-		new->w = ealloc(len + 1);
+		new->w = enew_arr(char, len + 1);
 		new->m = NULL;
 		new->n = NULL;
 		to = new->w;

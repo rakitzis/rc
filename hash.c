@@ -31,8 +31,8 @@ static char * const dead = "";
 extern void inithash() {
 	Htab *fpp, *vpp;
 	int i;
-	fp = ealloc(sizeof(Htab) * HASHSIZE);
-	vp = ealloc(sizeof(Htab) * HASHSIZE);
+	fp = enew_arr(Htab, HASHSIZE);
+	vp = enew_arr(Htab, HASHSIZE);
 	fused = vused = 0;
 	fsize = vsize = HASHSIZE;
 	for (vpp = vp, fpp = fp, i = 0; i < HASHSIZE; i++, vpp++, fpp++)
@@ -74,7 +74,7 @@ static bool rehash(Htab *ht) {
 		size = vsize;
 	}
 	newsize = 2 * size;
-	newhtab = ealloc(newsize * sizeof(Htab));
+	newhtab = enew_arr(Htab, newsize);
 	for (i = 0; i < newsize; i++)
 		newhtab[i].name = NULL;
 	for (i = newused = 0; i < size; i++)
@@ -223,9 +223,10 @@ extern void initenv(char **envp) {
 	n++; /* one for the null terminator */
 	if (n < HASHSIZE)
 		n = HASHSIZE;
-	env = ealloc((envsize = 2 * n) * sizeof (char *));
+	env = enew_arr(char *, (envsize = 2 * n));
+
 	for (; *envp != NULL; envp++)
-		if (strncmp(*envp, "fn_", conststrlen("fn_")) == 0) {
+		if (strncmp_fast(*envp, "fn_", conststrlen("fn_")) == 0) {
 			if (!dashpee)
 				fnassign_string(*envp);
 		} else {
@@ -271,7 +272,7 @@ static bool var_exportable(const char *s) {
 
 static bool fn_exportable(const char *s) {
 	int i;
-	if (strncmp(s, "sig", conststrlen("sig")) == 0) { /* small speed hack */
+	if (strncmp_fast(s, "sig", conststrlen("sig")) == 0) { /* small speed hack */
 		for (i = 0; i < NUMOFSIGNALS; i++)
 			if (streq(s, signals[i].name))
 				return FALSE;

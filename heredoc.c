@@ -29,13 +29,13 @@ static char *readheredoc(char *eof) {
 	char *t, *buf, *bufend;
 	unsigned char *s;
 	size_t bufsize;
-	t = buf = nalloc(bufsize = 512);
+	t = buf = nnew_arr(char, bufsize = 512);
 	bufend = &buf[bufsize];
 	dead = FALSE;
 #define	RESIZE(extra) { \
 		char *nbuf; \
 		bufsize = bufsize * 2 + extra; \
-		nbuf = nalloc(bufsize); \
+		nbuf = nnew_arr(char, bufsize); \
 		memcpy(nbuf, buf, (size_t) (t - buf)); \
 		t = nbuf + (t - buf); \
 		buf = nbuf; \
@@ -102,7 +102,7 @@ static Node *parseheredoc(char *s) {
 					c = *s;
 				else
 					s--;
-				var = nalloc(len + 1);
+				var = nnew_arr(char, len + 1);
 				var[len] = '\0';
 				memcpy(var, begin, len);
 				node = mk(nFlat, mk(nWord, var, NULL));

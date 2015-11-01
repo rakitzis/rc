@@ -335,7 +335,7 @@ static void memprint_grow(Format *format, size_t more) {
 	if (format->u.n)
 		buf = erealloc(format->bufbegin, len);
 	else {
-		buf = nalloc(len);
+		buf = nnew_arr(char, len);
 		memcpy(buf, format->bufbegin, used);
 	}
 	format->buf = buf + used;
@@ -362,7 +362,7 @@ extern char *mprint(const char *fmt,...) {
 	format.u.n = 1;
 	va_start(ap, fmt);
 	va_copy(format.args, ap);
-	result = memprint(&format, fmt, ealloc(PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
+	result = memprint(&format, fmt, enew_arr(char, PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
 	va_end(format.args);
 	return result;
 }
@@ -375,7 +375,7 @@ extern char *nprint(const char *fmt,...) {
 	format.u.n = 0;
 	va_start(ap, fmt);
 	va_copy(format.args, ap);
-	result = memprint(&format, fmt, nalloc(PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
+	result = memprint(&format, fmt, nnew_arr(char, PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
 	va_end(format.args);
 	return result;
 }

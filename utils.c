@@ -59,7 +59,7 @@ extern int n2u(const char *s, unsigned int base) {
 /* The last word in portable ANSI: a strcmp wrapper for qsort */
 
 extern int starstrcmp(const void *s1, const void *s2) {
-	return strcmp(*(char * const *)s1, *(char * const *)s2);
+	return strcmp_fast(*(char * const *)s1, *(char * const *)s2);
 }
 
 /* tests to see if pathname begins with "/", "./", or "../" */

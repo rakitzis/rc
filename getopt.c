@@ -16,7 +16,7 @@ extern int rc_getopt(int argc, char **argv, const char *opts) {
 	if (sp == 1) {
 		if (rc_optind >= argc || argv[rc_optind][0] != '-' || argv[rc_optind][1] == '\0') {
 			return -1;
-		} else if (strcmp(argv[rc_optind], "--") == 0) {
+		} else if (strcmp_fast(argv[rc_optind], "--") == 0) {
 			rc_optind++;
 			return -1;
 		}
