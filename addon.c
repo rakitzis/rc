@@ -127,7 +127,7 @@ void b_let (char **av)
   varname = av[1];
   exp = av[2];
 
-  if (0 == strcmp(varname, "-p")) {
+  if (0 == strcmp_fast(varname, "-p")) {
     parse_status = LetDoParse(exp, &R);
     if (0==parse_status) {
       fprint(1, "%ld\n", R);

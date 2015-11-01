@@ -174,6 +174,9 @@ enum {
 #define offsetof(t, m) ((size_t) (((char *) &((t *) 0)->m) - (char *)0))
 #endif
 #define streq(x, y) (*(x) == *(y) && strcmp(x, y) == 0)
+#define strcmp_fast(a, b) (((a)[0] != (b)[0]) ? ((a)[0] - (b)[0]) : strcmp(a, b))
+#define strncmp_fast(a, b, n) (((a)[0] != (b)[0]) ? ((a)[0] - (b)[0]) : strncmp(a, b, n))
+
 #define conststrlen(x) (sizeof (x) - 1)
 
 /* rc prototypes */

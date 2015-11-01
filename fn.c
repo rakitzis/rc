@@ -150,7 +150,7 @@ extern void fnassign(const char *name, Node *def) {
 	int i;
 	new->def = newdef;
 	new->extdef = NULL;
-	if (strncmp(name, "sig", conststrlen("sig")) == 0) { /* slight optimization */
+	if (strncmp_fast(name, "sig", conststrlen("sig")) == 0) { /* slight optimization */
 #if HAVE_SYSV_SIGCLD /* System V machines treat SIGCLD very specially */
 		if (streq(name, "sigcld"))
 			rc_error("can't trap SIGCLD");

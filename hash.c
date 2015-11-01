@@ -226,7 +226,7 @@ extern void initenv(char **envp) {
 	env = enew_arr(char *, (envsize = 2 * n));
 
 	for (; *envp != NULL; envp++)
-		if (strncmp(*envp, "fn_", conststrlen("fn_")) == 0) {
+		if (strncmp_fast(*envp, "fn_", conststrlen("fn_")) == 0) {
 			if (!dashpee)
 				fnassign_string(*envp);
 		} else {
@@ -272,7 +272,7 @@ static bool var_exportable(const char *s) {
 
 static bool fn_exportable(const char *s) {
 	int i;
-	if (strncmp(s, "sig", conststrlen("sig")) == 0) { /* small speed hack */
+	if (strncmp_fast(s, "sig", conststrlen("sig")) == 0) { /* small speed hack */
 		for (i = 0; i < NUMOFSIGNALS; i++)
 			if (streq(s, signals[i].name))
 				return FALSE;

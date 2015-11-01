@@ -67,7 +67,7 @@ extern bool q_builtins_ordered(void)
 	int i = 0, N = sizeof(builtins)/sizeof(builtins[0]);
 
 	for (i = 0; i < N-1; ++i) {
-		if (strcmp(builtins[i].name, builtins[i+1].name) >= 0) {
+		if (strcmp_fast(builtins[i].name, builtins[i+1].name) >= 0) {
 			return FALSE;
 		}
 	}
@@ -75,26 +75,18 @@ extern bool q_builtins_ordered(void)
 }
 
 extern builtin_t *isbuiltin(const char *s) {
-	const char s0 = s[0];
 	int i = 0, j = sizeof(builtins)/sizeof(builtins[0]);
 
 	while (i < j) {
 		const int m = (i + j)/2;
 		const char* const bm = builtins[m].name;
-		const char bm0 = bm[0];
-		if (bm0 > s0) { /* try to avoid func call */
-			j = m;
-		} else if (bm0 < s0) {  /* try to avoid func call */
-			i = m + 1;
+		const int c = strcmp_fast(bm, s);
+		if (c > 0) {
+		  j = m;
+		} else if (c < 0) {
+		  i = m + 1;
 		} else {
-			const int r = strcmp(bm, s);
-			if (r > 0) {         /* b[m] > s   */
-				j = m;
-			} else if (r < 0) {  /* b[m] < s   */
-				i = m + 1;
-			} else {             /* b[m] = s   */
-				return builtins[m].p;
-			}
+		  return builtins[m].p;
 		}
 	}
 

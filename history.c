@@ -68,7 +68,7 @@ static char *isin(char *target, char *pattern) {
 	size_t plen = strlen(pattern);
 	size_t tlen = strlen(target);
 	for (; tlen >= plen; target++, --tlen)
-		if (strncmp(target, pattern, plen) == 0)
+		if (strncmp_fast(target, pattern, plen) == 0)
 			return target;
 	return NULL;
 }
