@@ -64,10 +64,11 @@ static struct {
 
 extern bool q_builtins_ordered(void)
 {
-	int i = 0, N = sizeof(builtins)/sizeof(builtins[0]);
+	const int N = sizeof(builtins)/sizeof(builtins[0]);
+	int i = 0, j = i + 1;
 
-	for (i = 0; i < N-1; ++i) {
-		if (strcmp_fast(builtins[i].name, builtins[i+1].name) >= 0) {
+	for (i = 0; j < N; ++i, ++j) {
+		if (strcmp_fast(builtins[i].name, builtins[j].name) >= 0) {
 			return FALSE;
 		}
 	}
@@ -79,8 +80,7 @@ extern builtin_t *isbuiltin(const char *s) {
 
 	while (i < j) {
 		const int m = (i + j)/2;
-		const char* const bm = builtins[m].name;
-		const int c = strcmp_fast(bm, s);
+		const int c = strcmp_fast(builtins[m].name, s);
 		if (c > 0) {
 		  j = m;
 		} else if (c < 0) {
