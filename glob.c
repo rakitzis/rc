@@ -21,9 +21,9 @@
 # endif
 #endif
 
-static List *dmatch(const char *, char *, char *);
-static List *doglob(char *, char *);
-static List *lglob(List *, char *, char *, size_t);
+static List *dmatch(const char *, const char *, const char *);
+static List *doglob(char *, const char *);
+static List *lglob(List *, const char *, const char *, size_t);
 static List *sort(List *);
 
 /*
@@ -85,7 +85,7 @@ extern List *glob(List *s) {
 
 /* Matches a pattern p against the contents of directory d */
 
-static List *dmatch(const char *d, char *p, char *m) {
+static List *dmatch(const char *d, const char *p, const char *m) {
 	bool matched;
 	List *top, *r;
 	static DIR *dirp;
@@ -149,7 +149,7 @@ static List *dmatch(const char *d, char *p, char *m) {
    matched name. e.g., for matching ////tmp/////foo*
 */
 
-static List *lglob(List *s, char *p, char *m, size_t slashcount) {
+static List *lglob(List *s, const char *p, const char *m, size_t slashcount) {
 	List *q, *r, *top, foo;
 	static struct {
 		List l;
@@ -187,7 +187,7 @@ static List *lglob(List *s, char *p, char *m, size_t slashcount) {
    pattern (cleaned of metacharacters) on failure, or the globbed string(s).
 */
 
-static List *doglob(char *w, char *m) {
+static List *doglob(char *w, const char *m) {
 	static char *dir = NULL, *pattern = NULL, *metadir = NULL, *metapattern = NULL;
 	static size_t dsize = 0;
 	char *d, *p, *md, *mp;
