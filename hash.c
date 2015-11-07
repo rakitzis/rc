@@ -291,7 +291,7 @@ extern char **makeenv() {
 	ep = bozosize;
 	if (vsize + fsize + 1 + bozosize > envsize) {
 		envsize = 2 * (bozosize + vsize + fsize + 1);
-		env = erealloc(env, envsize * sizeof(char *));
+		env = erenew_arr(char*, env, envsize);
 	}
 	for (i = 0; i < vsize; i++) {
 		if (vp[i].name == NULL || vp[i].name == dead || !var_exportable(vp[i].name))

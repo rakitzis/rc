@@ -157,7 +157,7 @@ static List *lglob(List *s, const char *p, const char *m, size_t slashcount) {
 	} slash;
 	if (slashcount+1 > slash.size) {
 		slash.size = 2*(slashcount+1);
-		slash.l.w = erealloc(slash.l.w, slash.size);
+		slash.l.w = erenew_arr(char, slash.l.w, slash.size);
 	}
 	slash.l.w[slashcount] = '\0';
 	while (slashcount > 0)

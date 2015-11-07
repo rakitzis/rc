@@ -130,7 +130,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 			if (c == '?' || c == '[' || c == '*')
 				saw_meta = TRUE;
 			if (i >= bufsize)
-				buf = realbuf = erealloc(buf, bufsize *= 2);
+				buf = realbuf = erenew_arr(char, buf, bufsize *= 2);
 		} while ((c = gchar()) != EOF && !meta[(unsigned char) c]);
 		while (c == '\\') {
 			if ((c = gchar()) == '\n') {
@@ -141,7 +141,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 	bs:			if (meta != dnw) { /* all words but varnames may have a bslash */
 					buf[i++] = '\\';
 					if (i >= bufsize)
-						buf = realbuf = erealloc(buf, bufsize *= 2);
+						buf = realbuf = erenew_arr(char, buf, bufsize *= 2);
 					if (!meta[(unsigned char) c])
 						goto read;
 				} else {
@@ -218,7 +218,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 				return HUH;
 			}
 			if (i >= bufsize)
-				buf = realbuf = erealloc(buf, bufsize *= 2);
+				buf = realbuf = erenew_arr(char, buf, bufsize *= 2);
 		}
 		ugchar(c);
 		buf[i] = '\0';

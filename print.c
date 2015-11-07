@@ -333,7 +333,7 @@ static void memprint_grow(Format *format, size_t more) {
 		? len * 2
 		: ((len + more) + PRINT_ALLOCSIZE) &~ (PRINT_ALLOCSIZE - 1);
 	if (format->u.n)
-		buf = erealloc(format->bufbegin, len);
+		buf = erenew_arr(char, format->bufbegin, len);
 	else {
 		buf = nnew_arr(char, len);
 		memcpy(buf, format->bufbegin, used);
