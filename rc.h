@@ -241,34 +241,38 @@ extern List *concat(List *, List *);
 extern List *varsub(List *, List *);
 extern List *word(char *, char *);
 
-/* hash.c */
-extern Htab *fp, *vp;
-extern rc_Function *get_fn_place(const char *);
-extern List *varlookup(const char *);
+/* fn.c */
 extern Node *fnlookup(const char *);
-extern Variable *get_var_place(const char *, bool);
-extern bool varassign_string(const char *);
-extern char **makeenv(void);
 extern char *fnlookup_string(const char *);
-extern char *varlookup_string(const char *);
-extern void alias(const char *, List *, bool);
-extern void starassign(char *, char **, bool);
-extern void delete_fn(const char *);
-extern void delete_var(const char *, bool);
 extern void fnassign(const char *, Node *);
 extern void fnassign_string(char *);
 extern void fnrm(const char *);
+extern void prettyprint_fn(int, const char *, Node *);
+
+/* var.c */
+extern void starassign(char *, char **, bool);
+extern List *varlookup(const char *);
+extern bool varassign_string(const char *);
+extern char *varlookup_string(const char *);
+extern void varassign(const char *, List *, bool);
+extern void varrm(const char *, bool);
+extern void prettyprint_var(int, const char *, List *);
+
+/* hash.c */
+extern Htab *fp, *vp;
+extern rc_Function *get_fn_place(const char *);
+extern Variable *get_var_place(const char *, bool);
+extern char **makeenv(void);
+extern void alias(const char *, List *, bool);
+extern void delete_fn(const char *);
+extern void delete_var(const char *, bool);
 extern void initenv(char **);
 extern void inithash(void);
 extern void set_exportable(const char *, bool);
 extern void setsigdefaults(bool);
 extern void inithandler(void);
-extern void varassign(const char *, List *, bool);
-extern void varrm(const char *, bool);
 extern void whatare_all_vars(bool, bool);
 extern void whatare_all_signals(void);
-extern void prettyprint_var(int, const char *, List *);
-extern void prettyprint_fn(int, const char *, Node *);
 extern rc_Function *lookup_fn(const char* s);
 extern Variable * lookup_var(const char* s);
 
