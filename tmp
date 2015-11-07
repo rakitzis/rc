@@ -1,0 +1,2 @@
+x=('#' '#' '#')
+eval z^`{whatis -v x}  >[2]/dev/null
