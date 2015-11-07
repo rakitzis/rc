@@ -105,7 +105,7 @@ struct Redir {
 
 struct Word {
 	const char *w;
-  char *m;
+	const char *m;
 	bool q;
 };
 
