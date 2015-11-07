@@ -233,8 +233,9 @@ extern char *get_name(const char *s) {
    ^B escapes a literal ^A or ^B.  For minimal surprise, ^B followed
    by anything other than ^A or ^B is preserved. */
 
-extern List *parse_var(char *extdef) {
-	char *begin, *end, *from, *to;
+extern List *parse_var(const char *extdef) {
+	const char *begin, *end, *from;
+        char *to;
 	int len;
 	List *first, *last, *new;
 

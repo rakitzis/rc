@@ -86,7 +86,7 @@ enum filedescriptors {
 };
 
 /* does this string require quoting? */
-extern bool quotep(char *s, bool dollar) {
+extern bool quotep(const char *s, bool dollar) {
 	unsigned char c;
 	const char *meta;
 

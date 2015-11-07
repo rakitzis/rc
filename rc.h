@@ -216,7 +216,7 @@ extern int my_execve(char *, char **, char **);
 /* footobar.c */
 extern char **list2array(List *, bool);
 extern char *get_name(const char *);
-extern List *parse_var(char *);
+extern List *parse_var(const char *);
 extern Node *parse_fn(char *);
 extern void initprint(void);
 extern void rc_exit(int); /* here for odd reasons; user-defined signal handlers are kept in fn.c */
@@ -278,7 +278,7 @@ extern int qdoc(Node *, Node *);
 extern Hq *hq;
 
 /* lex.c */
-extern bool quotep(char *, bool);
+extern bool quotep(const char *, bool);
 extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);
@@ -292,7 +292,7 @@ extern size_t listlen(List *);
 extern int listnel(List *);
 
 /* match.c */
-extern bool match(char *, char *, char *);
+extern bool match(char *, const char *, const char *);
 
 /* alloc.c */
 extern void *ealloc(size_t);

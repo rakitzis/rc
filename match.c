@@ -8,7 +8,7 @@ enum { RANGE_FAIL = -1, RANGE_ERROR = -2 };
 
 /* match() matches a single pattern against a single string. */
 
-extern bool match(char *p, char *m, char *s) {
+extern bool match(char *p, const char *m, const char *s) {
 	int i, j;
 	if (m == NULL)
 		return streq(p, s);
