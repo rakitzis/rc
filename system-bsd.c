@@ -14,7 +14,7 @@ volatile sig_atomic_t slow;
 static char *safe_buf;
 static size_t safe_remain;
 
-extern void writeall(int fd, char *buf, size_t remain) {
+extern void writeall(int fd, const char *buf, size_t remain) {
 	int i;
 
 	safe_buf = buf;

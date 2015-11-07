@@ -292,7 +292,7 @@ extern size_t listlen(List *);
 extern int listnel(List *);
 
 /* match.c */
-extern bool match(char *, const char *, const char *);
+extern bool match(const char *, const char *, const char *);
 
 /* alloc.c */
 extern void *ealloc(size_t);
@@ -383,7 +383,7 @@ extern char *strstatus(int s);
 
 
 /* system.c or system-bsd.c */
-extern void writeall(int, char *, size_t);
+extern void writeall(int, const char *, size_t);
 
 #if HAVE_RESTARTABLE_SYSCALLS
 extern int rc_read(int, char *, size_t);
