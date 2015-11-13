@@ -192,7 +192,7 @@ static List *doglob(char *w, const char *m) {
 	static size_t dsize = 0;
 	char *d, *p, *md, *mp;
 	size_t psize;
-	char *s = w;
+	const char *s = w;
 	List firstdir;
 	List *matched;
 	if ((psize = strlen(w) + 1) > dsize || dir == NULL) {
