@@ -171,7 +171,7 @@ extern void fnassign(const char *name, Node *def) {
 
 /* Assign a function from the environment. Store just the external representation */
 
-extern void fnassign_string(char *extdef) {
+extern void fnassign_string(const char *extdef) {
 	char *name = get_name(extdef+3); /* +3 to skip over "fn_" */
 	rc_Function *new;
 	if (name == NULL)

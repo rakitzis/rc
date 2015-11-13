@@ -246,7 +246,7 @@ extern List *word(char *, char *);
 extern Node *fnlookup(const char *);
 extern char *fnlookup_string(const char *);
 extern void fnassign(const char *, Node *);
-extern void fnassign_string(char *);
+extern void fnassign_string(const char *);
 extern void fnrm(const char *);
 extern void prettyprint_fn(int, const char *, Node *);
 
