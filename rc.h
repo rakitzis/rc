@@ -138,7 +138,8 @@ struct Format {
 	va_list args;
 	long flags, f1, f2;
 	/* for the buffer maintenance routines */
-	char *buf, *bufbegin, *bufend;
+	char *buf, *bufbegin;
+	const char *bufend;
 	int flushed;
 	void (*grow)(Format *, size_t);
 	union { int n; void *p; } u;
