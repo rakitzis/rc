@@ -117,8 +117,11 @@ fn testManyLets { numEntries=() {
     '+3*-4'                        -12
   )
   numEntries=$#*
+  if (let '('$numEntries'%2)==1') {
+    fail let test has odd number of entries: $numEntries, should be even.
+  }
 
-  while (~ 0 0) {
+  while () {
     if (~ $#* 0) {
       break
     } else if (~ $#* 1) {
