@@ -214,14 +214,14 @@ int main(void) {
     fprintf(outf, "\tconst char *msg;\n");
     fprintf(outf, "\tint signum;\n");
     fprintf(outf, "} Sigmsgs;\n");
-    fprintf(outf, "extern Sigmsgs signals[];\n");
+    fprintf(outf, "extern const Sigmsgs signals[];\n");
     fprintf(outf, "#define NUMOFSIGNALS %d\n", maxsig+1);
     if (fclose(outf) == EOF)  barf("could not fclose sigmsgs.h after writing");
 
     outf = fopen("sigmsgs.c", "w");
     if (!outf) barf("could not open sigmsgs.c for writing");
     fprintf(outf, "#include \"sigmsgs.h\"\n\n");
-    fprintf(outf, "Sigmsgs signals[] = {\n");
+    fprintf(outf, "const Sigmsgs signals[] = {\n");
     fprintf(outf, "\t{\"\",\t\"\",0},\n");
 
     /* yes, we could avoid the quadratic searching with an aux array. fap. */
