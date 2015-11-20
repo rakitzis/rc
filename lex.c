@@ -167,7 +167,8 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		w = RW;
 		y->word.w = ncpy(buf);
 		if (saw_meta) {
-			char *r, *s;
+			CONST char *r;
+      char *s;
 			y->word.m = s = nnew_arr(char, strlen(buf) + 1);
 			for (r = buf; *r != '\0'; r++, s++)
 				*s = (*r == '?' || *r == '[' || *r == '*');
