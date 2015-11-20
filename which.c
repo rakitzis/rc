@@ -47,7 +47,11 @@ static int ingidset(gid_t g) {
    Returns a bool instead of this -1 nonsense.
 */
 
+<<<<<<< HEAD
 static bool rc_access(const char *path, bool verbose) {
+=======
+static bool rc_access(CONST char *path, bool verbose) {
+>>>>>>> const_ptr_only
 	struct stat st;
 	int mask;
 	if (stat(path, &st) != 0) {
@@ -73,7 +77,11 @@ static bool rc_access(const char *path, bool verbose) {
 
 /* replace non-printing characters with question marks in a freshly
  * allocated string */
+<<<<<<< HEAD
 static char *protect(const char *in) {
+=======
+static char *protect(CONST char *in) {
+>>>>>>> const_ptr_only
 	int l = strlen(in);
 	char *out = enew_arr(char, l + 1);
 	int i;

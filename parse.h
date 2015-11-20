@@ -32,6 +32,10 @@ typedef union {
 	struct Pipe pipe;
 	struct Dup dup;
 	struct Word word;
+<<<<<<< HEAD
 	const char *keyword;
+=======
+	CONST char *keyword;
+>>>>>>> const_ptr_only
 } YYSTYPE;
 extern YYSTYPE yylval;
