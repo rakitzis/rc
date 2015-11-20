@@ -12,7 +12,7 @@ pid_t rc_pid;
 
 static bool dashEYE, dashell, dashoh, dashess;
 
-static void assigndefault(const char *,...);
+static void assigndefault(CONST char *,...);
 static void checkfd(int, enum redirtype);
 
 extern int main(int argc, char *argv[], char *envp[]) {
@@ -131,7 +131,7 @@ quitopts:
 	return 0; /* Never really reached. */
 }
 
-static void assigndefault(const char *name,...) {
+static void assigndefault(CONST char *name,...) {
 	va_list ap;
 	List *l;
 	char *v;

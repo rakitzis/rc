@@ -32,6 +32,6 @@ typedef union {
 	struct Pipe pipe;
 	struct Dup dup;
 	struct Word word;
-	const char *keyword;
+	CONST char *keyword;
 } YYSTYPE;
 extern YYSTYPE yylval;

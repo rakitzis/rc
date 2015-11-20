@@ -9,7 +9,7 @@
 
 /* print error with line number on noninteractive shells (i.e., scripts) */
 
-extern void pr_error(char *s, int offset) {
+extern void pr_error(CONST char *s, int offset) {
 	if (s != NULL) {
 		if (interactive)
 			fprint(2, RC "%s\n", s);
@@ -20,7 +20,7 @@ extern void pr_error(char *s, int offset) {
 
 /* our perror */
 
-extern void uerror(char *s) {
+extern void uerror(CONST char *s) {
 	char *err;
 
 	err = strerror(errno);
@@ -36,7 +36,7 @@ extern void uerror(char *s) {
 
 #define PANICMSG "rc panic: "
 
-extern void panic(char *s) {
+extern void panic(CONST char *s) {
 	write(2, PANICMSG, conststrlen(PANICMSG));
 	write(2, s, strlen(s));
 	write(2, "!\n", 2);
@@ -45,7 +45,7 @@ extern void panic(char *s) {
 
 /* ascii -> unsigned conversion routines. -1 indicates conversion error. */
 
-extern int n2u(char *s, unsigned int base) {
+extern int n2u(CONST char *s, unsigned int base) {
 	unsigned int i;
 	for (i = 0; *s != '\0'; s++) {
 		unsigned int j = (unsigned int) *s - '0';

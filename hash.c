@@ -13,8 +13,8 @@
 
 static bool var_exportable(char *);
 static bool fn_exportable(char *);
-static int hash(char *, int);
-static int find(char *, Htab *, int);
+static int hash(CONST char *, int);
+static int find(CONST char *, Htab *, int);
 static void free_fn(rc_Function *);
 
 Htab *fp;
@@ -43,7 +43,7 @@ extern void inithash() {
 
 /* hash function courtesy of paul haahr */
 
-static int hash(char *s, int size) {
+static int hash(CONST char *s, int size) {
 	int c, n = 0;
 	while (1) {
 		ADV();
@@ -104,7 +104,7 @@ static bool rehash(Htab *ht) {
 #define varfind(s) find(s, vp, vsize)
 #define fnfind(s) find(s, fp, fsize)
 
-static int find(char *s, Htab *ht, int size) {
+static int find(CONST char *s, Htab *ht, int size) {
 	int h = hash(s, size);
 	while (ht[h].name != NULL && !streq(ht[h].name, s)) {
 		h++;
@@ -113,12 +113,12 @@ static int find(char *s, Htab *ht, int size) {
 	return h;
 }
 
-extern void *lookup(char *s, Htab *ht) {
+extern void *lookup(CONST char *s, Htab *ht) {
 	int h = find(s, ht, ht == fp ? fsize : vsize);
 	return (ht[h].name == NULL) ? NULL : ht[h].p;
 }
 
-extern rc_Function *get_fn_place(char *s) {
+extern rc_Function *get_fn_place(CONST char *s) {
 	int h = fnfind(s);
 	env_dirty = TRUE;
 	if (fp[h].name == NULL) {
@@ -132,7 +132,7 @@ extern rc_Function *get_fn_place(char *s) {
 	return fp[h].p;
 }
 
-extern Variable *get_var_place(char *s, bool stack) {
+extern Variable *get_var_place(CONST char *s, bool stack) {
 	Variable *new;
 	int h = varfind(s);
 
@@ -160,7 +160,7 @@ extern Variable *get_var_place(char *s, bool stack) {
 	}
 }
 
-extern void delete_fn(char *s) {
+extern void delete_fn(CONST char *s) {
 	int h = fnfind(s);
 	if (fp[h].name == NULL)
 		return; /* not found */
@@ -176,7 +176,7 @@ extern void delete_fn(char *s) {
 	}
 }
 
-extern void delete_var(char *s, bool stack) {
+extern void delete_var(CONST char *s, bool stack) {
 	int h = varfind(s);
 	Variable *v;
 	if (vp[h].name == NULL)
@@ -246,7 +246,7 @@ static struct nameflag maybeexport[] = {
 	{ "version", FALSE }
 };
 
-void set_exportable(char *s, bool b) {
+void set_exportable(CONST char *s, bool b) {
 	int i;
 	for (i = 0; i < arraysize(maybeexport); ++i)
 		if (maybeexport[i].flag != b && streq(s, maybeexport[i].name))

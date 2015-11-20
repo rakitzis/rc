@@ -42,11 +42,11 @@ typedef long rlim_t;
 struct Suffix {
 	const struct Suffix *next;
 	long amount;
-	const char *name;
+	CONST char *name;
 };
 
 struct Limit {
-	const char *name;
+	CONST char *name;
 	int flag;
 	const struct Suffix *suffix;
 };
