@@ -122,7 +122,7 @@ extern void pop_cmdarg(bool remove) {
 
 /* exception handlers */
 
-extern void rc_error(char *s) {
+extern void rc_error(const char *s) {
 	pr_error(s, -1);
 	set(FALSE);
 	redirq = NULL;

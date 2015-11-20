@@ -90,7 +90,7 @@ static bool Tconv(Format *f, int ignore) {
 		break;
 	}
 	case nCount: case nFlat: case nVar: {
-		char *lp = "", *rp = "";
+		const char *lp = "", *rp = "";
 		Node *n0 = n->u[0].p;
 
 		if (n0->type != nWord)
@@ -195,8 +195,8 @@ extern char **list2array(List *s, bool print) {
 
 /* figure out the name of a variable given an environment string. */
 
-extern char *get_name(char *s) {
-	char *eq = strchr(s, '=');
+extern char *get_name(const char *s) {
+	const char *eq = strchr(s, '=');
 	char *r, *result;
 	int c;
 	
@@ -232,8 +232,8 @@ extern char *get_name(char *s) {
    ^B escapes a literal ^A or ^B.  For minimal surprise, ^B followed
    by anything other than ^A or ^B is preserved. */
 
-extern List *parse_var(char *extdef) {
-	char *begin, *end, *from, *to;
+extern List *parse_var(const char *extdef) {
+	const char *begin, *end, *from, *to;
 	int len;
 	List *first, *last, *new;
 

@@ -296,7 +296,7 @@ extern int fmtprint(Format *format, const char *fmt,...) {
 
 static void fprint_flush(Format *format, size_t ignore) {
 	size_t n = format->buf - format->bufbegin;
-	char *buf = format->bufbegin;
+	const char *buf = format->bufbegin;
 
 	format->flushed += n;
 	format->buf = format->bufbegin;

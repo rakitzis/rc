@@ -34,7 +34,7 @@ static void b_echo(char **);
 
 static struct {
 	builtin_t *p;
-	char *name;
+	const char *name;
 } builtins[] = {
 	{ b_break,	"break" },
 	{ b_builtin,	"builtin" },
@@ -60,7 +60,7 @@ static struct {
 #endif
 };
 
-extern builtin_t *isbuiltin(char *s) {
+extern builtin_t *isbuiltin(const char *s) {
 	int i;
 	for (i = 0; i < arraysize(builtins); i++)
 		if (streq(builtins[i].name, s))
@@ -87,12 +87,12 @@ extern void funcall(char **av) {
 	unexcept(); /* eReturn */
 }
 
-static void arg_count(char *name) {
+static void arg_count(const char *name) {
 	fprint(2, RC "too many arguments to %s\n", name);
 	set(FALSE);
 }
 
-static void badnum(char *num) {
+static void badnum(const char *num) {
 	fprint(2, RC "`%s' is a bad number\n", num);
 	set(FALSE);
 }
@@ -106,7 +106,7 @@ extern void b_exec(char **ignore) {
 /* echo -n omits a newline. echo -- -n echos '-n' */
 
 static void b_echo(char **av) {
-	char *format = "%A\n";
+	const char *format = "%A\n";
 	if (*++av != NULL) {
 		if (streq(*av, "-n"))
                 	format = "%A", av++;
@@ -281,7 +281,7 @@ static void b_wait(char **av) {
 #define not(b)	((b)^TRUE)
 #define show(b)	(not(eff|vee|pee|bee|ess)|(b))
 
-static bool issig(char *s) {
+static bool issig(const char *s) {
 	int i;
 	for (i = 0; i < NUMOFSIGNALS; i++)
 		if (streq(s, signals[i].name))

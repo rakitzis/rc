@@ -25,7 +25,7 @@ typedef union {
 	struct Pipe pipe;
 	struct Dup dup;
 	struct Word word;
-	char *keyword;
+	const char *keyword;
 } YYSTYPE;
 #line 31 "y.tab.c"
 #define YYERRCODE 256

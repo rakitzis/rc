@@ -210,16 +210,17 @@ int main(void) {
     outf = fopen("sigmsgs.h", "w");
     if (!outf) barf("could not open sigmsgs.h for writing");
     fprintf(outf, "typedef struct {\n");
-    fprintf(outf, "\tchar *name, *msg;\n");
+    fprintf(outf, "\tchar *name;\n");
+    fprintf(outf, "\tconst char *msg;\n");
     fprintf(outf, "} Sigmsgs;\n");
-    fprintf(outf, "extern Sigmsgs signals[];\n");
+    fprintf(outf, "extern const Sigmsgs signals[];\n");
     fprintf(outf, "#define NUMOFSIGNALS %d\n", maxsig+1);
     if (fclose(outf) == EOF)  barf("could not fclose sigmsgs.h after writing");
 
     outf = fopen("sigmsgs.c", "w");
     if (!outf) barf("could not open sigmsgs.c for writing");
     fprintf(outf, "#include \"sigmsgs.h\"\n\n");
-    fprintf(outf, "Sigmsgs signals[] = {\n");
+    fprintf(outf, "const Sigmsgs signals[] = {\n");
     fprintf(outf, "\t{\"\",\t\"\"},\n");
 
     /* yes, we could avoid the quadratic searching with an aux array. fap. */
