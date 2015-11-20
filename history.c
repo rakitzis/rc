@@ -64,11 +64,7 @@ static char *rc_basename(char *s) {
 
 /* stupid O(n^2) substring matching routine */
 
-<<<<<<< HEAD
-static char *isin(const char *target, const char *pattern) {
-=======
 static char *isin(CONST char *target, CONST char *pattern) {
->>>>>>> const_ptr_only
 	size_t plen = strlen(pattern);
 	size_t tlen = strlen(target);
 	for (; tlen >= plen; target++, --tlen)
@@ -78,11 +74,7 @@ static char *isin(CONST char *target, CONST char *pattern) {
 }
 
 /* replace the first match in the string with "new" */
-<<<<<<< HEAD
-static char *sub(const char *s, const char *old, const char *new) {
-=======
 static char *sub(CONST char *s, CONST char *old, CONST char *new) {
->>>>>>> const_ptr_only
 	char *t, *u;
 
 	t = isin(s, old);

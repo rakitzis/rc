@@ -9,11 +9,7 @@
 
 /* print error with line number on noninteractive shells (i.e., scripts) */
 
-<<<<<<< HEAD
-extern void pr_error(const char *s, int offset) {
-=======
 extern void pr_error(CONST char *s, int offset) {
->>>>>>> const_ptr_only
 	if (s != NULL) {
 		if (interactive)
 			fprint(2, RC "%s\n", s);
@@ -24,13 +20,8 @@ extern void pr_error(CONST char *s, int offset) {
 
 /* our perror */
 
-<<<<<<< HEAD
-extern void uerror(const char *s) {
-	const char *err;
-=======
 extern void uerror(CONST char *s) {
-	char *err;
->>>>>>> const_ptr_only
+	CONST char *err;
 
 	err = strerror(errno);
 	if (!err) err = "unknown error";
@@ -45,11 +36,7 @@ extern void uerror(CONST char *s) {
 
 #define PANICMSG "rc panic: "
 
-<<<<<<< HEAD
-extern void panic(const char *s) {
-=======
 extern void panic(CONST char *s) {
->>>>>>> const_ptr_only
 	write(2, PANICMSG, conststrlen(PANICMSG));
 	write(2, s, strlen(s));
 	write(2, "!\n", 2);
@@ -58,11 +45,7 @@ extern void panic(CONST char *s) {
 
 /* ascii -> unsigned conversion routines. -1 indicates conversion error. */
 
-<<<<<<< HEAD
-extern int n2u(const char *s, unsigned int base) {
-=======
 extern int n2u(CONST char *s, unsigned int base) {
->>>>>>> const_ptr_only
 	unsigned int i;
 	for (i = 0; *s != '\0'; s++) {
 		unsigned int j = (unsigned int) *s - '0';
@@ -81,7 +64,7 @@ extern int starstrcmp(const void *s1, const void *s2) {
 
 /* tests to see if pathname begins with "/", "./", or "../" */
 
-extern bool isabsolute(const char *path) {
+extern bool isabsolute(CONST char *path) {
 	return path[0] == '/' || (path[0] == '.' && (path[1] == '/' || (path[1] == '.' && path[2] == '/')));
 }
 

@@ -219,7 +219,7 @@ extern char *fnlookup_string(CONST char *name) {
    handler, restore the signal handler to its default value.
 */
 
-extern void fnrm(const char *name) {
+extern void fnrm(CONST char *name) {
 	int i;
 	for (i = 1; i < NUMOFSIGNALS; i++)
 		if (streq(signals[i].name, name)) {

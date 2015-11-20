@@ -137,11 +137,7 @@ extern rc_Function *get_fn_place(CONST char *s) {
 	return fp[h].u.f;
 }
 
-<<<<<<< HEAD
-extern Variable *get_var_place(const char *s, bool stack) {
-=======
 extern Variable *get_var_place(CONST char *s, bool stack) {
->>>>>>> const_ptr_only
 	Variable *new;
 	int h = varfind(s);
 
@@ -169,11 +165,7 @@ extern Variable *get_var_place(CONST char *s, bool stack) {
 	}
 }
 
-<<<<<<< HEAD
-extern void delete_fn(const char *s) {
-=======
 extern void delete_fn(CONST char *s) {
->>>>>>> const_ptr_only
 	int h = fnfind(s);
 	if (fp[h].name == NULL)
 		return; /* not found */
@@ -189,11 +181,7 @@ extern void delete_fn(CONST char *s) {
 	}
 }
 
-<<<<<<< HEAD
-extern void delete_var(const char *s, bool stack) {
-=======
 extern void delete_var(CONST char *s, bool stack) {
->>>>>>> const_ptr_only
 	int h = varfind(s);
 	Variable *v;
 	if (vp[h].name == NULL)
@@ -264,18 +252,14 @@ static struct nameflag maybeexport[] = {
 	{ "version", FALSE }
 };
 
-<<<<<<< HEAD
-void set_exportable(const char *s, bool b) {
-=======
 void set_exportable(CONST char *s, bool b) {
->>>>>>> const_ptr_only
 	int i;
 	for (i = 0; i < arraysize(maybeexport); ++i)
 		if (maybeexport[i].flag != b && streq(s, maybeexport[i].name))
 			maybeexport[i].flag = b;
 }
 
-static bool var_exportable(const char *s) {
+static bool var_exportable(CONST char *s) {
 	int i;
 	for (i = 0; i < arraysize(neverexport); i++)
 		if (streq(s, neverexport[i]))
@@ -286,7 +270,7 @@ static bool var_exportable(const char *s) {
 	return TRUE;
 }
 
-static bool fn_exportable(const char *s) {
+static bool fn_exportable(CONST char *s) {
 	int i;
 	if (strncmp_fast(s, "sig", conststrlen("sig")) == 0) { /* small speed hack */
 		for (i = 0; i < NUMOFSIGNALS; i++)

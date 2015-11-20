@@ -6,11 +6,7 @@
 
 struct Hq {
 	Node *doc;
-<<<<<<< HEAD
-	const char *name;
-=======
 	CONST char *name;
->>>>>>> const_ptr_only
 	Hq *n;
 	bool quoted;
 } *hq;
@@ -28,11 +24,7 @@ static bool dead = FALSE;
  * never get out of its readheredoc() when the heredoc string contains a newline
  */
 
-<<<<<<< HEAD
-static char *readheredoc(const char *eof) {
-=======
 static char *readheredoc(CONST char *eof) {
->>>>>>> const_ptr_only
 	int c;
 	char *t, *buf, *bufend;
 	unsigned char *s;
