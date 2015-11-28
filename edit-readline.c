@@ -333,8 +333,19 @@ char *edit_alloc(void *cookie, size_t *count) {
 
 	if (c->buffer) {
 		*count = strlen(c->buffer);
-		if (*count)
+		if (*count) {
+			history_set_pos(history_length);
+			while (history_search_prefix(c->buffer, -1) == 0) {
+				HIST_ENTRY *e = current_history();
+				if (e != NULL && e->line[*count] == '\0') {
+					if ((e = remove_history(where_history())))
+						free_history_entry(e);
+				}
+				if (!previous_history())
+					break;
+			}
 			add_history(c->buffer);
+		}
 		c->buffer[*count] = '\n';
 		++*count; /* include the \n */
 	}
