@@ -3,8 +3,11 @@
 #include "rc.h"
 
 #include <errno.h>
+#include <locale.h>
 
 #include "input.h"
+
+extern char **environ;
 
 bool dashdee, dashee, dasheye, dashell, dashen;
 bool dashpee, dashoh, dashess, dashvee, dashex;
@@ -120,6 +123,8 @@ quitopts:
 			close(fd);
 		}
 	}
+	environ = makeenv();
+	setlocale(LC_CTYPE, "");
 
 	if (dashsee[0] != NULL || dashess) {	/* input from  -c or -s? */
 		if (*argv != NULL)
