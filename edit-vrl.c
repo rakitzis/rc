@@ -32,7 +32,11 @@ void *edit_begin(int fd) {
 }
 
 /*
+static void (*oldint)(int), (*oldquit)(int);
+
 static void edit_catcher(int sig) {
+	sys_signal(SIGINT, oldint);
+	sys_signal(SIGQUIT, oldquit);
 	write(2, "\n", 1);
 	rc_raise(eError);
 }
@@ -45,7 +49,6 @@ char *edit_alloc(void *cookie, size_t *count) {
 	const char *r;
 	HistEvent he;
 	struct cookie *c = cookie;
-	void (*oldint)(int), (*oldquit)(int);
 
 	oldint = sys_signal(SIGINT, edit_catcher);
 	oldquit = sys_signal(SIGQUIT, edit_catcher);
