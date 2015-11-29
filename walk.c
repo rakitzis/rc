@@ -103,7 +103,7 @@ top:	sigchk();
 	case nWhile: {
 		Jbwrap j;
 		Edata jbreak;
-		Estack e1, e2;
+		Estack e1;
 		bool testtrue, oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) { /* prevent spurious breaks inside test */
@@ -116,6 +116,7 @@ top:	sigchk();
 		except(eBreak, jbreak, &e1);
 		do {
 			Edata block;
+			Estack e2;
 			block.b = newblock();
 			cond = oldcond;
 			except(eArena, block, &e2);
@@ -131,7 +132,7 @@ top:	sigchk();
 	case nForin: {
 		List *l, *var = glom(n->u[0].p);
 		Jbwrap j;
-		Estack e1, e2;
+		Estack e1;
 		Edata jbreak;
 		if (sigsetjmp(j.j, 1))
 			break;
@@ -139,6 +140,7 @@ top:	sigchk();
 		except(eBreak, jbreak, &e1);
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
 			Edata block;
+			Estack e2;
 			assign(var, word(l->w, NULL), FALSE);
 			block.b = newblock();
 			except(eArena, block, &e2);
