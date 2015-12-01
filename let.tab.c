@@ -758,14 +758,20 @@ break;
 case 18:
 #line 76 "let.y"
 	{ long v3 = yystack.l_mark[0].m_Val;
-          if (v3 == 0) { leterror("Division by 0"); }
+          if (v3 == 0) {
+            leterror("Division by 0");
+            YYABORT;
+          }
           yyval.m_Val = yystack.l_mark[-2].m_Val / (v3);
         }
 break;
 case 19:
 #line 81 "let.y"
 	{ long v3 = yystack.l_mark[0].m_Val;
-          if (v3 == 0) { leterror("Module by 0"); }
+          if (v3 == 0) {
+            leterror("Module by 0");
+            YYABORT;
+          }
           yyval.m_Val = yystack.l_mark[-2].m_Val % (v3);
         }
 break;
@@ -788,7 +794,10 @@ break;
 case 24:
 #line 90 "let.y"
 	{ long v3 = yystack.l_mark[0].m_Val;
-          if (v3 < 0) { leterror("Negative power"); }
+          if (v3 < 0) {
+            leterror("Negative power");
+            YYABORT;
+          }
           yyval.m_Val = letpwr(yystack.l_mark[-2].m_Val, v3);
         }
 break;
