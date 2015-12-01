@@ -53,6 +53,20 @@ fn testOneLet { e=$1 v=$2 a=() {
   }
 }}
 
+######################################################################
+fn letExprErr { exp=$1 msg=$2 s=() n=() {
+  n=()
+  expect error $msg
+  let n $exp; s = $status
+  if (! ~ $n ()) {
+    fail 'n assigned value after error in expr '^$exp
+  }
+  if (~ $s 0) {
+    fail 'status == 0 after error in expr '^$exp
+  }
+}}
+
+######################################################################
 fn testManyLets { numEntries=() {
   *=(
     '4 || 3'                        1
@@ -131,6 +145,11 @@ fn testManyLets { numEntries=() {
       shift 2
     }
   }
+
+  letExprErr '2 / 0'   'division by 0'
+  letExprErr '2 % 0'   'modulo 0'
+  letExprErr '2 @ (-1)' 'negative power'
+
 }}
 testManyLets
 
