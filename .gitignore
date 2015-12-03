@@ -1,6 +1,6 @@
-*.o
 *~
 *.o
+.*.sw?
 .deps/
 Makefile
 autom4te.cache/
