@@ -4,6 +4,7 @@
 
 #include <signal.h>
 #include <setjmp.h>
+#include <errno.h>
 
 #include "sigmsgs.h"
 #include "jbwrap.h"
@@ -11,11 +12,15 @@
 #if HAVE_SIGACTION
 void (*sys_signal(int signum, void (*handler)(int)))(int) {
 	struct sigaction new, old;
+	int ret;
 
 	new.sa_handler = handler;
 	new.sa_flags = 0; /* clear SA_RESTART */
 	sigfillset(&new.sa_mask);
-	sigaction(signum, &new, &old);
+	ret = sigaction(signum, &new, &old);
+	if (0 != ret) {
+		old.sa_handler = SIG_IGN;
+	}
 	return old.sa_handler;
 }
 #else
