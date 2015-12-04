@@ -1,3 +1,11 @@
+
+
+To get the current commit hash:
+
+$ git rev-parse  HEAD
+c0faccd37f707ddf183f55e7d61cb4b72536a479
+
+
 1. -----------------------------------------------------
 let is builtin, so must configure with 'configure --with-addon'
 
