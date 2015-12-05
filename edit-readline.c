@@ -94,13 +94,36 @@ static rl_compentry_func_t *compl_func(const char *text, int start, int end) {
 	return NULL;
 }
 
-static char **rc_completion(const char *text, int start, int end) {
-	rl_compentry_func_t *func = compl_func(text, start, end);
+static rl_compentry_func_t *compentry_func;
 
+static char **rc_completion(const char *text, int start, int end) {
+	rl_compentry_func_t *func;
+
+	if (compentry_func != NULL) {
+		func = compentry_func;
+		compentry_func = NULL;
+		rl_attempted_completion_over = 1;
+	} else
+		func = compl_func(text, start, end);
 	if (func != NULL)
 		return rl_completion_matches(text, func);
 	else
 		return NULL;
+}
+
+static int rc_complete_command(int count, int key) {
+	compentry_func = compl_extcmd;
+	return rl_complete(count, key);
+}
+
+static int rc_complete_filename(int count, int key) {
+	compentry_func = rl_filename_completion_function;
+	return rl_complete(count, key);
+}
+
+static int rc_complete_variable(int count, int key) {
+	compentry_func = compl_var;
+	return rl_complete(count, key);
 }
 
 void *edit_begin(int fd) {
@@ -112,6 +135,14 @@ void *edit_begin(int fd) {
 	rl_catch_signals = 0;
 	rl_completer_quote_characters = "'";
 	rl_filename_quote_characters = "\t\n !#$&'()*;<=>?@[\\]^`{|}~";
+	rl_readline_name = "rc";
+
+	rl_add_funmap_entry("rc-complete-command",  rc_complete_command);
+	rl_add_funmap_entry("rc-complete-filename", rc_complete_filename);
+	rl_add_funmap_entry("rc-complete-variable", rc_complete_variable);
+	rl_bind_keyseq("\e!", rc_complete_command);
+	rl_bind_keyseq("\e/", rc_complete_filename);
+	rl_bind_keyseq("\e$", rc_complete_variable);
 
 	hist = varlookup("history");
 	if (hist != NULL)
