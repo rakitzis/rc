@@ -181,6 +181,7 @@ extern int lineno;
 extern builtin_t *isbuiltin(char *);
 extern void b_exec(char **), funcall(char **), b_dot(char **), b_builtin(char **);
 extern char *which(char *, bool);
+extern char *compl_builtin(const char *, int);
 
 /* except.c */
 extern bool nl_on_intr;
@@ -259,6 +260,9 @@ extern void whatare_all_vars(bool, bool);
 extern void whatare_all_signals(void);
 extern void prettyprint_var(int, char *, List *);
 extern void prettyprint_fn(int, char *, Node *);
+extern char *compl_name(const char *, int, char **, size_t, ssize_t);
+extern char *compl_fn(const char *, int);
+extern char *compl_var(const char *, int);
 
 /* heredoc.c */
 extern int heredoc(int);

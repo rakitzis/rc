@@ -2,6 +2,8 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include <dirent.h>
+#include <sys/types.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <readline/rltypedefs.h>
@@ -14,11 +16,99 @@ struct cookie {
 	char *buffer;
 };
 
+static char *compl_extcmd(const char *text, int state) {
+	static DIR *d;
+	static List *path;
+	static size_t len;
+	char *name = NULL;
+
+	if (!state) {
+		d = NULL;
+		path = varlookup("path");
+		len = strlen(text);
+	}
+nextdir:
+	while (d == NULL) {
+		if (path == NULL)
+			return NULL;
+		d = opendir(path->w);
+		path = path->n;
+	}
+	while (name == NULL) {
+		struct dirent *e = readdir(d);
+		if (e == NULL) {
+			closedir(d);
+			d = NULL;
+			goto nextdir;
+		}
+		if (strncmp(e->d_name, text, len) == 0)
+			name = strdup(e->d_name);
+	}
+	return name;
+}
+
+static rl_compentry_func_t *const compl_cmd_funcs[] = {
+	compl_builtin,
+	compl_fn,
+	compl_extcmd
+};
+
+static char *compl_command(const char *text, int state) {
+	static size_t i;
+	static int s;
+	char *name = NULL;
+
+	if (!state) {
+		i = 0;
+		s = 0;
+	}
+	while (name == NULL && i < arraysize(compl_cmd_funcs)) {
+		name = compl_cmd_funcs[i](text, s);
+		if (name != NULL) {
+			s = 1;
+		} else {
+			i++;
+			s = 0;
+		}
+	}
+	return name;
+}
+
+static rl_compentry_func_t *compl_func(const char *text, int start, int end) {
+	int quote = FALSE;
+	char last = ';', *s, *t;
+
+	for (s = &rl_line_buffer[0], t = &rl_line_buffer[start]; s < t; s++) {
+		if (!quote && *s != ' ' && *s != '\t')
+			last = *s;
+		if (*s == '\'')
+			quote = !quote;
+	}
+	switch (last) {
+		case '`': case '@': case '|': case '&':
+		case '(': case ')': case '{': case ';':
+			return compl_command;
+		case '$':
+			return compl_var;
+	}
+	return NULL;
+}
+
+static char **rc_completion(const char *text, int start, int end) {
+	rl_compentry_func_t *func = compl_func(text, start, end);
+
+	if (func != NULL)
+		return rl_completion_matches(text, func);
+	else
+		return NULL;
+}
+
 void *edit_begin(int fd) {
 	List *hist;
 	struct cookie *c;
 
 	rl_initialize();
+	rl_attempted_completion_function = rc_completion;
 	rl_catch_signals = 0;
 	rl_completer_quote_characters = "'";
 	rl_filename_quote_characters = "\t\n !#$&'()*;<=>?@[\\]^`{|}~";

@@ -316,3 +316,28 @@ extern void whatare_all_vars(bool showfn, bool showvar) {
 			if (fp[i].name != NULL && fp[i].name != dead)
 				prettyprint_fn(1, fp[i].name, fnlookup(fp[i].name));
 }
+
+extern char *compl_name(const char *text, int state, char **p, size_t count, ssize_t inc) {
+	static char **n;
+	static size_t i, len;
+	char *name;
+
+	if (!state) {
+		n = p;
+		i = 0;
+		len = strlen(text);
+	}
+	for (name = NULL; name == NULL && i < count; i++, n += inc)
+		if (*n != NULL && strncmp(*n, text, len) == 0)
+			name = strdup(*n);
+	return name;
+}
+
+extern char *compl_fn(const char *text, int state) {
+	return compl_name(text, state, &fp[0].name, fsize, &fp[1].name - &fp[0].name);
+}
+
+extern char *compl_var(const char *text, int state) {
+	return compl_name(text, state, &vp[0].name, vsize, &vp[1].name - &vp[0].name);
+}
+
