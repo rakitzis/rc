@@ -1,24 +1,32 @@
 
-
+################################################################
 To get the current commit hash:
 
 $ git rev-parse  HEAD
 c0faccd37f707ddf183f55e7d61cb4b72536a479
 
 
-1. -----------------------------------------------------
-let is builtin, so must configure with 'configure --with-addon'
 
-2. -----------------------------------------------------
+################################################################
+To build from scratch
+
+$ sh bootstrap
+$ ./configure --with-addon           # let is added-on builtin
+$ make
+
+
+################################################################
 To get hardened executable change:
 
-From
-CFLAGS = -Wall -g -O2
+Change compile flags from
+    CFLAGS = -Wall -g -O2
 to
-CFLAGS = -Wall -g -O2       -fPIE  -fstack-protector
+    CFLAGS = -Wall -g -O2       -fPIE  -fstack-protector
 
-From
-LDFLAGS = 
+Change link flags from
+    LDFLAGS = 
 to
-LDFLAGS = -pie -Wl,-z,now,-z,relro
+    LDFLAGS = -pie -Wl,-z,now,-z,relro
+
+################################################################
 
