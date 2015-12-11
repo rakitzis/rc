@@ -17,6 +17,7 @@ LetValue letResult;
 
 
 #define KILL_USAGE "usage: kill [-signame|-signum] pid\n"
+#define LET_USAGE  "usage: let [Var] Expr\n"
 #define CHECK(cond, msg) if (cond) { fprint(2, (msg)); set(FALSE); return; }
 
 void b_kill (char **av)
@@ -78,7 +79,7 @@ static int check_var_name (char *p)
     return 0;
   }
   for ( ; *p; ++p) {
-    if (!isalnum(*p) && (*p) != '_') {
+    if (! (isalnum(*p) || (*p) == '_') ) {
       return 0;
     }
   }
@@ -108,7 +109,7 @@ void b_let (char **av)
   char *exp, *varname;
 
   if (av[1] == 0) {
-    fprint(2, "let: cannot have 0 args\n");
+    fprint(2, LET_USAGE);
     goto returnLabel;
   }
 
@@ -120,7 +121,7 @@ void b_let (char **av)
   }
 
   if (av[3] != 0) {
-    fprint(2, "let: cannot have more than 2 args\n");
+    fprint(2, LET_USAGE);
     goto returnLabel;
   }
 
