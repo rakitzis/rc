@@ -25,7 +25,7 @@ extern int rc_open(const char *name, redirtype m) {
 }
 
 /* make a file descriptor blocking. return value indicates whether
-the desciptor was previously set to non-blocking. */
+the descriptor was previously set to non-blocking. */
 
 extern bool makeblocking(int fd) {
 	int flags;

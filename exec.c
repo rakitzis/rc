@@ -30,7 +30,7 @@ extern void exec(List *s, bool parent) {
 			b = isbuiltin(*av);
 
 		/*
-		   a builtin applies only to the immmediately following
+		   a builtin applies only to the immediately following
 		   command, e.g., builtin exec echo hi
 		*/
 		saw_builtin = FALSE;
