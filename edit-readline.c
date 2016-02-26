@@ -111,19 +111,23 @@ static char **rc_completion(const char *text, int start, int end) {
 		return NULL;
 }
 
-static int rc_complete_command(int count, int key) {
-	compentry_func = compl_extcmd;
+static int expl_complete(rl_compentry_func_t *func, int count, int key) {
+	if (rl_last_func == rl_complete)
+		rl_last_func = NULL;
+	compentry_func = func;
 	return rl_complete(count, key);
+}
+
+static int rc_complete_command(int count, int key) {
+	return expl_complete(compl_extcmd, count, key);
 }
 
 static int rc_complete_filename(int count, int key) {
-	compentry_func = rl_filename_completion_function;
-	return rl_complete(count, key);
+	return expl_complete(rl_filename_completion_function, count, key);
 }
 
 static int rc_complete_variable(int count, int key) {
-	compentry_func = compl_var;
-	return rl_complete(count, key);
+	return expl_complete(compl_var, count, key);
 }
 
 void *edit_begin(int fd) {
