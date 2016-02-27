@@ -16,6 +16,7 @@ Node *parsetree;	/* not using yylval because bison declares it as an auto */
 %token ANDAND BACKBACK BANG CASE COUNT DUP ELSE END FLAT FN FOR IF IN
 %token OROR PIPE REDIR SREDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
 
+%left '^' '='
 %left WHILE ')' ELSE
 %left ANDAND OROR '\n'
 %left BANG SUBSHELL
@@ -41,6 +42,7 @@ Node *parsetree;	/* not using yylval because bison declares it as an auto */
 %type <keyword> keyword
 %type <node> assign body brace case cbody cmd cmdsa cmdsan comword epilog
 	     first line nlwords paren redir sword simple iftail word words
+	     arg args
 
 %start rc
 
@@ -72,7 +74,7 @@ brace	: '{' body '}'		{ $$ = $2; }
 
 paren	: '(' body ')'		{ $$ = $2; }
 
-assign	: first '=' word	{ $$ = mk(nAssign,$1,$3); }
+assign	: first optcaret '=' optcaret word	{ $$ = mk(nAssign,$1,$5); }
 
 epilog	:			{ $$ = NULL; }
 	| redir epilog		{ $$ = mk(nEpilog,$1,$2); }
@@ -115,12 +117,17 @@ cmd	: /* empty */	%prec WHILE		{ $$ = NULL; }
 	| FN words brace			{ $$ = mk(nNewfn,$2,$3); }
 	| FN words				{ $$ = mk(nRmfn,$2); }
 
-optcaret : /* empty */
+optcaret : /* empty */	%prec '^'
 	| '^'
 
 simple	: first
-	| simple word			{ $$ = ($2 != NULL ? mk(nArgs,$1,$2) : $1); }
-	| simple redir			{ $$ = mk(nArgs,$1,$2); }
+	| first args			{ $$ = ($2 != NULL ? mk(nArgs,$1,$2) : $1); }
+
+args	: arg
+	| args arg			{ $$ = ($2 != NULL ? mk(nArgs,$1,$2) : $1); }
+
+arg	: word
+	| redir
 
 first	: comword
 	| first '^' sword		{ $$ = mk(nConcat,$1,$3); }
@@ -154,6 +161,7 @@ keyword	: FOR		{ $$ = "for"; }
 	| TWIDDLE	{ $$ = "~"; }
 	| BANG		{ $$ = "!"; }
 	| SUBSHELL	{ $$ = "@"; }
+	| '='		{ $$ = "="; }
 
 words	:		{ $$ = NULL; }
 	| words word	{ $$ = ($1 != NULL ? ($2 != NULL ? mk(nLappend,$1,$2) : $1) : $2); }

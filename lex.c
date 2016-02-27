@@ -178,9 +178,9 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		y->word.q = FALSE;
 		return WORD;
 	}
-	if (c == '`' || c == '!' || c == '@' || c == '~' || c == '$' || c == '\'') {
+	if (c == '`' || c == '!' || c == '@' || c == '~' || c == '$' || c == '\'' || c == '=') {
 		checkfreecaret;
-		if (c == '!' || c == '@' || c == '~')
+		if (c == '!' || c == '@' || c == '~' || c == '=')
 			w = KW;
 	}
 	switch (c) {
@@ -255,9 +255,9 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 	case ';':
 	case '^':
 	case ')':
-	case '=':
 	case '{': case '}':
 		w = NW;
+	case '=':
 		return c;
 	case '&':
 		w = NW;
