@@ -91,7 +91,6 @@ extern void rc_raise(ecodes e) {
 			if (e == eError && !estack->interactive) {
 				popinput();
 			} else {
-        Estack* tmp_estack = estack;
 				Jbwrap *j = estack->data.jb;
 
 				interactive = estack->interactive;
