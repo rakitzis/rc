@@ -104,6 +104,7 @@ top:	sigchk();
 		Jbwrap j;
 		Edata jbreak;
 		Estack e1;
+
 		bool testtrue, oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) { /* prevent spurious breaks inside test */
@@ -115,12 +116,20 @@ top:	sigchk();
 		jbreak.jb = &j;
 		except(eBreak, jbreak, &e1);
 		do {
-			Edata block;
-			Estack e2;
+			Edata block, cont_data;
+			Estack e2, cont_stack;
+			Jbwrap cont_jb;
 			block.b = newblock();
 			cond = oldcond;
 			except(eArena, block, &e2);
+			cont_data.jb = &cont_jb;
+			except(eContinue, cont_data, &cont_stack);
+			if (sigsetjmp(cont_jb.j, 1)) {
+				goto cont_test;
+			}
 			walk(n->u[1].p, TRUE);
+			unexcept(eContinue);
+cont_test:
 			testtrue = walk(n->u[0].p, TRUE);
 			unexcept(eArena);
 			cond = TRUE;

@@ -42,7 +42,7 @@ typedef enum nodetype {
 } nodetype;
 
 typedef enum ecodes {
-	eError, eBreak, eReturn, eVarstack, eArena, eFifo, eFd
+	eError, eBreak, eReturn, eVarstack, eArena, eFifo, eFd, eContinue
 } ecodes;
 
 #ifdef __cplusplus
