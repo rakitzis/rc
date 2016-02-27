@@ -125,11 +125,11 @@ top:	sigchk();
 			cont_data.jb = &cont_jb;
 			except(eContinue, cont_data, &cont_stack);
 			if (sigsetjmp(cont_jb.j, 1)) {
-				goto cont_test;
+				goto cont_while;
 			}
 			walk(n->u[1].p, TRUE);
 			unexcept(eContinue);
-cont_test:
+cont_while:
 			testtrue = walk(n->u[0].p, TRUE);
 			unexcept(eArena);
 			cond = TRUE;
@@ -148,12 +148,20 @@ cont_test:
 		jbreak.jb = &j;
 		except(eBreak, jbreak, &e1);
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			Edata block;
-			Estack e2;
+			Edata block, cont_data;
+			Estack e2, cont_stack;
+			Jbwrap cont_jb;
 			assign(var, word(l->w, NULL), FALSE);
 			block.b = newblock();
 			except(eArena, block, &e2);
+			cont_data.jb = &cont_jb;
+			except(eContinue, cont_data, &cont_stack);
+			if (sigsetjmp(cont_jb.j, 1)) {
+				goto cont_for;
+			}
 			walk(n->u[2].p, TRUE);
+			unexcept(eContinue);
+cont_for:
 			unexcept(eArena);
 		}
 		unexcept(eBreak);
