@@ -124,12 +124,10 @@ top:	sigchk();
 			except(eArena, block, &e2);
 			cont_data.jb = &cont_jb;
 			except(eContinue, cont_data, &cont_stack);
-			if (sigsetjmp(cont_jb.j, 1)) {
-				goto cont_while;
+			if (! sigsetjmp(cont_jb.j, 1)) {
+				walk(n->u[1].p, TRUE);
+				unexcept(eContinue);
 			}
-			walk(n->u[1].p, TRUE);
-			unexcept(eContinue);
-cont_while:
 			testtrue = walk(n->u[0].p, TRUE);
 			unexcept(eArena);
 			cond = TRUE;
@@ -156,12 +154,10 @@ cont_while:
 			except(eArena, block, &e2);
 			cont_data.jb = &cont_jb;
 			except(eContinue, cont_data, &cont_stack);
-			if (sigsetjmp(cont_jb.j, 1)) {
-				goto cont_for;
+			if (! sigsetjmp(cont_jb.j, 1)) {
+				walk(n->u[2].p, TRUE);
+				unexcept(eContinue);
 			}
-			walk(n->u[2].p, TRUE);
-			unexcept(eContinue);
-cont_for:
 			unexcept(eArena);
 		}
 		unexcept(eBreak);
