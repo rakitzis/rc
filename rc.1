@@ -395,7 +395,7 @@ interprets several characters specially; special characters
 automatically terminate words.
 The following characters are special:
 .Ds
-.Cr "# ; & | ^ $ = \` ' { } ( ) < >"
+.Cr "# ; & | ^ $ \` ' { } ( ) < >"
 .De
 .PP
 The single quote
@@ -1936,6 +1936,7 @@ grammar, edited to remove semantic actions.
 %term ANDAND BACKBACK BANG CASE COUNT DUP ELSE END FLAT FN FOR IF IN
 %term OROR PIPE REDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
 
+%left '^' '='
 %left WHILE ')' ELSE
 %left ANDAND OROR '\en'
 %left BANG SUBSHELL
@@ -1964,7 +1965,7 @@ brace: '{' body '}'
 
 paren: '(' body ')'
 
-assign: first '=' word
+assign: first optcaret '=' optcaret word
 
 epilog: /* empty */ | redir epilog
 
@@ -1996,9 +1997,13 @@ cmd	: /* empty */	%prec WHILE
 	| FN words brace
 	| FN words
 
-optcaret: /* empty */ | '^'
+optcaret: /* empty */ %prec '^' | '^'
 
-simple: first | simple word | simple redir
+simple: first | first args
+
+args: arg | args arg
+
+arg: word | redir
 
 first: comword | first '^' sword
 
@@ -2018,7 +2023,7 @@ comword: '$' sword
 	| WORD
 
 keyword: FOR | IN | WHILE | IF | SWITCH
-	| FN | ELSE | CASE | TWIDDLE | BANG | SUBSHELL
+	| FN | ELSE | CASE | TWIDDLE | BANG | SUBSHELL | '='
 
 words: /* empty */ | words word
 
