@@ -67,8 +67,10 @@ extern void rc_raise(ecodes e) {
 		exit(1); /* child processes exit on an error/signal */
 	for (; estack != NULL; estack = estack->prev)
 		if (estack->e != e) {
-			if (e == eBreak && estack->e != eArena && estack->e != eVarstack && estack->e != eContinue)
+			if (e == eBreak && !(estack->e == eArena || estack->e == eVarstack || estack->e == eContinue))
 				rc_error("break outside of loop");
+			else if (e == eContinue && !(estack->e == eArena || estack->e == eVarstack /*|| estack->e == eBreak*/))
+				rc_error("continue outside of loop");
 			else if (e == eReturn && estack->e == eError) /* can return from loops inside functions */
 				rc_error("return outside of function");
 			switch (estack->e) {
