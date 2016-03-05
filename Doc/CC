@@ -22,7 +22,7 @@ fn Compile Link { opts=() cmd=() securityOpts=() {
   #--------------------------------------------------------------------
   securityOpts=(
     -fPIE
-    ## -fstack-protector   ## does not work on gregorio
+    -fstack-protector   ## does not work on gregorio
   )
   if (~ $0 Link) {
     securityOpts=(
@@ -120,6 +120,9 @@ if ($AddOn) {
 Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT tripping.o -MD -MP -MF .deps/tripping.Tpo -c -o tripping.o tripping.c
 Link -Wall -g    -o tripping tripping.o  
 
+
+
+
 ########################################################################################
 ########################################################################################
 } else {
@@ -151,18 +154,15 @@ Comp heredoc
 Comp input
 Comp lex
 Comp list
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT main.o -MD -MP -MF .deps/main.Tpo -c -o main.o 
 Comp main
 Comp match
 Comp nalloc
 Comp open
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT parse.o -MD -MP -MF .deps/parse.Tpo -c -o parse.o 
 Comp parse
 if ($AddOn) {
   Comp let.tab
 }
 Comp print
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT redir.o -MD -MP -MF .deps/redir.Tpo -c -o redir.o 
 Comp redir
 Comp signal
 Comp status
