@@ -22,7 +22,7 @@ fn Compile Link { opts=() cmd=() securityOpts=() {
   #--------------------------------------------------------------------
   securityOpts=(
     -fPIE
-    -fstack-protector   ## does not work on gregorio
+    -fstack-protector   ## does not work on older systems
   )
   if (~ $0 Link) {
     securityOpts=(
@@ -48,155 +48,81 @@ fn Comp Lnk { f=$1 {
   }
 }}
 
-
-
-if (false) {
 ########################################################################################
+########################################################################################
+
+
+########################################################################################
+for (s in mksignal mkstatval) {
+  Comp $s
+  Lnk $s
+}
+
 ## Signal names for sigmsgs.c, must be done before compiling rc
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT mksignal.o -MD -MP -MF .deps/mksignal.Tpo -c -o mksignal.o mksignal.c
-Link -Wall -g    -o mksignal mksignal.o  
 ./mksignal
 
-########################################################################################
 ## Status value defines, must be done before compiling rc
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT mkstatval.o -MD -MP -MF .deps/mkstatval.Tpo -c -o mkstatval.o mkstatval.c
-Link -Wall -g    -o mkstatval mkstatval.o  
+## Making mkstatval does not depend on singals created by mksignal
 ./mkstatval > statval.h
-
 
 ########################################################################################
 ## Compile rc source
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT builtins.o -MD -MP -MF .deps/builtins.Tpo -c -o builtins.o builtins.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT except.o -MD -MP -MF .deps/except.Tpo -c -o except.o except.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT exec.o -MD -MP -MF .deps/exec.Tpo -c -o exec.o exec.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT fn.o -MD -MP -MF .deps/fn.Tpo -c -o fn.o fn.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT footobar.o -MD -MP -MF .deps/footobar.Tpo -c -o footobar.o footobar.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT getopt.o -MD -MP -MF .deps/getopt.Tpo -c -o getopt.o getopt.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT glob.o -MD -MP -MF .deps/glob.Tpo -c -o glob.o glob.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT glom.o -MD -MP -MF .deps/glom.Tpo -c -o glom.o glom.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT hash.o -MD -MP -MF .deps/hash.Tpo -c -o hash.o hash.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT heredoc.o -MD -MP -MF .deps/heredoc.Tpo -c -o heredoc.o heredoc.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT input.o -MD -MP -MF .deps/input.Tpo -c -o input.o input.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT lex.o -MD -MP -MF .deps/lex.Tpo -c -o lex.o lex.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT list.o -MD -MP -MF .deps/list.Tpo -c -o list.o list.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT main.o -MD -MP -MF .deps/main.Tpo -c -o main.o main.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT match.o -MD -MP -MF .deps/match.Tpo -c -o match.o match.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT nalloc.o -MD -MP -MF .deps/nalloc.Tpo -c -o nalloc.o nalloc.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT open.o -MD -MP -MF .deps/open.Tpo -c -o open.o open.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT parse.o -MD -MP -MF .deps/parse.Tpo -c -o parse.o parse.c
+sources=(
+  builtins
+  except
+  exec
+  fn
+  footobar
+  getopt
+  glob
+  glom
+  hash
+  heredoc
+  input
+  lex
+  list
+  main
+  match
+  nalloc
+  open
+  parse
+  print
+  redir
+  signal
+  status
+  tree
+  utils
+  var
+  wait
+  walk
+  which
+  sigmsgs
+  edit-null
+  system
+)
+
 if ($AddOn) {
-  Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT let.tab.o -MD -MP -MF .deps/let.tab.Tpo -c -o let.tab.o let.tab.c
+  sources=(
+    $sources
+    addon
+    let.tab
+  )
 }
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT print.o -MD -MP -MF .deps/print.Tpo -c -o print.o print.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT redir.o -MD -MP -MF .deps/redir.Tpo -c -o redir.o redir.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT signal.o -MD -MP -MF .deps/signal.Tpo -c -o signal.o signal.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT status.o -MD -MP -MF .deps/status.Tpo -c -o status.o status.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT tree.o -MD -MP -MF .deps/tree.Tpo -c -o tree.o tree.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT utils.o -MD -MP -MF .deps/utils.Tpo -c -o utils.o utils.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT var.o -MD -MP -MF .deps/var.Tpo -c -o var.o var.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT wait.o -MD -MP -MF .deps/wait.Tpo -c -o wait.o wait.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT walk.o -MD -MP -MF .deps/walk.Tpo -c -o walk.o walk.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT which.o -MD -MP -MF .deps/which.Tpo -c -o which.o which.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT sigmsgs.o -MD -MP -MF .deps/sigmsgs.Tpo -c -o sigmsgs.o sigmsgs.c
-if ($AddOn) {
-  Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT addon.o -MD -MP -MF .deps/addon.Tpo -c -o addon.o addon.c
-}
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT edit-null.o -MD -MP -MF .deps/edit-null.Tpo -c -o edit-null.o edit-null.c
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT system.o -MD -MP -MF .deps/system.Tpo -c -o system.o system.c
+
 
 ########################################################################################
 ## Link rc
-rc_objs_no_addon=(builtins.o except.o exec.o fn.o footobar.o getopt.o glob.o glom.o hash.o heredoc.o input.o lex.o list.o main.o match.o nalloc.o open.o parse.o print.o redir.o signal.o status.o tree.o utils.o var.o wait.o walk.o which.o sigmsgs.o edit-null.o  system.o)
-rc_objs_addon=(addon.o let.tab.o)
+rc_objs = $sources^.o
 
-if ($AddOn) {
-  Link -Wall -g    -o rc     $rc_objs_no_addon  $rc_objs_addon  
-} else {
-  Link -Wall -g    -o rc     $rc_objs_no_addon
+########################################################################################
+for (s in $sources) {
+  Comp $s
 }
-
-########################################################################################
-## Make test (trip)
-Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT tripping.o -MD -MP -MF .deps/tripping.Tpo -c -o tripping.o tripping.c
-Link -Wall -g    -o tripping tripping.o  
-
-
-
-
-########################################################################################
-########################################################################################
-} else {
-########################################################################################
-## Signal names for sigmsgs.c, must be done before compiling rc
-Comp mksignal
-Lnk  mksignal
-./mksignal
-
-########################################################################################
-## Status value defines, must be done before compiling rc
-Comp mkstatval
-Lnk  mkstatval
-./mkstatval > statval.h
-
-
-########################################################################################
-## Compile rc source
-Comp builtins
-Comp except
-Comp exec
-Comp fn
-Comp footobar
-Comp getopt
-Comp glob
-Comp glom
-Comp hash
-Comp heredoc
-Comp input
-Comp lex
-Comp list
-Comp main
-Comp match
-Comp nalloc
-Comp open
-Comp parse
-if ($AddOn) {
-  Comp let.tab
-}
-Comp print
-Comp redir
-Comp signal
-Comp status
-Comp tree
-Comp utils
-Comp var
-Comp wait
-Comp walk
-Comp which
-Comp sigmsgs
-if ($AddOn) {
-  Comp addon
-}
-Comp edit-null
-Comp system
-
-########################################################################################
-## Link rc
-rc_objs_no_addon=(builtins.o except.o exec.o fn.o footobar.o getopt.o glob.o glom.o hash.o heredoc.o input.o lex.o list.o main.o match.o nalloc.o open.o parse.o print.o redir.o signal.o status.o tree.o utils.o var.o wait.o walk.o which.o sigmsgs.o edit-null.o  system.o)
-rc_objs_addon=(addon.o let.tab.o)
-
-if ($AddOn) {
-  Link -Wall -g    -o rc     $rc_objs_no_addon  $rc_objs_addon  
-} else {
-  Link -Wall -g    -o rc     $rc_objs_no_addon
-}
+Link -Wall -g    -o rc     $rc_objs
 
 ########################################################################################
 ## Make test (trip)
 Comp tripping
 Lnk tripping
 
-}
- 
-
- 
 
