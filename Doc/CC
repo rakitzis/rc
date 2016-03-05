@@ -1,6 +1,6 @@
 ########################################################################################
-Optimization=()
-Optimization=-O2
+OptimizationOpts=()
+OptimizationOpts=-O2
 
 AddOn=false
 AddOn=true
@@ -15,24 +15,28 @@ LangOpts=(
   -m64
 )
 
+opts = ($LangOpts $OptimizationOpts)
+
+SecurityCompOpts=(
+  -fPIE
+  -fstack-protector   ## does not work on older systems
+)
+SecurityLinkOpts=(
+  -pie 
+  -Wl,-z,now,-z,relro  
+)
+
 ########################################################################################
 ########################################################################################
-fn Compile Link { opts=() cmd=() securityOpts=() {
-  opts = ($LangOpts $Optimization)
+fn Compile Link { cmd=() securityOpts=() {
   #--------------------------------------------------------------------
-  securityOpts=(
-    -fPIE
-    -fstack-protector   ## does not work on older systems
-  )
   if (~ $0 Link) {
-    securityOpts=(
-      $securityOpts
-      -pie 
-      -Wl,-z,now,-z,relro  
-    )
+    securityOpts=( $SecurityCompOpts )
+  } else {
+    securityOpts=( $SecurityCompOpts $SecurityLinkOpts)
   }
   #--------------------------------------------------------------------
-  ####gcc $opts -DHAVE_CONFIG_H -I.    -fPIE  -fstack-protector -Wall -g $Optimization -MT $f.o -MD -MP -MF .deps/$f.Tpo -c -o $f.o $f.c
+  ####gcc $opts -DHAVE_CONFIG_H -I.    -fPIE  -fstack-protector -Wall -g $OptimizationOpts -MT $f.o -MD -MP -MF .deps/$f.Tpo -c -o $f.o $f.c
 
   cmd = (gcc $opts $securityOpts  $*)
   echo $cmd
