@@ -15,6 +15,12 @@ LangOpts=(
   -m64
 )
 
+if (clang --version >/dev/null >[2]/dev/null) {
+  COMPILER=clang
+} else {
+  COMPILER=gcc
+}
+
 opts = ($LangOpts $OptimizationOpts)
 
 SecurityCompOpts=(
@@ -31,14 +37,14 @@ SecurityLinkOpts=(
 fn Compile Link { cmd=() securityOpts=() {
   #--------------------------------------------------------------------
   if (~ $0 Link) {
-    securityOpts=( $SecurityCompOpts )
+    securityOpts=( $SecurityLinkOpts)
   } else {
-    securityOpts=( $SecurityCompOpts $SecurityLinkOpts)
+    securityOpts=( $SecurityCompOpts )
   }
   #--------------------------------------------------------------------
   ####gcc $opts -DHAVE_CONFIG_H -I.    -fPIE  -fstack-protector -Wall -g $OptimizationOpts -MT $f.o -MD -MP -MF .deps/$f.Tpo -c -o $f.o $f.c
 
-  cmd = (gcc $opts $securityOpts  $*)
+  cmd = ($COMPILER $opts $securityOpts  $*)
   echo $cmd
   $cmd
 }}
