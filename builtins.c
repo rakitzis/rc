@@ -41,7 +41,9 @@ static struct {
 	{ b_break,	"break" },
 	{ b_builtin,	"builtin" },
 	{ b_cd,		"cd" },
+#ifdef RC_ADDON
 	{ b_continue,	"continue" },
+#endif
 #if RC_ECHO
 	{ b_echo,	"echo" },
 #endif
@@ -260,6 +262,7 @@ static void b_break(char **av) {
 
 /* raise a "continue" exception */
 
+#ifdef RC_ADDON
 static void b_continue(char **av) {
 	if (av[1] != NULL) {
 		arg_count("continue");
@@ -267,6 +270,7 @@ static void b_continue(char **av) {
 	}
 	rc_raise(eContinue);
 }
+#endif
 
 /* shift $* n places (default 1) */
 
