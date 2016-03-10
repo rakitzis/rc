@@ -1,9 +1,10 @@
 ########################################################################################
+AddOn=false
+AddOn=true    ## for builtins: let, kill
+
+########################################################################################
 OptimizationOpts=()
 OptimizationOpts=-O2
-
-AddOn=false
-AddOn=true
 
 LangOpts=(
   -m32 '-std=c99'
@@ -15,40 +16,73 @@ LangOpts=(
   -m64
 )
 
-opts = ($LangOpts $OptimizationOpts)
+CommonOpts = ($LangOpts $OptimizationOpts)
 
-SecurityCompOpts=(
+########################################################################################
+SecurityCompileOpts=(
   -fPIE
   -fstack-protector   ## does not work on older systems
 )
+
 SecurityLinkOpts=(
   -pie 
   -Wl,-z,now,-z,relro  
 )
 
 ########################################################################################
+RegularCompileOpts=(
+  -DHAVE_CONFIG_H
+  -I.
+  -Wall -g  
+  -MD -MP
+)
+RegularLinkOpts=(
+  -Wall -g
+)
+
 ########################################################################################
-fn Compile Link { cmd=() securityOpts=() {
+CompileOpts = (
+  $CommonOpts
+  $RegularCompileOpts
+  $SecurityCompileOpts
+)
+LinkOpts=(
+  $CommonOpts
+  $RegularLinkOpts
+  $SecurityLinkOpts
+)
+
+########################################################################################
+if (clang --version >/dev/null >[2]/dev/null) {
+  COMPILER=clang
+} else {
+  COMPILER=gcc
+}
+
+########################################################################################
+########################################################################################
+fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
   #--------------------------------------------------------------------
-  if (~ $0 Link) {
-    securityOpts=( $SecurityCompOpts )
+  if (~ $0 LinkWithOpts) {
+    allOpts = ($LinkOpts)
   } else {
-    securityOpts=( $SecurityCompOpts $SecurityLinkOpts)
+    allOpts = ($CompileOpts)
   }
   #--------------------------------------------------------------------
-  ####gcc $opts -DHAVE_CONFIG_H -I.    -fPIE  -fstack-protector -Wall -g $OptimizationOpts -MT $f.o -MD -MP -MF .deps/$f.Tpo -c -o $f.o $f.c
+  ### gcc $opts -DHAVE_CONFIG_H -I.    -fPIE  -fstack-protector -Wall -g $OptimizationOpts -MT $f.o -MD -MP -MF .deps/$f.Tpo -c -o $f.o $f.c
 
-  cmd = (gcc $opts $securityOpts  $*)
+  cmd = ($COMPILER $allOpts $*)
   echo $cmd
   $cmd
 }}
 
 ########################################################################################
-fn Comp Lnk { f=$1 {
-  if (~ $0 Comp) {
-    Compile -DHAVE_CONFIG_H -I.    -Wall -g  -MT $f.o -MD -MP -MF .deps/$f.Tpo -c -o $f.o $f.c
+fn Compile LinkOneObj { f=$1 {
+  if (~ $0 Compile) {
+    #CompileWithOpts -DHAVE_CONFIG_H -I.    -Wall -g  -MT $f.o -MD -MP -MF .deps/$f.Tpo -c -o $f.o $f.c
+    CompileWithOpts   -MT $f.o -MF .deps/$f.Tpo -c -o $f.o $f.c
   } else {
-    Link -Wall -g    -o $f $f.o  
+    LinkWithOpts      -o $f $f.o  
   }
 }}
 
@@ -58,8 +92,8 @@ fn Comp Lnk { f=$1 {
 
 ########################################################################################
 for (s in mksignal mkstatval) {
-  Comp $s
-  Lnk $s
+  Compile $s
+  LinkOneObj $s
 }
 
 ## Signal names for sigmsgs.c, must be done before compiling rc
@@ -70,7 +104,7 @@ for (s in mksignal mkstatval) {
 ./mkstatval > statval.h
 
 ########################################################################################
-## Compile rc source
+## CompileWithOpts rc source
 sources=()
 
 if ($AddOn) {
@@ -126,13 +160,13 @@ rc_objs = $sources^.o
 
 ########################################################################################
 for (s in $sources) {
-  Comp $s
+  Compile $s
 }
-Link -Wall -g    -o rc     $rc_objs
+LinkWithOpts -o rc     $rc_objs
 
 ########################################################################################
 ## Make test (trip)
-Comp tripping
-Lnk tripping
+Compile tripping
+LinkOneObj tripping
 
 
