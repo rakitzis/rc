@@ -21,6 +21,12 @@
 #include "rlimit.h"
 #include "sigmsgs.h"
 
+#ifdef RC_ADDON
+#define RC_CONTINUE 1
+#else
+#undef RC_CONTINUE
+#endif
+
 static void b_break(char **), b_cd(char **), b_eval(char **), b_exit(char **),
         b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
         b_wait(char **), b_whatis(char **);
@@ -33,7 +39,7 @@ static void b_limit(char **);
 static void b_echo(char **);
 #endif
 
-#ifdef RC_ADDON
+#ifdef RC_CONTINUE
 static void b_continue(char **);
 #endif
 
@@ -45,7 +51,7 @@ static struct {
 	{ b_break,	"break" },
 	{ b_builtin,	"builtin" },
 	{ b_cd,		"cd" },
-#ifdef RC_ADDON
+#ifdef RC_CONTINUE
 	{ b_continue,	"continue" },
 #endif
 #if RC_ECHO
@@ -266,7 +272,7 @@ static void b_break(char **av) {
 
 /* raise a "continue" exception */
 
-#ifdef RC_ADDON
+#ifdef RC_CONTINUE
 static void b_continue(char **av) {
 	if (av[1] != NULL) {
 		arg_count("continue");
