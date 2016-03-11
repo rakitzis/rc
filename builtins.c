@@ -89,11 +89,11 @@ extern builtin_t *isbuiltin(CONST char *s) {
 		const int m = (i + j)/2;
 		const int c = strcmp_fast(builtins[m].name, s);
 		if (c > 0) {
-		  j = m;
+			j = m;
 		} else if (c < 0) {
-		  i = m + 1;
+			i = m + 1;
 		} else {
-		  return builtins[m].p;
+			return builtins[m].p;
 		}
 	}
 
