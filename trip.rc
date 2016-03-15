@@ -715,7 +715,14 @@ x=$tmpdir/qux*/foo
 
 x=`{echo a b c}
 y=${echo a b c}
-if (! ~ $^x $^y) {
+if (! ~ $#x 3) {
+  fail 'Lists produced by `{} should have lenght 3'
+}
+if (! ~ $#y 3) {
+  fail 'Lists produced by ${} should have lenght 3'
+}
+
+if (! ~ $x(1)-$x(2):$x(3) $y(1)-$y(2):$y(3)) {
   fail '`{echo a b c} does not match ${echo a b c}'
 }
 
