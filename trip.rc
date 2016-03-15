@@ -713,6 +713,12 @@ x=$tmpdir/qux/foo*
 x=$tmpdir/qux*/foo
 ~ $x $tmpdir/qux/foo || { rm -rf $tmpdir/qux; fail broken symlink globbing }
 
+x=`{echo a b c}
+y=${echo a b c}
+if (! ~ $^x $^y) {
+  fail '`{echo a b c} does not match ${echo a b c}'
+}
+
 #############################################################################
 q=''''
 C=$q^While-continue$q
