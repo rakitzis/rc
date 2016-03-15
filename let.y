@@ -95,7 +95,9 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
     | expr '@' expr
         { long v3 = $3;
           if (v3 < 0) {
-            leterror("Negative power");
+            if (! YYRECOVERING) {
+              leterror("Negative power");
+	    }
             YYABORT;
           }
           $$ = letpwr($1, v3);
