@@ -31,7 +31,7 @@ Node *parsetree;	/* not using yylval because bison declares it as an auto */
 	struct Pipe pipe;
 	struct Dup dup;
 	struct Word word;
-	const char *keyword;
+	CONST char *keyword;
 }
 
 %type <redir> REDIR SREDIR
@@ -137,6 +137,7 @@ comword	: '$' sword			{ $$ = mk(nVar,$2); }
 	| FLAT sword			{ $$ = mk(nFlat, $2); }
 	| '`' sword			{ $$ = mk(nBackq,nolist,$2); }
 	| '`' brace			{ $$ = mk(nBackq,nolist,$2); }
+	| '$' brace			{ $$ = mk(nBackq,nolist,$2); }
 	| BACKBACK word	brace		{ $$ = mk(nBackq,$2,$3); }
 	| BACKBACK word	sword		{ $$ = mk(nBackq,$2,$3); }
 	| '(' nlwords ')'		{ $$ = $2; }

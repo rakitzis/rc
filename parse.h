@@ -1,7 +1,3 @@
-#ifndef YYERRCODE
-#define YYERRCODE 256
-#endif
-
 #define ANDAND 257
 #define BACKBACK 258
 #define BANG 259

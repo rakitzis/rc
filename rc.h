@@ -344,15 +344,12 @@ extern char *nprint(const char *fmt,...);
 /* parse.c (parse.y) */
 extern Node *parsetree;
 
-#if 0
+#if 1
 extern int yyparse(void);
 #else
-typedef int (*lexer_ptr)(void);
-/* or 
-typedef int (*lexer_ptr)(YYSTYPE*);
-*/
-#define YYPARSE_PARAM_TYPE lexer_ptr
-#define YYPARSE_PARAM yylex
+typedef int (*lexer_ptr)(void); /* or typedef int (*lexer_ptr)(YYSTYPE*); */
+#define YYPARSE_PARAM_TYPE   lexer_ptr
+#define YYPARSE_PARAM        yylex
 /* #define YYPARSE_PARAM_ARG YYPARSE_PARAM_TYPE YYPARSE_PARAM */
 extern int yyparse(YYPARSE_PARAM_TYPE YYPARSE_PARAM);
 #endif
