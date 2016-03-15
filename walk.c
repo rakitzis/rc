@@ -124,8 +124,8 @@ top:	sigchk();
 			cont_data.jb = &cont_jb;
 			except(eContinue, cont_data, &cont_stack);
 			if (! sigsetjmp(cont_jb.j, 1)) {
-						walk(n->u[1].p, TRUE);
-						unexcept(/* eContinue */);
+				walk(n->u[1].p, TRUE);
+				unexcept(/* eContinue */);
 			}
 			testtrue = walk(n->u[0].p, TRUE);
 			unexcept(); /* eArena */
@@ -154,8 +154,8 @@ top:	sigchk();
 			cont_data.jb = &cont_jb;
 			except(eContinue, cont_data, &cont_stack);
 			if (! sigsetjmp(cont_jb.j, 1)) {
-						walk(n->u[2].p, TRUE);
-						unexcept(/* eContinue */);
+				walk(n->u[2].p, TRUE);
+				unexcept(/* eContinue */);
 			}
 			unexcept(); /* eArena */
 		}

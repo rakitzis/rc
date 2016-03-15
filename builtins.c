@@ -217,7 +217,7 @@ static void b_break(char **av) {
 	rc_raise(eBreak);
 }
 
-/* raise a "continue" exception for breaking out of for and while loops */
+/* raise a "continue" exception to finish early an iteration of 'for' and 'while' loops */
 
 static void b_continue(char **av) {
 	if (av[1] != NULL) {
