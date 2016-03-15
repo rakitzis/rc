@@ -146,13 +146,25 @@ fn testManyLets { numEntries=() {
     }
   }
 
-  letExprErr '2 / 0'   'division by 0'
-  letExprErr '2 % 0'   'modulo 0'
-  letExprErr '2 @ (-1)' 'negative power'
+  q=''''
 
-  letExprErr '2 @ (-+1)' 'invalid syntax'
-  letExprErr '2 ^' 'invalid syntax'
-  letExprErr '*2' 'invalid syntax'
+  e='2 / 0'
+  letExprErr $e $q$e$q^': division by 0'
+
+  e= '2 % 0'
+  letExprErr $e $q$e$q^': modulo 0'
+
+  e= '2 @ (-1)' 
+  letExprErr $e $q$e$q^': negative power'
+
+  e= '2 @ (-+1)' 
+  letExprErr $e $q$e^$q': invalid syntax'
+
+  e= '2 ^' 
+  letExprErr $e $q$e$q^': invalid syntax'
+
+  e= '*2' 
+  letExprErr $e $q$e$q^': invalid syntax'
 
 }}
 testManyLets
