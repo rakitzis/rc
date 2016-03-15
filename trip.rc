@@ -596,4 +596,53 @@ x=$tmpdir/qux/foo*
 x=$tmpdir/qux*/foo
 ~ $x $tmpdir/qux/foo || { rm -rf $tmpdir/qux; fail broken symlink globbing }
 
+#############################################################################
+q=''''
+C=$q^While-continue$q
+L=()
+
+ten = (1 2 3 4 5 6 7 8 9 10)
+for (n in $ten) {
+  if (~ $n 2 3) {
+    continue
+  }
+  L=($L $n)
+}
+if (! ~ $#L 8) {
+  fail Wrong length of list from $C
+}
+if (! ~ $L(1) 1) {
+  fail First element of $C list is not 1: $L(1)
+}
+if (! ~ $L(2) 4) {
+  fail Second element of $C list is not 4: $L(2)
+}
+C=() L=()
+
+#############################################################################
+C=$q^For-continue$q
+L=()
+
+for (x in a b c d e f g) {
+  if (~ $x c f) {
+    continue
+  }
+  L=($L $x)
+}
+if (! ~ $#L 5) {
+  fail Wrong length of list from $C
+}
+if (! ~ $L(1) a) {
+  fail First element of $C list is not a: $L(1)
+}
+if (! ~ $L(3) d) {
+  fail Third element of $C list is not d: $L(3)
+}
+if (! ~ $L(5) g) {
+  fail Fifth element of $C list is not g: $L(5)
+}
+C=() L=()
+
+#############################################################################
+
 rm -rf $tmpdir

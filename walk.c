@@ -115,11 +115,18 @@ top:	sigchk();
 		jbreak.jb = &j;
 		except(eBreak, jbreak, &e1);
 		do {
-			Edata block;
+			Edata block, cont_data;
+			Estack cont_stack;
+			Jbwrap cont_jb;
 			block.b = newblock();
 			cond = oldcond;
 			except(eArena, block, &e2);
-			walk(n->u[1].p, TRUE);
+			cont_data.jb = &cont_jb;
+			except(eContinue, cont_data, &cont_stack);
+			if (! sigsetjmp(cont_jb.j, 1)) {
+						walk(n->u[1].p, TRUE);
+						unexcept(/* eContinue */);
+			}
 			testtrue = walk(n->u[0].p, TRUE);
 			unexcept(); /* eArena */
 			cond = TRUE;
@@ -138,11 +145,18 @@ top:	sigchk();
 		jbreak.jb = &j;
 		except(eBreak, jbreak, &e1);
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			Edata block;
+			Edata block, cont_data;
+			Estack cont_stack;
+			Jbwrap cont_jb;
 			assign(var, word(l->w, NULL), FALSE);
 			block.b = newblock();
 			except(eArena, block, &e2);
-			walk(n->u[2].p, TRUE);
+			cont_data.jb = &cont_jb;
+			except(eContinue, cont_data, &cont_stack);
+			if (! sigsetjmp(cont_jb.j, 1)) {
+						walk(n->u[2].p, TRUE);
+						unexcept(/* eContinue */);
+			}
 			unexcept(); /* eArena */
 		}
 		unexcept(); /* eBreak */
