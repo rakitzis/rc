@@ -1159,6 +1159,11 @@ substitution:
 returns a list formed from the standard output of the command in braces.
 .Cr $ifs
 is used to split the output into list elements.
+Alternative syntax for backquote substitution is:
+.Ds
+.Cr "${ command }"
+.De
+.PP
 By default,
 .Cr $ifs
 has the value space-tab-newline.
