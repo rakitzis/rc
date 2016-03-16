@@ -244,7 +244,7 @@ if (~ `{echo -n} ?)
 if (!~ `` '' {echo --} $nl)
 	fail echo --
 
-pwd=`/bin/pwd cdpath=/ { # some local assignments
+Pwd=`/bin/pwd cdpath=/ { # some local assignments
 	home=/tmp cd
 	if (!~ `/bin/pwd `{sh -c 'cd /tmp; /bin/pwd'})
 		fail could not cd to '$home'
@@ -253,8 +253,8 @@ pwd=`/bin/pwd cdpath=/ { # some local assignments
 	if (!~ `/bin/pwd `{sh -c 'cd /tmp; /bin/pwd'})
 		fail could not cd to /tmp
 
-	cd $pwd
-	if (!~ `/bin/pwd `{sh -c 'cd $pwd; /bin/pwd'})
+	cd $Pwd
+	if (!~ `/bin/pwd `{sh -c 'cd $Pwd; /bin/pwd'})
 		fail could not cd to current directory!
 }
 
@@ -643,6 +643,21 @@ if (! ~ $L(5) g) {
 }
 C=() L=()
 
+#############################################################################
+L=()
+for (x in a b c d e f g) {
+  if (~ $x b d) {
+    continue
+  }
+  L=($L $x)
+  if (~ $x f) {
+    break;
+  }
+}
+
+if (! ~ $^L 'a c e f') {
+  fail List should be '(a c e f)', but is $L
+}
 #############################################################################
 
 rm -rf $tmpdir
