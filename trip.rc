@@ -725,6 +725,7 @@ x=$tmpdir/qux/foo*
 x=$tmpdir/qux*/foo
 ~ $x $tmpdir/qux/foo || { rm -rf $tmpdir/qux; fail broken symlink globbing }
 
+#############################################################################
 x=`{echo a b c}
 y=${echo a b c}
 if (! ~ $#x 3) {
@@ -736,6 +737,13 @@ if (! ~ $#y 3) {
 
 if (! ~ $x(1)-$x(2):$x(3) $y(1)-$y(2):$y(3)) {
   fail '`{echo a b c} does not match ${echo a b c}'
+}
+
+x=1
+y=x
+z=$$${echo y}
+if (! ~ $z 1) {
+  fail '$$${echo y}' should be 1, 'z='$z, 'y='$y, 'x='$x
 }
 
 #############################################################################
