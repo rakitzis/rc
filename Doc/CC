@@ -31,6 +31,7 @@ SecurityLinkOpts=(
 
 ########################################################################################
 RegularCompileOpts=(
+  ## -DYYDEBUG'='1  ## To compile parsers with debug. At run time define env variable 'YYDEBUG=1'
   -DHAVE_CONFIG_H
   -I.
   -Wall -g  
