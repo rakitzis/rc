@@ -48,17 +48,16 @@ if (false) {					# WARNING: this differs from sh
 ######################################################################
 fn testOneLet { e=$1 v=$2 a=() {
   let a $e
-  if (! ~ $a $v) {
+  if (!~ $a $v) {
     fail let: $e evaluates to $a, should be $v
   }
 }}
 
 ######################################################################
-fn letExprErr { exp=$1 msg=$2 s=() n=() {
-  n=()
-  expect error $msg
+fn letExprErr { exp=$1 msg=$2 s=() n=() q='''' {
+  expect error $q$exp$q^': '^$msg
   let n $exp; s = $status
-  if (! ~ $n ()) {
+  if (!~ $n ()) {
     fail 'n assigned value after error in expr '^$exp
   }
   if (~ $s 0) {
@@ -148,23 +147,17 @@ fn testManyLets { numEntries=() {
 
   q=''''
 
-  e='2 / 0'
-  letExprErr $e $q$e$q^': division by 0'
+  letExprErr  '2 / 0'       'division by 0'
 
-  e= '2 % 0'
-  letExprErr $e $q$e$q^': modulo 0'
+  letExprErr  '2 % 0'       'modulo 0'
 
-  e= '2 @ (-1)' 
-  letExprErr $e $q$e$q^': negative power'
+  letExprErr  '2 @ (-1)'    'negative power'
 
-  e= '2 @ (-+1)' 
-  letExprErr $e $q$e^$q': invalid syntax'
+  letExprErr  '2 @ (-+1)'   'negative power since '$q'-+1'$q' == '$q'-(+1)'$q
 
-  e= '2 ^' 
-  letExprErr $e $q$e$q^': invalid syntax'
+  letExprErr  '2 ^'         'invalid expr syntax' 
 
-  e= '*2' 
-  letExprErr $e $q$e$q^': invalid syntax'
+  letExprErr  '*2'          'invalid expr syntax'
 
 }}
 testManyLets
@@ -728,21 +721,21 @@ x=$tmpdir/qux*/foo
 #############################################################################
 x=`{echo a b c}
 y=${echo a b c}
-if (! ~ $#x 3) {
+if (!~ $#x 3) {
   fail 'Lists produced by `{} should have lenght 3'
 }
-if (! ~ $#y 3) {
+if (!~ $#y 3) {
   fail 'Lists produced by ${} should have lenght 3'
 }
 
-if (! ~ $x(1)-$x(2):$x(3) $y(1)-$y(2):$y(3)) {
+if (!~ $x(1)-$x(2):$x(3) $y(1)-$y(2):$y(3)) {
   fail '`{echo a b c} does not match ${echo a b c}'
 }
 
 x=1
 y=x
 z=$$${echo y}
-if (! ~ $z 1) {
+if (!~ $z 1) {
   fail '$$${echo y}' should be 1, 'z='$z, 'y='$y, 'x='$x
 }
 
@@ -758,13 +751,13 @@ for (n in $ten) {
   }
   L=($L $n)
 }
-if (! ~ $#L 8) {
+if (!~ $#L 8) {
   fail Wrong length of list from $C
 }
-if (! ~ $L(1) 1) {
+if (!~ $L(1) 1) {
   fail First element of $C list is not 1: $L(1)
 }
-if (! ~ $L(2) 4) {
+if (!~ $L(2) 4) {
   fail Second element of $C list is not 4: $L(2)
 }
 C=() L=()
@@ -779,16 +772,16 @@ for (x in a b c d e f g) {
   }
   L=($L $x)
 }
-if (! ~ $#L 5) {
+if (!~ $#L 5) {
   fail Wrong length of list from $C
 }
-if (! ~ $L(1) a) {
+if (!~ $L(1) a) {
   fail First element of $C list is not a: $L(1)
 }
-if (! ~ $L(3) d) {
+if (!~ $L(3) d) {
   fail Third element of $C list is not d: $L(3)
 }
-if (! ~ $L(5) g) {
+if (!~ $L(5) g) {
   fail Fifth element of $C list is not g: $L(5)
 }
 C=() L=()
@@ -805,7 +798,7 @@ for (x in a b c d e f g) {
   }
 }
 
-if (! ~ $^L 'a c e f') {
+if (!~ $^L 'a c e f') {
   fail List should be '(a c e f)', but is $L
 }
 #############################################################################
