@@ -22,7 +22,7 @@ CommonOpts = ($LangOpts $OptimizationOpts)
 ########################################################################################
 SecurityCompileOpts=(
   -fPIE
-  #-fstack-protector   ## does not work on older systems
+  -fstack-protector   ## does not work on older systems (e.g., RedHat 4)
 )
 
 SecurityLinkOpts=(
@@ -32,7 +32,7 @@ SecurityLinkOpts=(
 
 ########################################################################################
 RegularCompileOpts=(
-  ## -DYYDEBUG'='1  ## To compile parsers with debug. At run time define env variable 'YYDEBUG=1'
+  ## -DYYDEBUG'='1  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
   -DHAVE_CONFIG_H
   -I.
   -Wall
@@ -40,6 +40,7 @@ RegularCompileOpts=(
   -MD
   -MP
 )
+
 RegularLinkOpts=(
   -Wall
   -g
@@ -51,6 +52,7 @@ CompileOpts = (
   $RegularCompileOpts
   $SecurityCompileOpts
 )
+
 LinkOpts=(
   $CommonOpts
   $RegularLinkOpts
@@ -74,8 +76,6 @@ fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
     allOpts = ($CompileOpts)
   }
   #--------------------------------------------------------------------
-  ### gcc $opts -DHAVE_CONFIG_H -I.    -fPIE  -fstack-protector -Wall -g $OptimizationOpts -MT $f.o -MD -MP -MF .deps/$f.Tpo -c -o $f.o $f.c
-
   cmd = ($COMPILER $allOpts $*)
   echo $cmd
   $cmd
@@ -84,7 +84,6 @@ fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
 ########################################################################################
 fn Compile LinkOneObj { f=$1 {
   if (~ $0 Compile) {
-    #CompileWithOpts -DHAVE_CONFIG_H -I.    -Wall -g  -MT $f.o -MD -MP -MF .deps/$f.Tpo -c -o $f.o $f.c
     CompileWithOpts   -MT $f.o -MF .deps/$f.Tpo -c -o $f.o $f.c
   } else {
     LinkWithOpts      -o $f $f.o  
@@ -160,13 +159,13 @@ sources=(
 
 
 ########################################################################################
-## Link rc
 rc_objs = $sources^.o
 
 ########################################################################################
 for (s in $sources) {
   Compile $s
 }
+## Link rc
 LinkWithOpts -o rc     $rc_objs
 
 ########################################################################################
