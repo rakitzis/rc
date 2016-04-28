@@ -21,7 +21,7 @@ CommonOpts = ($LangOpts $OptimizationOpts)
 ########################################################################################
 SecurityCompileOpts=(
   -fPIE
-  -fstack-protector   ## does not work on older systems
+  #-fstack-protector   ## does not work on older systems
 )
 
 SecurityLinkOpts=(
