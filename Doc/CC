@@ -4,10 +4,11 @@ AddOn=true    ## for builtins: let, kill
 
 ########################################################################################
 OptimizationOpts=()
-OptimizationOpts=-O2
+OptimizationOpts=(-O2)
 
 LangOpts=(
-  -m32 '-std=c99'
+  -m32
+  '-std=c99'
 )
 
 LangOpts=(
@@ -26,7 +27,7 @@ SecurityCompileOpts=(
 
 SecurityLinkOpts=(
   -pie 
-  -Wl,-z,now,-z,relro  
+  -Wl,-z,now,-z,relro   ## a single option / no spaces 
 )
 
 ########################################################################################
@@ -34,11 +35,14 @@ RegularCompileOpts=(
   ## -DYYDEBUG'='1  ## To compile parsers with debug. At run time define env variable 'YYDEBUG=1'
   -DHAVE_CONFIG_H
   -I.
-  -Wall -g  
-  -MD -MP
+  -Wall
+  -g  
+  -MD
+  -MP
 )
 RegularLinkOpts=(
-  -Wall -g
+  -Wall
+  -g
 )
 
 ########################################################################################
