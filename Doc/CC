@@ -109,13 +109,17 @@ for (s in mksignal mkstatval) {
 
 ########################################################################################
 ## CompileWithOpts rc source
-sources=()
 
 if ($AddOn) {
-  sources=($sources addon)
+  addon=(addon)
+  let=(let.tab)
+} else {
+  addon=()
+  let=()
 }
+
 sources=(
-  $sources
+ $addon
   builtins
   except
   exec
@@ -127,14 +131,7 @@ sources=(
   hash
   heredoc
   input
-)
-
-if ($AddOn) {
-  sources=($sources let.tab)
-}
-
-sources=(
-  $sources
+ $let
   lex
   list
   main
