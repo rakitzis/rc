@@ -4,6 +4,7 @@ AddOn=true    ## for builtins: let, kill
 
 ########################################################################################
 OptimizationOpts=()
+OptimizationOpts=(-O3)
 OptimizationOpts=(-O2)
 
 LangOpts=(
@@ -39,6 +40,7 @@ RegularCompileOpts=(
   -g  
   -MD
   -MP
+  -pedantic
 )
 
 RegularLinkOpts=(
