@@ -40,7 +40,9 @@ RegularCompileOpts=(
   -g  
   -MD
   -MP
+
   -pedantic
+  # -Werror -Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
 )
 
 RegularLinkOpts=(
