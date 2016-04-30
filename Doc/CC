@@ -38,7 +38,10 @@ LangOpts=(
   -m64
 )
 
-CommonOpts = ($LangOpts $OptimizationOpts)
+CommonOpts = (
+  $LangOpts
+  $OptimizationOpts
+)
 
 ########################################################################################
 SecurityCompileOpts=(
@@ -56,14 +59,15 @@ RegularCompileOpts=(
   ## -DYYDEBUG'='1  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
   -DHAVE_CONFIG_H
   -I.
-  -Wall
   -g  
   -MD
   -MP
 
+  -Wall
   -pedantic
-   -Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
-  # -Werror
+  -Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
+  -Wno-unused-parameter
+  # -Werror  ## makes warnings errors
 )
 
 RegularLinkOpts=(
