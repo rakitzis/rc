@@ -741,29 +741,32 @@ if (!~ $z 1) {
 
 #############################################################################
 q=''''
-C=$q^While-continue$q
+C=$q^while-continue$q
 L=()
 
-ten = (1 2 3 4 5 6 7 8 9 10)
-for (n in $ten) {
-  if (~ $n 2 3) {
+ten = a^(1 2 3 4 5 6 7 8 9 10)
+i=1
+while (let $i' <= '$#ten) {
+  n=$ten($i)
+  let i $i+1
+  if (~ $n a2 a3) {
     continue
   }
   L=($L $n)
 }
 if (!~ $#L 8) {
-  fail Wrong length of list from $C
+  fail Wrong length of list from $C: $#L
 }
-if (!~ $L(1) 1) {
-  fail First element of $C list is not 1: $L(1)
+if (!~ $L(1) a1) {
+  fail First element of $C list is not a1: $L(1)
 }
-if (!~ $L(2) 4) {
-  fail Second element of $C list is not 4: $L(2)
+if (!~ $L(2) a4) {
+  fail Second element of $C list is not a4: $L(2)
 }
 C=() L=()
 
 #############################################################################
-C=$q^For-continue$q
+C=$q^for-continue$q
 L=()
 
 for (x in a b c d e f g) {
