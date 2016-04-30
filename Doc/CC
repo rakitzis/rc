@@ -1,11 +1,31 @@
 ########################################################################################
+FORCE_CLANG=false
+FORCE_GCC=false
+
+while (! ~ $#* 0) {
+  switch(x$1) {
+  case x-force_clang
+    FORCE_CLANG=true
+  case x-force_gcc
+    FORCE_GCC=true
+
+  case x-*
+    echo >[1=2] Bad option $1
+    exit 1
+  case *
+    break
+  }
+  shift
+}
+
+########################################################################################
 AddOn=false
 AddOn=true    ## for builtins: let, kill
 
 ########################################################################################
 OptimizationOpts=()
-OptimizationOpts=(-O3)
 OptimizationOpts=(-O2)
+OptimizationOpts=(-O3)
 
 LangOpts=(
   -m32
@@ -64,9 +84,15 @@ LinkOpts=(
 )
 
 ########################################################################################
-if (clang --version >/dev/null >[2]/dev/null) {
+if ($FORCE_CLANG) {
+  COMPILER=clang
+} else if ($FORCE_GCC) {
+  COMPILER=gcc
+  CompileOpts=($CompileOpts -Wclobbered)
+} else if (clang --version >/dev/null >[2]/dev/null) {
   COMPILER=clang
 } else {
+  CompileOpts=($CompileOpts -Wclobbered)
   COMPILER=gcc
 }
 

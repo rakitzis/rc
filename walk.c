@@ -24,7 +24,8 @@ static void dopipe(Node *);
 
 /* walk the parse-tree. "obvious". */
 
-extern bool walk(Node *volatile n, bool parent) {
+extern bool walk(Node *nd, bool parent) {
+  Node *volatile n = nd;
 top:	sigchk();
 	if (n == NULL) {
 		if (!parent)
