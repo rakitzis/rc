@@ -25,7 +25,7 @@ static void dopipe(Node *);
 /* walk the parse-tree. "obvious". */
 
 extern bool walk(Node *nd, bool parent) {
-  Node *volatile n = nd;
+	Node *volatile n = nd;
 top:	sigchk();
 	if (n == NULL) {
 		if (!parent)
@@ -106,7 +106,8 @@ top:	sigchk();
 		Edata jbreak;
 		Estack e1;
 
-		bool testtrue, oldcond = cond;
+		bool testtrue;
+		volatile bool oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) { /* prevent spurious breaks inside test */
 			cond = oldcond;
@@ -138,7 +139,7 @@ top:	sigchk();
 		break;
 	}
 	case nForin: {
-		List *volatile l, *var = glom(n->u[0].p);
+		List *volatile l, *volatile var = glom(n->u[0].p);
 		Jbwrap j;
 		Estack e1;
 		Edata jbreak;
