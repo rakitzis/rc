@@ -24,8 +24,8 @@ AddOn=true    ## for builtins: let, kill
 
 ########################################################################################
 OptimizationOpts=()
-OptimizationOpts=(-O2)
 OptimizationOpts=(-O3)
+OptimizationOpts=(-O2)
 
 LangOpts=(
   -m32

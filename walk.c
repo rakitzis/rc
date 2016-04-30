@@ -17,6 +17,9 @@ static bool haspreredir(Node *);
 static bool isallpre(Node *);
 static bool dofork(bool);
 static void dopipe(Node *);
+static bool while_body(Node *n);
+static void for_body(Node *n, List *l);
+
 
 /* Tail-recursive version of walk() */
 
@@ -25,7 +28,7 @@ static void dopipe(Node *);
 /* walk the parse-tree. "obvious". */
 
 extern bool walk(Node *nd, bool parent) {
-	Node *volatile n = nd;
+	Node *volatile n = nd; /* this volatile should not be necessary because setjmps() break; */
 top:	sigchk();
 	if (n == NULL) {
 		if (!parent)
@@ -105,9 +108,7 @@ top:	sigchk();
 		Jbwrap j;
 		Edata jbreak;
 		Estack e1;
-
-		bool testtrue;
-		volatile bool oldcond = cond;
+		bool testtrue, oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) { /* prevent spurious breaks inside test */
 			cond = oldcond;
@@ -118,20 +119,8 @@ top:	sigchk();
 		jbreak.jb = &j;
 		except(eBreak, jbreak, &e1);
 		do {
-			Edata block, cont_data;
-			Estack e2, cont_stack;
-			Jbwrap cont_jb;
-			block.b = newblock();
 			cond = oldcond;
-			except(eArena, block, &e2);
-			cont_data.jb = &cont_jb;
-			except(eContinue, cont_data, &cont_stack);
-			if (! sigsetjmp(cont_jb.j, 1)) {
-				walk(n->u[1].p, TRUE);
-				unexcept(eContinue);
-			}
-			testtrue = walk(n->u[0].p, TRUE);
-			unexcept(eArena);
+			testtrue = while_body(n);
 			cond = TRUE;
 		} while (testtrue);
 		cond = oldcond;
@@ -139,7 +128,7 @@ top:	sigchk();
 		break;
 	}
 	case nForin: {
-		List *volatile l, *volatile var = glom(n->u[0].p);
+		List *l;
 		Jbwrap j;
 		Estack e1;
 		Edata jbreak;
@@ -148,19 +137,7 @@ top:	sigchk();
 		jbreak.jb = &j;
 		except(eBreak, jbreak, &e1);
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			Edata block, cont_data;
-			Estack e2, cont_stack;
-			Jbwrap cont_jb;
-			assign(var, word(l->w, NULL), FALSE);
-			block.b = newblock();
-			except(eArena, block, &e2);
-			cont_data.jb = &cont_jb;
-			except(eContinue, cont_data, &cont_stack);
-			if (! sigsetjmp(cont_jb.j, 1)) {
-				walk(n->u[2].p, TRUE);
-				unexcept(eContinue);
-			}
-			unexcept(eArena);
+			for_body(n, l);
 		}
 		unexcept(eBreak);
 		break;
@@ -380,3 +357,40 @@ static void dopipe(Node *n) {
 	setpipestatus(stats, i);
 	sigchk();
 }
+
+static bool while_body(Node *nd) {
+	Node *volatile n = nd;
+	Edata block, cont_data;
+	Estack e2, cont_stack;
+	Jbwrap cont_jb;
+	bool testtrue;
+	block.b = newblock();
+	except(eArena, block, &e2);
+	cont_data.jb = &cont_jb;
+	except(eContinue, cont_data, &cont_stack);
+	if (! sigsetjmp(cont_jb.j, 1)) {
+		walk(n->u[1].p, TRUE);
+		unexcept(eContinue);
+	}
+	testtrue = walk(n->u[0].p, TRUE); /* n might be used after longjmp, need volatile */
+	unexcept(eArena);
+	return testtrue;
+}
+
+static void for_body(Node *n, List *l) {
+	List *var = glom(n->u[0].p);
+	Edata block, cont_data;
+	Estack e2, cont_stack;
+	Jbwrap cont_jb;
+	assign(var, word(l->w, NULL), FALSE);
+	block.b = newblock();
+	except(eArena, block, &e2);
+	cont_data.jb = &cont_jb;
+	except(eContinue, cont_data, &cont_stack);
+	if (! sigsetjmp(cont_jb.j, 1)) {
+		walk(n->u[2].p, TRUE);
+		unexcept(eContinue);
+	}
+	unexcept(eArena);
+}
+
