@@ -24,7 +24,7 @@ static void dopipe(Node *);
 
 /* walk the parse-tree. "obvious". */
 
-extern bool walk(Node *n, bool parent) {
+extern bool walk(Node *volatile n, bool parent) {
 top:	sigchk();
 	if (n == NULL) {
 		if (!parent)
@@ -137,7 +137,7 @@ top:	sigchk();
 		break;
 	}
 	case nForin: {
-		List *l, *var = glom(n->u[0].p);
+		List *volatile l, *var = glom(n->u[0].p);
 		Jbwrap j;
 		Estack e1;
 		Edata jbreak;
