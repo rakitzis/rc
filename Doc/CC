@@ -23,9 +23,13 @@ AddOn=false
 AddOn=true    ## for builtins: let, kill
 
 ########################################################################################
-OptimizationOpts=()
-OptimizationOpts=(-O3)
-OptimizationOpts=(-O2)
+if (~ $OPT ()) {
+  OptimizationOpts=()
+  OptimizationOpts=(-O3)
+  OptimizationOpts=(-O2)
+} else {
+  OptimizationOpts=(-O$OPT)
+}
 
 LangOpts=(
   -m32

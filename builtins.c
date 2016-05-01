@@ -34,10 +34,13 @@ static void b_echo(char **);
 #endif
 
 
-static struct {
+typedef struct BuiltinMap {
 	builtin_t *p;
 	CONST char *name;
-} builtins[] = {
+} BuiltinMap;
+
+static BuiltinMap
+builtins[] = {
 	{ b_dot,	"." },
 	{ b_break,	"break" },
 	{ b_builtin,	"builtin" },
@@ -78,17 +81,17 @@ extern bool q_builtins_ordered(void)
 }
 
 extern builtin_t *isbuiltin(CONST char *s) {
-	int i = 0, j = sizeof(builtins)/sizeof(builtins[0]);
+	const BuiltinMap *pi = &builtins[0], *pj = &builtins[sizeof(builtins)/sizeof(builtins[0])];
 
-	while (i < j) {
-		const int m = (i + j)/2;
-		const int c = strcmp_fast(builtins[m].name, s);
+	while (pi < pj) {
+		const BuiltinMap *const pm = pi + (pj - pi)/2;
+		const int c = strcmp_fast(pm->name, s);
 		if (c > 0) {
-			j = m;
+			pj = pm;
 		} else if (c < 0) {
-			i = m + 1;
+			pi = pm + 1;
 		} else {
-			return builtins[m].p;
+			return pm->p;
 		}
 	}
 
