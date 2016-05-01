@@ -27,8 +27,8 @@ static void for_body(Node *n, List *l);
 
 /* walk the parse-tree. "obvious". */
 
-extern bool walk(Node *nd, bool parent) {
-	Node *volatile n = nd; /* this volatile should not be necessary because setjmps() break; */
+extern bool walk(Node *n, bool parent) {
+	/*Node *volatile n = nd;*/ /* this volatile should not be necessary because setjmps() break; */
 top:	sigchk();
 	if (n == NULL) {
 		if (!parent)
