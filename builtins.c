@@ -42,7 +42,7 @@ static struct {
 	{ b_break,	"break" },
 	{ b_builtin,	"builtin" },
 	{ b_cd,		"cd" },
-	{ b_continue,		"continue" },
+	{ b_continue,	"continue" },
 #if RC_ECHO
 	{ b_echo,	"echo" },
 #endif
