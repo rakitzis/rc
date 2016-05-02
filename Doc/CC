@@ -42,6 +42,7 @@ RegularCompileOpts=(
   -MP
 
   -pedantic
+  -W
   # -Werror -Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
 )
 
