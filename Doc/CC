@@ -1,11 +1,31 @@
 ########################################################################################
+FORCE_CLANG=false
+FORCE_GCC=false
+
+while (! ~ $#* 0) {
+  switch(x$1) {
+  case x-force_clang  x-clang
+    FORCE_CLANG=true
+  case x-force_gcc  x-gcc
+    FORCE_GCC=true
+
+  case x-*
+    echo >[1=2] Bad option $1
+    exit 1
+  case *
+    break
+  }
+  shift
+}
+
+########################################################################################
 AddOn=false
 AddOn=true    ## for builtins: let, kill
 
 ########################################################################################
 OptimizationOpts=()
-OptimizationOpts=(-O3)
 OptimizationOpts=(-O2)
+OptimizationOpts=(-O3)
 
 LangOpts=(
   -m32
@@ -18,7 +38,10 @@ LangOpts=(
   -m64
 )
 
-CommonOpts = ($LangOpts $OptimizationOpts)
+CommonOpts = (
+  $LangOpts
+  $OptimizationOpts
+)
 
 ########################################################################################
 SecurityCompileOpts=(
@@ -36,14 +59,15 @@ RegularCompileOpts=(
   ## -DYYDEBUG'='1  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
   -DHAVE_CONFIG_H
   -I.
-  -Wall
   -g  
   -MD
   -MP
 
+  -Wall
   -pedantic
-  -W
-  # -Werror -Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
+  -Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
+  -Wno-unused-parameter
+  # -Werror  ## makes warnings errors
 )
 
 RegularLinkOpts=(
@@ -65,9 +89,15 @@ LinkOpts=(
 )
 
 ########################################################################################
-if (clang --version >/dev/null >[2]/dev/null) {
+if ($FORCE_CLANG) {
+  COMPILER=clang
+} else if ($FORCE_GCC) {
+  COMPILER=gcc
+  CompileOpts=($CompileOpts -Wclobbered)
+} else if (clang --version >/dev/null >[2]/dev/null) {
   COMPILER=clang
 } else {
+  CompileOpts=($CompileOpts -Wclobbered)
   COMPILER=gcc
 }
 

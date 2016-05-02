@@ -253,7 +253,8 @@ extern void skiptonl() {
 
 /* the wrapper loop in rc: prompt for commands until EOF, calling yyparse and walk() */
 
-extern Node *doit(bool clobberexecit) {
+extern Node *doit(bool clobberexecitIn) {
+	volatile bool clobberexecit = clobberexecitIn;
 	bool eof;
 	bool execit;
 	Jbwrap j;
