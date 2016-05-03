@@ -27,8 +27,8 @@ static void for_body(Node *n, List *l);
 
 /* walk the parse-tree. "obvious". */
 
-extern bool walk(Node *n, bool parent) {
-	/*Node *volatile n = nd;*/ /* this volatile should not be necessary because setjmps() break; */
+extern bool walk(Node *nd, bool parent) {
+	Node *volatile n = nd;
 top:	sigchk();
 	if (n == NULL) {
 		if (!parent)
@@ -358,8 +358,8 @@ static void dopipe(Node *n) {
 	sigchk();
 }
 
-static bool while_body(Node *nd) {
-	Node *volatile n = nd;
+static bool while_body(Node *n) {
+	/*Node *volatile n = nd;*/
 	Edata block, cont_data;
 	Estack e2, cont_stack;
 	Jbwrap cont_jb;
