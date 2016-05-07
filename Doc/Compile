@@ -25,8 +25,8 @@ AddOn=true    ## for builtins: let, kill
 ########################################################################################
 if (~ $OPT ()) {
   OptimizationOpts=()
-  OptimizationOpts=(-O3)
   OptimizationOpts=(-O2)
+  OptimizationOpts=(-O3)
 } else {
   OptimizationOpts=(-O$OPT)
 }
