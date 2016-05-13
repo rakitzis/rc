@@ -4,6 +4,7 @@
 
 #include <signal.h>
 #include <setjmp.h>
+#include <errno.h>
 
 #include "sigmsgs.h"
 #include "jbwrap.h"
@@ -16,7 +17,9 @@ void (*sys_signal(int signum, void (*handler)(int)))(int) {
 	new.sa_flags = 0; /* clear SA_RESTART */
 	sigfillset(&new.sa_mask);
 	if (0 != sigaction(signum, &new, &old)) {
-		old.sa_handler = SIG_DFL; /* set DFL to remove function, IGN creates empty func */
+		if (EINVAL == errno) {
+			old.sa_handler = SIG_DFL; /* set DFL to remove function, IGN creates empty func */
+		}
 	}
 	return old.sa_handler;
 }
