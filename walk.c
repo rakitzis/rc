@@ -359,11 +359,11 @@ static void dopipe(Node *n) {
 }
 
 static bool while_body(Node *n) {
-	/*Node *volatile n = nd;*/
 	Edata block, cont_data;
 	Estack e2, cont_stack;
 	Jbwrap cont_jb;
 	bool testtrue;
+
 	block.b = newblock();
 	except(eArena, block, &e2);
 	cont_data.jb = &cont_jb;
@@ -378,10 +378,11 @@ static bool while_body(Node *n) {
 }
 
 static void for_body(Node *n, List *l) {
-	List *var = glom(n->u[0].p);
 	Edata block, cont_data;
 	Estack e2, cont_stack;
 	Jbwrap cont_jb;
+	List *var = glom(n->u[0].p);
+
 	assign(var, word(l->w, NULL), FALSE);
 	block.b = newblock();
 	except(eArena, block, &e2);
