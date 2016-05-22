@@ -36,11 +36,14 @@ int f(int x)
 
   foo = 5;
   if ( setjmp(buf) != 2 ) {
-     if ( foo != 5 ) { optimize_me(); longjmp(buf, 2); }
-     foo = 6;
-     printf("foo=%d\n", foo);
-     longjmp( buf, 1 );
-     return 1;
+    if ( foo != 5 ) {
+      optimize_me();
+      longjmp(buf, 2);
+    }
+    foo = 6;
+    printf("foo=%d\n", foo);
+    longjmp( buf, 1 );
+    return 1;
   }
   return 0;
 }
