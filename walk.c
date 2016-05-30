@@ -19,6 +19,7 @@ static bool dofork(bool);
 static void dopipe(Node *);
 static bool while_body(Node *n);
 static void for_body(Node *n, List *l);
+static void loop_body(Node* n);
 
 
 /* Tail-recursive version of walk() */
@@ -359,39 +360,40 @@ static void dopipe(Node *n) {
 }
 
 static bool while_body(Node *n) {
-	Edata block, cont_data;
-	Estack e2, cont_stack;
-	Jbwrap cont_jb;
-	bool testtrue;
+	Edata  block;
+	Estack e2;
+	bool   testtrue;
 
 	block.b = newblock();
 	except(eArena, block, &e2);
-	cont_data.jb = &cont_jb;
-	except(eContinue, cont_data, &cont_stack);
-	if (! sigsetjmp(cont_jb.j, 1)) {
-		walk(n->u[1].p, TRUE);
-		unexcept(eContinue);
-	}
+	loop_body(n->u[1].p);
 	testtrue = walk(n->u[0].p, TRUE); /* n might be used after longjmp, need volatile */
 	unexcept(eArena);
 	return testtrue;
 }
 
 static void for_body(Node *n, List *l) {
-	Edata block, cont_data;
-	Estack e2, cont_stack;
-	Jbwrap cont_jb;
-	List *var = glom(n->u[0].p);
+	Edata  block;
+	Estack e2;
+	List  *var = glom(n->u[0].p);
 
 	assign(var, word(l->w, NULL), FALSE);
 	block.b = newblock();
 	except(eArena, block, &e2);
-	cont_data.jb = &cont_jb;
-	except(eContinue, cont_data, &cont_stack);
-	if (! sigsetjmp(cont_jb.j, 1)) {
-		walk(n->u[2].p, TRUE);
-		unexcept(eContinue);
-	}
+	loop_body(n->u[2].p);
 	unexcept(eArena);
 }
 
+static void loop_body(Node* n)
+{
+	Edata  cont_data;
+	Estack cont_stack;
+	Jbwrap cont_jb;
+
+	cont_data.jb = &cont_jb;
+	except(eContinue, cont_data, &cont_stack);
+	if (! sigsetjmp(cont_jb.j, 1)) {
+		walk(n, TRUE);
+		unexcept(eContinue);
+	}
+}
