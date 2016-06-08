@@ -94,7 +94,9 @@ LinkOpts=(
 )
 
 ########################################################################################
-Clobbered=( -Wclobbered )
+Clobbered=(
+  -Wclobbered
+)
 if ($FORCE_CLANG) {
   COMPILER=clang
 } else if ($FORCE_GCC) {
