@@ -4,9 +4,9 @@ FORCE_GCC=false
 
 while (! ~ $#* 0) {
   switch(x$1) {
-  case x-force_clang  x-clang
+  case x-force_clang  x-clang x--clang
     FORCE_CLANG=true
-  case x-force_gcc  x-gcc
+  case x-force_gcc  x-gcc x--gcc
     FORCE_GCC=true
 
   case x-*
