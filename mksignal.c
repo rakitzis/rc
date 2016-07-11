@@ -57,12 +57,9 @@ static struct signaming signamings[] = {
 #ifdef SIGILL
     { SIGILL,	"sigill",	"illegal instruction"},
 #endif
-
-/* We don't want a default message for SIGINT. */
 #ifdef SIGINT
-    { SIGINT,	"sigint",	""},
+    { SIGINT,	"sigint",	"interrupt"},
 #endif
-
 #ifdef SIGIO
     { SIGIO,	"sigio",	"socket i/o possible"},
 #endif
@@ -78,12 +75,9 @@ static struct signaming signamings[] = {
 #ifdef SIGLWP
     { SIGLWP,	"siglwp",	"thread library signal"},
 #endif
-
-/* By default, SIGPIPEs are silent. */
 #ifdef SIGPIPE
-    { SIGPIPE,	"sigpipe",	""},
+    { SIGPIPE,	"sigpipe",	"broken pipe"},
 #endif
-
 #ifdef SIGPOLL
     { SIGPOLL,	"sigpoll",	"pollable event occurred"},
 #endif
