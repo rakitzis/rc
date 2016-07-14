@@ -2,20 +2,25 @@
 FORCE_CLANG=false
 FORCE_GCC=false
 
-while (! ~ $#* 0) {
-  switch(x$1) {
-  case x-force_clang  x-clang x--clang
-    FORCE_CLANG=true
-  case x-force_gcc  x-gcc x--gcc
-    FORCE_GCC=true
+CLOB=true
 
-  case x-*
-    echo >[1=2] Bad option $1
-    exit 1
-  case *
-    break
-  }
-  shift
+while (! ~ $#* 0) {
+    switch(x$1) {
+    case x-force_clang  x-clang x--clang
+        FORCE_CLANG=true
+    case x-force_gcc  x-gcc x--gcc
+        FORCE_GCC=true
+
+    case x-noclob* x--noclob*
+        CLOB=false
+
+    case x-*
+        echo >[1=2] Bad option $1
+        exit 1
+    case *
+        break
+    }
+    shift
 }
 
 ########################################################################################
@@ -24,116 +29,118 @@ AddOn=true    ## for builtins: let, kill
 
 ########################################################################################
 if (~ $OPT ()) {
-  OptimizationOpts=()
-  OptimizationOpts=(-O2)
-  OptimizationOpts=(-O3)
+    OptimizationOpts=()
+    OptimizationOpts=(-O2)
+    OptimizationOpts=(-O3)
 } else {
-  OptimizationOpts=(-O$OPT)
+    OptimizationOpts=(-O$OPT)
 }
 
 LangOpts=(
-  -m32
-  '-std=c99'
+    -m32
+    '-std=c99'
 )
 
 LangOpts=(
-  #-m32
-  '-std=gnu99'
-  -m64
+    #-m32
+    '-std=gnu99'
+    -m64
 )
 
 CommonOpts = (
-  $LangOpts
-  $OptimizationOpts
+    $LangOpts
+    $OptimizationOpts
 )
 
 ########################################################################################
 SecurityCompileOpts=(
-  -fPIE
-  ## -fstack-protector does not work on older systems (e.g., RedHat 4, 5)
-  -fstack-protector
+    -fPIE
+    ## -fstack-protector does not work on older systems (e.g., RedHat 4, 5)
+    -fstack-protector
 )
 
 SecurityLinkOpts=(
-  -pie 
-  -Wl,-z,now,-z,relro   ## a single option / no spaces 
+    -pie 
+    -Wl,-z,now,-z,relro   ## a single option / no spaces 
 )
 
 ########################################################################################
 RegularCompileOpts=(
-  ## -DYYDEBUG'='1  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
-  -DHAVE_CONFIG_H
-  -I.
-  -g  
-  -MD
-  -MP
+    ## -DYYDEBUG'='1  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
+    -DHAVE_CONFIG_H
+    -I.
+    -g  
+    -MD
+    -MP
 
-  -Wall
-  -pedantic
-  -Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
-  -Wno-unused-parameter
-  # -Werror  ## makes warnings errors
+    -Wall
+    -pedantic
+    -Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
+    -Wno-unused-parameter
+    # -Werror  ## makes warnings errors
 )
 
 RegularLinkOpts=(
-  -Wall
-  -g
+    -Wall
+    -g
 )
 
 ########################################################################################
 CompileOpts = (
-  $CommonOpts
-  $RegularCompileOpts
-  $SecurityCompileOpts
+    $CommonOpts
+    $RegularCompileOpts
+    $SecurityCompileOpts
 )
 
 LinkOpts=(
-  $CommonOpts
-  $RegularLinkOpts
-  $SecurityLinkOpts
+    $CommonOpts
+    $RegularLinkOpts
+    $SecurityLinkOpts
 )
 
 ########################################################################################
-Clobbered=(
-  -Wclobbered
-)
+if ($CLOB) {
+    Clobbered=(
+        -Wclobbered
+    )
+}
 if ($FORCE_CLANG) {
-  COMPILER=clang
+    COMPILER=clang
 } else if ($FORCE_GCC) {
-  COMPILER=gcc
-  CompileOpts=(
-    $CompileOpts
-    $Clobbered
-  )
+    COMPILER=gcc
+    CompileOpts=(
+        $CompileOpts
+        $Clobbered
+    )
 } else if (clang --version >/dev/null >[2]/dev/null) {
-  COMPILER=clang
+    COMPILER=clang
 } else {
-  CompileOpts=($CompileOpts $Clobbered)
-  COMPILER=gcc
+    CompileOpts=($CompileOpts $Clobbered)
+    COMPILER=gcc
 }
 
 ########################################################################################
 ########################################################################################
 fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
-  #--------------------------------------------------------------------
-  if (~ $0 LinkWithOpts) {
-    allOpts = ($LinkOpts)
-  } else {
-    allOpts = ($CompileOpts)
-  }
-  #--------------------------------------------------------------------
-  cmd = ($COMPILER $allOpts $*)
-  echo $cmd
-  $cmd
+    #--------------------------------------------------------------------
+    if (~ $0 LinkWithOpts) {
+        allOpts = ($LinkOpts)
+    } else {
+        allOpts = ($CompileOpts)
+    }
+    #--------------------------------------------------------------------
+    cmd = ($COMPILER $allOpts $*)
+    echo $cmd
+    $cmd
 }}
 
 ########################################################################################
 fn Compile LinkOneObj { f=$1 {
-  if (~ $0 Compile) {
-    CompileWithOpts   -MT $f.o -MF .deps/$f.Tpo -c -o $f.o $f.c
-  } else {
-    LinkWithOpts      -o $f $f.o  
-  }
+    if (~ $0 Compile) {
+        CompileWithOpts   -MT $f.o -MF .deps/$f.Tpo -c -o $f.o $f.c
+    } else {
+        LinkWithOpts      -o $f $f.o  
+    }
 }}
 
 ########################################################################################
@@ -142,8 +149,8 @@ fn Compile LinkOneObj { f=$1 {
 
 ########################################################################################
 for (s in mksignal mkstatval) {
-  Compile $s
-  LinkOneObj $s
+    Compile $s
+    LinkOneObj $s
 }
 
 ## Signal names for sigmsgs.c, must be done before compiling rc
@@ -157,47 +164,47 @@ for (s in mksignal mkstatval) {
 ## CompileWithOpts rc source
 
 if ($AddOn) {
-  addon=(addon)
-  let=(let.tab)
+    addon=(addon)
+    let=(let.tab)
 } else {
-  addon=()
-  let=()
+    addon=()
+    let=()
 }
 
 sources=(
- $addon
-  builtins
-  except
-  exec
-  fn
-  footobar
-  getopt
-  glob
-  glom
-  hash
-  heredoc
-  input
- $let
-  lex
-  list
-  main
-  match
-  nalloc
-  open
-  parse
-  print
-  redir
-  signal
-  status
-  tree
-  utils
-  var
-  wait
-  walk
-  which
-  sigmsgs
-  edit-null
-  system
+    $addon
+    builtins
+    except
+    exec
+    fn
+    footobar
+    getopt
+    glob
+    glom
+    hash
+    heredoc
+    input
+    $let
+    lex
+    list
+    main
+    match
+    nalloc
+    open
+    parse
+    print
+    redir
+    signal
+    status
+    tree
+    utils
+    var
+    wait
+    walk
+    which
+    sigmsgs
+    edit-null
+    system
 )
 
 
@@ -206,7 +213,7 @@ rc_objs = $sources^.o
 
 ########################################################################################
 for (s in $sources) {
-  Compile $s
+    Compile $s
 }
 ## Link rc
 LinkWithOpts -o rc     $rc_objs

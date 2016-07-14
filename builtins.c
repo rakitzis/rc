@@ -14,6 +14,7 @@
 #include <setjmp.h>
 #include <errno.h>
 #include <limits.h>
+#include <wait.h>
 
 #include "addon.h"
 #include "input.h"
