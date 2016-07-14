@@ -116,9 +116,11 @@ extern void waitforall() {
 
 	while (plist != NULL) {
 		pid_t pid = rc_wait4(plist->pid, &stat, FALSE);
-		if (pid > 0)
+		if (pid > 0) {
 			setstatus(pid, stat);
-		else {
+			if (WIFEXITED(stat))
+			    fprint(2, "%ld: exited (%d)\n", pid, WEXITSTATUS(stat));
+		} else {
 			set(FALSE);
 			if (errno == EINTR)
 				return;

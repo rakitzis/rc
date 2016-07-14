@@ -322,9 +322,11 @@ static void b_wait(char **av) {
 		badnum(av[1]);
 		return;
 	}
-	if (rc_wait4(pid, &status, FALSE) > 0)
+	if (rc_wait4(pid, &status, FALSE) > 0) {
 		setstatus(pid, status);
-	else
+		if (WIFEXITED(status))
+		    fprint(2, "%ld: exited (%d)\n", pid, WEXITSTATUS(status));
+	} else
 		set(FALSE);
 	sigchk();
 }
