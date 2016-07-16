@@ -25,6 +25,7 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	}
 	dashsee[0] = dashsee[1] = NULL;
 	dollarzero = argv[0];
+	srandom(20021003);
 	rc_pid  = getpid();
 	rc_ppid = getppid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
