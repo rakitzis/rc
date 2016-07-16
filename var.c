@@ -74,6 +74,13 @@ extern List *varlookup(CONST char *name) {
 		q->n = NULL;
 		return q;
 	}
+	if (streq(name, "random")) {
+		List *q = nnew(List);
+		q->w = nprint("%d", random());
+		q->m = NULL;
+		q->n = NULL;
+		return q;
+    }
 	if (*name != '\0' && (sub = a2u(name)) != -1) { /* handle $1, $2, etc. */
 		for (l = varlookup("*"); l != NULL && sub != 0; --sub)
 			l = l->n;

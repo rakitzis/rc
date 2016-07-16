@@ -805,6 +805,12 @@ if (!~ $^L 'a c e f') {
   fail List should be '(a c e f)', but is $L
 }
 #############################################################################
+x=$random
+y=$random
+if (~ $x $y) {
+    fail Two random value not different: $x $y
+}
+#############################################################################
 
 rm -rf $tmpdir
 
