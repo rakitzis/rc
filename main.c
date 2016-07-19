@@ -27,9 +27,9 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	dashsee[0] = dashsee[1] = NULL;
 	dollarzero = argv[0];
 	{
-	    struct timeval timeVal;
-	    gettimeofday(&timeVal, 0);
-	    srandom(20021003 ^ timeVal.tv_usec);
+		struct timeval timeVal;
+		gettimeofday(&timeVal, 0);
+		srandom(20021003 ^ timeVal.tv_usec);
 	}
 	rc_pid  = getpid();
 	rc_ppid = getppid();
