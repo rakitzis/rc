@@ -4,6 +4,7 @@
 #include "rc.h"
 
 #include <errno.h>
+#include <sys/time.h>
 
 #include "input.h"
 
@@ -25,7 +26,11 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	}
 	dashsee[0] = dashsee[1] = NULL;
 	dollarzero = argv[0];
-	srandom(20021003);
+	{
+	    struct timeval timeVal;
+	    gettimeofday(&timeVal, 0);
+	    srandom(20021003 ^ timeVal.tv_usec);
+	}
 	rc_pid  = getpid();
 	rc_ppid = getppid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
