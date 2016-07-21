@@ -52,6 +52,10 @@ fn testOneLet { e=$1 v=$2 a=() {
   if (!~ $a $v) {
     fail let: $e evaluates to $a, should be $v
   }
+  let 'b='$e
+  if (!~ $b $v) {
+    fail let: $e evaluates to $b, should be $v
+  }
 }}
 
 ######################################################################

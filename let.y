@@ -1,6 +1,12 @@
-/* process with "byacc -b let -p let let.y */
+/*
+ * process with
+ *    byacc -d -b let -p let let.y
+ * or with
+ *    bison -d -b let -p let let.y
+ */
 
 %{
+#include <assert.h>
 
 extern int printf(const char *, ...);
 
@@ -9,8 +15,8 @@ extern int printf(const char *, ...);
 
 
 
-#define letparse(a)  LetParser(struct LetLex *lex)
-#define letparse_r(a)  LetParser(struct LetLex *lex)
+#define letparse(a)  LetParser(LetLex *lex)
+#define letparse_r(a)  LetParser(LetLex *lex)
 #define letlex(a)  LetLexer(lex, &letlval)
 
 
@@ -22,9 +28,10 @@ extern int printf(const char *, ...);
 }
 
 /* Non-terminals */
-%type <m_Val> expr
+%type <m_Val> expr assignment
 
 /* Tokens */
+%nonassoc '='
 %left LET_OROR
 %left LET_ANDAND
 %left '|'
@@ -40,7 +47,7 @@ extern int printf(const char *, ...);
 
 
 %token <m_Val> NUMBER
-%token END_TOKEN BAD_TOKEN
+%token END_TOKEN BAD_TOKEN LET_VAR
 
 %pure-parser
 
@@ -48,7 +55,26 @@ extern int printf(const char *, ...);
 %start top
 
 %%
-top: expr   { letResult = $1; } ;
+top
+    : expr
+        {
+            assert('\0' == lex->m_Indent[0]);
+            letResult = $1;
+        }
+    | assignment
+        {
+            assert('\0' != lex->m_Indent[0]);
+            letResult = $1;
+        }
+    ;
+
+assignment
+    : LET_VAR '=' expr
+        {
+            assert('\0' != lex->m_Indent[0]);
+            $$ = $3;
+        }
+    ;
 
 expr: expr LET_OROR expr    { $$ = $1 || $3; }
     | expr LET_ANDAND  expr { $$ = $1 && $3; }

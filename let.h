@@ -6,19 +6,20 @@ typedef long int LetValue;
 
 typedef int Token;
 
-struct LetLex {
+typedef struct LetLex {
   const char* m_Buf;
   const char* m_Current;
   Token       m_LastToken;
-};
+  char        m_Indent[256];
+} LetLex;
 
 extern LetValue letResult;
 
 extern int leterror(const char *s);
-extern int LetDoParse(const char *s, LetValue *);
+extern int LetDoParse(const char *s, LetValue *r, LetLex* lex);
 extern LetValue letpwr(LetValue a, LetValue b);
-extern Token LetLexer(struct LetLex *lex, YYSTYPE* letlval);
-extern int LetParser(struct LetLex *lex);
+extern Token LetLexer(LetLex *lex, YYSTYPE* letlval);
+extern int LetParser(LetLex *lex);
 
 
 #endif

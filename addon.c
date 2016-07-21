@@ -62,7 +62,7 @@ void b_kill (char **av)
 #undef CHECK
 }
 
-extern int LetDoParse(const char *s, LetValue *r);
+extern int LetDoParse(const char *s, LetValue *r, LetLex* lex);
 
 #if 0
 static void set_var (char *varname, long R)
@@ -72,7 +72,7 @@ static void set_var (char *varname, long R)
 }
 #endif
 
-static int check_var_name (char *p)
+static int check_var_name (const char *p)
 {
   if (!isalpha(*p) && (*p) != '_') {
     return 0;
@@ -102,59 +102,75 @@ static int ret_value(int parse_status, long value)
 
 void b_let (char **av)
 {
-  long R = 0;
-  int parse_status;
-  int rc_status = BAD_EXP;
-  char *exp, *varname;
+    long R = 0;
+    int parse_status;
+    int rc_status = BAD_EXP;
+    char *exp;
 
-  if (av[1] == 0) {
-    fprint(2, LET_USAGE);
-    goto returnLabel;
-  }
-
-  if (av[2] == 0) {
-    exp = av[1];
-    parse_status = LetDoParse(exp, &R);
-    rc_status = ret_value(parse_status, R);
-    goto returnLabel;
-  }
-
-  if (av[3] != 0) {
-    fprint(2, LET_USAGE);
-    goto returnLabel;
-  }
-
-  varname = av[1];
-  exp = av[2];
-
-  if (0 == strcmp_fast(varname, "-p")) {
-    parse_status = LetDoParse(exp, &R);
-    if (0==parse_status) {
-      fprint(1, "%ld\n", R);
+    if (av[1] == 0) {
+        fprint(2, LET_USAGE);
+        goto returnLabel;
+    } else if (av[2] == 0) {
+        LetLex lex;
+        const char* const exp = av[1];
+        parse_status = LetDoParse(exp, &R, &lex);
+        if (0==parse_status) {
+            const char* const varName = &lex.m_Indent[0];
+            if ('\0' != varName[0]) {
+                List val;
+                if (!check_var_name(varName)) {
+                    fprint(2, "let: bad variable name '%s'\n", varName);
+                    goto returnLabel;
+                }
+                val.w = nprint("%ld", R);
+                val.n = NULL;
+                varassign(varName, &val, FALSE);
+            }
+        }
+        rc_status = ret_value(parse_status, R);
+        goto returnLabel;
+    } else if (av[3] != 0) {
+        fprint(2, LET_USAGE);
+        goto returnLabel;
+    } else if (0 == strcmp_fast(av[1], "-p")) {
+        const char* const exp = av[2];
+        LetLex lex;
+        parse_status = LetDoParse(exp, &R, &lex);
+        if (0==parse_status) {
+            const char* const varName = &lex.m_Indent[0];
+            if ('\0' != varName[0]) {
+                List val;
+                if (!check_var_name(varName)) {
+                    fprint(2, "let: bad variable name '%s'\n", varName);
+                    goto returnLabel;
+                }
+                fprint(1, "%ld\n", R);
+                val.w = nprint("%ld", R);
+                val.n = NULL;
+                varassign(varName, &val, FALSE);
+            }
+        }
+        rc_status = ret_value(parse_status, R);
+        goto returnLabel;
+    } else if (!check_var_name(av[1])) {
+        fprint(2, "let: bad variable name '%s'\n", av[1]);
+        goto returnLabel;
+    } else {
+        LetLex lex;
+        parse_status = LetDoParse(av[2], &R, &lex);
+        if (0 == parse_status) {
+            List val;
+            val.w = nprint("%ld", R);
+            val.n = NULL;
+            varassign(av[1], &val, FALSE);
+        }
+        rc_status = ret_value(parse_status, R);
+        goto returnLabel;
     }
-    rc_status = ret_value(parse_status, R);
-    goto returnLabel;
-  }
-
-  if (!check_var_name(av[1])) {
-    fprint(2, "let: bad variable name '%s'\n", av[1]);
-    goto returnLabel;
-  }
-
-  parse_status = LetDoParse(av[2], &R);
-  if (0 == parse_status) {
-    List val;
-    val.w = nprint("%ld", R);
-    val.n = NULL;
-    varassign(av[1], &val, FALSE);
-  }
-  rc_status = ret_value(parse_status, R);
-  goto returnLabel;
-
 
 returnLabel:
-  setN(rc_status);
-  return;
+    setN(rc_status);
+    return;
 }
 
 
@@ -180,7 +196,7 @@ LetValue letpwr(LetValue a, LetValue b)
   return z;
 }
 /******************************************************/
-Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
+Token LetLexer (LetLex *lex, YYSTYPE* letlval)
 {
   const char *p;
   Token tok;
@@ -194,6 +210,23 @@ Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
   p = lex->m_Current;
   while (*p == ' ' || *p == '\t') {
     p++;
+  }
+  if (isalpha(*p) || '_' == *p) {
+    enum { NUM_CHARS = sizeof(lex->m_Indent)/sizeof(lex->m_Indent[0]) - 1 };
+    int i = 0;
+    int c = *p;
+
+    while (isalnum(c) || '_' == c) {
+        if (i >= NUM_CHARS) {
+            return BAD_TOKEN;
+        }
+        lex->m_Indent[i++] = *(p++);
+        c = *p;
+    }
+
+    lex->m_Indent[i] = '\0';
+    lex->m_Current = p;
+    return LET_VAR;
   }
   switch (*p) {
   case '^':
@@ -274,15 +307,21 @@ Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
 /******************************************************/
 
 /******************************************************/
-int LetDoParse(const char *s, LetValue *r)
+#if YYDEBUG
+extern int letdebug;
+#endif
+int LetDoParse(const char *s, LetValue *r, LetLex* lex)
 {
   int status;
-  struct LetLex lex;
 
-  lex.m_Current = lex.m_Buf = s;
-  lex.m_LastToken = BAD_TOKEN;
+  lex->m_Current = lex->m_Buf = s;
+  lex->m_LastToken = BAD_TOKEN;
+  lex->m_Indent[0] = '\0';
 
-  status = LetParser(&lex);
+#if YYDEBUG
+  letdebug = 1;
+#endif
+  status = LetParser(lex);
   *r = letResult;
   return status;
 }
