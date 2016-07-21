@@ -15,7 +15,7 @@ struct LetLex {
 extern LetValue letResult;
 
 extern int leterror(const char *s);
-extern int LetDoParse(char *s, LetValue *);
+extern int LetDoParse(const char *s, LetValue *);
 extern LetValue letpwr(LetValue a, LetValue b);
 extern Token LetLexer(struct LetLex *lex, YYSTYPE* letlval);
 extern int LetParser(struct LetLex *lex);

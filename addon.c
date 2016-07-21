@@ -62,7 +62,7 @@ void b_kill (char **av)
 #undef CHECK
 }
 
-extern int LetDoParse(char *s, long *r);
+extern int LetDoParse(const char *s, long *r);
 
 #if 0
 static void set_var (char *varname, long R)
@@ -229,13 +229,22 @@ Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
     }
     break;
 
-  case '!': case '=':
+  case '=':
     c = *p++;
     if (*p == '=') {
-      tok = ((c == '=') ? EQEQ : NEQ);
+      tok = EQEQ;
       p++;
     } else {
-      tok = BAD_TOKEN;
+      tok = (Token) (c);
+    }
+
+  case '!':
+    c = *p++;
+    if (*p == '=') {
+      tok = NEQ;
+      p++;
+    } else {
+      tok = (Token) (c);
     }
     break;
 
@@ -264,7 +273,7 @@ Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
 /******************************************************/
 
 /******************************************************/
-int LetDoParse(char *s, LetValue *r)
+int LetDoParse(const char *s, LetValue *r)
 {
   int status;
   struct LetLex lex;
