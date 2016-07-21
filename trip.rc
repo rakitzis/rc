@@ -47,6 +47,7 @@ if (false) {					# WARNING: this differs from sh
 
 ######################################################################
 fn testOneLet { e=$1 v=$2 a=() {
+  #echo exp: $e
   let a $e
   if (!~ $a $v) {
     fail let: $e evaluates to $a, should be $v
@@ -128,6 +129,10 @@ fn testManyLets { numEntries=() {
 
     '-3*4'                         -12
     '+3*-4'                        -12
+    '!0'                           1
+    '!2'                           0
+    '!-1'                          0
+    '!1'                           0
   )
   numEntries=$#*
   if (let '('$numEntries'%2)==1') {

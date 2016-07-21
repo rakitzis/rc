@@ -62,7 +62,7 @@ void b_kill (char **av)
 #undef CHECK
 }
 
-extern int LetDoParse(const char *s, long *r);
+extern int LetDoParse(const char *s, LetValue *r);
 
 #if 0
 static void set_var (char *varname, long R)
@@ -237,6 +237,7 @@ Token LetLexer (struct LetLex *lex, YYSTYPE* letlval)
     } else {
       tok = (Token) (c);
     }
+    break;
 
   case '!':
     c = *p++;
