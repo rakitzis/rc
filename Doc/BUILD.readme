@@ -31,3 +31,55 @@ to
 ################################################################
 
 
+
+
+################################################################
+TODO: erase later
+
+Change let assignment from
+    let var '2 + 3'
+to
+    let 'var = 2 + 3'
+
+----------------------------------------------------------------
+In let.h
+
+struct LetLex {
+    ....
+    char m_VarName[256];
+};
+
+
+----------------------------------------------------------------
+Lexer fills lex.m_VarName with var name or with '\0'
+Only one var allowed in expression, lexer asserts m_VarName[0]==0
+before filling the name.
+
+----------------------------------------------------------------
+In let.y
+
+%nonassoc '='
+%left LET_OROR
+
+top: assignment
+        {   assert(lex->m_VarName[0] != '\0');
+            return $1;
+        }
+    | expr
+        {   lex->m_VarName[0] = '\0';
+            return $1;
+        }
+    ;            
+assignment:
+    VAR '=' expr
+        {
+            assert(lex->m_VarName[0] != '\0');
+            return $3;
+        }
+    ;
+
+----------------------------------------------------------------
+In addon.c
+Before calling LetParser, set lex.m_VarName[0] to '\0'
+Perform the assignment if lex.m_VarName[0] != '\0'
+
