@@ -105,7 +105,6 @@ void b_let (char **av)
     long R = 0;
     int parse_status;
     int rc_status = BAD_EXP;
-    char *exp;
 
     if (av[1] == 0) {
         fprint(2, LET_USAGE);
