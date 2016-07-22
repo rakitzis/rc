@@ -57,21 +57,18 @@ extern int printf(const char *, ...);
 %%
 top
     : expr
-        {
-            assert('\0' == lex->m_Indent[0]);
+        {   assert('\0' == lex->m_Indent[0]);
             letResult = $1;
         }
     | assignment
-        {
-            assert('\0' != lex->m_Indent[0]);
+        {   assert('\0' != lex->m_Indent[0]);
             letResult = $1;
         }
     ;
 
 assignment
     : LET_VAR '=' expr
-        {
-            assert('\0' != lex->m_Indent[0]);
+        {   assert('\0' != lex->m_Indent[0]);
             $$ = $3;
         }
     ;
@@ -88,23 +85,23 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
     | expr LEQ expr { $$ = $1 <= $3; }
     | expr GEQ expr { $$ = $1 >= $3; }
     | expr LSHIFT expr 
-        { LetValue v3 = $3;
-          $$ = (v3 >= 0) ? ($1 << v3) : ($1 >> (-v3));
+        {   LetValue v3 = $3;
+            $$ = (v3 >= 0) ? ($1 << v3) : ($1 >> (-v3));
         }
     | expr RSHIFT expr
-        { LetValue v3 = $3; 
-          $$ = (v3>=0) ? ($1 >> v3) : ($1 << (-v3));
+        {   LetValue v3 = $3; 
+            $$ = (v3>=0) ? ($1 >> v3) : ($1 << (-v3));
         }
     | expr '+' expr { $$ = $1 + $3; }
     | expr '-' expr { $$ = $1 - $3; }
     | expr '*' expr    { $$ = $1 * $3; }
     | expr '/' expr
-        { long v3 = $3;
-          if (v3 == 0) {
-            leterror("Division by 0");
-            YYABORT;
-          }
-          $$ = $1 / (v3);
+        {   long v3 = $3;
+            if (v3 == 0) {
+                leterror("Division by 0");
+                YYABORT;
+            }
+            $$ = $1 / (v3);
         }
     | expr '%' expr
         { long v3 = $3;
@@ -119,12 +116,12 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
     | '-' expr %prec UNARY_PLUSMINUS { $$ = -$2; }
     | '+' expr %prec UNARY_PLUSMINUS { $$ = +$2; }
     | expr '@' expr
-        { long v3 = $3;
-          if (v3 < 0) {
-            leterror("Negative power");
-            YYABORT;
-          }
-          $$ = letpwr($1, v3);
+        {   long v3 = $3;
+            if (v3 < 0) {
+                leterror("Negative power");
+                YYABORT;
+            }
+            $$ = letpwr($1, v3);
         }
      | '(' expr ')'    { $$ = $2; }
      |  NUMBER { $$ = $1; }

@@ -7,10 +7,10 @@ typedef long int LetValue;
 typedef int Token;
 
 typedef struct LetLex {
-  const char* m_Buf;
-  const char* m_Current;
-  Token       m_LastToken;
-  char        m_Indent[256];
+    const char* m_Buf;
+    const char* m_Current;
+    Token       m_LastToken;
+    char        m_Indent[256];
 } LetLex;
 
 extern LetValue letResult;

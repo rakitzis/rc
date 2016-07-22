@@ -459,9 +459,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    59,    59,    64,    72,    79,    80,    81,    82,    83,
-      84,    85,    86,    87,    88,    89,    90,    94,    98,    99,
-     100,   101,   109,   117,   118,   119,   120,   121,   129,   130
+       0,    59,    59,    63,    70,    76,    77,    78,    79,    80,
+      81,    82,    83,    84,    85,    86,    87,    91,    95,    96,
+      97,    98,   106,   114,   115,   116,   117,   118,   126,   127
 };
 #endif
 
@@ -1426,8 +1426,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 60 "let.y"
-    {
-            assert('\0' == lex->m_Indent[0]);
+    {   assert('\0' == lex->m_Indent[0]);
             letResult = (yyvsp[(1) - (1)].m_Val);
         ;}
     break;
@@ -1435,9 +1434,8 @@ yyreduce:
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 65 "let.y"
-    {
-            assert('\0' != lex->m_Indent[0]);
+#line 64 "let.y"
+    {   assert('\0' != lex->m_Indent[0]);
             letResult = (yyvsp[(1) - (1)].m_Val);
         ;}
     break;
@@ -1445,9 +1443,8 @@ yyreduce:
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 73 "let.y"
-    {
-            assert('\0' != lex->m_Indent[0]);
+#line 71 "let.y"
+    {   assert('\0' != lex->m_Indent[0]);
             (yyval.m_Val) = (yyvsp[(3) - (3)].m_Val);
         ;}
     break;
@@ -1455,136 +1452,136 @@ yyreduce:
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 79 "let.y"
+#line 76 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) || (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 80 "let.y"
+#line 77 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) && (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 81 "let.y"
+#line 78 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) | (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 82 "let.y"
+#line 79 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) ^ (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 83 "let.y"
+#line 80 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) & (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 84 "let.y"
+#line 81 "let.y"
     { (yyval.m_Val) = ((yyvsp[(1) - (3)].m_Val) == (yyvsp[(3) - (3)].m_Val)); ;}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 85 "let.y"
+#line 82 "let.y"
     { (yyval.m_Val) = ((yyvsp[(1) - (3)].m_Val) != (yyvsp[(3) - (3)].m_Val)); ;}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 86 "let.y"
+#line 83 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) > (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 87 "let.y"
+#line 84 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) < (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 88 "let.y"
+#line 85 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) <= (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 89 "let.y"
+#line 86 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) >= (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 91 "let.y"
-    { LetValue v3 = (yyvsp[(3) - (3)].m_Val);
-          (yyval.m_Val) = (v3 >= 0) ? ((yyvsp[(1) - (3)].m_Val) << v3) : ((yyvsp[(1) - (3)].m_Val) >> (-v3));
+#line 88 "let.y"
+    {   LetValue v3 = (yyvsp[(3) - (3)].m_Val);
+            (yyval.m_Val) = (v3 >= 0) ? ((yyvsp[(1) - (3)].m_Val) << v3) : ((yyvsp[(1) - (3)].m_Val) >> (-v3));
         ;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 95 "let.y"
-    { LetValue v3 = (yyvsp[(3) - (3)].m_Val); 
-          (yyval.m_Val) = (v3>=0) ? ((yyvsp[(1) - (3)].m_Val) >> v3) : ((yyvsp[(1) - (3)].m_Val) << (-v3));
+#line 92 "let.y"
+    {   LetValue v3 = (yyvsp[(3) - (3)].m_Val); 
+            (yyval.m_Val) = (v3>=0) ? ((yyvsp[(1) - (3)].m_Val) >> v3) : ((yyvsp[(1) - (3)].m_Val) << (-v3));
         ;}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 98 "let.y"
+#line 95 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) + (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 99 "let.y"
+#line 96 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) - (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 100 "let.y"
+#line 97 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) * (yyvsp[(3) - (3)].m_Val); ;}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 102 "let.y"
-    { long v3 = (yyvsp[(3) - (3)].m_Val);
-          if (v3 == 0) {
-            leterror("Division by 0");
-            YYABORT;
-          }
-          (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) / (v3);
+#line 99 "let.y"
+    {   long v3 = (yyvsp[(3) - (3)].m_Val);
+            if (v3 == 0) {
+                leterror("Division by 0");
+                YYABORT;
+            }
+            (yyval.m_Val) = (yyvsp[(1) - (3)].m_Val) / (v3);
         ;}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 110 "let.y"
+#line 107 "let.y"
     { long v3 = (yyvsp[(3) - (3)].m_Val);
           if (v3 == 0) {
             leterror("Module by 0");
@@ -1597,62 +1594,62 @@ yyreduce:
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 117 "let.y"
+#line 114 "let.y"
     { (yyval.m_Val) = !(yyvsp[(2) - (2)].m_Val); ;}
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 118 "let.y"
+#line 115 "let.y"
     { (yyval.m_Val) = ~(yyvsp[(2) - (2)].m_Val); ;}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 119 "let.y"
+#line 116 "let.y"
     { (yyval.m_Val) = -(yyvsp[(2) - (2)].m_Val); ;}
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 120 "let.y"
+#line 117 "let.y"
     { (yyval.m_Val) = +(yyvsp[(2) - (2)].m_Val); ;}
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 122 "let.y"
-    { long v3 = (yyvsp[(3) - (3)].m_Val);
-          if (v3 < 0) {
-            leterror("Negative power");
-            YYABORT;
-          }
-          (yyval.m_Val) = letpwr((yyvsp[(1) - (3)].m_Val), v3);
+#line 119 "let.y"
+    {   long v3 = (yyvsp[(3) - (3)].m_Val);
+            if (v3 < 0) {
+                leterror("Negative power");
+                YYABORT;
+            }
+            (yyval.m_Val) = letpwr((yyvsp[(1) - (3)].m_Val), v3);
         ;}
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 129 "let.y"
+#line 126 "let.y"
     { (yyval.m_Val) = (yyvsp[(2) - (3)].m_Val); ;}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 130 "let.y"
+#line 127 "let.y"
     { (yyval.m_Val) = (yyvsp[(1) - (1)].m_Val); ;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1656 "let.tab.c"
+#line 1653 "let.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1864,7 +1861,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 133 "let.y"
+#line 130 "let.y"
 
 
 /*
