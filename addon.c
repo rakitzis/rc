@@ -143,11 +143,11 @@ void b_let (char **av)
                     fprint(2, "let: bad variable name '%s'\n", varName);
                     goto returnLabel;
                 }
-                fprint(1, "%ld\n", R);
                 val.w = nprint("%ld", R);
                 val.n = NULL;
                 varassign(varName, &val, FALSE);
             }
+            fprint(1, "%ld\n", R);
         }
         rc_status = ret_value(parse_status, R);
         goto returnLabel;

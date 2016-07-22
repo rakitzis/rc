@@ -46,7 +46,7 @@ if (false) {					# WARNING: this differs from sh
 }
 
 ######################################################################
-fn testOneLet { e=$1 v=$2 a=() {
+fn testOneLet { e=$1 v=$2 a=() x=() {
   #echo exp: $e
   let a $e
   if (!~ $a $v) {
@@ -55,6 +55,14 @@ fn testOneLet { e=$1 v=$2 a=() {
   let 'b='$e
   if (!~ $b $v) {
     fail let: $e evaluates to $b, should be $v
+  }
+  x=${let -p $e}
+  if (! ~ $x $v) {
+    fail let -p: $e evaluates to $x, should be $v
+  }
+  x=${let -p 'b='$e}
+  if (! ~ $x $b) {
+    fail let -p: $e evaluates to $x, should be $v
   }
 }}
 
