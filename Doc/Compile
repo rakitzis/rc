@@ -119,6 +119,12 @@ if ($FORCE_CLANG) {
     COMPILER=gcc
 }
 
+objDir=obj
+if (! ~ $objDir ()) {
+    if (! test -d $objDir) {
+        mkdir -p $objDir
+    }
+}
 ########################################################################################
 ########################################################################################
 fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
@@ -135,11 +141,16 @@ fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
 }}
 
 ########################################################################################
-fn Compile LinkOneObj { f=$1 {
-    if (~ $0 Compile) {
-        CompileWithOpts   -MT $f.o -MF .deps/$f.Tpo -c -o $f.o $f.c
+fn Compile LinkOneObj { f=$1 obj=() {
+    if (~ $objDir ()) {
+        obj = $f.o
     } else {
-        LinkWithOpts      -o $f $f.o  
+        obj=obj/$f.o
+    }
+    if (~ $0 Compile) {
+        CompileWithOpts   -MT $obj -MF .deps/$f.Tpo -c -o $obj $f.c
+    } else {
+        LinkWithOpts      -o $f $obj  
     }
 }}
 
@@ -209,7 +220,11 @@ sources=(
 
 
 ########################################################################################
-rc_objs = $sources^.o
+if (~ $objDir ()) {
+    rc_objs = $sources^.o
+} else {
+    rc_objs = obj/^$sources^.o
+}
 
 ########################################################################################
 for (s in $sources) {

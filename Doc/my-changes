@@ -1,7 +1,27 @@
 let
+    let 'EXP'
+    let 'v=EXP'
+    let v 'EXP'
+
 continue
+    while (cmd1) {
+        if (cmd2) {
+            continue
+        }
+        cmd3
+    }
+
 $pwd
+    Current working directory ($PWD in bash)
+
 $ppid
+    Parent process id
+
 $random
+    Random number
+
 const* char
+
 ${cmd}
+    Equivalent to `{cmd}
+
