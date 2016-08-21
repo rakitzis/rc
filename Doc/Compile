@@ -1,4 +1,6 @@
 ########################################################################################
+# rc script to compile self.
+########################################################################################
 FORCE_CLANG=false
 FORCE_GCC=false
 
@@ -28,6 +30,7 @@ AddOn=false
 AddOn=true    ## for builtins: let, kill
 
 ########################################################################################
+# Standard options
 if (~ $OPT ()) {
     OptimizationOpts=()
     OptimizationOpts=(-O2)
@@ -53,6 +56,7 @@ CommonOpts = (
 )
 
 ########################################################################################
+# Security options (stack randomization, etc.)
 SecurityCompileOpts=(
     -fPIE
     ## -fstack-protector does not work on older systems (e.g., RedHat 4, 5)
@@ -65,6 +69,7 @@ SecurityLinkOpts=(
 )
 
 ########################################################################################
+# Other options
 RegularCompileOpts=(
     ## -DYYDEBUG'='1  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
     -DHAVE_CONFIG_H
@@ -86,6 +91,7 @@ RegularLinkOpts=(
 )
 
 ########################################################################################
+# All compile and link options together
 CompileOpts = (
     $CommonOpts
     $RegularCompileOpts
@@ -99,6 +105,7 @@ LinkOpts=(
 )
 
 ########################################################################################
+# Clobbering by setjmp/longjmp
 if ($CLOB) {
     Clobbered=(
         -Wclobbered
@@ -119,6 +126,8 @@ if ($FORCE_CLANG) {
     COMPILER=gcc
 }
 
+########################################################################################
+# Store object files in a subdir to prevent polution
 objDir=obj
 if (! ~ $objDir ()) {
     if (! test -d $objDir) {
@@ -147,6 +156,7 @@ fn Compile LinkOneObj { f=$1 obj=() {
     } else {
         obj=obj/$f.o
     }
+    #--------------------------------------------------------------------
     if (~ $0 Compile) {
         CompileWithOpts   -MT $obj -MF .deps/$f.Tpo -c -o $obj $f.c
     } else {

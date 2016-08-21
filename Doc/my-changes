@@ -1,9 +1,16 @@
-let
+For my scripts the most useful additions have been 'let' and 'continue'
+${com} made scripts nicer.
+
+---------------------------------------------------------------------
+let builtin
     let 'EXP'
     let 'v=EXP'
     let v 'EXP'
+    
+    Borrowed from ksh and bash.
 
-continue
+---------------------------------------------------------------------
+continue builtin
     while (cmd1) {
         if (cmd2) {
             continue
@@ -11,17 +18,37 @@ continue
         cmd3
     }
 
-$pwd
-    Current working directory ($PWD in bash)
+    Builtin 'break' was present - add 'continue' for completeness
 
-$ppid
-    Parent process id
+---------------------------------------------------------------------
+kill builtin
+    Borrowed from ksh and bash.
 
-$random
-    Random number
-
-const* char
-
+---------------------------------------------------------------------
 ${cmd}
     Equivalent to `{cmd}
+    Suggested on rc github repository.
+
+---------------------------------------------------------------------
+$pwd
+    Current working directory
+    Borrowed from ksh and bash ($PWD)
+
+---------------------------------------------------------------------
+$ppid
+    Parent process id
+    Borrowed from ksh and bash ($PPID)
+    Not resolved fully whether the value should change in a subshell.
+    $pid does not change.
+
+---------------------------------------------------------------------
+$random
+    Random number.
+    Starts with a function of time.  Can be restarted with random=NUMBER.
+    Borrowed from ksh and bash ($RANDOM)
+
+---------------------------------------------------------------------
+const* char
+    Replace 'char*' with 'const char*' in many places.
+    Safety.
 
