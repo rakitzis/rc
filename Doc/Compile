@@ -5,6 +5,7 @@ FORCE_CLANG=false
 FORCE_GCC=false
 
 CLOB=true
+Yydebug=false
 
 while (! ~ $#* 0) {
     switch(x$1) {
@@ -15,6 +16,10 @@ while (! ~ $#* 0) {
 
     case x-noclob* x--noclob*
         CLOB=false
+
+    case x-yydebug x--yydebug
+        Yydebug=true
+        
 
     case x-*
         echo >[1=2] Bad option $1
@@ -71,7 +76,6 @@ SecurityLinkOpts=(
 ########################################################################################
 # Other options
 RegularCompileOpts=(
-    ## -DYYDEBUG'='1  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
     -DHAVE_CONFIG_H
     -I.
     -g  
@@ -84,6 +88,12 @@ RegularCompileOpts=(
     -Wno-unused-parameter
     # -Werror  ## makes warnings errors
 )
+if ($Yydebug) {
+    RegularCompileOpts=(
+        $RegularCompileOpts
+        '-DYYDEBUG=1'  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
+    )
+}
 
 RegularLinkOpts=(
     -Wall

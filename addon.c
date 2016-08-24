@@ -318,7 +318,15 @@ int LetDoParse(const char *s, LetValue *r, LetLex* lex)
     lex->m_Indent[0] = '\0';
 
 #if YYDEBUG
-    letdebug = 1;
+    {
+        const char * const yys = getenv("YYDEBUG");
+        if (yys != 0) {
+            const int yyn = *yys;
+            if (yyn >= '0' && yyn <= '9') {
+                letdebug = yyn - '0';
+            }
+        }
+    }
 #endif
     status = LetParser(lex);
     *r = letResult;
