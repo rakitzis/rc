@@ -96,7 +96,7 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
     | expr '-' expr { $$ = $1 - $3; }
     | expr '*' expr    { $$ = $1 * $3; }
     | expr '/' expr
-        {   const long v3 = $3;
+        {   const LetValue v3 = $3;
             if (v3 == 0) {
                 leterror("Division by 0");
                 YYABORT;
@@ -104,7 +104,7 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
             $$ = $1 / (v3);
         }
     | expr '%' expr
-        { const long v3 = $3;
+        { const LetValue v3 = $3;
           if (v3 == 0) {
             leterror("Module by 0");
             YYABORT;
@@ -116,7 +116,7 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
     | '-' expr %prec UNARY_PLUSMINUS { $$ = -$2; }
     | '+' expr %prec UNARY_PLUSMINUS { $$ = +$2; }
     | expr '@' expr
-        {   const long v3 = $3;
+        {   const LetValue v3 = $3;
             if (v3 < 0) {
                 leterror("Negative power");
                 YYABORT;
