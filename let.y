@@ -1,8 +1,8 @@
 /*
  * process with
- *    byacc -d -b let -p let let.y
+ *    byacc -t -v -d [-P] -b let -p let let.y
  * or with
- *    bison -d -b let -p let let.y
+ *    bison -t -v -d -b let -p let let.y
  */
 
 %{
