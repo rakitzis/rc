@@ -16,12 +16,9 @@ void (*sys_signal(int signum, void (*handler)(int)))(int) {
 	new.sa_handler = handler;
 	new.sa_flags = 0; /* clear SA_RESTART */
 	sigfillset(&new.sa_mask);
-	if (0 != sigaction(signum, &new, &old)) {
-		if (EINVAL == errno) {
-			old.sa_handler = SIG_DFL; /* set DFL to remove function, IGN creates empty func */
-		}
-	}
-	return old.sa_handler;
+	if (sigaction(signum, &new, &old) == 0)
+		return old.sa_handler;
+	return SIG_DFL;
 }
 #else
 void (*sys_signal(int signum, void (*handler)(int)))(int) {
