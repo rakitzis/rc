@@ -52,10 +52,10 @@ extern int printf(const char *, ...);
 %pure-parser
 
 
-%start top
+%start let
 
 %%
-top
+let
     : expr
         {   assert('\0' == lex->m_Indent[0]);
             letResult = $1;
