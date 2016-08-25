@@ -1,11 +1,16 @@
 ########################################################################################
 # rc script to compile self.
 ########################################################################################
+fn Error { echo >[1=2] $* }
+fn Fatal { Error $*; exit 1 }
+
+########################################################################################
 FORCE_CLANG=false
 FORCE_GCC=false
 
 CLOB=true
 Yydebug=false
+Yyacc = false
 
 while (! ~ $#* 0) {
     switch(x$1) {
@@ -20,10 +25,11 @@ while (! ~ $#* 0) {
     case x-yydebug x--yydebug
         Yydebug=true
         
+    case x-yacc x--yacc
+        Yyacc = true
 
     case x-*
-        echo >[1=2] Bad option $1
-        exit 1
+        Fatal Bad option $1
     case *
         break
     }
@@ -244,6 +250,15 @@ if (~ $objDir ()) {
     rc_objs = $sources^.o
 } else {
     rc_objs = obj/^$sources^.o
+}
+
+########################################################################################
+if ($Yyacc) {
+    yaccOpts = (-t -v -d)
+    byacc $yaccOpts -o parse.c parse.y
+    if ($AddOn) {
+        byacc $yaccOpts -P -b let -p let let.y
+    }
 }
 
 ########################################################################################
