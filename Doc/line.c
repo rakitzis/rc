@@ -12,7 +12,9 @@ int main (int ac, char* av[])
   }
 
   l = strlen(buf);
+  /*
   fprintf(stderr, "L=%d, b=<%s>\n", l, buf);
+  */
 
   if (l <= 1) {  // empty or newline alone
     return 1;
