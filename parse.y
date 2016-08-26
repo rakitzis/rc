@@ -31,7 +31,7 @@ Node *parsetree;	/* not using yylval because bison declares it as an auto */
 	struct Pipe pipe;
 	struct Dup dup;
 	struct Word word;
-	CONST char *keyword;
+	const char *keyword;
 }
 
 %type <redir> REDIR SREDIR

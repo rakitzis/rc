@@ -11,10 +11,10 @@
 #include "rc.h"
 #include "sigmsgs.h"
 
-static bool var_exportable(CONST char *);
-static bool fn_exportable(CONST char *);
-static int hash(CONST char *, int);
-static int find(CONST char *, Htab *, int);
+static bool var_exportable(const char *);
+static bool fn_exportable(const char *);
+static int hash(const char *, int);
+static int find(const char *, Htab *, int);
 static void free_fn(rc_Function *);
 
 Htab *fp;
@@ -43,7 +43,7 @@ extern void inithash() {
 
 /* hash function courtesy of paul haahr */
 
-static int hash(CONST char *s, int size) {
+static int hash(const char *s, int size) {
 	int c, n = 0;
 	while (1) {
 		ADV();
@@ -104,7 +104,7 @@ static bool rehash(Htab *ht) {
 #define varfind(s) find(s, vp, vsize)
 #define fnfind(s) find(s, fp, fsize)
 
-static int find(CONST char *s, Htab *ht, int size) {
+static int find(const char *s, Htab *ht, int size) {
 	int h = hash(s, size);
 	while (ht[h].name != NULL && !streq(ht[h].name, s)) {
 		h++;
@@ -113,17 +113,17 @@ static int find(CONST char *s, Htab *ht, int size) {
 	return h;
 }
 
-extern rc_Function *lookup_fn(CONST char *s) {
+extern rc_Function *lookup_fn(const char *s) {
 	int h = find(s, fp, fsize);
 	return (fp[h].name == NULL) ? NULL : fp[h].u.f;
 }
 
-extern Variable *lookup_var(CONST char *s) {
+extern Variable *lookup_var(const char *s) {
 	int h = find(s, vp, vsize);
 	return (vp[h].name == NULL) ? NULL : vp[h].u.v;
 }
 
-extern rc_Function *get_fn_place(CONST char *s) {
+extern rc_Function *get_fn_place(const char *s) {
 	int h = fnfind(s);
 	env_dirty = TRUE;
 	if (fp[h].name == NULL) {
@@ -137,7 +137,7 @@ extern rc_Function *get_fn_place(CONST char *s) {
 	return fp[h].u.f;
 }
 
-extern Variable *get_var_place(CONST char *s, bool stack) {
+extern Variable *get_var_place(const char *s, bool stack) {
 	Variable *new;
 	int h = varfind(s);
 
@@ -165,7 +165,7 @@ extern Variable *get_var_place(CONST char *s, bool stack) {
 	}
 }
 
-extern void delete_fn(CONST char *s) {
+extern void delete_fn(const char *s) {
 	int h = fnfind(s);
 	if (fp[h].name == NULL)
 		return; /* not found */
@@ -181,7 +181,7 @@ extern void delete_fn(CONST char *s) {
 	}
 }
 
-extern void delete_var(CONST char *s, bool stack) {
+extern void delete_var(const char *s, bool stack) {
 	int h = varfind(s);
 	Variable *v;
 	if (vp[h].name == NULL)
@@ -252,14 +252,14 @@ static struct nameflag maybeexport[] = {
 	{ "version", FALSE }
 };
 
-void set_exportable(CONST char *s, bool b) {
+void set_exportable(const char *s, bool b) {
 	int i;
 	for (i = 0; i < arraysize(maybeexport); ++i)
 		if (maybeexport[i].flag != b && streq(s, maybeexport[i].name))
 			maybeexport[i].flag = b;
 }
 
-static bool var_exportable(CONST char *s) {
+static bool var_exportable(const char *s) {
 	int i;
 	for (i = 0; i < arraysize(neverexport); i++)
 		if (streq(s, neverexport[i]))
@@ -270,7 +270,7 @@ static bool var_exportable(CONST char *s) {
 	return TRUE;
 }
 
-static bool fn_exportable(CONST char *s) {
+static bool fn_exportable(const char *s) {
 	int i;
 	if (strncmp_fast(s, "sig", conststrlen("sig")) == 0) { /* small speed hack */
 		for (i = 0; i < NUMOFSIGNALS; i++)

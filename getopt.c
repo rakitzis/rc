@@ -7,10 +7,10 @@ char    *rc_optarg;
 
 /* getopt routine courtesy of David Sanderson */
  
-extern int rc_getopt(int argc, char **argv, CONST char *opts) {
+extern int rc_getopt(int argc, char **argv, const char *opts) {
         static int sp = 1;
 	int c;
-	CONST char *cp;
+	const char *cp;
 	if (rc_optind == 0) /* reset rc_getopt() */
 		rc_optind = sp = 1;
 	if (sp == 1) {

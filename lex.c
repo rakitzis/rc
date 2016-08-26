@@ -86,7 +86,7 @@ enum filedescriptors {
 };
 
 /* does this string require quoting? */
-extern bool quotep(CONST char *s, bool dollar) {
+extern bool quotep(const char *s, bool dollar) {
 	unsigned char c;
 	const char *meta;
 
@@ -167,7 +167,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		w = RW;
 		y->word.w = ncpy(buf);
 		if (saw_meta) {
-			CONST char *r;
+			const char *r;
 			char *s;
 			y->word.m = s = nnew_arr(char, strlen(buf) + 1);
 			for (r = buf; *r != '\0'; r++, s++)
@@ -348,7 +348,7 @@ extern void yyerror(const char *s) {
 		fprint(2, "rc: %s\n", s);
 }
 
-extern void scanerror(CONST char *s) {
+extern void scanerror(const char *s) {
 	skiptonl(); /* flush up to newline */
 	yyerror(s);
 	errset = prerror = TRUE;

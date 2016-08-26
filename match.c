@@ -2,13 +2,13 @@
 
 #include "rc.h"
 
-static int rangematch(CONST char *, char);
+static int rangematch(const char *, char);
 
 enum { RANGE_FAIL = -1, RANGE_ERROR = -2 };
 
 /* match() matches a single pattern against a single string. */
 
-extern bool match(CONST char *p, CONST char *m, CONST char *s) {
+extern bool match(const char *p, const char *m, const char *s) {
 	int i, j;
 	if (m == NULL)
 		return streq(p, s);
@@ -71,8 +71,8 @@ extern bool match(CONST char *p, CONST char *m, CONST char *s) {
    failure.
 */
 
-static int rangematch(CONST char *p, char c) {
-	CONST char *orig = p;
+static int rangematch(const char *p, char c) {
+	const char *orig = p;
 	bool neg = (*p == '~');
 	bool matched = FALSE;
 	if (neg)

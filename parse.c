@@ -37,7 +37,7 @@ typedef union {
 	struct Pipe pipe;
 	struct Dup dup;
 	struct Word word;
-	CONST char *keyword;
+	const char *keyword;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
 #line 44 "parse.c"
