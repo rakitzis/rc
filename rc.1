@@ -11,7 +11,7 @@
 .\" man page must contain '\en'.)
 .\"
 .\" Evidently not all versions of nroff allow the omission of the
-.\" terminal " on a macro argument.  Thus what could be written
+.\" terminal " on a macro argument. Thus what could be written
 .\"
 .\" .Cr "exec >[2] err.out
 .\"
@@ -22,7 +22,7 @@
 .\" instead.
 .\"
 .\" Use symbolic font names (e.g. R, I, B) instead of the standard
-.\" font positions 1, 2, 3.  Note that for Xf to work the standard
+.\" font positions 1, 2, 3. Note that for Xf to work the standard
 .\" font names must be single characters.
 .\"
 .\" Not all man macros have the RS and RE requests (I altered the Ds
@@ -31,9 +31,9 @@
 .\" Thanks to Michael Haardt (u31b3hs@cip-s01.informatik.rwth-aachen.de)
 .\" for pointing out these problems.
 .\"
-.\" Note that sentences should end at the end of a line.  nroff and
+.\" Note that sentences should end at the end of a line. nroff and
 .\" troff will supply the correct inter-sentence spacing, but only if
-.\" the sentences end at the end of a line.  Explicit spaces, if given,
+.\" the sentences end at the end of a line. Explicit spaces, if given,
 .\" are apparently honored and the normal inter-sentence spacing is
 .\" suppressed.
 .\"
@@ -125,8 +125,8 @@
 .\"		with a new word made of the current word (\$3) and \$4
 .\"		rendered in the first font,
 .\"		and with the remaining args following \$4.
-.\" else	We are done recursing.  \$3 holds the desired output
-.\"		word.  We emit \$3, change to Roman font, and restore
+.\" else	We are done recursing. \$3 holds the desired output
+.\"		word. We emit \$3, change to Roman font, and restore
 .\"		the point size to the default.
 .\" fi
 .\"
@@ -136,7 +136,7 @@
 .ds Xi
 .\"-------
 .\" I used to test for the italic font both by its font position
-.\" and its name.  Now just test by its name.
+.\" and its name. Now just test by its name.
 .\"
 .\" .if "\\$1"2" .if !"\\$5"" .ds Xi \^
 .\"-------
@@ -222,11 +222,13 @@ If the
 .Cr \-e
 flag is present, then
 .I rc
-will exit if the exit status of a command is false (nonzero).
-.I rc
-will not exit, however, if a conditional fails, e.g., an
-.Cr if()
-command.
+will exit if any command fails (exits with non-zero status). However
+.I "rc -e"
+does not exit if a conditional fails. A conditional is the test of an
+.Cr "if ()"
+command, or the left hand side of the
+.Cr ||
+operator.
 .TP
 .Cr \-i
 If the
@@ -653,7 +655,7 @@ The following may be used for control flow in
 .sp
 .Ci "if (" test ") {"
 .br
-.I  "    cmd"
+.I "    cmd"
 .br
 .TP
 .Ci "} else " cmd
@@ -823,22 +825,26 @@ command:
 .Cr "~ subject pattern pattern ..."
 .De
 .PP
+The
 .Cr ~
-sets
+command succeeds (sets
 .Cr $status
-to zero if and only if a supplied pattern matches any
-single element of the subject list.
+to zero) if and only if one of the
+.Cr pattern s
+matches
+.Cr subject .
 Thus
 .Ds
 .Cr "~ foo f*"
 .De
 .PP
-sets status to zero, while
+succeeds (sets status to zero), while
 .Ds
-.Cr "~ (bar baz) f*"
+.Cr "~ bar f*"
 .De
 .PP
-sets status to one.
+fails (sets status to one).
+.PP
 The null list is matched by the null list, so
 .Ds
 .Cr "~ $foo ()"
@@ -846,9 +852,30 @@ The null list is matched by the null list, so
 .PP
 checks to see whether
 .Cr $foo
-is empty or not.
-This may also be achieved
-by the test
+is empty or not. Because
+.I rc
+does not have hierarchical lists, the test for emptiness cannot be
+combined with other tests. To test whether
+.Cr $foo
+is empty, or one of the strings
+.Cr nada
+or
+.Cr rien ,
+do
+.I not
+write
+.Ds
+.Cr "~ $x () nada rien # WRONG means the same as: ~ $x nada rien"
+.De
+.PP
+instead write
+.Ds
+.Cr "~ $x () || ~ $x nada rien"
+.De
+.PP
+Another way to test if
+.Cr $foo
+is empty is
 .Ds
 .Cr "~ $#foo 0"
 .De
@@ -872,15 +899,16 @@ Thus, the command
 .Cr "~ * ?"
 .De
 .PP
-returns true if any of the files in the current directory have a
+succeeds if any of the files in the current directory have a
 single-character name.
+.PP
 If the
 .Cr ~
 command is given a list as its first
 argument, then a successful match against any of the elements of that
 list will cause
 .Cr ~
-to return true.
+to succeed.
 For example:
 .Ds
 .Cr "~ (foo goo zoo) z*"
@@ -967,7 +995,7 @@ example, the above example could also be typed in as:
 .De
 .PP
 .I rc
-takes care to insert a free-caret between the
+takes care to insert a free caret between the
 .Rc `` \- ''
 and
 .Cr "$opts" ,
@@ -976,7 +1004,7 @@ as between
 .Cr $files
 and
 .Cr ".c" .
-The rule for free carets is as follows:  if
+The rule for free carets is as follows: if
 a word or keyword is immediately
 followed by another word, keyword, dollar-sign or
 backquote, then
@@ -1286,12 +1314,12 @@ yet.
 .Cr bqstatus " (no-export)"
 The exit status of the
 .I rc
-forked to execute the most recent backquote substitution.  Note that, unlike
+forked to execute the most recent backquote substitution. Note that, unlike
 .Cr $status ,
 .Cr $bqstatus
 is always a single element list (see
 .BR "EXIT STATUS"
-below).  For example:
+below). For example:
 .Ds
 .Cr "echo foo |grep bar; whatis status"
 .De
@@ -1355,7 +1383,7 @@ has been started up as a login shell.
 .TP
 .Cr ifs " (default)"
 The internal field separator, used for splitting up the output of
-backquote commands for digestion as a list.  On startup,
+backquote commands for digestion as a list. On startup,
 .I rc
 assigns the list containing the characters space, tab, and newline to
 .Cr $ifs .
@@ -1405,7 +1433,7 @@ prompt is simply ignored by
 The null
 .Cr $prompt(2)
 also has its
-justification:  an
+justification: an
 .I rc
 script, when typed interactively, will not leave
 .Cr $prompt(2) 's
@@ -2055,7 +2083,7 @@ If anybody can reproduce this problem, please let the maintainer know.)
 .PP
 The
 .B echo
-command does not need to be a builtin.  It is one for reasons of
+command does not need to be a builtin. It is one for reasons of
 performance and portability (of
 .I rc
 scripts).
