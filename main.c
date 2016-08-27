@@ -84,7 +84,10 @@ quitopts:
 #endif
 	assigndefault("pid", nprint("%d", rc_pid), (void *)0);
 	assigndefault("prompt", "; ", "", (void *)0);
-	assigndefault("version", VERSION, "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $", (void *)0);
+	assigndefault("version",
+                VERSION,
+                "$Release: @(#)" PACKAGE " " VERSION " " DESCRIPTION " $",
+                (void *)0 );
 	initenv(envp);
 	initinput();
 	null[0] = NULL;

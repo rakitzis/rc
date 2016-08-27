@@ -1,1 +1,1 @@
-const char id[] = "@(#)@PACKAGE@ version @VERSION@, @RELDATE@.";
+const char id[] = "@(#)@PACKAGE@ version @VERSION@, @DESCRIPTION@.";

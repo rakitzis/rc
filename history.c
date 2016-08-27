@@ -20,7 +20,7 @@
 
 #include <stdio.h>
 
-static const char id[] = "$Release: @(#)" PACKAGE " " VERSION " " RELDATE " $";
+static const char id[] = "$Release: @(#)" PACKAGE " " VERSION " " DESCRIPTION " $";
 
 #define CHUNKSIZE 65536
 

@@ -2,8 +2,8 @@ dnl Our package name, version, ...
 AC_INIT([rc], [1.7.4])
 
 dnl ... and release date
-RELDATE=`date +%Y-%m-%d`
-AC_DEFINE_UNQUOTED(RELDATE, "$RELDATE", [Release date])
+DESCRIPTION=$(git describe || echo '(git description unavailable)')
+AC_DEFINE_UNQUOTED(DESCRIPTION, "$DESCRIPTION", [Release date])
 
 dnl Get things going...
 AC_CONFIG_SRCDIR([rc.h])
