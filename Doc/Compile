@@ -14,9 +14,9 @@ Yyacc = false
 
 while (! ~ $#* 0) {
     switch(x$1) {
-    case x-force_clang  x-clang x--clang
+    case x-force-clang  x--force-clang x-clang x--clang
         FORCE_CLANG=true
-    case x-force_gcc  x-gcc x--gcc
+    case x-force-gcc    x--force-gcc   x-gcc   x--gcc
         FORCE_GCC=true
 
     case x-noclob* x--noclob*
