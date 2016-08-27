@@ -1,5 +1,5 @@
 .deps/
-Makefile
+aclocal.m4
 autom4te.cache/
 *~
 *.o
