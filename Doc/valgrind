@@ -1,0 +1,10 @@
+val_opts=(
+  -v
+  '--leak-check=full'
+  '--show-leak-kinds=all'
+  '--track-origins=yes'
+  '--gen-suppressions=yes'
+)
+
+valgrind $val_opts ./rc -p < trip.rc  >[2]val.err | tee val.out 
+
