@@ -1,7 +1,3 @@
-#ifndef YYERRCODE
-#define YYERRCODE 256
-#endif
-
 #define ANDAND 257
 #define BACKBACK 258
 #define BANG 259
@@ -26,6 +22,12 @@
 #define WHILE 278
 #define WORD 279
 #define HUH 280
+#ifdef YYSTYPE
+#undef  YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
+#endif
+#ifndef YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
 typedef union {
 	struct Node *node;
 	struct Redir redir;
@@ -34,4 +36,5 @@ typedef union {
 	struct Word word;
 	char *keyword;
 } YYSTYPE;
+#endif /* !YYSTYPE_IS_DECLARED */
 extern YYSTYPE yylval;
