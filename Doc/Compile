@@ -28,6 +28,9 @@ while (! ~ $#* 0) {
     case x-yacc x--yacc
         Yyacc = true
 
+    case --opt 
+        OPT=$2
+
     case x-*
         Fatal Bad option $1
     case *
@@ -43,9 +46,9 @@ AddOn=true    ## for builtins: let, kill
 ########################################################################################
 # Standard options
 if (~ $OPT ()) {
-    OptimizationOpts=()
     OptimizationOpts=(-O2)
     OptimizationOpts=(-O3)
+    OptimizationOpts=()
 } else {
     OptimizationOpts=(-O$OPT)
 }
