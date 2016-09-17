@@ -827,6 +827,21 @@ y=$random
 if (~ $x $y) {
     fail Two random value not different: $x $y
 }
+
+#############################################################################
+rm -f a=b
+if (test -e 'a=b') {
+    fail 'rm -f a=b' failed, file 'a=b' exists
+}
+touch a=b
+if (! test -f 'a=b') {
+    fail 'test -f a=b' failed, file 'a=b' does not exist
+}
+rm -f a=b
+if (test -e 'a=b') {
+    fail 'rm -f a=b' failed, file 'a=b' exists
+}
+
 #############################################################################
 
 rm -rf $tmpdir
