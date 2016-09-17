@@ -41,7 +41,22 @@ extern int getstatus() {
 }
 
 extern void setN(int code) {
-  setstatus(-1, code << 8);
+    int scode = 0;
+    switch (code) {
+    case 0:
+        scode = STATUS0;
+        break;
+    case 1:
+        scode = STATUS1;
+        break;
+    case 2:
+        scode = STATUS2;
+        break;
+    default:
+        scode = STATUS1;
+        break;
+    }
+    setstatus(-1, scode);
 }
 
 extern void set(bool code) {

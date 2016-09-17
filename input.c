@@ -304,7 +304,8 @@ extern Node *doit(bool clobberexecitIn) {
 		}
 		inityy();
 		if (yyparse(/*yylex*/) == 1 && execit) {
-			rc_error(NULL);
+			setN(2); /* syntax error */
+			rc_raise(eError);
 		}
 		eof = (lastchar == EOF); /* "lastchar" can be clobbered during a walk() */
 		if (parsetree != NULL) {
