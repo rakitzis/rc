@@ -303,8 +303,9 @@ extern Node *doit(bool clobberexecitIn) {
 				edit_prompt(istack->cookie, prompt);
 		}
 		inityy();
-		if (yyparse(/*yylex*/) == 1 && execit)
-			rc_raise(eError);
+		if (yyparse(/*yylex*/) == 1 && execit) {
+			rc_error(NULL);
+		}
 		eof = (lastchar == EOF); /* "lastchar" can be clobbered during a walk() */
 		if (parsetree != NULL) {
 			if (execit)
