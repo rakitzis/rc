@@ -1,4 +1,5 @@
 ########################################################################################
+ObjDir=obj
 FORCE_CLANG=false
 FORCE_GCC=false
 
@@ -137,9 +138,9 @@ fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
 ########################################################################################
 fn Compile LinkOneObj { f=$1 {
     if (~ $0 Compile) {
-        CompileWithOpts   -MT $f.o -MF .deps/$f.Tpo -c -o $f.o $f.c
+        CompileWithOpts   -MT $f.o -MF .deps/$f.Tpo -c -o $ObjDir/$f.o $f.c
     } else {
-        LinkWithOpts      -o $f $f.o  
+        LinkWithOpts      -o $f $ObjDir/$f.o  
     }
 }}
 
@@ -209,7 +210,7 @@ sources=(
 
 
 ########################################################################################
-rc_objs = $sources^.o
+rc_objs = $ObjDir/$sources^.o
 
 ########################################################################################
 for (s in $sources) {
