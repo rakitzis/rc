@@ -149,10 +149,8 @@ if ($FORCE_CLANG) {
 ########################################################################################
 # Store object files in a subdir to prevent polution
 objDir=obj
-if (! ~ $objDir ()) {
-    if (! test -d $objDir) {
-        mkdir -p $objDir
-    }
+if (! ~ $#objDir 0 && ! test -d $objDir) {
+    mkdir -p $objDir
 }
 ########################################################################################
 ########################################################################################
@@ -174,7 +172,7 @@ fn Compile LinkOneObj { f=$1 obj=() {
     if (~ $objDir ()) {
         obj = $f.o
     } else {
-        obj=obj/$f.o
+        obj=$objDir/$f.o
     }
     #--------------------------------------------------------------------
     if (~ $0 Compile) {
@@ -253,7 +251,7 @@ sources=(
 if (~ $objDir ()) {
     rc_objs = $sources^.o
 } else {
-    rc_objs = obj/^$sources^.o
+    rc_objs = $objDir/^$sources^.o
 }
 
 ########################################################################################
