@@ -5,6 +5,7 @@ fn Error { echo >[1=2] $* }
 fn Fatal { Error $*; exit 1 }
 
 ########################################################################################
+objDir=obj
 FORCE_CLANG=false
 FORCE_GCC=false
 
