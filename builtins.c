@@ -71,9 +71,9 @@ builtins[] = {
 extern bool q_builtins_ordered(void)
 {
 	const int N = sizeof(builtins)/sizeof(builtins[0]);
-	int i = 0, j = i + 1;
+	int i, j;
 
-	for (i = 0; j < N; ++i, ++j) {
+	for (i = 0, j = 1; j < N; ++i, ++j) {
 		if (strcmp_fast(builtins[i].name, builtins[j].name) >= 0) {
 			return FALSE;
 		}
