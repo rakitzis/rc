@@ -97,7 +97,7 @@ quitopts:
 	assigndefault("ppid", nprint("%d", rc_ppid), (void *)0);
 	{
 		char b[PATH_MAX+1];
-		const char* ret = getcwd(b, arraysize(b)-1);
+		const char* ret = getcwd(b, arraysize(b) - 1);
 		if (ret) {
 			assigndefault("pwd", nprint("%s", b), (void*)0);
 		} 
