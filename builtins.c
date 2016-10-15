@@ -42,35 +42,35 @@ typedef struct BuiltinMap {
 
 static BuiltinMap
 builtins[] = {
-	{ b_dot,	"." },
-	{ b_break,	"break" },
-	{ b_builtin,	"builtin" },
-	{ b_cd,		"cd" },
-	{ b_continue,	"continue" },
+	{ b_dot,        "." },
+	{ b_break,      "break" },
+	{ b_builtin,    "builtin" },
+	{ b_cd,         "cd" },
+	{ b_continue,   "continue" },
 #if RC_ECHO
-	{ b_echo,	"echo" },
+	{ b_echo,       "echo" },
 #endif
-	{ b_eval,	"eval" },
-	{ b_exec,	"exec" },
-	{ b_exit,	"exit" },
+	{ b_eval,       "eval" },
+	{ b_exec,       "exec" },
+	{ b_exit,       "exit" },
 #ifdef RC_ADDON
-	{ b_kill,	"kill" },
-	{ b_let,	"let" },
+	{ b_kill,       "kill" },
+	{ b_let,        "let" },
 #endif
 #if HAVE_SETRLIMIT
-	{ b_limit,	"limit" },
+	{ b_limit,      "limit" },
 #endif
-	{ b_newpgrp,	"newpgrp" },
-	{ b_return,	"return" },
-	{ b_shift,	"shift" },
-	{ b_umask,	"umask" },
-	{ b_wait,	"wait" },
-	{ b_whatis,	"whatis" },
+	{ b_newpgrp,    "newpgrp" },
+	{ b_return,     "return" },
+	{ b_shift,      "shift" },
+	{ b_umask,      "umask" },
+	{ b_wait,       "wait" },
+	{ b_whatis,     "whatis" },
 };
 
 extern bool q_builtins_ordered(void)
 {
-	const int N = sizeof(builtins)/sizeof(builtins[0]);
+	const int N = arraysize(builtins);
 	int i, j;
 
 	for (i = 0, j = 1; j < N; ++i, ++j) {
@@ -82,7 +82,7 @@ extern bool q_builtins_ordered(void)
 }
 
 extern builtin_t *isbuiltin(const char *s) {
-	const BuiltinMap *pi = &builtins[0], *pj = &builtins[sizeof(builtins)/sizeof(builtins[0])];
+	const BuiltinMap *pi = &builtins[0], *pj = &builtins[arraysize(builtins)];
 
 	while (pi < pj) {
 		const BuiltinMap *const pm = pi + (pj - pi)/2;
@@ -153,7 +153,7 @@ static void update_cwd_var(void)
 {
   char b[PATH_MAX+1];
   List val;
-  const char* ret = getcwd(b, (sizeof(b)/sizeof(b[0]))-1);
+  const char* ret = getcwd(b, arraysize(b)-1);
   if (ret) {
     val.w = nprint("%s", b);
     val.n = NULL;

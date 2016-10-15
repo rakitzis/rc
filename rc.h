@@ -164,7 +164,7 @@ enum {
 #endif
 #define a2u(x) n2u(x, 10)
 #define o2u(x) n2u(x, 8)
-#define arraysize(a) ((int)(sizeof(a)/sizeof(*a)))
+#define arraysize(a) ((int)(sizeof(a)/sizeof((a)[0])))
 #define memzero(s, n) memset(s, 0, n)
 #define enew(x) ((x *) ealloc(sizeof(x)))
 #define enew_arr(T,n) ((T *) ealloc((n)*sizeof(T)))
