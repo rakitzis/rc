@@ -1717,7 +1717,11 @@ If no argument is given, the current value of
 .Cr $status
 is used.
 .TP
-\fBlet \fR[\fIvarname\fR=\fIexpression\fR | [\fIvarname\fR] \fIexpression\fR]
+\fBkill \fR[-\fIsigname\fR|-\fIsignum\fR] \fIprocess\fR
+Kills \fIprocess\fR by sending the signal specified by \fIsigname\fR or \fIsignum\fR.
+If neither signal name nor signal number is specified, uses signal SIGTERM.
+.TP
+\fBlet \fIvarname\fR=\fIexpression\fR | [\fIvarname\fR] \fIexpression\fR
 Evaluates signed integer arithmetic \fIexpression\fR.
 Sets status to 0 if the value of the expression is non-zero,
 to 1 if the value is zero, and to 2 if the expression is malformed.
