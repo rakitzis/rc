@@ -1717,6 +1717,13 @@ If no argument is given, the current value of
 .Cr $status
 is used.
 .TP
+\fBlet \fR[\fIvarname\fR=\fIexpression\fR | [\fIvarname\fR] \fIexpression\fR]
+Evaluates signed integer arithmetic \fIexpression\fR.
+Sets status to 0 if the value of the expression is non-zero,
+to 1 if the value is zero, and to 2 if the expression is malformed.
+Additionally, the first form and the second form when \fIvarname\fR is present
+assign the value of the expression to the variable.
+.TP
 \fBlimit \fR[\fB\-h\fR] [\fIresource \fR[\fIvalue\fR]]
 Similar to the
 .IR csh (1)
