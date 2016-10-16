@@ -15,51 +15,62 @@
 LetValue letResult;
 
 
-#define KILL_USAGE "usage: kill [-signame|-signum] pid\n"
-#define LET_USAGE  "usage: let [Var] Expr\n"
-#define CHECK(cond, msg) if (cond) { fprint(2, (msg)); set(FALSE); return; }
 
 void b_kill (char **av)
 {
-    char *sig_p, *proc_p;
-    pid_t proc;
-    int sig, r;
+    int p, sig;
+    bool ret;
 
     if (av[1]  == NULL) {
-        fprint(2, KILL_USAGE); set(FALSE); return; 
+        fprint(2, "usage: kill [-signame|-signum] pid+\n");
+        set(FALSE);
+        return; 
     }
-    sig_p = av[1];
-    if (av[2] == NULL) {
+
+    if ('-' != av[1][0]) {
         sig = SIGTERM;
-        proc_p = sig_p;
+        p = 1;
     } else {
-        proc_p = av[2];
-        CHECK((av[3] != NULL), KILL_USAGE);
-        CHECK((*sig_p != '-'), KILL_USAGE)
-        sig = a2u(sig_p+1);
+        const char* const sigStr = av[1] + 1;
+        sig = a2u(sigStr);
         if (sig < 0) {
-            int i;
-            for (i=0; signals[i].name; ++i) {
-                if (0 == strcasecmp(sig_p+1, signals[i].name)) {
-                    /* -sigkill */
-                    sig = signals[i].signum;
-                    break;
-                } else if (0 == strcasecmp(sig_p+1, signals[i].name+3)) {
+            int s;
+            for (s=0; signals[s].name; ++s) {
+                if (0 == strcasecmp(sigStr, signals[s].name)) {
                     /* -kill */
-                    sig = signals[i].signum;
+                    sig = signals[s].signum;
+                    break;
+                } else if (0 == strcasecmp(sigStr, signals[s].name+3)) {
+                    /* -sigkill */
+                    sig = signals[s].signum;
                     break;
                 }
             }
+            if (sig < 0) {
+                fprint(2, "bad signal %s\n", sigStr);
+                set(FALSE);
+                return;
+            }
         }
-        CHECK((sig < 0), "bad signal\n")
+        p = 2;
     }
 
-    proc = a2u(proc_p);
-    CHECK((proc < 0), "bad process id\n")
-    r = kill(proc, sig);
-    CHECK((r < 0), "kill failed\n")
-#undef KILL_USAGE
-#undef CHECK
+    ret = TRUE;
+    for (/*empty*/; av[p]; ++p) {
+        const char* const procStr = av[p];
+        const pid_t proc = a2u(procStr);
+        if (proc > 0) {
+            const int r = kill(proc, sig);
+            if (r < 0) {
+                ret = FALSE;
+                fprint(2, "failed to kill process %d with signal, return value %d\n", proc, sig, r);
+            }
+        } else {
+            ret = FALSE;
+            fprint(2, "bad process id: %s\n", procStr);
+        }
+    }
+    set(ret);
 }
 
 extern int LetDoParse(const char *s, LetValue *r, LetLex* lex);
@@ -99,6 +110,9 @@ static int ret_value(int parse_status, long value)
         return BAD_EXP;
     }
 }
+
+
+#define LET_USAGE  "usage: let [Var] Expr\n"
 
 void b_let (char **av)
 {
