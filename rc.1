@@ -1717,16 +1717,16 @@ If no argument is given, the current value of
 .Cr $status
 is used.
 .TP
-\fBkill \fR[-\fIsigname\fR|-\fIsignum\fR] \fIprocess\fR
-Kills \fIprocess\fR by sending the signal specified by \fIsigname\fR or \fIsignum\fR.
+\fBkill \fR[-\fIsigname\fR|-\fIsignum\fR] \fIprocess\fR ...
+Kills \fIprocesses\fR by sending the signal specified by \fIsigname\fR or \fIsignum\fR.
 If neither signal name nor signal number is specified, uses signal SIGTERM.
 .TP
 \fBlet \fIvarname\fR=\fIexpression\fR | [\fIvarname\fR] \fIexpression\fR
 Evaluates signed integer arithmetic \fIexpression\fR.
 Sets status to 0 if the value of the expression is non-zero,
 to 1 if the value is zero, and to 2 if the expression is malformed.
-Additionally, the first form and the second form when \fIvarname\fR is present
-assign the value of the expression to the variable.
+Additionally, the first form and the second form with \fIvarname\fR present
+assign the value of the expression to the variable \fIvarname\fR.
 .TP
 \fBlimit \fR[\fB\-h\fR] [\fIresource \fR[\fIvalue\fR]]
 Similar to the
