@@ -12,10 +12,10 @@ Precedence  Operator    Description Associativity
 -------------------------------------------------------------------
 7   <<   >>     Bitwise left shift and right shift
 -------------------------------------------------------------------
-8   <   <=      For relational operators < and ≤ respectively
-    >   >=      For relational operators > and ≥ respectively
+8   <   <=      For relational operators < and <= respectively
+    >   >=      For relational operators > and >= respectively
 -------------------------------------------------------------------
-9   ==   !=     For relational operators = and ≠ respectively
+9   ==   !=     For relational operators = and <> respectively
 -------------------------------------------------------------------
 10  &           Bitwise AND
 -------------------------------------------------------------------
