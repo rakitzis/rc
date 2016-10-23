@@ -14,7 +14,7 @@
 
 LetValue letResult;
 
-
+#define KILL_USAGE "usage: kill [-signame|-signum] pid+\n"
 
 void b_kill (char **av)
 {
@@ -22,7 +22,7 @@ void b_kill (char **av)
     bool ret;
 
     if (av[1]  == NULL) {
-        fprint(2, "usage: kill [-signame|-signum] pid+\n");
+        fprint(2, "%s", KILL_USAGE);
         set(FALSE);
         return; 
     }
@@ -56,7 +56,7 @@ void b_kill (char **av)
     }
 
     if (! av[p]) { /* must have at least one process id */
-        fprint(2, "usage: kill [-signame|-signum] pid+\n");
+        fprint(2, "%s", KILL_USAGE);
         set(FALSE);
         return; 
     }
@@ -118,7 +118,7 @@ static int ret_value(int parse_status, long value)
 }
 
 
-#define LET_USAGE  "usage: let [Var] Expr\n"
+#define LET_USAGE  "usage: let [var] expr\n"
 
 void b_let (char **av)
 {
@@ -127,7 +127,7 @@ void b_let (char **av)
     int rc_status = BAD_EXP;
 
     if (av[1] == 0) {
-        fprint(2, LET_USAGE);
+        fprint(2, "%s", LET_USAGE);
         goto returnLabel;
     } else if (av[2] == 0) {
         LetLex lex;
@@ -149,7 +149,7 @@ void b_let (char **av)
         rc_status = ret_value(parse_status, R);
         goto returnLabel;
     } else if (av[3] != 0) {
-        fprint(2, LET_USAGE);
+        fprint(2, "%s", LET_USAGE);
         goto returnLabel;
     } else if (0 == strcmp_fast(av[1], "-p")) {
         const char* const exp = av[2];
