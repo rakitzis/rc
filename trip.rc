@@ -608,6 +608,13 @@ fn_ff='{' prompt='' if (!~ `` $nl {$rc -cff>[2=1]} 'rc: line 1: '*' error near e
 ~ `{$rc -ec 'sleep 10&kill -9 $apid;wait'>[2=1]} killed ||
 	fail status diagnostic
 
+if (kill) {
+	fail 'kill without args succeeded'
+}
+if (kill -term) {
+	fail 'kill with signal but without process args succeeded'
+}
+
 $rc -c 'exit 0 sigfpe' && fail exit of bad pipeline is true
 
 submatch 'exit foo' 'bad status' 'exit diagnostic'

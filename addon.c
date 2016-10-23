@@ -55,6 +55,12 @@ void b_kill (char **av)
         p = 2;
     }
 
+    if (! av[p]) { /* must have at least one process id */
+        fprint(2, "usage: kill [-signame|-signum] pid+\n");
+        set(FALSE);
+        return; 
+    }
+
     ret = TRUE;
     for (/*empty*/; av[p]; ++p) {
         const char* const procStr = av[p];
