@@ -5,7 +5,7 @@ fn Error { echo >[1=2] $* }
 fn Fatal { Error $*; exit 1 }
 
 ########################################################################################
-objDir=obj
+objDir=./obj
 FORCE_CLANG=false
 FORCE_GCC=false
 
@@ -148,7 +148,6 @@ if ($FORCE_CLANG) {
 
 ########################################################################################
 # Store object files in a subdir to prevent polution
-objDir=obj
 if (! ~ $#objDir 0 && ! test -d $objDir) {
     mkdir -p $objDir
 }
@@ -171,14 +170,20 @@ fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
 fn Compile LinkOneObj { f=$1 obj=() {
     if (~ $objDir ()) {
         obj = $f.o
+        exe = $f
     } else {
         obj=$objDir/$f.o
+        if (~ $f *tripping*) {
+            exe = $f
+        } else {
+            exe = $objDir/$f
+        }
     }
     #--------------------------------------------------------------------
     if (~ $0 Compile) {
         CompileWithOpts   -MT $obj -MF .deps/$f.Tpo -c -o $obj $f.c
     } else {
-        LinkWithOpts      -o $f $obj  
+        LinkWithOpts      -o $exe $obj  
     }
 }}
 
@@ -193,11 +198,17 @@ for (s in mksignal mkstatval) {
 }
 
 ## Signal names for sigmsgs.c, must be done before compiling rc
-./mksignal
-
+if (~ $objDir ()) {
+    mksignalExe = ./mksignal
+    mkstatExe = ./mkstatval
+} else {
+    mksignalExe = $objDir/mksignal
+    mkstatExe = $objDir/mkstatval
+}
+$mksignalExe
 ## Status value defines, must be done before compiling rc
 ## Making mkstatval does not depend on singals created by mksignal
-./mkstatval > statval.h
+$mkstatExe > statval.h
 
 ########################################################################################
 ## CompileWithOpts rc source
