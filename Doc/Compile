@@ -29,8 +29,12 @@ while (! ~ $#* 0) {
     case x-yacc x--yacc
         Yyacc = true
 
-    case --opt 
+    case x--opt 
         OPT=$2
+        shift
+    case x--fortify
+        Fortify=$2
+        shift
 
     case x-*
         Fatal Bad option $1
@@ -77,6 +81,12 @@ SecurityCompileOpts=(
     ## -fstack-protector does not work on older systems (e.g., RedHat 4, 5)
     -fstack-protector
 )
+if (! ~ $#Fortify 0) {
+    SecurityCompileOpts=(
+        $SecurityCompileOpts
+        '-D_FORTIFY_SOURCE='$Fortify
+    )
+}
 
 SecurityLinkOpts=(
     -pie 
