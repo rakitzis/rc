@@ -30,9 +30,15 @@ while (! ~ $#* 0) {
         Yyacc = true
 
     case x--opt 
+        if (~ $#* 0 1) {
+            Fatal Option $1 needs value
+        }
         OPT=$2
         shift
     case x--fortify
+        if (~ $#* 0 1) {
+            Fatal Option $1 needs value
+        }
         Fortify=$2
         shift
 
