@@ -228,12 +228,12 @@ int main(void) {
     for (s = 1; s <= maxsig; ++s) {
         for (snp = signamings; snp->signo && snp->signo != s; ++snp)
             /* */;
-          if (snp->signo)
-  	          fprintf(outf, "\t{\"%s\",\t\"%s\", %d},\n",
-  		                snp->signame, snp->sigmsg, snp->signo);
-          else
-              fprintf(outf, "\t{\"sigunknown%d\",\t\"unknown signal %d\", 0},\n",
-  		                  s, s);
+        if (snp->signo)
+            fprintf(outf, "\t{\"%s\",\t\"%s\", %d},\n",
+                      snp->signame, snp->sigmsg, snp->signo);
+        else
+            fprintf(outf, "\t{\"sigunknown%d\",\t\"unknown signal %d\", 0},\n",
+                        s, s);
     }
     fprintf(outf, "\t{0,\t0,\t-1},\n");
     fprintf(outf, "};\n");
