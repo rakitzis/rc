@@ -48,7 +48,7 @@ if (false) {					# WARNING: this differs from sh
 ######################################################################
 fn testOneLet { e=$1 v=$2 a=() x=() {
   #echo exp: $e
-  let a=$e
+  let a = $e
   if (!~ $a $v) {
     fail let: $e evaluates to $a, should be $v
   }
@@ -60,7 +60,7 @@ fn testOneLet { e=$1 v=$2 a=() x=() {
   if (! ~ $x $v) {
     fail let -p: $e evaluates to $x, should be $v
   }
-  x=${let -p 'b='$e}
+  x=${let -p 'b' = $e}
   if (! ~ $x $b) {
     fail let -p: $e evaluates to $x, should be $v
   }
@@ -772,7 +772,7 @@ ten = a^(1 2 3 4 5 6 7 8 9 10)
 i=1
 while (let $i' <= '$#ten) {
   n=$ten($i)
-  let i=$i+1
+  let i = $i+1
   if (~ $n a2 a3) {
     continue
   }

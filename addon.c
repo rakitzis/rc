@@ -16,6 +16,7 @@ LetValue letResult;
 
 #define KILL_USAGE "usage: kill [-signame|-signum] pid+\n"
 
+/******************************************************/
 void b_kill (char **av)
 {
     int p, sig;
@@ -89,6 +90,7 @@ static void set_var (char *varname, long R)
 }
 #endif
 
+/******************************************************/
 static int check_var_name (const char *p)
 {
     if (!isalpha(*p) && (*p) != '_') {
@@ -103,12 +105,14 @@ static int check_var_name (const char *p)
 }
 
 
+/******************************************************/
 enum {
     VAL_NONZERO  = 0,
     VAL_ZERO     = 1,
     BAD_EXP      = 2,
 };
 
+/******************************************************/
 static int ret_value(int parse_status, long value)
 {
     if (0==parse_status) {
@@ -125,16 +129,14 @@ static int ret_value(int parse_status, long value)
 
 #define LET_USAGE  "usage: let [expr|assignment]\n"
 
+/******************************************************/
 void b_let (char **av)
 {
-    long R = 0;
-    int parse_status;
     int rc_status = BAD_EXP;
 
     if (av[1] == 0) { /* no arg like parse error */
         fprint(2, "%s", LET_USAGE);
         rc_status = BAD_EXP;
-        goto finish;
     } else {
         int i;
         bool doPrint = FALSE;
@@ -150,6 +152,8 @@ void b_let (char **av)
             rc_status = BAD_EXP;
         } else {
             LetLex lex;
+            long parse_value = 0;
+            int parse_status;
             const char* exp;
 
             if (0 == av[i+1]) {
@@ -176,19 +180,19 @@ void b_let (char **av)
                 *p = '\0';
             }
 
-            parse_status = LetDoParse(exp, &R, &lex);
+            parse_status = LetDoParse(exp, &parse_value, &lex);
 
             if (0==parse_status) {
                 const char* const varName = &lex.m_Indent[0];
                 if ('\0' != varName[0]) { /* assignment */
                     List val;
                     if (check_var_name(varName)) {
-                        val.w = nprint("%ld", R);
+                        val.w = nprint("%ld", parse_value);
                         val.n = NULL;
                         varassign(varName, &val, FALSE);
-                        rc_status = ret_value(parse_status, R);
+                        rc_status = ret_value(parse_status, parse_value);
                         if (doPrint) {
-                            fprint(1, "%ld\n", R);
+                            fprint(1, "%ld\n", parse_value);
                         }
                     } else {
                         // should this be treated as bad parse?
@@ -196,9 +200,9 @@ void b_let (char **av)
                         rc_status = BAD_EXP;
                     }
                 } else { /* no variable => not assignment */
-                    rc_status = ret_value(parse_status, R);
+                    rc_status = ret_value(parse_status, parse_value);
                     if (doPrint) {
-                        fprint(1, "%ld\n", R);
+                        fprint(1, "%ld\n", parse_value);
                     }
                 }
             } else { /* parse error */
@@ -206,7 +210,7 @@ void b_let (char **av)
             }
         }
     }
-finish:
+
     setN(rc_status);
     return;
 }
@@ -216,7 +220,6 @@ finish:
 
 
 /******************************************************/
-
 LetValue letpwr(LetValue a, LetValue b)
 {
     LetValue z = 1;   /* z*a^b = A^B */
@@ -343,7 +346,6 @@ Token LetLexer (LetLex *lex, YYSTYPE* letlval)
 } /* LetLexer */
 
 /******************************************************/
-
 /******************************************************/
 #if YYDEBUG
 extern int letdebug;
@@ -373,8 +375,6 @@ int LetDoParse(const char *s, LetValue *r, LetLex* lex)
 }
 
 /******************************************************/
-
-
 int leterror(const char *s)
 {
     fprint(2, "let: %s\n", s);
