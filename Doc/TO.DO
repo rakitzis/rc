@@ -13,7 +13,7 @@ one string as is done today.
 With this change the old assignment form
     let x 'expression'          (3)
 would have to be abandonded because there is no way to distinguish between
-    let 2 + 3                   (4)
+    let 2+ 3                    (4)
 and
     let x '3+4'                 (5)
 
