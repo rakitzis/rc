@@ -150,25 +150,31 @@ void b_let (char **av)
             rc_status = BAD_EXP;
         } else {
             LetLex lex;
-            char* exp;
-            char* p;
-            int j;
-            int len = 0;
+            const char* exp;
 
-            for (j = 0; av[j]; ++j) { /* count total len */
-                len += strlen(av[j]) + 1; /* 1 space between args:(a,b) to 'a b', no to 'ab' */
+            if (0 == av[i+1]) {
+                exp = av[i];
+            } else {
+                int j;
+                char* p;
+                int len = 0;
+
+                for (j = i; av[j]; ++j) { /* count total len */
+                    len += strlen(av[j]) + 1; /* 1 space between args:(a,b) to 'a b', no to 'ab' */
+                }
+
+                exp = p = nnew_arr(char, len+1);
+
+                strcpy(p, av[i]); /* guaranteed non-null */
+                p += strlen(av[i++]);
+
+                for (; av[i]; ++i) {
+                    *p++ = ' ';
+                    strcpy(p, av[i]);
+                    p += strlen(av[i]);
+                }
+                *p = '\0';
             }
-            p = exp = nnew_arr(char, len+1);
-
-            strcpy(p, av[i]); /* guaranteed non-null */
-            p += strlen(av[i++]);
-
-            for (; av[i]; ++i) {
-                *p++ = ' ';
-                strcpy(p, av[i]);
-                p += strlen(av[i]);
-            }
-            *p = '\0';
 
             parse_status = LetDoParse(exp, &R, &lex);
 
