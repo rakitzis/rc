@@ -48,7 +48,7 @@ if (false) {					# WARNING: this differs from sh
 ######################################################################
 fn testOneLet { e=$1 v=$2 a=() x=() {
   #echo exp: $e
-  let a $e
+  let a=$e
   if (!~ $a $v) {
     fail let: $e evaluates to $a, should be $v
   }
@@ -69,7 +69,7 @@ fn testOneLet { e=$1 v=$2 a=() x=() {
 ######################################################################
 fn letExprErr { exp=$1 msg=$2 s=() n=() q='''' {
   expect error $q$exp$q^': '^$msg
-  let n $exp; s = $status
+  let n=$exp; s = $status
   if (!~ $n ()) {
     fail 'n assigned value after error in expr '^$exp
   }
@@ -772,7 +772,7 @@ ten = a^(1 2 3 4 5 6 7 8 9 10)
 i=1
 while (let $i' <= '$#ten) {
   n=$ten($i)
-  let i $i+1
+  let i=$i+1
   if (~ $n a2 a3) {
     continue
   }

@@ -103,7 +103,12 @@ static int check_var_name (const char *p)
 }
 
 
-enum { VAL_ZERO = 1, VAL_NONZERO = 0, BAD_EXP = 2 };
+enum {
+    VAL_NONZERO  = 0,
+    VAL_ZERO     = 1,
+    BAD_EXP      = 2,
+};
+
 static int ret_value(int parse_status, long value)
 {
     if (0==parse_status) {
@@ -118,7 +123,7 @@ static int ret_value(int parse_status, long value)
 }
 
 
-#define LET_USAGE  "usage: let [var] expr\n"
+#define LET_USAGE  "usage: let [expr|assignment]\n"
 
 void b_let (char **av)
 {
@@ -126,68 +131,76 @@ void b_let (char **av)
     int parse_status;
     int rc_status = BAD_EXP;
 
-    if (av[1] == 0) {
+    if (av[1] == 0) { /* no arg like parse error */
         fprint(2, "%s", LET_USAGE);
-        goto returnLabel;
-    } else if (av[2] == 0) {
-        LetLex lex;
-        const char* const exp = av[1];
-        parse_status = LetDoParse(exp, &R, &lex);
-        if (0==parse_status) {
-            const char* const varName = &lex.m_Indent[0];
-            if ('\0' != varName[0]) {
-                List val;
-                if (!check_var_name(varName)) {
-                    fprint(2, "let: bad variable name '%s'\n", varName);
-                    goto returnLabel;
-                }
-                val.w = nprint("%ld", R);
-                val.n = NULL;
-                varassign(varName, &val, FALSE);
-            }
-        }
-        rc_status = ret_value(parse_status, R);
-        goto returnLabel;
-    } else if (av[3] != 0) {
-        fprint(2, "%s", LET_USAGE);
-        goto returnLabel;
-    } else if (0 == strcmp_fast(av[1], "-p")) {
-        const char* const exp = av[2];
-        LetLex lex;
-        parse_status = LetDoParse(exp, &R, &lex);
-        if (0==parse_status) {
-            const char* const varName = &lex.m_Indent[0];
-            if ('\0' != varName[0]) {
-                List val;
-                if (!check_var_name(varName)) {
-                    fprint(2, "let: bad variable name '%s'\n", varName);
-                    goto returnLabel;
-                }
-                val.w = nprint("%ld", R);
-                val.n = NULL;
-                varassign(varName, &val, FALSE);
-            }
-            fprint(1, "%ld\n", R);
-        }
-        rc_status = ret_value(parse_status, R);
-        goto returnLabel;
-    } else if (!check_var_name(av[1])) {
-        fprint(2, "let: bad variable name '%s'\n", av[1]);
-        goto returnLabel;
+        rc_status = BAD_EXP;
+        goto finish;
     } else {
-        LetLex lex;
-        parse_status = LetDoParse(av[2], &R, &lex);
-        if (0 == parse_status) {
-            List val;
-            val.w = nprint("%ld", R);
-            val.n = NULL;
-            varassign(av[1], &val, FALSE);
-        }
-        rc_status = ret_value(parse_status, R);
-        goto returnLabel;
-    }
+        int i;
+        bool doPrint = FALSE;
 
-returnLabel:
+        i = 1;
+        if (streq(av[i], "-p")) {
+            doPrint = TRUE;
+            ++i;
+        }
+
+        if (av[i] == 0) {
+            fprint(2, "%s", LET_USAGE);
+            rc_status = BAD_EXP;
+        } else {
+            LetLex lex;
+            char* exp;
+            char* p;
+            int j;
+            int len = 0;
+
+            for (j = 0; av[j]; ++j) { /* count total len */
+                len += strlen(av[j]) + 1; /* 1 space between args:(a,b) to 'a b', no to 'ab' */
+            }
+            p = exp = nnew_arr(char, len+1);
+
+            strcpy(p, av[i]); /* guaranteed non-null */
+            p += strlen(av[i++]);
+
+            for (; av[i]; ++i) {
+                *p++ = ' ';
+                strcpy(p, av[i]);
+                p += strlen(av[i]);
+            }
+            *p = '\0';
+
+            parse_status = LetDoParse(exp, &R, &lex);
+
+            if (0==parse_status) {
+                const char* const varName = &lex.m_Indent[0];
+                if ('\0' != varName[0]) { /* assignment */
+                    List val;
+                    if (check_var_name(varName)) {
+                        val.w = nprint("%ld", R);
+                        val.n = NULL;
+                        varassign(varName, &val, FALSE);
+                        rc_status = ret_value(parse_status, R);
+                        if (doPrint) {
+                            fprint(1, "%ld", R);
+                        }
+                    } else {
+                        // should this be treated as bad parse?
+                        fprint(2, "let: bad variable name '%s'\n", varName);
+                        rc_status = BAD_EXP;
+                    }
+                } else { /* no variable => not assignment */
+                    rc_status = ret_value(parse_status, R);
+                    if (doPrint) {
+                        fprint(1, "%ld", R);
+                    }
+                }
+            } else { /* parse error */
+                rc_status = BAD_EXP;
+            }
+        }
+    }
+finish:
     setN(rc_status);
     return;
 }
