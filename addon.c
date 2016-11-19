@@ -182,7 +182,7 @@ void b_let (char **av)
                         varassign(varName, &val, FALSE);
                         rc_status = ret_value(parse_status, R);
                         if (doPrint) {
-                            fprint(1, "%ld", R);
+                            fprint(1, "%ld\n", R);
                         }
                     } else {
                         // should this be treated as bad parse?
@@ -192,7 +192,7 @@ void b_let (char **av)
                 } else { /* no variable => not assignment */
                     rc_status = ret_value(parse_status, R);
                     if (doPrint) {
-                        fprint(1, "%ld", R);
+                        fprint(1, "%ld\n", R);
                     }
                 }
             } else { /* parse error */
