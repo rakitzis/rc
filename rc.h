@@ -246,7 +246,7 @@ extern List *word(char *, char *);
 /* fn.c */
 extern Node *fnlookup(const char *);
 extern char *fnlookup_string(const char *);
-extern void fnassign(const char *, Node *);
+extern void fnassign(const char *, const Node *);
 extern void fnassign_string(const char *);
 extern void fnrm(const char *);
 extern void prettyprint_fn(int, const char *, Node *);
@@ -404,7 +404,7 @@ extern volatile sig_atomic_t slow;
 
 /* tree.c */
 extern Node *mk(int /*nodetype*/,...);
-extern Node *treecpy(Node *, void *(*)(size_t));
+extern Node *treecpy(const Node *, void *(*)(size_t));
 extern void treefree(Node *);
 
 /* utils.c */

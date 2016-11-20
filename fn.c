@@ -144,7 +144,7 @@ static void dud_handler(int ignore) {
    a signal, and set the signal vectors appropriately.
 */
 
-extern void fnassign(const char *name, Node *def) {
+extern void fnassign(const char *name, const Node *def) {
 	Node *newdef = treecpy(def == NULL ? &null : def, ealloc); /* important to do the treecopy first */
 	rc_Function *new = get_fn_place(name);
 	int i;
