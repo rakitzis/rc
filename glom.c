@@ -86,7 +86,7 @@ extern List *concat(List *s1, List *s2) {
 	return top;
 }
 
-extern List *varsub(List *var, List *subs) {
+extern List *varsub(const List *var, const List *subs) {
 	List *r, *top;
 	int n = listnel(var);
 	for (top = r = NULL; subs != NULL; subs = subs->n) {
@@ -94,7 +94,7 @@ extern List *varsub(List *var, List *subs) {
 		if (i < 1)
 			rc_error("bad subscript");
 		if (i <= n) {
-			List *sub = var;
+			const List *sub = var;
 			while (--i)
 				sub = sub->n; /* loop until sub == var(i) */
 			if (top == NULL)
