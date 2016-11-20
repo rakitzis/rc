@@ -17,8 +17,8 @@ static int hash(const char *, int);
 static int find(const char *, Htab *, int);
 static void free_fn(rc_Function *);
 
-Htab *fp;
-Htab *vp;
+static Htab *fp;
+static Htab *vp;
 static int fused, fsize, vused, vsize;
 static char **env;
 static int bozosize;

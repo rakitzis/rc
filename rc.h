@@ -261,7 +261,6 @@ extern void varrm(const char *, bool);
 extern void prettyprint_var(int, const char *, const List *);
 
 /* hash.c */
-extern Htab *fp, *vp;
 extern rc_Function *get_fn_place(const char *);
 extern Variable *get_var_place(const char *, bool);
 extern char **makeenv(void);
