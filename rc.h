@@ -230,11 +230,11 @@ extern int rc_optind, rc_opterr, rc_optopt;
 extern char *rc_optarg;
 
 /* glob.c */
-extern bool lmatch(List *, List *);
+extern bool lmatch(const List *, const List *);
 extern List *glob(List *);
 
 /* glom.c */
-extern void assign(List *, List *, bool);
+extern void assign(const List *, List *, bool);
 extern void qredir(Node *);
 extern List *append(List *, List*);
 extern List *flatten(List *);

@@ -8,7 +8,7 @@
 
 static List *backq(Node *, Node *);
 static List *bqinput(List *, int);
-static List *count(List *);
+static List *count(const List *);
 static List *mkcmdarg(Node *);
 
 Rq *redirq = NULL;
@@ -133,7 +133,7 @@ extern List *flatten(List *s) {
 	return r;
 }
 
-static List *count(List *l) {
+static List *count(const List *l) {
 	List *s = nnew(List);
 	s->w = nprint("%d", listnel(l));
 	s->n = NULL;
@@ -141,7 +141,7 @@ static List *count(List *l) {
 	return s;
 }
 
-extern void assign(List *s1, List *s2, bool stack) {
+extern void assign(const List *s1, List *s2, bool stack) {
 	List *val = s2;
 	if (s1 == NULL)
 		rc_error("null variable name");

@@ -32,8 +32,8 @@ static List *sort(List *);
    patterns match nothing.
 */
 
-extern bool lmatch(List *s, List *p) {
-	List *q;
+extern bool lmatch(const List *s, const List *p) {
+	const List *q;
 	if (s == NULL) {
 		if (p == NULL) /* null matches null */
 			return TRUE;
