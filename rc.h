@@ -381,7 +381,7 @@ extern void setstatus(pid_t, int);
 extern List *sgetstatus(void);
 extern void setpipestatus(int [], int);
 extern void statprint(pid_t, int);
-extern void ssetstatus(char **);
+extern void ssetstatus(char* const*);
 extern char *strstatus(int s);
 
 

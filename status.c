@@ -132,7 +132,7 @@ extern char *strstatus(int s) {
 		return nprint("%d", WEXITSTATUS(s));
 }
 
-extern void ssetstatus(char **av) {
+extern void ssetstatus(char * const*av) {
 	int i, j, k, l;
 	bool found;
 	for (l = 0; av[l] != NULL; l++)
