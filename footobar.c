@@ -175,7 +175,7 @@ static bool Tconv(Format *f, int ignore) {
 
 /* convert a List to an array, for execve() */
 
-extern char **list2array(List *s, bool print) {
+extern char **list2array(const List *s, bool print) {
 	char **argv, **av;
 
 	if (print)
@@ -282,7 +282,7 @@ extern List *parse_var(const char *extdef) {
 
 #define PREFIX "fn x"
 #define PRELEN conststrlen(PREFIX)
-extern Node *parse_fn(char *extdef) {
+extern Node *parse_fn(const char *extdef) {
 	Node *def;
 	char *s, old[PRELEN];
 	if ((s = strchr(extdef, '=')) == NULL)

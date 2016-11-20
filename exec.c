@@ -12,7 +12,7 @@
    builtin, calls a function, etc.)
 */
 
-extern void exec(List *s, bool parent) {
+extern void exec(const List *s, bool parent) {
 	char **av, **ev = NULL;
 	int stat;
 	pid_t pid;

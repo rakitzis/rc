@@ -7,7 +7,7 @@ char    *rc_optarg;
 
 /* getopt routine courtesy of David Sanderson */
  
-extern int rc_getopt(int argc, char **argv, const char *opts) {
+extern int rc_getopt(int argc, char * const *argv, const char *opts) {
         static int sp = 1;
 	int c;
 	const char *cp;

@@ -206,7 +206,7 @@ extern void rc_error(const char *);
 extern void sigint(int);
 
 /* exec.c */
-extern void exec(List *, bool);
+extern void exec(const List *, bool);
 
 #if HASH_BANG
 #define rc_execve execve
@@ -216,15 +216,15 @@ extern int my_execve(char *, char **, char **);
 #endif
 
 /* footobar.c */
-extern char **list2array(List *, bool);
+extern char **list2array(const List *, bool);
 extern char *get_name(const char *);
 extern List *parse_var(const char *);
-extern Node *parse_fn(char *);
+extern Node *parse_fn(const char *);
 extern void initprint(void);
 extern void rc_exit(int); /* here for odd reasons; user-defined signal handlers are kept in fn.c */
 
 /* getopt.c */
-extern int rc_getopt(int, char **, const char *);
+extern int rc_getopt(int, char * const *, const char *);
 
 extern int rc_optind, rc_opterr, rc_optopt;
 extern char *rc_optarg;
@@ -296,7 +296,7 @@ extern const char nw[], dnw[];
 extern void listfree(List *);
 extern List *listcpy(List *, void *(*)(size_t));
 extern size_t listlen(List *);
-extern int listnel(List *);
+extern int listnel(const List *);
 
 /* match.c */
 extern bool match(const char *, const char *, const char *);

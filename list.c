@@ -49,7 +49,7 @@ extern size_t listlen(List *s) {
 
 /* Number of elements in list */
 
-extern int listnel(List *s) {
+extern int listnel(const List *s) {
 	int nel;
 	for (nel = 0; s != NULL; s = s->n)
 		nel++;
