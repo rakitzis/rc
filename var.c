@@ -214,7 +214,7 @@ extern void alias(const char *name, List *s, bool stack) {
 		(*vectors[i])(aliases[i^1], s, stack); /* xor hack to reverse case of alias entry */
 }
 
-extern void prettyprint_var(int fd, const char *name, List *s) {
+extern void prettyprint_var(int fd, const char *name, const List *s) {
 	int i;
 	static const char * const keywords[] = {
 		"if", "in", "fn", "for", "else", "switch", "while", "case"

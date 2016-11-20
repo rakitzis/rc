@@ -140,7 +140,7 @@ extern int heredoc(int end) {
 
 /* queue pending heredocs into a queue. called from yyparse */
 
-extern int qdoc(Node *name, Node *n) {
+extern int qdoc(const Node *name, Node *n) {
 	Hq *new, **prev;
 	if (name->type != nWord) {
 		yyerror("eof-marker not a single literal word");

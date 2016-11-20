@@ -258,7 +258,7 @@ extern bool varassign_string(const char *);
 extern char *varlookup_string(const char *);
 extern void varassign(const char *, List *, bool);
 extern void varrm(const char *, bool);
-extern void prettyprint_var(int, const char *, List *);
+extern void prettyprint_var(int, const char *, const List *);
 
 /* hash.c */
 extern Htab *fp, *vp;
@@ -281,7 +281,7 @@ extern void *lookup(const char *, Htab *);
 
 /* heredoc.c */
 extern int heredoc(int);
-extern int qdoc(Node *, Node *);
+extern int qdoc(const Node *, Node *);
 extern Hq *hq;
 
 /* lex.c */
@@ -294,8 +294,8 @@ extern const char nw[], dnw[];
 
 /* list.c */
 extern void listfree(List *);
-extern List *listcpy(List *, void *(*)(size_t));
-extern size_t listlen(List *);
+extern List *listcpy(const List *, void *(*)(size_t));
+extern size_t listlen(const List *);
 extern int listnel(const List *);
 
 /* match.c */
