@@ -155,7 +155,7 @@ if ($FORCE_CLANG) {
         $CompileOpts
         $Clobbered
     )
-} else if (clang --version >/dev/null >[2]/dev/null) {
+} else if (whatis clang >[2]/dev/null) {
     COMPILER=clang
 } else {
     CompileOpts=($CompileOpts $Clobbered)
