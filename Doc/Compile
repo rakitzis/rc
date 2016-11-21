@@ -12,6 +12,7 @@ FORCE_GCC=false
 CLOB=true
 Yydebug=false
 Yyacc = false
+Fortify=2
 
 while (! ~ $#* 0) {
     switch(x$1) {
