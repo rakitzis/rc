@@ -1721,12 +1721,15 @@ is used.
 Kills \fIprocesses\fR by sending the signal specified by \fIsigname\fR or \fIsignum\fR.
 If neither signal name nor signal number is specified, uses signal SIGTERM.
 .TP
-\fBlet \fIvarname\fR=\fIexpression\fR | [\fIvarname\fR] \fIexpression\fR
+\fBlet \fR[-p] [\fIvarname\fR=]\fIexpression\fR
 Evaluates signed integer arithmetic \fIexpression\fR.
 Sets status to 0 if the value of the expression is non-zero,
 to 1 if the value is zero, and to 2 if the expression is malformed.
-Additionally, the first form and the second form with \fIvarname\fR present
-assign the value of the expression to the variable \fIvarname\fR.
+If \fIvarname=\fR is present, assigns the value of the expression
+to the variable \fIvarname\fR.
+If [-p] is present, the value of the expression is displayed on stdout.
+The expression is \fInot\fR limited to one argument; all arguments other than [-p]
+are concatenated together to form the expression.
 .TP
 \fBlimit \fR[\fB\-h\fR] [\fIresource \fR[\fIvalue\fR]]
 Similar to the
