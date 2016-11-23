@@ -46,6 +46,8 @@ if (false) {					# WARNING: this differs from sh
 }
 
 ######################################################################
+## Testing builtin let.
+######################################################################
 fn testOneLet { e=$1 v=$2 a=() x=() {
   #echo exp: $e
   let a = $e
@@ -743,13 +745,15 @@ x=$tmpdir/qux*/foo
 ~ $x $tmpdir/qux/foo || { rm -rf $tmpdir/qux; fail broken symlink globbing }
 
 #############################################################################
+## Check ${program}
+#############################################################################
 x=`{echo a b c}
-y=${echo a b c}
 if (!~ $#x 3) {
-  fail 'Lists produced by `{} should have lenght 3'
+  fail 'Lists produced by `{} should have length 3'
 }
+y=${echo a b c}
 if (!~ $#y 3) {
-  fail 'Lists produced by ${} should have lenght 3'
+  fail 'Lists produced by ${} should have length 3'
 }
 
 if (!~ $x(1)-$x(2):$x(3) $y(1)-$y(2):$y(3)) {
@@ -763,6 +767,8 @@ if (!~ $z 1) {
   fail '$$${echo y}' should be 1, 'z='$z, 'y='$y, 'x='$x
 }
 
+#############################################################################
+## Check builtin continue in while loop.
 #############################################################################
 q=''''
 C=$q^while-continue$q
@@ -790,6 +796,8 @@ if (!~ $L(2) a4) {
 C=() L=()
 
 #############################################################################
+## Check builtin continue in for loop.
+#############################################################################
 C=$q^for-continue$q
 L=()
 
@@ -814,6 +822,8 @@ if (!~ $L(5) g) {
 C=() L=()
 
 #############################################################################
+## check builtin continue in for loop (2)
+#############################################################################
 L=()
 for (x in a b c d e f g) {
   if (~ $x b d) {
@@ -829,12 +839,16 @@ if (!~ $^L 'a c e f') {
   fail List should be '(a c e f)', but is $L
 }
 #############################################################################
+## Check $random
+#############################################################################
 x=$random
 y=$random
 if (~ $x $y) {
     fail Two random value not different: $x $y
 }
 
+#############################################################################
+## Check '=' as keyword (in the middle of a command).
 #############################################################################
 rm -f a=b
 if (test -e 'a=b') {
