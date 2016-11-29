@@ -45,6 +45,9 @@ builtins[] = {
 	{ b_dot,        "." },
 	{ b_break,      "break" },
 	{ b_builtin,    "builtin" },
+#ifdef RC_ADDON
+	{ b_let,        "calc" },
+#endif
 	{ b_cd,         "cd" },
 	{ b_continue,   "continue" },
 #if RC_ECHO
