@@ -14,6 +14,7 @@ typedef struct LetLex {
 } LetLex;
 
 extern LetValue letResult;
+extern const char* letCmdName;
 
 extern int leterror(const char *s);
 extern int LetDoParse(const char *s, LetValue *r, LetLex* lex);

@@ -127,15 +127,16 @@ static int ret_value(int parse_status, long value)
 }
 
 
+const char* letCmdName;
 
 /******************************************************/
 void b_let (char **av)
 {
-    const char* const cmdName = av[0];
+    letCmdName = av[0];
     int rc_status = BAD_EXP;
 
     if (av[1] == 0) { /* no arg like parse error */
-        fprint(2, "usage: %s [expr|assignment]\n", cmdName);
+        fprint(2, "usage: %s [expr|assignment]\n", letCmdName);
         rc_status = BAD_EXP;
     } else {
         int i;
@@ -148,7 +149,7 @@ void b_let (char **av)
         }
 
         if (av[i] == 0) {
-            fprint(2, "usage: %s [expr|assignment]\n", cmdName);
+            fprint(2, "usage: %s [expr|assignment]\n", letCmdName);
             rc_status = BAD_EXP;
         } else {
             LetLex lex;
@@ -196,7 +197,7 @@ void b_let (char **av)
                         }
                     } else {
                         // should this be treated as bad parse?
-                        fprint(2, "let: bad variable name '%s'\n", varName);
+                        fprint(2, "%s: bad variable name '%s'\n", letCmdName, varName);
                         rc_status = BAD_EXP;
                     }
                 } else { /* no variable => not assignment */
@@ -377,7 +378,7 @@ int LetDoParse(const char *s, LetValue *r, LetLex* lex)
 /******************************************************/
 int leterror(const char *s)
 {
-    fprint(2, "let: %s\n", s);
+    fprint(2, "%s: %s\n", letCmdName, s);
     return 0;
 }
 /******************************************************/
