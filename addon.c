@@ -127,15 +127,15 @@ static int ret_value(int parse_status, long value)
 }
 
 
-#define LET_USAGE  "usage: let [expr|assignment]\n"
 
 /******************************************************/
 void b_let (char **av)
 {
+    const char* const cmdName = av[0];
     int rc_status = BAD_EXP;
 
     if (av[1] == 0) { /* no arg like parse error */
-        fprint(2, "%s", LET_USAGE);
+        fprint(2, "usage: %s [expr|assignment]\n", cmdName);
         rc_status = BAD_EXP;
     } else {
         int i;
@@ -148,7 +148,7 @@ void b_let (char **av)
         }
 
         if (av[i] == 0) {
-            fprint(2, "%s", LET_USAGE);
+            fprint(2, "usage: %s [expr|assignment]\n", cmdName);
             rc_status = BAD_EXP;
         } else {
             LetLex lex;
