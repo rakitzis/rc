@@ -6,21 +6,22 @@ typedef long int CalcValue;
 
 typedef int CalcToken;
 
-typedef struct CalcLex {
+typedef struct CalcLexData {
     const char* m_Buf;
     const char* m_Current;
     CalcToken   m_LastToken;
     char        m_Indent[256];
-} CalcLex;
+} CalcLexData;
 
 extern CalcValue calcResult;
 extern const char* calcCmdName;
 
 extern int calcerror(const char *s);
-extern int CalcDoParse(const char *s, CalcValue *r, CalcLex* lex);
+extern int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData);
 extern CalcValue calcpwr(CalcValue a, CalcValue b);
-extern CalcToken CalcLexer(CalcLex *lex, YYSTYPE* calclval);
-extern int CalcParser(CalcLex *lex);
+
+typedef CalcToken (*CalcLexerType)(CalcLexData *lexData, YYSTYPE* calclval);
+extern int CalcParser(CalcLexerType lexer, CalcLexData *lexData);
 
 
 #endif

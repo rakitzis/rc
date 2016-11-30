@@ -80,7 +80,7 @@ void b_kill (char **av)
     set(ret);
 }
 
-extern int CalcDoParse(const char *s, CalcValue *r, CalcLex* lex);
+extern int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData);
 
 #if 0
 static void set_var (char *varname, long R)
@@ -152,7 +152,7 @@ void b_calc (char **av)
             fprint(2, "usage: %s [-p] [expr|assignment]\n", calcCmdName);
             rc_status = BAD_EXP;
         } else {
-            CalcLex lex;
+            CalcLexData lexData;
             long parse_value = 0;
             int parse_status;
             const char* exp;
@@ -181,10 +181,10 @@ void b_calc (char **av)
                 *p = '\0';
             }
 
-            parse_status = CalcDoParse(exp, &parse_value, &lex);
+            parse_status = CalcDoParse(exp, &parse_value, &lexData);
 
             if (0==parse_status) {
-                const char* const varName = &lex.m_Indent[0];
+                const char* const varName = &lexData.m_Indent[0];
                 if ('\0' != varName[0]) { /* assignment */
                     List val;
                     if (check_var_name(varName)) {
@@ -238,23 +238,23 @@ CalcValue calcpwr(CalcValue a, CalcValue b)
     return z;
 }
 /******************************************************/
-CalcToken CalcLexer (CalcLex *lex, YYSTYPE* calclval)
+static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 {
     const char *p;
     CalcToken tok;
     int c;
 
-    if (lex->m_LastToken != BAD_TOKEN) {
-        tok = lex->m_LastToken;
-        lex->m_LastToken = BAD_TOKEN;
+    if (lexData->m_LastToken != BAD_TOKEN) {
+        tok = lexData->m_LastToken;
+        lexData->m_LastToken = BAD_TOKEN;
         return tok;
     }
-    p = lex->m_Current;
+    p = lexData->m_Current;
     while (*p == ' ' || *p == '\t') {
         p++;
     }
     if (isalpha(*p) || '_' == *p) {
-        enum { NUM_CHARS = sizeof(lex->m_Indent)/sizeof(lex->m_Indent[0]) - 1 };
+        enum { NUM_CHARS = sizeof(lexData->m_Indent)/sizeof(lexData->m_Indent[0]) - 1 };
         int i = 0;
         int c = *p;
 
@@ -262,12 +262,12 @@ CalcToken CalcLexer (CalcLex *lex, YYSTYPE* calclval)
             if (i >= NUM_CHARS) {
                 return BAD_TOKEN;
             }
-            lex->m_Indent[i++] = *(p++);
+            lexData->m_Indent[i++] = *(p++);
             c = *p;
         }
 
-        lex->m_Indent[i] = '\0';
-        lex->m_Current = p;
+        lexData->m_Indent[i] = '\0';
+        lexData->m_Current = p;
         return CALC_VAR;
     }
     switch (*p) {
@@ -342,7 +342,7 @@ CalcToken CalcLexer (CalcLex *lex, YYSTYPE* calclval)
         tok = BAD_TOKEN;
         break;
     }
-    lex->m_Current = p;
+    lexData->m_Current = p;
     return tok;
 } /* CalcLexer */
 
@@ -351,13 +351,13 @@ CalcToken CalcLexer (CalcLex *lex, YYSTYPE* calclval)
 #if YYDEBUG
 extern int calcdebug;
 #endif
-int CalcDoParse(const char *s, CalcValue *r, CalcLex* lex)
+int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData)
 {
     int status;
 
-    lex->m_Current = lex->m_Buf = s;
-    lex->m_LastToken = BAD_TOKEN;
-    lex->m_Indent[0] = '\0';
+    lexData->m_Current = lexData->m_Buf = s;
+    lexData->m_LastToken = BAD_TOKEN;
+    lexData->m_Indent[0] = '\0';
 
 #if YYDEBUG
     {
@@ -370,7 +370,7 @@ int CalcDoParse(const char *s, CalcValue *r, CalcLex* lex)
         }
     }
 #endif
-    status = CalcParser(lex);
+    status = CalcParser(CalcLexer, lexData);
     *r = calcResult;
     return status;
 }

@@ -15,9 +15,12 @@ extern int printf(const char *, ...);
 
 
 
-#define calcparse(a)  CalcParser(CalcLex *lex)
-#define calcparse_r(a)  CalcParser(CalcLex *lex)
-#define calclex(a)  CalcLexer(lex, &calclval)
+/* the name of the lexer in CalcParser(), lexer, must be equal to the call
+ * that calclex() represents, lexer(lexData, &calcval
+ */
+#define calcparse(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
+#define calcparse_r(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
+#define calclex(a)  (*lexer)(lexData, &calclval)
 
 
 %}
@@ -57,18 +60,18 @@ extern int printf(const char *, ...);
 %%
 calc
     : expr
-        {   assert('\0' == lex->m_Indent[0]);
+        {   assert('\0' == lexData->m_Indent[0]);
             calcResult = $1;
         }
     | assignment
-        {   assert('\0' != lex->m_Indent[0]);
+        {   assert('\0' != lexData->m_Indent[0]);
             calcResult = $1;
         }
     ;
 
 assignment
     : CALC_VAR '=' expr
-        {   assert('\0' != lex->m_Indent[0]);
+        {   assert('\0' != lexData->m_Indent[0]);
             $$ = $3;
         }
     ;
