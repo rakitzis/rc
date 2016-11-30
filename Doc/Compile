@@ -240,6 +240,7 @@ if ($AddOn) {
 
 sources=(
     $addon
+    $calc
     builtins
     except
     exec
@@ -251,7 +252,6 @@ sources=(
     hash
     heredoc
     input
-    $calc
     lex
     list
     main
