@@ -11,12 +11,13 @@ typedef struct CalcLexData {
     const char* m_Current;
     CalcToken   m_LastToken;
     char        m_Indent[256];
+    CalcValue   m_CalcResult;
+    const char* m_CalcCmdName;
 } CalcLexData;
 
-extern CalcValue calcResult;
 extern const char* calcCmdName;
 
-extern int calcerror(const char *s);
+extern int CalcError(const char *s, const CalcLexData* lexData);
 extern int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData);
 extern CalcValue calcpwr(CalcValue a, CalcValue b);
 

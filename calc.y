@@ -21,6 +21,7 @@ extern int printf(const char *, ...);
 #define calcparse(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
 #define calcparse_r(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
 #define calclex(a)  (*lexer)(lexData, &calclval)
+#define calcerror(s) CalcError(s, lexData);
 
 
 %}
@@ -61,11 +62,11 @@ extern int printf(const char *, ...);
 calc
     : expr
         {   assert('\0' == lexData->m_Indent[0]);
-            calcResult = $1;
+            lexData->m_CalcResult = $1;
         }
     | assignment
         {   assert('\0' != lexData->m_Indent[0]);
-            calcResult = $1;
+            lexData->m_CalcResult = $1;
         }
     ;
 

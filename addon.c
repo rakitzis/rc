@@ -12,7 +12,6 @@
 /******************************************************/
 /******************************************************/
 
-CalcValue calcResult;
 
 #define KILL_USAGE "usage: kill [-signame|-signum] pid+\n"
 
@@ -127,12 +126,10 @@ static int ret_value(int parse_status, long value)
 }
 
 
-const char* calcCmdName;
-
 /******************************************************/
 void b_calc (char **av)
 {
-    calcCmdName = av[0];
+    const char* const calcCmdName = av[0];
     int rc_status = BAD_EXP;
 
     if (av[1] == 0) { /* no arg like parse error */
@@ -181,6 +178,7 @@ void b_calc (char **av)
                 *p = '\0';
             }
 
+            lexData.m_CalcCmdName = calcCmdName;
             parse_status = CalcDoParse(exp, &parse_value, &lexData);
 
             if (0==parse_status) {
@@ -371,14 +369,14 @@ int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData)
     }
 #endif
     status = CalcParser(CalcLexer, lexData);
-    *r = calcResult;
+    *r = lexData->m_CalcResult;
     return status;
 }
 
 /******************************************************/
-int calcerror(const char *s)
+int CalcError(const char *s, const CalcLexData* lexData)
 {
-    fprint(2, "%s: %s\n", calcCmdName, s);
+    fprint(2, "%s: %s\n", lexData->m_CalcCmdName, s);
     return 0;
 }
 /******************************************************/

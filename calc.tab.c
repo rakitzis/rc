@@ -110,6 +110,7 @@ extern int printf(const char *, ...);
 #define calcparse(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
 #define calcparse_r(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
 #define calclex(a)  (*lexer)(lexData, &calclval)
+#define calcerror(s) CalcError(s, lexData);
 
 
 #ifdef YYSTYPE
@@ -688,13 +689,13 @@ yyreduce:
 case 1:
 #line 60 "calc.y"
 	{   assert('\0' == lexData->m_Indent[0]);
-            calcResult = yystack.l_mark[0].m_Val;
+            lexData->m_CalcResult = yystack.l_mark[0].m_Val;
         }
 break;
 case 2:
 #line 64 "calc.y"
 	{   assert('\0' != lexData->m_Indent[0]);
-            calcResult = yystack.l_mark[0].m_Val;
+            lexData->m_CalcResult = yystack.l_mark[0].m_Val;
         }
 break;
 case 3:
