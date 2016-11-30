@@ -162,6 +162,7 @@ if ($FORCE_CLANG) {
     CompileOpts=($CompileOpts $Clobbered)
     COMPILER=gcc
 }
+whatis $COMPILER
 $COMPILER --version
 ########################################################################################
 # Store object files in a subdir to prevent polution
