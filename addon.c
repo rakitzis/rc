@@ -238,10 +238,10 @@ CalcValue calcpwr(CalcValue a, CalcValue b)
     return z;
 }
 /******************************************************/
-Token CalcLexer (CalcLex *lex, YYSTYPE* calclval)
+CalcToken CalcLexer (CalcLex *lex, YYSTYPE* calclval)
 {
     const char *p;
-    Token tok;
+    CalcToken tok;
     int c;
 
     if (lex->m_LastToken != BAD_TOKEN) {
@@ -277,7 +277,7 @@ Token CalcLexer (CalcLex *lex, YYSTYPE* calclval)
     case '~':
     case '@':
     case '(': case ')':
-        tok = (Token) (*p);
+        tok = (CalcToken) (*p);
         p++;
         break;
 
@@ -287,7 +287,7 @@ Token CalcLexer (CalcLex *lex, YYSTYPE* calclval)
             tok = (c == '|' ? CALC_OROR : CALC_ANDAND);
             p++; 
         } else {
-            tok = (Token)(c);
+            tok = (CalcToken)(c);
         }
         break;
 
@@ -300,7 +300,7 @@ Token CalcLexer (CalcLex *lex, YYSTYPE* calclval)
             tok = (c == '<' ? LSHIFT : RSHIFT);
             p++;
         } else {
-            tok = (Token) (c);
+            tok = (CalcToken) (c);
         }
         break;
 
@@ -310,7 +310,7 @@ Token CalcLexer (CalcLex *lex, YYSTYPE* calclval)
             tok = EQEQ;
             p++;
         } else {
-            tok = (Token) (c);
+            tok = (CalcToken) (c);
         }
         break;
 
@@ -320,7 +320,7 @@ Token CalcLexer (CalcLex *lex, YYSTYPE* calclval)
             tok = NEQ;
             p++;
         } else {
-            tok = (Token) (c);
+            tok = (CalcToken) (c);
         }
         break;
 
