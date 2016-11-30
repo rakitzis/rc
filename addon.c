@@ -136,7 +136,7 @@ void b_let (char **av)
     int rc_status = BAD_EXP;
 
     if (av[1] == 0) { /* no arg like parse error */
-        fprint(2, "usage: %s [expr|assignment]\n", letCmdName);
+        fprint(2, "usage: %s [-p] [expr|assignment]\n", letCmdName);
         rc_status = BAD_EXP;
     } else {
         int i;
@@ -149,7 +149,7 @@ void b_let (char **av)
         }
 
         if (av[i] == 0) {
-            fprint(2, "usage: %s [expr|assignment]\n", letCmdName);
+            fprint(2, "usage: %s [-p] [expr|assignment]\n", letCmdName);
             rc_status = BAD_EXP;
         } else {
             LetLex lex;
