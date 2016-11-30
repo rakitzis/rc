@@ -46,9 +46,9 @@ if (false) {					# WARNING: this differs from sh
 }
 
 ######################################################################
-## Testing builtin let.
+## Testing builtin calc.
 ######################################################################
-fn testOneLet { e=$1 v=$2 a=() x=() {
+fn testOneCalc { e=$1 v=$2 a=() x=() {
   #echo exp: $e
   let a = $e
   if (!~ $a $v) {
@@ -69,9 +69,9 @@ fn testOneLet { e=$1 v=$2 a=() x=() {
 }}
 
 ######################################################################
-fn letExprErr { exp=$1 msg=$2 s=() n=() q='''' {
+fn calcExprErr { exp=$1 msg=$2 s=() n=() q='''' {
   expect error $q$exp$q^': '^$msg
-  let n=$exp; s = $status
+  calc n=$exp; s = $status
   if (!~ $n ()) {
     fail 'n assigned value after error in expr '^$exp
   }
@@ -81,7 +81,7 @@ fn letExprErr { exp=$1 msg=$2 s=() n=() q='''' {
 }}
 
 ######################################################################
-fn testManyLets { numEntries=() {
+fn testManyCalcs { numEntries=() {
   *=(
     '4 || 3'                        1
     '5 || 0'                        1
@@ -149,37 +149,37 @@ fn testManyLets { numEntries=() {
     '!1'                           0
   )
   numEntries=$#*
-  if (let '('$numEntries'%2)==1') {
-    fail let test has odd number of entries: $numEntries, should be even.
+  if (calc '('$numEntries'%2)==1') {
+    fail calc test has odd number of entries: $numEntries, should be even.
   }
 
   while () {
     if (~ $#* 0) {
       break
     } else if (~ $#* 1) {
-      fail let test has $numEntries, should be even.
+      fail calc test has $numEntries, should be even.
     } else {
-      testOneLet $1 $2
+      testOneCalc $1 $2
       shift 2
     }
   }
 
   q=''''
 
-  letExprErr  '2 / 0'       'division by 0'
+  calcExprErr  '2 / 0'       'division by 0'
 
-  letExprErr  '2 % 0'       'modulo 0'
+  calcExprErr  '2 % 0'       'modulo 0'
 
-  letExprErr  '2 @ (-1)'    'negative power'
+  calcExprErr  '2 @ (-1)'    'negative power'
 
-  letExprErr  '2 @ (-+1)'   'negative power since '$q'-+1'$q' == '$q'-(+1)'$q
+  calcExprErr  '2 @ (-+1)'   'negative power since '$q'-+1'$q' == '$q'-(+1)'$q
 
-  letExprErr  '2 ^'         'invalid expr syntax' 
+  calcExprErr  '2 ^'         'invalid expr syntax' 
 
-  letExprErr  '*2'          'invalid expr syntax'
+  calcExprErr  '*2'          'invalid expr syntax'
 
 }}
-testManyLets
+testManyCalcs
 
 
 ######################################################################
@@ -776,7 +776,7 @@ L=()
 
 ten = a^(1 2 3 4 5 6 7 8 9 10)
 i=1
-while (let $i' <= '$#ten) {
+while (calc $i' <= '$#ten) {
   n=$ten($i)
   calc i = $i+1
   if (~ $n a2 a3) {
