@@ -46,7 +46,7 @@ builtins[] = {
 	{ b_break,      "break" },
 	{ b_builtin,    "builtin" },
 #ifdef RC_ADDON
-	{ b_let,        "calc" },
+	{ b_calc,       "calc" },
 #endif
 	{ b_cd,         "cd" },
 	{ b_continue,   "continue" },
@@ -58,7 +58,7 @@ builtins[] = {
 	{ b_exit,       "exit" },
 #ifdef RC_ADDON
 	{ b_kill,       "kill" },
-	{ b_let,        "let" },
+	{ b_calc,       "let" },
 #endif
 #if HAVE_SETRLIMIT
 	{ b_limit,      "limit" },

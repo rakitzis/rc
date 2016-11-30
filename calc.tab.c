@@ -15,101 +15,101 @@
 #define YYEOF          0
 
 #ifndef yyparse
-#define yyparse    letparse
+#define yyparse    calcparse
 #endif /* yyparse */
 
 #ifndef yylex
-#define yylex      letlex
+#define yylex      calclex
 #endif /* yylex */
 
 #ifndef yyerror
-#define yyerror    leterror
+#define yyerror    calcerror
 #endif /* yyerror */
 
 #ifndef yychar
-#define yychar     letchar
+#define yychar     calcchar
 #endif /* yychar */
 
 #ifndef yyval
-#define yyval      letval
+#define yyval      calcval
 #endif /* yyval */
 
 #ifndef yylval
-#define yylval     letlval
+#define yylval     calclval
 #endif /* yylval */
 
 #ifndef yydebug
-#define yydebug    letdebug
+#define yydebug    calcdebug
 #endif /* yydebug */
 
 #ifndef yynerrs
-#define yynerrs    letnerrs
+#define yynerrs    calcnerrs
 #endif /* yynerrs */
 
 #ifndef yyerrflag
-#define yyerrflag  leterrflag
+#define yyerrflag  calcerrflag
 #endif /* yyerrflag */
 
 #ifndef yylhs
-#define yylhs      letlhs
+#define yylhs      calclhs
 #endif /* yylhs */
 
 #ifndef yylen
-#define yylen      letlen
+#define yylen      calclen
 #endif /* yylen */
 
 #ifndef yydefred
-#define yydefred   letdefred
+#define yydefred   calcdefred
 #endif /* yydefred */
 
 #ifndef yydgoto
-#define yydgoto    letdgoto
+#define yydgoto    calcdgoto
 #endif /* yydgoto */
 
 #ifndef yysindex
-#define yysindex   letsindex
+#define yysindex   calcsindex
 #endif /* yysindex */
 
 #ifndef yyrindex
-#define yyrindex   letrindex
+#define yyrindex   calcrindex
 #endif /* yyrindex */
 
 #ifndef yygindex
-#define yygindex   letgindex
+#define yygindex   calcgindex
 #endif /* yygindex */
 
 #ifndef yytable
-#define yytable    lettable
+#define yytable    calctable
 #endif /* yytable */
 
 #ifndef yycheck
-#define yycheck    letcheck
+#define yycheck    calccheck
 #endif /* yycheck */
 
 #ifndef yyname
-#define yyname     letname
+#define yyname     calcname
 #endif /* yyname */
 
 #ifndef yyrule
-#define yyrule     letrule
+#define yyrule     calcrule
 #endif /* yyrule */
-#define YYPREFIX "let"
+#define YYPREFIX "calc"
 
 #define YYPURE 1
 
-#line 9 "let.y"
+#line 9 "calc.y"
 #include <assert.h>
 
 extern int printf(const char *, ...);
 
-#include "let.h"
+#include "calc.h"
 
 
 
 
-#define letparse(a)  LetParser(LetLex *lex)
-#define letparse_r(a)  LetParser(LetLex *lex)
-#define letlex(a)  LetLexer(lex, &letlval)
+#define calcparse(a)  CalcParser(CalcLex *lex)
+#define calcparse_r(a)  CalcParser(CalcLex *lex)
+#define calclex(a)  CalcLexer(lex, &calclval)
 
 
 #ifdef YYSTYPE
@@ -118,12 +118,12 @@ extern int printf(const char *, ...);
 #endif
 #ifndef YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
-#line 26 "let.y"
+#line 26 "calc.y"
 typedef union {
-    LetValue m_Val;
+    CalcValue m_Val;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 127 "let.tab.c"
+#line 127 "calc.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -160,8 +160,8 @@ typedef union {
 
 extern int YYPARSE_DECL();
 
-#define LET_OROR 257
-#define LET_ANDAND 258
+#define CALC_OROR 257
+#define CALC_ANDAND 258
 #define EQEQ 259
 #define NEQ 260
 #define LEQ 261
@@ -172,20 +172,20 @@ extern int YYPARSE_DECL();
 #define NUMBER 266
 #define END_TOKEN 267
 #define BAD_TOKEN 268
-#define LET_VAR 269
+#define CALC_VAR 269
 #define YYERRCODE 256
 typedef short YYINT;
-static const YYINT letlhs[] = {                          -1,
+static const YYINT calclhs[] = {                         -1,
     0,    0,    2,    1,    1,    1,    1,    1,    1,    1,
     1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
     1,    1,    1,    1,    1,    1,    1,    1,
 };
-static const YYINT letlen[] = {                           2,
+static const YYINT calclen[] = {                          2,
     1,    1,    3,    3,    3,    3,    3,    3,    3,    3,
     3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
     3,    2,    2,    2,    2,    3,    3,    1,
 };
-static const YYINT letdefred[] = {                        0,
+static const YYINT calcdefred[] = {                       0,
     0,    0,    0,    0,   28,    0,    0,    0,    0,    2,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -193,10 +193,10 @@ static const YYINT letdefred[] = {                        0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,
 };
-static const YYINT letdgoto[] = {                         8,
+static const YYINT calcdgoto[] = {                        8,
     9,   10,
 };
-static const YYINT letsindex[] = {                      -13,
+static const YYINT calcsindex[] = {                     -13,
   197,  197,  197,  197,    0,  -61,  197,    0,  464,    0,
   -62,  -62,  -62,  -62,  197,  453,  197,  197,  197,  197,
   197,  197,  197,  197,  197,  197,  197,  197,  197,  197,
@@ -204,7 +204,7 @@ static const YYINT letsindex[] = {                      -13,
   578,  506,  592,  592,  -28,  -28,  -28,  -28,  297,  297,
   -31,  -31,  -62,  -62,  -62,  -62,
 };
-static const YYINT letrindex[] = {                        0,
+static const YYINT calcrindex[] = {                       0,
     0,    0,    0,    0,    0,    0,    0,    0,    3,    0,
     1,   12,   28,   40,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -212,11 +212,11 @@ static const YYINT letrindex[] = {                        0,
    23,  115,   92,  107,  410,  420,  426,  437,  172,  333,
   144,  183,   56,   67,  128,  155,
 };
-static const YYINT letgindex[] = {                        0,
+static const YYINT calcgindex[] = {                       0,
   788,    0,
 };
 #define YYTABLESIZE 856
-static const YYINT lettable[] = {                        15,
+static const YYINT calctable[] = {                       15,
    25,   35,    1,    3,    0,   34,    0,    0,   34,    4,
    32,   24,    0,   32,   30,   33,   31,    0,   33,    3,
     0,    0,    7,    0,    0,    0,    7,   22,    0,    1,
@@ -304,7 +304,7 @@ static const YYINT lettable[] = {                        15,
    28,   29,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,   26,   27,   28,   29,
 };
-static const YYINT letcheck[] = {                        61,
+static const YYINT calccheck[] = {                       61,
     0,   64,    0,    0,   -1,   37,   -1,   -1,   37,    0,
    42,    0,   -1,   42,   43,   47,   45,   -1,   47,   33,
    -1,   -1,    0,   -1,   -1,   -1,   40,    0,   -1,   43,
@@ -400,7 +400,7 @@ static const YYINT letcheck[] = {                        61,
 #define YYUNDFTOKEN 274
 #define YYTRANSLATE(a) ((a) > YYMAXTOKEN ? YYUNDFTOKEN : (a))
 #if YYDEBUG
-static const char *const letname[] = {
+static const char *const calcname[] = {
 
 "end-of-file",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 "'!'",0,0,0,"'%'","'&'",0,"'('","')'","'*'","'+'",0,"'-'",0,"'/'",0,0,0,0,0,0,0,
@@ -409,17 +409,17 @@ static const char *const letname[] = {
 "'|'",0,"'~'",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"LET_OROR","LET_ANDAND","EQEQ","NEQ","LEQ",
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"CALC_OROR","CALC_ANDAND","EQEQ","NEQ","LEQ",
 "GEQ","LSHIFT","RSHIFT","UNARY_PLUSMINUS","NUMBER","END_TOKEN","BAD_TOKEN",
-"LET_VAR",0,0,0,0,"illegal-symbol",
+"CALC_VAR",0,0,0,0,"illegal-symbol",
 };
-static const char *const letrule[] = {
-"$accept : let",
-"let : expr",
-"let : assignment",
-"assignment : LET_VAR '=' expr",
-"expr : expr LET_OROR expr",
-"expr : expr LET_ANDAND expr",
+static const char *const calcrule[] = {
+"$accept : calc",
+"calc : expr",
+"calc : assignment",
+"assignment : CALC_VAR '=' expr",
+"expr : expr CALC_OROR expr",
+"expr : expr CALC_ANDAND expr",
 "expr : expr '|' expr",
 "expr : expr '^' expr",
 "expr : expr '&' expr",
@@ -473,13 +473,13 @@ typedef struct {
     YYSTYPE  *l_base;
     YYSTYPE  *l_mark;
 } YYSTACKDATA;
-#line 131 "let.y"
+#line 131 "calc.y"
 
 /*
 */
 
 
-#line 483 "let.tab.c"
+#line 483 "calc.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>	/* needed for printf */
@@ -686,146 +686,146 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 60 "let.y"
+#line 60 "calc.y"
 	{   assert('\0' == lex->m_Indent[0]);
-            letResult = yystack.l_mark[0].m_Val;
+            calcResult = yystack.l_mark[0].m_Val;
         }
 break;
 case 2:
-#line 64 "let.y"
+#line 64 "calc.y"
 	{   assert('\0' != lex->m_Indent[0]);
-            letResult = yystack.l_mark[0].m_Val;
+            calcResult = yystack.l_mark[0].m_Val;
         }
 break;
 case 3:
-#line 71 "let.y"
+#line 71 "calc.y"
 	{   assert('\0' != lex->m_Indent[0]);
             yyval.m_Val = yystack.l_mark[0].m_Val;
         }
 break;
 case 4:
-#line 76 "let.y"
+#line 76 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val || yystack.l_mark[0].m_Val; }
 break;
 case 5:
-#line 77 "let.y"
+#line 77 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val && yystack.l_mark[0].m_Val; }
 break;
 case 6:
-#line 78 "let.y"
+#line 78 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val | yystack.l_mark[0].m_Val; }
 break;
 case 7:
-#line 79 "let.y"
+#line 79 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val ^ yystack.l_mark[0].m_Val; }
 break;
 case 8:
-#line 80 "let.y"
+#line 80 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val & yystack.l_mark[0].m_Val; }
 break;
 case 9:
-#line 81 "let.y"
+#line 81 "calc.y"
 	{ yyval.m_Val = (yystack.l_mark[-2].m_Val == yystack.l_mark[0].m_Val); }
 break;
 case 10:
-#line 82 "let.y"
+#line 82 "calc.y"
 	{ yyval.m_Val = (yystack.l_mark[-2].m_Val != yystack.l_mark[0].m_Val); }
 break;
 case 11:
-#line 83 "let.y"
+#line 83 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val > yystack.l_mark[0].m_Val; }
 break;
 case 12:
-#line 84 "let.y"
+#line 84 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val < yystack.l_mark[0].m_Val; }
 break;
 case 13:
-#line 85 "let.y"
+#line 85 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val <= yystack.l_mark[0].m_Val; }
 break;
 case 14:
-#line 86 "let.y"
+#line 86 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val >= yystack.l_mark[0].m_Val; }
 break;
 case 15:
-#line 88 "let.y"
-	{   const LetValue v3 = yystack.l_mark[0].m_Val;
+#line 88 "calc.y"
+	{   const CalcValue v3 = yystack.l_mark[0].m_Val;
             yyval.m_Val = (v3 >= 0) ? (yystack.l_mark[-2].m_Val << v3) : (yystack.l_mark[-2].m_Val >> (-v3));
         }
 break;
 case 16:
-#line 92 "let.y"
-	{   const LetValue v3 = yystack.l_mark[0].m_Val; 
+#line 92 "calc.y"
+	{   const CalcValue v3 = yystack.l_mark[0].m_Val; 
             yyval.m_Val = (v3>=0) ? (yystack.l_mark[-2].m_Val >> v3) : (yystack.l_mark[-2].m_Val << (-v3));
         }
 break;
 case 17:
-#line 95 "let.y"
+#line 95 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val + yystack.l_mark[0].m_Val; }
 break;
 case 18:
-#line 96 "let.y"
+#line 96 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val - yystack.l_mark[0].m_Val; }
 break;
 case 19:
-#line 97 "let.y"
+#line 97 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val * yystack.l_mark[0].m_Val; }
 break;
 case 20:
-#line 99 "let.y"
-	{   const LetValue v3 = yystack.l_mark[0].m_Val;
+#line 99 "calc.y"
+	{   const CalcValue v3 = yystack.l_mark[0].m_Val;
             if (v3 == 0) {
-                leterror("Division by 0");
+                calcerror("Division by 0");
                 YYABORT;
             }
             yyval.m_Val = yystack.l_mark[-2].m_Val / (v3);
         }
 break;
 case 21:
-#line 107 "let.y"
-	{ const LetValue v3 = yystack.l_mark[0].m_Val;
+#line 107 "calc.y"
+	{ const CalcValue v3 = yystack.l_mark[0].m_Val;
           if (v3 == 0) {
-            leterror("Module by 0");
+            calcerror("Module by 0");
             YYABORT;
           }
           yyval.m_Val = yystack.l_mark[-2].m_Val % (v3);
         }
 break;
 case 22:
-#line 114 "let.y"
+#line 114 "calc.y"
 	{ yyval.m_Val = !yystack.l_mark[0].m_Val; }
 break;
 case 23:
-#line 115 "let.y"
+#line 115 "calc.y"
 	{ yyval.m_Val = ~yystack.l_mark[0].m_Val; }
 break;
 case 24:
-#line 116 "let.y"
+#line 116 "calc.y"
 	{ yyval.m_Val = -yystack.l_mark[0].m_Val; }
 break;
 case 25:
-#line 117 "let.y"
+#line 117 "calc.y"
 	{ yyval.m_Val = +yystack.l_mark[0].m_Val; }
 break;
 case 26:
-#line 119 "let.y"
-	{   const LetValue v3 = yystack.l_mark[0].m_Val;
+#line 119 "calc.y"
+	{   const CalcValue v3 = yystack.l_mark[0].m_Val;
             if (v3 < 0) {
-                leterror("Negative power");
+                calcerror("Negative power");
                 YYABORT;
             }
-            yyval.m_Val = letpwr(yystack.l_mark[-2].m_Val, v3);
+            yyval.m_Val = calcpwr(yystack.l_mark[-2].m_Val, v3);
         }
 break;
 case 27:
-#line 126 "let.y"
+#line 126 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-1].m_Val; }
 break;
 case 28:
-#line 127 "let.y"
+#line 127 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[0].m_Val; }
 break;
-#line 829 "let.tab.c"
+#line 829 "calc.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

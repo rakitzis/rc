@@ -7,12 +7,12 @@
 #if RC_ADDON
 
 
-#include "let.h"
+#include "calc.h"
 
 /******************************************************/
 /******************************************************/
 
-LetValue letResult;
+CalcValue calcResult;
 
 #define KILL_USAGE "usage: kill [-signame|-signum] pid+\n"
 
@@ -80,7 +80,7 @@ void b_kill (char **av)
     set(ret);
 }
 
-extern int LetDoParse(const char *s, LetValue *r, LetLex* lex);
+extern int CalcDoParse(const char *s, CalcValue *r, CalcLex* lex);
 
 #if 0
 static void set_var (char *varname, long R)
@@ -127,16 +127,16 @@ static int ret_value(int parse_status, long value)
 }
 
 
-const char* letCmdName;
+const char* calcCmdName;
 
 /******************************************************/
-void b_let (char **av)
+void b_calc (char **av)
 {
-    letCmdName = av[0];
+    calcCmdName = av[0];
     int rc_status = BAD_EXP;
 
     if (av[1] == 0) { /* no arg like parse error */
-        fprint(2, "usage: %s [-p] [expr|assignment]\n", letCmdName);
+        fprint(2, "usage: %s [-p] [expr|assignment]\n", calcCmdName);
         rc_status = BAD_EXP;
     } else {
         int i;
@@ -149,10 +149,10 @@ void b_let (char **av)
         }
 
         if (av[i] == 0) {
-            fprint(2, "usage: %s [-p] [expr|assignment]\n", letCmdName);
+            fprint(2, "usage: %s [-p] [expr|assignment]\n", calcCmdName);
             rc_status = BAD_EXP;
         } else {
-            LetLex lex;
+            CalcLex lex;
             long parse_value = 0;
             int parse_status;
             const char* exp;
@@ -181,7 +181,7 @@ void b_let (char **av)
                 *p = '\0';
             }
 
-            parse_status = LetDoParse(exp, &parse_value, &lex);
+            parse_status = CalcDoParse(exp, &parse_value, &lex);
 
             if (0==parse_status) {
                 const char* const varName = &lex.m_Indent[0];
@@ -197,7 +197,7 @@ void b_let (char **av)
                         }
                     } else {
                         // should this be treated as bad parse?
-                        fprint(2, "%s: bad variable name '%s'\n", letCmdName, varName);
+                        fprint(2, "%s: bad variable name '%s'\n", calcCmdName, varName);
                         rc_status = BAD_EXP;
                     }
                 } else { /* no variable => not assignment */
@@ -221,9 +221,9 @@ void b_let (char **av)
 
 
 /******************************************************/
-LetValue letpwr(LetValue a, LetValue b)
+CalcValue calcpwr(CalcValue a, CalcValue b)
 {
-    LetValue z = 1;   /* z*a^b = A^B */
+    CalcValue z = 1;   /* z*a^b = A^B */
     while (b > 0) {
         if (b & 1) { /* odd */
             /* z*a^b = z*a * a^(b-1) */
@@ -238,7 +238,7 @@ LetValue letpwr(LetValue a, LetValue b)
     return z;
 }
 /******************************************************/
-Token LetLexer (LetLex *lex, YYSTYPE* letlval)
+Token CalcLexer (CalcLex *lex, YYSTYPE* calclval)
 {
     const char *p;
     Token tok;
@@ -268,7 +268,7 @@ Token LetLexer (LetLex *lex, YYSTYPE* letlval)
 
         lex->m_Indent[i] = '\0';
         lex->m_Current = p;
-        return LET_VAR;
+        return CALC_VAR;
     }
     switch (*p) {
     case '^':
@@ -284,7 +284,7 @@ Token LetLexer (LetLex *lex, YYSTYPE* letlval)
     case '|': case '&':
         c = *p++;
         if (*p == c) {
-            tok = (c == '|' ? LET_OROR : LET_ANDAND);
+            tok = (c == '|' ? CALC_OROR : CALC_ANDAND);
             p++; 
         } else {
             tok = (Token)(c);
@@ -327,11 +327,11 @@ Token LetLexer (LetLex *lex, YYSTYPE* letlval)
     case '0': case '1': case '2': case '3': case '4': 
     case '5': case '6': case '7': case '8': case '9': 
         {
-            LetValue val = 0;
+            CalcValue val = 0;
             while ('0' <= *p && *p <= '9') {
                 val = 10 * val + (*p++ -'0');
             }
-            letlval->m_Val = val;
+            calclval->m_Val = val;
             tok = NUMBER;
         }
         break;
@@ -344,14 +344,14 @@ Token LetLexer (LetLex *lex, YYSTYPE* letlval)
     }
     lex->m_Current = p;
     return tok;
-} /* LetLexer */
+} /* CalcLexer */
 
 /******************************************************/
 /******************************************************/
 #if YYDEBUG
-extern int letdebug;
+extern int calcdebug;
 #endif
-int LetDoParse(const char *s, LetValue *r, LetLex* lex)
+int CalcDoParse(const char *s, CalcValue *r, CalcLex* lex)
 {
     int status;
 
@@ -365,20 +365,20 @@ int LetDoParse(const char *s, LetValue *r, LetLex* lex)
         if (yys != 0) {
             const int yyn = *yys;
             if (yyn >= '0' && yyn <= '9') {
-                letdebug = yyn - '0';
+                calcdebug = yyn - '0';
             }
         }
     }
 #endif
-    status = LetParser(lex);
-    *r = letResult;
+    status = CalcParser(lex);
+    *r = calcResult;
     return status;
 }
 
 /******************************************************/
-int leterror(const char *s)
+int calcerror(const char *s)
 {
-    fprint(2, "%s: %s\n", letCmdName, s);
+    fprint(2, "%s: %s\n", calcCmdName, s);
     return 0;
 }
 /******************************************************/

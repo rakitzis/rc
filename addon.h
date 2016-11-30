@@ -22,6 +22,6 @@
 #if RC_ADDON
 
 extern void b_kill(char **av);
-extern void b_let(char **av);
+extern void b_calc(char **av);
 
 #endif

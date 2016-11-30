@@ -1,8 +1,8 @@
 /*
  * process with
- *    byacc -t -v -d [-P] -b let -p let let.y
+ *    byacc -t -v -d [-P] -b calc -p calc calc.y
  * or with
- *    bison -t -v -d -b let -p let let.y
+ *    bison -t -v -d -b calc -p calc calc.y
  */
 
 %{
@@ -10,21 +10,21 @@
 
 extern int printf(const char *, ...);
 
-#include "let.h"
+#include "calc.h"
 
 
 
 
-#define letparse(a)  LetParser(LetLex *lex)
-#define letparse_r(a)  LetParser(LetLex *lex)
-#define letlex(a)  LetLexer(lex, &letlval)
+#define calcparse(a)  CalcParser(CalcLex *lex)
+#define calcparse_r(a)  CalcParser(CalcLex *lex)
+#define calclex(a)  CalcLexer(lex, &calclval)
 
 
 %}
 
 
 %union {
-    LetValue m_Val;
+    CalcValue m_Val;
 }
 
 /* Non-terminals */
@@ -32,8 +32,8 @@ extern int printf(const char *, ...);
 
 /* Tokens */
 %nonassoc '='
-%left LET_OROR
-%left LET_ANDAND
+%left CALC_OROR
+%left CALC_ANDAND
 %left '|'
 %left '^'
 %left '&'
@@ -47,34 +47,34 @@ extern int printf(const char *, ...);
 
 
 %token <m_Val> NUMBER
-%token END_TOKEN BAD_TOKEN LET_VAR
+%token END_TOKEN BAD_TOKEN CALC_VAR
 
 %pure-parser
 
 
-%start let
+%start calc
 
 %%
-let
+calc
     : expr
         {   assert('\0' == lex->m_Indent[0]);
-            letResult = $1;
+            calcResult = $1;
         }
     | assignment
         {   assert('\0' != lex->m_Indent[0]);
-            letResult = $1;
+            calcResult = $1;
         }
     ;
 
 assignment
-    : LET_VAR '=' expr
+    : CALC_VAR '=' expr
         {   assert('\0' != lex->m_Indent[0]);
             $$ = $3;
         }
     ;
 
-expr: expr LET_OROR expr    { $$ = $1 || $3; }
-    | expr LET_ANDAND  expr { $$ = $1 && $3; }
+expr: expr CALC_OROR expr    { $$ = $1 || $3; }
+    | expr CALC_ANDAND  expr { $$ = $1 && $3; }
     | expr '|' expr  { $$ = $1 | $3; } ;
     | expr '^' expr { $$ = $1 ^ $3; } ;
     | expr '&' expr     { $$ = $1 & $3; } ;
@@ -85,28 +85,28 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
     | expr LEQ expr { $$ = $1 <= $3; }
     | expr GEQ expr { $$ = $1 >= $3; }
     | expr LSHIFT expr 
-        {   const LetValue v3 = $3;
+        {   const CalcValue v3 = $3;
             $$ = (v3 >= 0) ? ($1 << v3) : ($1 >> (-v3));
         }
     | expr RSHIFT expr
-        {   const LetValue v3 = $3; 
+        {   const CalcValue v3 = $3; 
             $$ = (v3>=0) ? ($1 >> v3) : ($1 << (-v3));
         }
     | expr '+' expr { $$ = $1 + $3; }
     | expr '-' expr { $$ = $1 - $3; }
     | expr '*' expr    { $$ = $1 * $3; }
     | expr '/' expr
-        {   const LetValue v3 = $3;
+        {   const CalcValue v3 = $3;
             if (v3 == 0) {
-                leterror("Division by 0");
+                calcerror("Division by 0");
                 YYABORT;
             }
             $$ = $1 / (v3);
         }
     | expr '%' expr
-        { const LetValue v3 = $3;
+        { const CalcValue v3 = $3;
           if (v3 == 0) {
-            leterror("Module by 0");
+            calcerror("Module by 0");
             YYABORT;
           }
           $$ = $1 % (v3);
@@ -116,12 +116,12 @@ expr: expr LET_OROR expr    { $$ = $1 || $3; }
     | '-' expr %prec UNARY_PLUSMINUS { $$ = -$2; }
     | '+' expr %prec UNARY_PLUSMINUS { $$ = +$2; }
     | expr '@' expr
-        {   const LetValue v3 = $3;
+        {   const CalcValue v3 = $3;
             if (v3 < 0) {
-                leterror("Negative power");
+                calcerror("Negative power");
                 YYABORT;
             }
-            $$ = letpwr($1, v3);
+            $$ = calcpwr($1, v3);
         }
      | '(' expr ')'    { $$ = $2; }
      |  NUMBER { $$ = $1; }

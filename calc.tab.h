@@ -1,5 +1,5 @@
-#define LET_OROR 257
-#define LET_ANDAND 258
+#define CALC_OROR 257
+#define CALC_ANDAND 258
 #define EQEQ 259
 #define NEQ 260
 #define LEQ 261
@@ -10,7 +10,7 @@
 #define NUMBER 266
 #define END_TOKEN 267
 #define BAD_TOKEN 268
-#define LET_VAR 269
+#define CALC_VAR 269
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -18,7 +18,7 @@
 #ifndef YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
 typedef union {
-    LetValue m_Val;
+    CalcValue m_Val;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-extern YYSTYPE letlval;
+extern YYSTYPE calclval;

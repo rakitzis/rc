@@ -53,7 +53,7 @@ while (! ~ $#* 0) {
 
 ########################################################################################
 AddOn=false
-AddOn=true    ## for builtins: let, kill
+AddOn=true    ## for builtins: calc, kill
 
 ########################################################################################
 # Standard options
@@ -232,10 +232,10 @@ $mkstatExe > statval.h
 
 if ($AddOn) {
     addon=(addon)
-    let=(let.tab)
+    calc=(calc.tab)
 } else {
     addon=()
-    let=()
+    calc=()
 }
 
 sources=(
@@ -251,7 +251,7 @@ sources=(
     hash
     heredoc
     input
-    $let
+    $calc
     lex
     list
     main
@@ -287,7 +287,7 @@ if ($Yyacc) {
     yaccOpts = (-t -v -d)
     byacc $yaccOpts -o parse.c parse.y
     if ($AddOn) {
-        byacc $yaccOpts -P -b let -p let let.y
+        byacc $yaccOpts -P -b calc -p calc calc.y
     }
 }
 
