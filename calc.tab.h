@@ -11,9 +11,9 @@ typedef enum calc_token {
   RSHIFT = 264,
   UNARY_PLUSMINUS = 265,
   NUMBER = 266,
-  END_TOKEN = 267,
-  BAD_TOKEN = 268,
-  CALC_VAR = 269,
+  CALC_VAR = 267,
+  END_TOKEN = 268,
+  BAD_TOKEN = 269,
 } calc_token;
 #endif /* !YYTOKEN_IS_DECLARED */
 #ifdef YYSTYPE

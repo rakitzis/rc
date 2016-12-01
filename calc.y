@@ -51,7 +51,8 @@ extern int printf(const char *, ...);
 
 
 %token <m_Val> NUMBER
-%token END_TOKEN BAD_TOKEN CALC_VAR
+%token CALC_VAR
+%token END_TOKEN BAD_TOKEN
 
 %pure-parser
 

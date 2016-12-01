@@ -177,9 +177,9 @@ typedef enum calc_token {
   RSHIFT = 264,
   UNARY_PLUSMINUS = 265,
   NUMBER = 266,
-  END_TOKEN = 267,
-  BAD_TOKEN = 268,
-  CALC_VAR = 269,
+  CALC_VAR = 267,
+  END_TOKEN = 268,
+  BAD_TOKEN = 269,
 } calc_token;
 #endif /* !YYTOKEN_IS_DECLARED */
 #define YYERRCODE 256
@@ -251,7 +251,7 @@ static const YYINT calctable[] = {                       15,
    18,   21,    0,   18,    0,   18,    0,   18,    0,    3,
    10,   15,    0,   15,   28,   29,    7,   17,    8,    1,
     0,    2,   18,    0,   18,    0,    0,    0,   26,    0,
-    0,   21,    5,    0,    0,    6,    0,   25,   25,   25,
+    0,   21,    5,    6,    0,    0,    0,   25,   25,   25,
    25,   25,   25,   25,   25,   15,    4,   17,   24,   24,
    24,   24,   24,   24,   24,   24,   18,    0,   26,    7,
     7,    0,    0,    0,   22,   22,   22,   22,   22,   22,
@@ -339,7 +339,7 @@ static const YYINT calccheck[] = {                       61,
    38,   94,   -1,   41,   -1,   43,   -1,   45,   -1,   33,
   124,   60,   -1,   62,  263,  264,   40,   94,  124,   43,
    -1,   45,   60,   -1,   62,   -1,   -1,   -1,   94,   -1,
-   -1,  124,  266,   -1,   -1,  269,   -1,  257,  258,  259,
+   -1,  124,  266,  267,   -1,   -1,   -1,  257,  258,  259,
   260,  261,  262,  263,  264,   94,  257,  124,  257,  258,
   259,  260,  261,  262,  263,  264,   94,   -1,  124,  257,
   258,   -1,   -1,   -1,  257,  258,  259,  260,  261,  262,
@@ -419,8 +419,8 @@ static const char *const calcname[] = {
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"CALC_OROR","CALC_ANDAND","EQEQ","NEQ","LEQ",
-"GEQ","LSHIFT","RSHIFT","UNARY_PLUSMINUS","NUMBER","END_TOKEN","BAD_TOKEN",
-"CALC_VAR",0,0,0,0,"illegal-symbol",
+"GEQ","LSHIFT","RSHIFT","UNARY_PLUSMINUS","NUMBER","CALC_VAR","END_TOKEN",
+"BAD_TOKEN",0,0,0,0,"illegal-symbol",
 };
 static const char *const calcrule[] = {
 "$accept : calc",
@@ -482,7 +482,7 @@ typedef struct {
     YYSTYPE  *l_base;
     YYSTYPE  *l_mark;
 } YYSTACKDATA;
-#line 135 "calc.y"
+#line 136 "calc.y"
 
 /*
 */
@@ -695,93 +695,93 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 64 "calc.y"
+#line 65 "calc.y"
 	{   assert('\0' == lexData->m_Indent[0]);
             lexData->m_CalcResult = yystack.l_mark[0].m_Val;
         }
 break;
 case 2:
-#line 68 "calc.y"
+#line 69 "calc.y"
 	{   assert('\0' != lexData->m_Indent[0]);
             lexData->m_CalcResult = yystack.l_mark[0].m_Val;
         }
 break;
 case 3:
-#line 75 "calc.y"
+#line 76 "calc.y"
 	{   assert('\0' != lexData->m_Indent[0]);
             yyval.m_Val = yystack.l_mark[0].m_Val;
         }
 break;
 case 4:
-#line 80 "calc.y"
+#line 81 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val || yystack.l_mark[0].m_Val; }
 break;
 case 5:
-#line 81 "calc.y"
+#line 82 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val && yystack.l_mark[0].m_Val; }
 break;
 case 6:
-#line 82 "calc.y"
+#line 83 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val | yystack.l_mark[0].m_Val; }
 break;
 case 7:
-#line 83 "calc.y"
+#line 84 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val ^ yystack.l_mark[0].m_Val; }
 break;
 case 8:
-#line 84 "calc.y"
+#line 85 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val & yystack.l_mark[0].m_Val; }
 break;
 case 9:
-#line 85 "calc.y"
+#line 86 "calc.y"
 	{ yyval.m_Val = (yystack.l_mark[-2].m_Val == yystack.l_mark[0].m_Val); }
 break;
 case 10:
-#line 86 "calc.y"
+#line 87 "calc.y"
 	{ yyval.m_Val = (yystack.l_mark[-2].m_Val != yystack.l_mark[0].m_Val); }
 break;
 case 11:
-#line 87 "calc.y"
+#line 88 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val > yystack.l_mark[0].m_Val; }
 break;
 case 12:
-#line 88 "calc.y"
+#line 89 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val < yystack.l_mark[0].m_Val; }
 break;
 case 13:
-#line 89 "calc.y"
+#line 90 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val <= yystack.l_mark[0].m_Val; }
 break;
 case 14:
-#line 90 "calc.y"
+#line 91 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val >= yystack.l_mark[0].m_Val; }
 break;
 case 15:
-#line 92 "calc.y"
+#line 93 "calc.y"
 	{   const CalcValue v3 = yystack.l_mark[0].m_Val;
             yyval.m_Val = (v3 >= 0) ? (yystack.l_mark[-2].m_Val << v3) : (yystack.l_mark[-2].m_Val >> (-v3));
         }
 break;
 case 16:
-#line 96 "calc.y"
+#line 97 "calc.y"
 	{   const CalcValue v3 = yystack.l_mark[0].m_Val; 
             yyval.m_Val = (v3>=0) ? (yystack.l_mark[-2].m_Val >> v3) : (yystack.l_mark[-2].m_Val << (-v3));
         }
 break;
 case 17:
-#line 99 "calc.y"
+#line 100 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val + yystack.l_mark[0].m_Val; }
 break;
 case 18:
-#line 100 "calc.y"
+#line 101 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val - yystack.l_mark[0].m_Val; }
 break;
 case 19:
-#line 101 "calc.y"
+#line 102 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val * yystack.l_mark[0].m_Val; }
 break;
 case 20:
-#line 103 "calc.y"
+#line 104 "calc.y"
 	{   const CalcValue v3 = yystack.l_mark[0].m_Val;
             if (v3 == 0) {
                 calcerror("Division by 0");
@@ -791,7 +791,7 @@ case 20:
         }
 break;
 case 21:
-#line 111 "calc.y"
+#line 112 "calc.y"
 	{ const CalcValue v3 = yystack.l_mark[0].m_Val;
           if (v3 == 0) {
             calcerror("Module by 0");
@@ -801,23 +801,23 @@ case 21:
         }
 break;
 case 22:
-#line 118 "calc.y"
+#line 119 "calc.y"
 	{ yyval.m_Val = !yystack.l_mark[0].m_Val; }
 break;
 case 23:
-#line 119 "calc.y"
+#line 120 "calc.y"
 	{ yyval.m_Val = ~yystack.l_mark[0].m_Val; }
 break;
 case 24:
-#line 120 "calc.y"
+#line 121 "calc.y"
 	{ yyval.m_Val = -yystack.l_mark[0].m_Val; }
 break;
 case 25:
-#line 121 "calc.y"
+#line 122 "calc.y"
 	{ yyval.m_Val = +yystack.l_mark[0].m_Val; }
 break;
 case 26:
-#line 123 "calc.y"
+#line 124 "calc.y"
 	{   const CalcValue v3 = yystack.l_mark[0].m_Val;
             if (v3 < 0) {
                 calcerror("Negative power");
@@ -827,11 +827,11 @@ case 26:
         }
 break;
 case 27:
-#line 130 "calc.y"
+#line 131 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-1].m_Val; }
 break;
 case 28:
-#line 131 "calc.y"
+#line 132 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[0].m_Val; }
 break;
 #line 838 "calc.tab.c"
