@@ -31,7 +31,7 @@ Node *parsetree;	/* not using yylval because bison declares it as an auto */
 #ifndef YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
 #line 29 "parse.y"
-typedef union {
+typedef union YYSTYPE {
 	struct Node *node;
 	struct Redir redir;
 	struct Pipe pipe;
@@ -73,30 +73,35 @@ typedef union {
 
 extern int YYPARSE_DECL();
 
-#define ANDAND 257
-#define BACKBACK 258
-#define BANG 259
-#define CASE 260
-#define COUNT 261
-#define DUP 262
-#define ELSE 263
-#define END 264
-#define FLAT 265
-#define FN 266
-#define FOR 267
-#define IF 268
-#define IN 269
-#define OROR 270
-#define PIPE 271
-#define REDIR 272
-#define SREDIR 273
-#define SUB 274
-#define SUBSHELL 275
-#define SWITCH 276
-#define TWIDDLE 277
-#define WHILE 278
-#define WORD 279
-#define HUH 280
+#ifndef YYTOKEN_IS_DECLARED
+#define YYTOKEN_IS_DECLARED 1
+typedef enum yy_token {
+  ANDAND = 257,
+  BACKBACK = 258,
+  BANG = 259,
+  CASE = 260,
+  COUNT = 261,
+  DUP = 262,
+  ELSE = 263,
+  END = 264,
+  FLAT = 265,
+  FN = 266,
+  FOR = 267,
+  IF = 268,
+  IN = 269,
+  OROR = 270,
+  PIPE = 271,
+  REDIR = 272,
+  SREDIR = 273,
+  SUB = 274,
+  SUBSHELL = 275,
+  SWITCH = 276,
+  TWIDDLE = 277,
+  WHILE = 278,
+  WORD = 279,
+  HUH = 280,
+} yy_token;
+#endif /* !YYTOKEN_IS_DECLARED */
 #define YYERRCODE 256
 typedef short YYINT;
 static const YYINT yylhs[] = {                           -1,
@@ -650,7 +655,7 @@ void initparse() {
 	nolist = treecpy(mk(nVar, mk(nWord,"ifs", NULL, FALSE)), ealloc);
 }
 
-#line 654 "parse.c"
+#line 659 "parse.c"
 
 #if YYDEBUG
 #include <stdio.h>	/* needed for printf */
@@ -1141,7 +1146,7 @@ case 88:
 #line 172 "parse.y"
 	{ yyval.node = (yystack.l_mark[-1].node != NULL ? (yystack.l_mark[0].node != NULL ? mk(nLappend,yystack.l_mark[-1].node,yystack.l_mark[0].node) : yystack.l_mark[-1].node) : yystack.l_mark[0].node); }
 break;
-#line 1145 "parse.c"
+#line 1150 "parse.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
