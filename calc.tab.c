@@ -815,7 +815,7 @@ case 26:
                 calcerror("Negative power");
                 YYABORT;
             }
-            yyval.m_Val = calcpwr(yystack.l_mark[-2].m_Val, v3);
+            yyval.m_Val = CalcPower(yystack.l_mark[-2].m_Val, v3);
         }
 break;
 case 27:

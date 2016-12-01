@@ -219,7 +219,7 @@ void b_calc (char **av)
 
 
 /******************************************************/
-CalcValue calcpwr(CalcValue a, CalcValue b)
+CalcValue CalcPower(CalcValue a, CalcValue b)
 {
     CalcValue z = 1;   /* z*a^b = A^B */
     while (b > 0) {

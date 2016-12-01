@@ -125,7 +125,7 @@ expr: expr CALC_OROR expr    { $$ = $1 || $3; }
                 calcerror("Negative power");
                 YYABORT;
             }
-            $$ = calcpwr($1, v3);
+            $$ = CalcPower($1, v3);
         }
      | '(' expr ')'    { $$ = $2; }
      |  NUMBER { $$ = $1; }

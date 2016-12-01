@@ -19,7 +19,7 @@ extern const char* calcCmdName;
 
 extern int CalcError(const char *s, const CalcLexData* lexData);
 extern int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData);
-extern CalcValue calcpwr(CalcValue a, CalcValue b);
+extern CalcValue CalcPower(CalcValue a, CalcValue b);
 
 typedef CalcToken (*CalcLexerType)(CalcLexData *lexData, YYSTYPE* calclval);
 extern int CalcParser(CalcLexerType lexer, CalcLexData *lexData);
