@@ -286,9 +286,13 @@ if (~ $objDir ()) {
 ########################################################################################
 if ($Yyacc) {
     yaccOpts = (-t -v -d)
-    byacc $yaccOpts -o parse.c parse.y
+    cmd=(byacc $yaccOpts -o parse.c parse.y)
+    echo $cmd
+    $cmd
     if ($AddOn) {
-        byacc $yaccOpts -P -b calc -p calc calc.y
+        cmd=(byacc $yaccOpts -P -b calc -p calc calc.y)
+        echo $cmd
+        $cmd
     }
 }
 
