@@ -41,18 +41,18 @@ extern int printf(const char *, ...);
 %left '|'
 %left '^'
 %left '&'
-%left EQEQ NEQ 
-%left '<' '>' LEQ GEQ
-%left LSHIFT RSHIFT 
+%left CALC_EQEQ CALC_NEQ 
+%left '<' '>' CALC_LEQ CALC_GEQ
+%left CALC_LSHIFT CALC_RSHIFT 
 %left '+' '-'
 %left '*' '/' '%'
-%right '!' '~' UNARY_PLUSMINUS
+%right '!' '~' CALC_UNARY_PLUSMINUS
 %right '@'
 
 
-%token <m_Val> NUMBER
+%token <m_Val> CALC_NUMBER
 %token CALC_VAR
-%token END_TOKEN BAD_TOKEN
+%token CALC_END_TOKEN CALC_BAD_TOKEN
 
 %pure-parser
 
@@ -83,17 +83,17 @@ expr: expr CALC_OROR expr    { $$ = $1 || $3; }
     | expr '|' expr  { $$ = $1 | $3; } ;
     | expr '^' expr { $$ = $1 ^ $3; } ;
     | expr '&' expr     { $$ = $1 & $3; } ;
-    | expr EQEQ expr { $$ = ($1 == $3); }
-    | expr NEQ expr  { $$ = ($1 != $3); }
+    | expr CALC_EQEQ expr { $$ = ($1 == $3); }
+    | expr CALC_NEQ expr  { $$ = ($1 != $3); }
     | expr '>' expr { $$ = $1 > $3; }
     | expr '<' expr { $$ = $1 < $3; }
-    | expr LEQ expr { $$ = $1 <= $3; }
-    | expr GEQ expr { $$ = $1 >= $3; }
-    | expr LSHIFT expr 
+    | expr CALC_LEQ expr { $$ = $1 <= $3; }
+    | expr CALC_GEQ expr { $$ = $1 >= $3; }
+    | expr CALC_LSHIFT expr 
         {   const CalcValue v3 = $3;
             $$ = (v3 >= 0) ? ($1 << v3) : ($1 >> (-v3));
         }
-    | expr RSHIFT expr
+    | expr CALC_RSHIFT expr
         {   const CalcValue v3 = $3; 
             $$ = (v3>=0) ? ($1 >> v3) : ($1 << (-v3));
         }
@@ -118,8 +118,8 @@ expr: expr CALC_OROR expr    { $$ = $1 || $3; }
         }
     | '!' expr  { $$ = !$2; }
     | '~' expr  { $$ = ~$2; }
-    | '-' expr %prec UNARY_PLUSMINUS { $$ = -$2; }
-    | '+' expr %prec UNARY_PLUSMINUS { $$ = +$2; }
+    | '-' expr %prec CALC_UNARY_PLUSMINUS { $$ = -$2; }
+    | '+' expr %prec CALC_UNARY_PLUSMINUS { $$ = +$2; }
     | expr '@' expr
         {   const CalcValue v3 = $3;
             if (v3 < 0) {
@@ -129,7 +129,7 @@ expr: expr CALC_OROR expr    { $$ = $1 || $3; }
             $$ = CalcPower($1, v3);
         }
      | '(' expr ')'    { $$ = $2; }
-     |  NUMBER { $$ = $1; }
+     |  CALC_NUMBER { $$ = $1; }
      ;
 
 %%

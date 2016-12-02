@@ -169,17 +169,17 @@ extern int YYPARSE_DECL();
 typedef enum calc_token {
   CALC_OROR = 257,
   CALC_ANDAND = 258,
-  EQEQ = 259,
-  NEQ = 260,
-  LEQ = 261,
-  GEQ = 262,
-  LSHIFT = 263,
-  RSHIFT = 264,
-  UNARY_PLUSMINUS = 265,
-  NUMBER = 266,
+  CALC_EQEQ = 259,
+  CALC_NEQ = 260,
+  CALC_LEQ = 261,
+  CALC_GEQ = 262,
+  CALC_LSHIFT = 263,
+  CALC_RSHIFT = 264,
+  CALC_UNARY_PLUSMINUS = 265,
+  CALC_NUMBER = 266,
   CALC_VAR = 267,
-  END_TOKEN = 268,
-  BAD_TOKEN = 269,
+  CALC_END_TOKEN = 268,
+  CALC_BAD_TOKEN = 269,
 } calc_token;
 #endif /* !YYTOKEN_IS_DECLARED */
 #define YYERRCODE 256
@@ -418,9 +418,10 @@ static const char *const calcname[] = {
 "'|'",0,"'~'",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"CALC_OROR","CALC_ANDAND","EQEQ","NEQ","LEQ",
-"GEQ","LSHIFT","RSHIFT","UNARY_PLUSMINUS","NUMBER","CALC_VAR","END_TOKEN",
-"BAD_TOKEN",0,0,0,0,"illegal-symbol",
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"CALC_OROR","CALC_ANDAND","CALC_EQEQ",
+"CALC_NEQ","CALC_LEQ","CALC_GEQ","CALC_LSHIFT","CALC_RSHIFT",
+"CALC_UNARY_PLUSMINUS","CALC_NUMBER","CALC_VAR","CALC_END_TOKEN",
+"CALC_BAD_TOKEN",0,0,0,0,"illegal-symbol",
 };
 static const char *const calcrule[] = {
 "$accept : calc",
@@ -432,14 +433,14 @@ static const char *const calcrule[] = {
 "expr : expr '|' expr",
 "expr : expr '^' expr",
 "expr : expr '&' expr",
-"expr : expr EQEQ expr",
-"expr : expr NEQ expr",
+"expr : expr CALC_EQEQ expr",
+"expr : expr CALC_NEQ expr",
 "expr : expr '>' expr",
 "expr : expr '<' expr",
-"expr : expr LEQ expr",
-"expr : expr GEQ expr",
-"expr : expr LSHIFT expr",
-"expr : expr RSHIFT expr",
+"expr : expr CALC_LEQ expr",
+"expr : expr CALC_GEQ expr",
+"expr : expr CALC_LSHIFT expr",
+"expr : expr CALC_RSHIFT expr",
 "expr : expr '+' expr",
 "expr : expr '-' expr",
 "expr : expr '*' expr",
@@ -451,7 +452,7 @@ static const char *const calcrule[] = {
 "expr : '+' expr",
 "expr : expr '@' expr",
 "expr : '(' expr ')'",
-"expr : NUMBER",
+"expr : CALC_NUMBER",
 
 };
 #endif
@@ -488,7 +489,7 @@ typedef struct {
 */
 
 
-#line 492 "calc.tab.c"
+#line 493 "calc.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>	/* needed for printf */
@@ -834,7 +835,7 @@ case 28:
 #line 132 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[0].m_Val; }
 break;
-#line 838 "calc.tab.c"
+#line 839 "calc.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

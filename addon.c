@@ -242,9 +242,9 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
     CalcToken tok;
     int c;
 
-    if (lexData->m_LastToken != BAD_TOKEN) {
+    if (lexData->m_LastToken != CALC_BAD_TOKEN) {
         tok = lexData->m_LastToken;
-        lexData->m_LastToken = BAD_TOKEN;
+        lexData->m_LastToken = CALC_BAD_TOKEN;
         return tok;
     }
     p = lexData->m_Current;
@@ -258,7 +258,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 
         while (isalnum(c) || '_' == c) {
             if (i >= NUM_CHARS) {
-                return BAD_TOKEN;
+                return CALC_BAD_TOKEN;
             }
             lexData->m_Indent[i++] = *(p++);
             c = *p;
@@ -292,10 +292,10 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
     case '<': case '>':
         c = *p++;
         if (*p == '=') {
-            tok = (c == '<' ? LEQ : GEQ);
+            tok = (c == '<' ? CALC_LEQ : CALC_GEQ);
             p++;
         } else if (c == *p) {
-            tok = (c == '<' ? LSHIFT : RSHIFT);
+            tok = (c == '<' ? CALC_LSHIFT : CALC_RSHIFT);
             p++;
         } else {
             tok = (CalcToken) (c);
@@ -305,7 +305,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
     case '=':
         c = *p++;
         if (*p == '=') {
-            tok = EQEQ;
+            tok = CALC_EQEQ;
             p++;
         } else {
             tok = (CalcToken) (c);
@@ -315,7 +315,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
     case '!':
         c = *p++;
         if (*p == '=') {
-            tok = NEQ;
+            tok = CALC_NEQ;
             p++;
         } else {
             tok = (CalcToken) (c);
@@ -330,14 +330,14 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
                 val = 10 * val + (*p++ -'0');
             }
             calclval->m_Val = val;
-            tok = NUMBER;
+            tok = CALC_NUMBER;
         }
         break;
     case '\0':
         tok = 0;
         break;
     default:
-        tok = BAD_TOKEN;
+        tok = CALC_BAD_TOKEN;
         break;
     }
     lexData->m_Current = p;
@@ -354,7 +354,7 @@ int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData)
     int status;
 
     lexData->m_Current = lexData->m_Buf = s;
-    lexData->m_LastToken = BAD_TOKEN;
+    lexData->m_LastToken = CALC_BAD_TOKEN;
     lexData->m_Indent[0] = '\0';
 
 #if YYDEBUG
