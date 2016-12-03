@@ -9,7 +9,7 @@ objDir=./obj
 FORCE_CLANG=false
 FORCE_GCC=false
 
-CLOB=true
+CLOB=true 
 Yydebug=false
 Yyacc = false
 Fortify=2
