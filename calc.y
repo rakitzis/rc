@@ -34,7 +34,7 @@ extern int printf(const char *, ...);
 /* Non-terminals */
 %type <m_Val> expr assignment
 
-/* Tokens */
+/* Tokens - highest precedence last */
 %nonassoc '='
 %left CALC_OROR
 %left CALC_ANDAND
