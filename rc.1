@@ -1648,6 +1648,16 @@ is a non-terminating recursion, which will cause
 .Cr rc
 to exhaust its stack space and (eventually) terminate if it is executed.
 .TP
+\fBcalc \fR[-p] [\fIvarname\fR=]\fIexpression\fR
+Evaluates signed integer arithmetic \fIexpression\fR.
+Sets status to 0 if the value of the expression is non-zero,
+to 1 if the value is zero, and to 2 if the expression is malformed.
+If \fIvarname=\fR is present, assigns the value of the expression
+to the variable \fIvarname\fR.
+If [-p] is present, the value of the expression is displayed on stdout.
+The expression is \fInot\fR limited to one argument; all arguments other than
+the optional [-p] are concatenated together to form the expression.
+.TP
 \fBcd \fR[\fIdirectory\fR]
 Changes the current directory to
 .IR directory .
@@ -1722,14 +1732,7 @@ Kills \fIprocesses\fR by sending the signal specified by \fIsigname\fR or \fIsig
 If neither signal name nor signal number is specified, uses signal SIGTERM.
 .TP
 \fBlet \fR[-p] [\fIvarname\fR=]\fIexpression\fR
-Evaluates signed integer arithmetic \fIexpression\fR.
-Sets status to 0 if the value of the expression is non-zero,
-to 1 if the value is zero, and to 2 if the expression is malformed.
-If \fIvarname=\fR is present, assigns the value of the expression
-to the variable \fIvarname\fR.
-If [-p] is present, the value of the expression is displayed on stdout.
-The expression is \fInot\fR limited to one argument; all arguments other than
-the optional [-p] are concatenated together to form the expression.
+Alias for builtin \fIcalc\fR.
 .TP
 \fBlimit \fR[\fB\-h\fR] [\fIresource \fR[\fIvalue\fR]]
 Similar to the
