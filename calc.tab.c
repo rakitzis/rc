@@ -112,7 +112,7 @@ extern int printf(const char *, ...);
  */
 #define calcparse(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
 #define calcparse_r(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
-#define calclex(a)  (*lexer)(lexData, &calclval)
+#define calclex(a)  lexer(lexData, &calclval)
 #define calcerror(s) CalcError(s, lexData);
 
 
