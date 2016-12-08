@@ -107,8 +107,8 @@ extern int printf(const char *, ...);
 
 
 
-/* the name of the lexer in CalcParser(), lexer, must be equal to the call
- * that calclex() represents, lexer(lexData, &calcval
+/* The name of the lexer in the calcparse() call, "CalcParser(lexer, lexData)",
+ * must be equal to the call for calclex(), "lexer(lexData, &calcval)".
  */
 #define calcparse(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
 #define calcparse_r(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
