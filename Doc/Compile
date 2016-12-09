@@ -114,6 +114,7 @@ RegularCompileOpts=(
     -Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
     -Wno-unused-parameter
     # -Werror  ## makes warnings errors
+    -Wunreachable-code
 )
 if ($Yydebug) {
     RegularCompileOpts=(
