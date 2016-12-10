@@ -75,7 +75,7 @@ extern int YYPARSE_DECL();
 
 #ifndef YYTOKEN_IS_DECLARED
 #define YYTOKEN_IS_DECLARED 1
-typedef enum yy_token {
+typedef enum yytoken {
     ANDAND = 257,
     BACKBACK = 258,
     BANG = 259,
@@ -100,7 +100,7 @@ typedef enum yy_token {
     WHILE = 278,
     WORD = 279,
     HUH = 280,
-} yy_token;
+} yytoken;
 #endif /* !YYTOKEN_IS_DECLARED */
 #define YYERRCODE 256
 typedef short YYINT;

@@ -1,6 +1,6 @@
 #ifndef YYTOKEN_IS_DECLARED
 #define YYTOKEN_IS_DECLARED 1
-typedef enum calc_token {
+typedef enum calctoken {
     CALC_OROR = 257,
     CALC_ANDAND = 258,
     CALC_EQEQ = 259,
@@ -14,7 +14,7 @@ typedef enum calc_token {
     CALC_VAR = 267,
     CALC_END_TOKEN = 268,
     CALC_BAD_TOKEN = 269,
-} calc_token;
+} calctoken;
 #endif /* !YYTOKEN_IS_DECLARED */
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED

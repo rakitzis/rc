@@ -4,7 +4,7 @@
 typedef long int CalcValue;
 #include "calc.tab.h"
 
-typedef calc_token CalcToken;
+typedef calctoken CalcToken;
 
 typedef struct CalcLexData {
     const char* m_Buf;
