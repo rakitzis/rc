@@ -17,8 +17,8 @@ static bool haspreredir(Node *);
 static bool isallpre(Node *);
 static bool dofork(bool);
 static void dopipe(Node *);
-static bool while_body(Node *n);
-static void for_body(Node *n, List *var, List *l);
+static bool while_iter(Node *n);
+static void for_iter(Node *n, List *var, List *l);
 static void loop_body(Node* n);
 
 
@@ -106,22 +106,22 @@ top:	sigchk();
 		WALK(true_cmd, parent);
 	}
 	case nWhile: {
-		Jbwrap j;
-		Edata jbreak;
-		Estack e1;
+		Jbwrap while_break_jb;
+		Edata  while_break_data;
+		Estack while_break_stack;
 		bool testtrue, oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) { /* prevent spurious breaks inside test */
 			cond = oldcond;
 			break;
 		}
-		if (sigsetjmp(j.j, 1))
+		if (sigsetjmp(while_break_jb.j, 1))
 			break;
-		jbreak.jb = &j;
-		except(eBreak, jbreak, &e1);
+		while_break_data.jb = &while_break_jb;
+		except(eBreak, while_break_data, &while_break_stack);
 		do {
 			cond = oldcond;
-			testtrue = while_body(n);
+			testtrue = while_iter(n);
 			cond = TRUE;
 		} while (testtrue);
 		cond = oldcond;
@@ -130,15 +130,15 @@ top:	sigchk();
 	}
 	case nForin: {
 		List *l, *var = glom(n->u[0].p);
-		Jbwrap j;
-		Edata jbreak;
-		Estack e1;
-		if (sigsetjmp(j.j, 1))
+		Jbwrap for_break_jb;
+		Edata  for_break_data;
+		Estack for_break_stack;
+		if (sigsetjmp(for_break_jb.j, 1))
 			break;
-		jbreak.jb = &j;
-		except(eBreak, jbreak, &e1);
+		for_break_data.jb = &for_break_jb;
+		except(eBreak, for_break_data, &for_break_stack);
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			for_body(n, var, l);
+			for_iter(n, var, l);
 		}
 		unexcept(eBreak);
 		break;
@@ -359,32 +359,33 @@ static void dopipe(Node *n) {
 	sigchk();
 }
 
-static bool while_body(Node *n) {
-	Edata  block;
-	Estack e2;
+static bool while_iter(Node *n) {
+	Edata  while_iter_data;
+	Estack while_iter_stack;
 	bool   testtrue;
 
-	block.b = newblock();
-	except(eArena, block, &e2);
+	while_iter_data.b = newblock();
+	except(eArena, while_iter_data, &while_iter_stack);
 	loop_body(n->u[1].p);
 	testtrue = walk(n->u[0].p, TRUE); /* n might be used after longjmp, need volatile */
 	unexcept(eArena);
 	return testtrue;
 }
 
-static void for_body(Node *n, List *var, List *l) {
-	Edata  block;
-	Estack e2;
+static void for_iter(Node *n, List *var, List *l) {
+	Edata  for_iter_data;
+	Estack for_iter_stack;
 
 	assign(var, word(l->w, NULL), FALSE);
-	block.b = newblock();
-	except(eArena, block, &e2);
+	for_iter_data.b = newblock();
+	except(eArena, for_iter_data, &for_iter_stack);
 	loop_body(n->u[2].p);
 	unexcept(eArena);
 }
 
-static void loop_body(Node* n)
+static void loop_body(Node* nd)
 {
+	Node *volatile n = nd;
 	Jbwrap cont_jb;
 	Edata  cont_data;
 	Estack cont_stack;
