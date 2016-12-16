@@ -18,7 +18,7 @@ static bool isallpre(Node *);
 static bool dofork(bool);
 static void dopipe(Node *);
 static bool while_body(Node *n);
-static void for_body(Node *n, List *l);
+static void for_body(Node *n, List *var, List *l);
 static void loop_body(Node* n);
 
 
@@ -129,7 +129,7 @@ top:	sigchk();
 		break;
 	}
 	case nForin: {
-		List *l;
+		List *l, *var = glom(n->u[0].p);
 		Jbwrap j;
 		Estack e1;
 		Edata jbreak;
@@ -138,7 +138,7 @@ top:	sigchk();
 		jbreak.jb = &j;
 		except(eBreak, jbreak, &e1);
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			for_body(n, l);
+			for_body(n, var, l);
 		}
 		unexcept(eBreak);
 		break;
@@ -372,10 +372,9 @@ static bool while_body(Node *n) {
 	return testtrue;
 }
 
-static void for_body(Node *n, List *l) {
+static void for_body(Node *n, List *var, List *l) {
 	Edata  block;
 	Estack e2;
-	List  *var = glom(n->u[0].p);
 
 	assign(var, word(l->w, NULL), FALSE);
 	block.b = newblock();
