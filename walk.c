@@ -131,8 +131,8 @@ top:	sigchk();
 	case nForin: {
 		List *l, *var = glom(n->u[0].p);
 		Jbwrap j;
-		Estack e1;
 		Edata jbreak;
+		Estack e1;
 		if (sigsetjmp(j.j, 1))
 			break;
 		jbreak.jb = &j;
@@ -385,9 +385,9 @@ static void for_body(Node *n, List *var, List *l) {
 
 static void loop_body(Node* n)
 {
+	Jbwrap cont_jb;
 	Edata  cont_data;
 	Estack cont_stack;
-	Jbwrap cont_jb;
 
 	cont_data.jb = &cont_jb;
 	except(eContinue, cont_data, &cont_stack);
