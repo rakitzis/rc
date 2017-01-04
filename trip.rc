@@ -864,10 +864,10 @@ if (test -e 'a=b') {
 }
 
 #############################################################################
-x=${ls 0 >[2=1] | sed -e 's/0/1/g'}  # this returns a list
-x=$^x                                # so flatten it
-y=${>[2=1] ls 0 | sed -e 's/0/1/g'}  # this returns a list
-y=$^y                                # so flatten it
+x=${ls 0 >[2=1] | sed -e 's/0/1/g'}  # This returns a list,
+x=$^x                                # so flatten it.
+y=${>[2=1] ls 0 | sed -e 's/0/1/g'}  # This returns a list,
+y=$^y                                # so flatten it.
 if (! ~ $x $y) {
     fail 'Redirection before and after first command in pipe differ:' '<'$x'> != <'$y'>'
 }
