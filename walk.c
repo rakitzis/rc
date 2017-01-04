@@ -29,6 +29,7 @@ static void loop_body(Node* n);
 /* walk the parse-tree. "obvious". */
 
 extern bool walk(Node *nd, bool parent) {
+    enum { FACTORED_LOOP = 0 };
 	Node *volatile n = nd;
 top:	sigchk();
 	if (n == NULL) {
@@ -120,9 +121,33 @@ top:	sigchk();
 		while_break_data.jb = &while_break_jb;
 		except(eBreak, while_break_data, &while_break_stack);
 		do {
-			cond = oldcond;
-			testtrue = while_iter(n);
-			cond = TRUE;
+			if (FACTORED_LOOP) {
+				cond = oldcond;
+				testtrue = while_iter(n);
+				cond = TRUE;
+			} else {
+				Edata  while_iter_data;
+				Estack while_iter_stack;
+
+				cond = oldcond;
+				while_iter_data.b = newblock();
+				except(eArena, while_iter_data, &while_iter_stack);
+					Jbwrap cont_jb;
+					Edata  cont_data;
+					Estack cont_stack;
+
+					cont_data.jb = &cont_jb;
+					except(eContinue, cont_data, &cont_stack);
+					if (! sigsetjmp(cont_jb.j, 1)) {
+						walk(n->u[1].p, TRUE);
+						unexcept(eContinue);
+					}
+				}
+
+				testtrue = walk(n->u[0].p, TRUE); /* n might be used after longjmp, need volatile */
+				unexcept(eArena);
+				cond = TRUE;
+			}
 		} while (testtrue);
 		cond = oldcond;
 		unexcept(eBreak);
