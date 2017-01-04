@@ -194,7 +194,7 @@ void b_calc (char **av)
                             fprint(1, "%ld\n", parse_value);
                         }
                     } else {
-                        // should this be treated as bad parse?
+                        /* should this be treated as bad parse? */
                         fprint(2, "%s: bad variable name '%s'\n", calcCmdName, varName);
                         rc_status = BAD_EXP;
                     }
