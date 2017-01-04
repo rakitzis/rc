@@ -132,6 +132,7 @@ top:	sigchk();
 				cond = oldcond;
 				while_iter_data.b = newblock();
 				except(eArena, while_iter_data, &while_iter_stack);
+				{
 					Jbwrap cont_jb;
 					Edata  cont_data;
 					Estack cont_stack;
@@ -163,7 +164,30 @@ top:	sigchk();
 		for_break_data.jb = &for_break_jb;
 		except(eBreak, for_break_data, &for_break_stack);
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			for_iter(n, var, l);
+			if (FACTORED_LOOP) {
+				for_iter(n, var, l);
+			} else {
+				Edata  for_iter_data;
+				Estack for_iter_stack;
+
+				assign(var, word(l->w, NULL), FALSE);
+				for_iter_data.b = newblock();
+				except(eArena, for_iter_data, &for_iter_stack);
+				{
+					Jbwrap cont_jb;
+					Edata  cont_data;
+					Estack cont_stack;
+
+					cont_data.jb = &cont_jb;
+					except(eContinue, cont_data, &cont_stack);
+					if (! sigsetjmp(cont_jb.j, 1)) {
+						walk(n->u[2].p, TRUE);
+						unexcept(eContinue);
+					}
+				}
+
+				unexcept(eArena);
+			}
 		}
 		unexcept(eBreak);
 		break;
