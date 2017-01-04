@@ -19,7 +19,7 @@ Node *parsetree;	/* not using yylval because bison declares it as an auto */
 %left '^' '='
 %left WHILE ')' ELSE
 %left ANDAND OROR '\n'
-%left BANG SUBSHELL
+%nonassoc BANG SUBSHELL
 %left PIPE
 %nonassoc REDIR_PREC
 %right '$' 
