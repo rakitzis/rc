@@ -17,14 +17,15 @@ typedef enum yytoken {
     OROR = 270,
     PIPE = 271,
     REDIR = 272,
-    SREDIR = 273,
-    SUB = 274,
-    SUBSHELL = 275,
-    SWITCH = 276,
-    TWIDDLE = 277,
-    WHILE = 278,
-    WORD = 279,
-    HUH = 280,
+    REDIR_PREC = 273,
+    SREDIR = 274,
+    SUB = 275,
+    SUBSHELL = 276,
+    SWITCH = 277,
+    TWIDDLE = 278,
+    WHILE = 279,
+    WORD = 280,
+    HUH = 281,
 } yytoken;
 #endif /* !YYTOKEN_IS_DECLARED */
 #ifdef YYSTYPE
