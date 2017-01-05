@@ -153,7 +153,8 @@ top:	sigchk();
 		break;
 	}
 	case nForin: {
-		List *l, *var = glom(n->u[0].p);
+		List *volatile l;
+		List *var = glom(n->u[0].p);
 		Jbwrap break_jb;
 		Edata  break_data;
 		Estack break_stack;
@@ -406,7 +407,8 @@ static void dopipe(Node *n) {
 	sigchk();
 }
 
-static bool while_iter(Node *n) {
+static bool while_iter(Node *n)
+{
 	Edata  iter_data;
 	Estack iter_stack;
 	bool   testtrue;
@@ -419,7 +421,8 @@ static bool while_iter(Node *n) {
 	return testtrue;
 }
 
-static void for_iter(Node *n, List *var, List *l) {
+static void for_iter(Node *n, List *var, List *l)
+{
 	Edata  iter_data;
 	Estack iter_stack;
 
