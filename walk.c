@@ -29,6 +29,7 @@ static void loop_body(Node* n);
 /* walk the parse-tree. "obvious". */
 
 extern bool walk(Node *nd, bool parent) {
+    enum { FACTORED_LOOP = 0 };
 	Node *volatile n = nd;
 top:	sigchk();
 	if (n == NULL) {
@@ -106,22 +107,45 @@ top:	sigchk();
 		WALK(true_cmd, parent);
 	}
 	case nWhile: {
-		Jbwrap while_break_jb;
-		Edata  while_break_data;
-		Estack while_break_stack;
+		Jbwrap break_jb;
+		Edata  break_data;
+		Estack break_stack;
 		bool testtrue, oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) { /* prevent spurious breaks inside test */
 			cond = oldcond;
 			break;
 		}
-		if (sigsetjmp(while_break_jb.j, 1))
+		if (sigsetjmp(break_jb.j, 1))
 			break;
-		while_break_data.jb = &while_break_jb;
-		except(eBreak, while_break_data, &while_break_stack);
+		break_data.jb = &break_jb;
+		except(eBreak, break_data, &break_stack);
 		do {
 			cond = oldcond;
-			testtrue = while_iter(n);
+			if (FACTORED_LOOP) {
+				testtrue = while_iter(n);
+			} else {
+				Edata  iter_data;
+				Estack iter_stack;
+
+				iter_data.b = newblock();
+				except(eArena, iter_data, &iter_stack);
+				{
+					Jbwrap cont_jb;
+					Edata  cont_data;
+					Estack cont_stack;
+
+					cont_data.jb = &cont_jb;
+					except(eContinue, cont_data, &cont_stack);
+					if (! sigsetjmp(cont_jb.j, 1)) {
+						walk(n->u[1].p, TRUE);
+						unexcept(eContinue);
+					}
+				}
+
+				testtrue = walk(n->u[0].p, TRUE); /* n might be used after longjmp, need volatile */
+				unexcept(eArena);
+			}
 			cond = TRUE;
 		} while (testtrue);
 		cond = oldcond;
@@ -130,15 +154,38 @@ top:	sigchk();
 	}
 	case nForin: {
 		List *l, *var = glom(n->u[0].p);
-		Jbwrap for_break_jb;
-		Edata  for_break_data;
-		Estack for_break_stack;
-		if (sigsetjmp(for_break_jb.j, 1))
+		Jbwrap break_jb;
+		Edata  break_data;
+		Estack break_stack;
+		if (sigsetjmp(break_jb.j, 1))
 			break;
-		for_break_data.jb = &for_break_jb;
-		except(eBreak, for_break_data, &for_break_stack);
+		break_data.jb = &break_jb;
+		except(eBreak, break_data, &break_stack);
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			for_iter(n, var, l);
+			if (FACTORED_LOOP) {
+				for_iter(n, var, l);
+			} else {
+				Edata  iter_data;
+				Estack iter_stack;
+
+				assign(var, word(l->w, NULL), FALSE);
+				iter_data.b = newblock();
+				except(eArena, iter_data, &iter_stack);
+				{
+					Jbwrap cont_jb;
+					Edata  cont_data;
+					Estack cont_stack;
+
+					cont_data.jb = &cont_jb;
+					except(eContinue, cont_data, &cont_stack);
+					if (! sigsetjmp(cont_jb.j, 1)) {
+						walk(n->u[2].p, TRUE);
+						unexcept(eContinue);
+					}
+				}
+
+				unexcept(eArena);
+			}
 		}
 		unexcept(eBreak);
 		break;
@@ -360,12 +407,12 @@ static void dopipe(Node *n) {
 }
 
 static bool while_iter(Node *n) {
-	Edata  while_iter_data;
-	Estack while_iter_stack;
+	Edata  iter_data;
+	Estack iter_stack;
 	bool   testtrue;
 
-	while_iter_data.b = newblock();
-	except(eArena, while_iter_data, &while_iter_stack);
+	iter_data.b = newblock();
+	except(eArena, iter_data, &iter_stack);
 	loop_body(n->u[1].p);
 	testtrue = walk(n->u[0].p, TRUE); /* n might be used after longjmp, need volatile */
 	unexcept(eArena);
@@ -373,12 +420,12 @@ static bool while_iter(Node *n) {
 }
 
 static void for_iter(Node *n, List *var, List *l) {
-	Edata  for_iter_data;
-	Estack for_iter_stack;
+	Edata  iter_data;
+	Estack iter_stack;
 
 	assign(var, word(l->w, NULL), FALSE);
-	for_iter_data.b = newblock();
-	except(eArena, for_iter_data, &for_iter_stack);
+	iter_data.b = newblock();
+	except(eArena, iter_data, &iter_stack);
 	loop_body(n->u[2].p);
 	unexcept(eArena);
 }
