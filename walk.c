@@ -29,7 +29,7 @@ static void loop_body(Node* n);
 /* walk the parse-tree. "obvious". */
 
 extern bool walk(Node *nd, bool parent) {
-    enum { FACTORED_LOOP = 0 };
+	enum { FACTORED_LOOP = 0 };
 	Node *volatile n = nd;
 top:	sigchk();
 	if (n == NULL) {
