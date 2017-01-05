@@ -407,7 +407,8 @@ static void dopipe(Node *n) {
 	sigchk();
 }
 
-static bool while_iter(Node *n) {
+static bool while_iter(Node *n)
+{
 	Edata  iter_data;
 	Estack iter_stack;
 	bool   testtrue;
@@ -420,7 +421,8 @@ static bool while_iter(Node *n) {
 	return testtrue;
 }
 
-static void for_iter(Node *n, List *var, List *l) {
+static void for_iter(Node *n, List *var, List *l)
+{
 	Edata  iter_data;
 	Estack iter_stack;
 
