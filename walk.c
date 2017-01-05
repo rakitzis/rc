@@ -121,15 +121,13 @@ top:	sigchk();
 		break_data.jb = &break_jb;
 		except(eBreak, break_data, &break_stack);
 		do {
+			cond = oldcond;
 			if (FACTORED_LOOP) {
-				cond = oldcond;
 				testtrue = while_iter(n);
-				cond = TRUE;
 			} else {
 				Edata  iter_data;
 				Estack iter_stack;
 
-				cond = oldcond;
 				iter_data.b = newblock();
 				except(eArena, iter_data, &iter_stack);
 				{
@@ -147,8 +145,8 @@ top:	sigchk();
 
 				testtrue = walk(n->u[0].p, TRUE); /* n might be used after longjmp, need volatile */
 				unexcept(eArena);
-				cond = TRUE;
 			}
+			cond = TRUE;
 		} while (testtrue);
 		cond = oldcond;
 		unexcept(eBreak);
