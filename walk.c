@@ -153,7 +153,8 @@ top:	sigchk();
 		break;
 	}
 	case nForin: {
-		List *l, *var = glom(n->u[0].p);
+		List *volatile l;
+		List *var = glom(n->u[0].p);
 		Jbwrap break_jb;
 		Edata  break_data;
 		Estack break_stack;

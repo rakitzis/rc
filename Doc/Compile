@@ -9,10 +9,11 @@ objDir=./obj
 FORCE_CLANG=false
 FORCE_GCC=false
 
-CLOB=true 
+Clobber=true 
 Yydebug=false
 Yyacc = false
 Fortify=2
+CheckTime=false
 
 while (! ~ $#* 0) {
     switch(x$1) {
@@ -22,7 +23,7 @@ while (! ~ $#* 0) {
         FORCE_GCC=true
 
     case x-noclob* x--noclob*
-        CLOB=false
+        Clobber=false
 
     case x-yydebug x--yydebug
         Yydebug=true
@@ -30,12 +31,16 @@ while (! ~ $#* 0) {
     case x-yacc x--yacc
         Yyacc = true
 
+    case x--check_time x--check-time
+        CheckTime=true
+
     case x--opt 
         if (~ $#* 0 1) {
             Fatal Option $1 needs value
         }
         OPT=$2
         shift
+
     case x--fortify
         if (~ $#* 0 1) {
             Fatal Option $1 needs value
@@ -144,7 +149,7 @@ LinkOpts=(
 
 ########################################################################################
 # Clobbering by setjmp/longjmp
-if ($CLOB) {
+if ($Clobber) {
     Clobbered=(
         -Wclobbered
     )
@@ -200,7 +205,9 @@ fn Compile LinkOneObj { f=$1 obj=() {
     }
     #--------------------------------------------------------------------
     if (~ $0 Compile) {
-        CompileWithOpts   -MT $obj -MF .deps/$f.Tpo -c -o $obj $f.c
+        if ({! $CheckTime} || {test $f.c -nt $obj}) {
+            CompileWithOpts   -MT $obj -MF .deps/$f.Tpo -c -o $obj $f.c
+        }
     } else {
         LinkWithOpts      -o $exe $obj  
     }
