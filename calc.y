@@ -15,8 +15,12 @@ extern int printf(const char *, ...);
 
 
 
-/* The name of the lexer in the calcparse() call, "CalcParser(lexer, lexData)",
- * must be equal to the call for calclex(), "lexer(lexData, &calcval)".
+/* The name of the lexer argument for CalcParser() in the body of the macro calcparse():
+ *      CalcParser(lexer, lexData)
+ *                 ^^^^^
+ * must be equal to the function name in the body of the macro calclex():
+ *      lexer(lexData, &calcval)
+ *      ^^^^^
  */
 #define calcparse(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
 #define calcparse_r(a)  CalcParser(CalcLexerType lexer, CalcLexData *lexData)
