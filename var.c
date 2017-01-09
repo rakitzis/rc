@@ -69,7 +69,7 @@ extern List *varlookup(const char *name) {
 		return sgetstatus();
 	if (streq(name, "ppid")) {
 		List *q = nnew(List);
-		q->w = nprint("%d", getppid());
+		q->w = nprint("%d", rc_ppid);
 		q->m = NULL;
 		q->n = NULL;
 		return q;
