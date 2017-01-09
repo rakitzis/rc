@@ -186,7 +186,7 @@ enum {
 /* main.c */
 extern Rq *redirq;
 extern bool dashdee, dashee, dashvee, dashex, dasheye, dashen, dashpee, interactive;
-extern pid_t rc_pid;
+extern pid_t rc_pid, rc_ppid;
 extern int lineno;
 
 /* builtins.c */

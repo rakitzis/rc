@@ -137,7 +137,14 @@ top:	sigchk();
 
 					cont_data.jb = &cont_jb;
 					except(eContinue, cont_data, &cont_stack);
-					if (! sigsetjmp(cont_jb.j, 1)) {
+					/* From http://en.cppreference.com/w/c/program/setjmp
+					 * According to the C standard setjmp() must appear only in the following 4 constructs:
+					 *   switch (setjmp(args)) {statements}
+					 *   if (setjmp(args) == 0) {statements} with any of operators: ==,!=,<,>,<=,>=
+					 *   while (! setjmp(args)) {statements}
+					 *   setjmp(args);
+					 */
+					if (sigsetjmp(cont_jb.j, 1) == 0) {
 						walk(n->u[1].p, TRUE);
 						unexcept(eContinue);
 					}
@@ -179,7 +186,7 @@ top:	sigchk();
 
 					cont_data.jb = &cont_jb;
 					except(eContinue, cont_data, &cont_stack);
-					if (! sigsetjmp(cont_jb.j, 1)) {
+					if (sigsetjmp(cont_jb.j, 1) == 0) {
 						walk(n->u[2].p, TRUE);
 						unexcept(eContinue);
 					}
@@ -442,7 +449,7 @@ static void loop_body(Node* nd)
 
 	cont_data.jb = &cont_jb;
 	except(eContinue, cont_data, &cont_stack);
-	if (! sigsetjmp(cont_jb.j, 1)) {
+	if (sigsetjmp(cont_jb.j, 1) == 0) {
 		walk(n, TRUE);
 		unexcept(eContinue);
 	}
