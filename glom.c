@@ -144,9 +144,7 @@ static List *count(const List *l) {
 extern void assign(const List *s1, List *s2, bool stack) {
 	static const char* const read_only[] = {
 		"apid", "apids", "bqstatus", "pid", "ppid", "status",
-		0
 	};
-	int i;
 
 	List *val = s2;
 	if (s1 == NULL)
@@ -159,10 +157,8 @@ extern void assign(const List *s1, List *s2, bool stack) {
 		rc_error("numeric variable name");
 	if (strchr(s1->w, '=') != NULL)
 		rc_error("'=' in variable name");
-	for (i = 0; read_only[i]; ++i) {
-		if (streq(s1->w, read_only[i])) {
-			return;
-		}
+	if (find_str(s1->w, read_only, arraysize(read_only)) >= 0) {
+		return;
 	}
 	if (*s1->w == '*' && s1->w[1] == '\0')
 		val = append(varlookup("0"), s2); /* preserve $0 when * is assigned explicitly */
