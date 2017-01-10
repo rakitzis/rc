@@ -40,7 +40,7 @@ typedef struct BuiltinMap {
 	const char *name;
 } BuiltinMap;
 
-static BuiltinMap
+static const BuiltinMap
 builtins[] = {
 	{ b_dot,        "." },
 	{ b_break,      "break" },
@@ -100,6 +100,25 @@ extern builtin_t *isbuiltin(const char *s) {
 	}
 
 	return NULL;
+}
+
+int find_str(const char * const s, const char* const arr[], int sz)
+{
+	const char * const *pi = &arr[0], * const *pj = &arr[sz];
+
+	while (pi < pj) {
+		const char * const * const pm = pi + (pj - pi)/2;
+		const int c = strcmp_fast(*pm, s);
+		if (c > 0) {
+			pj = pm;
+		} else if (c < 0) {
+			pi = pm + 1;
+		} else {
+			return pm - arr;
+		}
+	}
+
+	return -1;
 }
 
 /* funcall() is the wrapper used to invoke shell functions. pushes $*, and "return" returns here. */
