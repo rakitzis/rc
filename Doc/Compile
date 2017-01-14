@@ -10,7 +10,7 @@ FORCE_CLANG=false
 FORCE_GCC=false
 
 Clobber=true 
-Yydebug=false
+Yydebug=true
 Yyacc = false
 Fortify=2
 CheckTime=false
@@ -25,8 +25,8 @@ while (! ~ $#* 0) {
     case x-noclob* x--noclob*
         Clobber=false
 
-    case x-yydebug x--yydebug
-        Yydebug=true
+    case x-no-yydebug x--no-yydebug x-noyydebug x--noyydebug
+        Yydebug=false
         
     case x-yacc x--yacc
         Yyacc = true

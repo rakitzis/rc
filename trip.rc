@@ -871,6 +871,14 @@ y=$^y                                # so flatten it.
 if (! ~ $x $y) {
     fail 'Redirection before and after first command in pipe differ:' '<'$x'> != <'$y'>'
 }
+#############################################################################
+for (varname in apid apids bqstatus pid ppid status ) {
+    x = $$varname
+    $varname = 1-$x-2
+    if (! ~ $x $$varname) {
+        fail 'Assigning to a read-only variable. Old value:' $x 'New value:' $$varname
+    }
+}
 
 #############################################################################
 rm -rf $tmpdir
