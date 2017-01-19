@@ -264,9 +264,9 @@ extern Node *doit(bool clobberexecitIn) {
 	if (dashen)
 		clobberexecit = FALSE;
 	execit = clobberexecit;
-	sigsetjmp(j.j, 1);
 	jerror.jb = &j;
 	except(eError, jerror, &e1);
+	sigsetjmp(j.j, 1);
 	for (eof = FALSE; !eof;) {
 		Edata block;
 		Estack e2;
