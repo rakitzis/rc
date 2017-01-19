@@ -209,7 +209,9 @@ fn Compile LinkOneObj { f=$1 obj=() {
             CompileWithOpts   -MT $obj -MF .deps/$f.Tpo -c -o $obj $f.c
         }
     } else {
-        LinkWithOpts      -o $exe $obj  
+        if ({! $CheckTime} || {test $obj -nt $exe}) {
+            LinkWithOpts      -o $exe $obj  
+        }
     }
 }}
 
@@ -231,9 +233,11 @@ if (~ $objDir ()) {
     mksignalExe = $objDir/mksignal
     mkstatExe = $objDir/mkstatval
 }
+echo $mksignalExe
 $mksignalExe
 ## Status value defines, must be done before compiling rc
 ## Making mkstatval does not depend on singals created by mksignal
+echo $mkstatExe
 $mkstatExe > statval.h
 
 ########################################################################################
