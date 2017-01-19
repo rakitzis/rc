@@ -109,13 +109,13 @@ extern void funcall(char **av) {
 	Jbwrap j;
 	Estack e1, e2;
 	Edata jreturn, star;
-	if (sigsetjmp(j.j, 1))
-		return;
 	starassign(*av, av+1, TRUE);
-	jreturn.jb = &j;
 	star.name = "*";
+	jreturn.jb = &j;
 	except(eReturn, jreturn, &e1);
 	except(eVarstack, star, &e2);
+	if (sigsetjmp(j.j, 1))
+		return;
 	walk(treecpy(fnlookup(*av), nalloc), TRUE);
 	varrm("*", TRUE);
 	unexcept(eVarstack);

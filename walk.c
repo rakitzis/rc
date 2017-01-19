@@ -116,10 +116,11 @@ top:	sigchk();
 			cond = oldcond;
 			break;
 		}
-		if (sigsetjmp(break_jb.j, 1))
-			break;
 		break_data.jb = &break_jb;
 		except(eBreak, break_data, &break_stack);
+		if (sigsetjmp(break_jb.j, 1))
+			break;
+
 		do {
 			cond = oldcond;
 			if (FACTORED_LOOP) {
@@ -127,14 +128,12 @@ top:	sigchk();
 			} else {
 				Edata  iter_data;
 				Estack iter_stack;
-
 				iter_data.b = newblock();
 				except(eArena, iter_data, &iter_stack);
 				{
 					Jbwrap cont_jb;
 					Edata  cont_data;
 					Estack cont_stack;
-
 					cont_data.jb = &cont_jb;
 					except(eContinue, cont_data, &cont_stack);
 					/* From http://en.cppreference.com/w/c/program/setjmp
@@ -149,7 +148,6 @@ top:	sigchk();
 						unexcept(eContinue);
 					}
 				}
-
 				testtrue = walk(n->u[0].p, TRUE); /* n might be used after longjmp, need volatile */
 				unexcept(eArena);
 			}
@@ -165,17 +163,17 @@ top:	sigchk();
 		Jbwrap break_jb;
 		Edata  break_data;
 		Estack break_stack;
-		if (sigsetjmp(break_jb.j, 1))
-			break;
 		break_data.jb = &break_jb;
 		except(eBreak, break_data, &break_stack);
+		if (sigsetjmp(break_jb.j, 1))
+			break;
+
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
 			if (FACTORED_LOOP) {
 				for_iter(n, var, l);
 			} else {
 				Edata  iter_data;
 				Estack iter_stack;
-
 				assign(var, word(l->w, NULL), FALSE);
 				iter_data.b = newblock();
 				except(eArena, iter_data, &iter_stack);
@@ -183,7 +181,6 @@ top:	sigchk();
 					Jbwrap cont_jb;
 					Edata  cont_data;
 					Estack cont_stack;
-
 					cont_data.jb = &cont_jb;
 					except(eContinue, cont_data, &cont_stack);
 					if (sigsetjmp(cont_jb.j, 1) == 0) {
@@ -191,7 +188,6 @@ top:	sigchk();
 						unexcept(eContinue);
 					}
 				}
-
 				unexcept(eArena);
 			}
 		}
