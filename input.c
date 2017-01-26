@@ -258,8 +258,8 @@ extern Node *doit(bool clobberexecitIn) {
 	bool eof;
 	bool execit;
 	Jbwrap j;
-	Estack e1;
 	Edata jerror;
+	Estack e1;
 
 	if (dashen)
 		clobberexecit = FALSE;

@@ -107,8 +107,8 @@ extern builtin_t *isbuiltin(const char *s) {
 
 extern void funcall(char **av) {
 	Jbwrap j;
-	Estack e1, e2;
 	Edata jreturn, star;
+	Estack e1, e2;
 	if (sigsetjmp(j.j, 1))
 		return;
 	starassign(*av, av+1, TRUE);
