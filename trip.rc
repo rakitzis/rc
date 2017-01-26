@@ -17,8 +17,10 @@ fn expect {
 fn submatch {
 	if (!~ $#* 3)
 		fail incorrect invocation of submatch
+    echo 27
 	prompt=$nl if (!~ `` $nl {$rc -ic $1>[2=1]} $2)
 		fail $3
+    echo 28
 }
 fn sigexit sigint sigquit sigsegv
 fn sigexit {
@@ -619,13 +621,16 @@ if (kill -term) {
 
 $rc -c 'exit 0 sigfpe' && fail exit of bad pipeline is true
 
+echo 1
 submatch 'exit foo' 'bad status' 'exit diagnostic'
+echo 2
 
 #
 # control structures
 #
 if (!~ `{false || echo hi} hi)
 	fail '||'
+echo 3
 if (!~ `{true && echo hi} hi)
 	fail '&&'
 if (~ `{true || echo hi} hi)
@@ -639,6 +644,7 @@ while (true) {
 	break
 	fail break in while
 }
+echo 8
 
 switch (foo) {
 	case bar
@@ -648,6 +654,7 @@ switch (foo) {
 	case *
 		fail match foo in switch
 }
+echo 9
 
 switch (nothing) {
 	case bar
@@ -655,28 +662,38 @@ switch (nothing) {
 	case *
 		i=frobnatz
 }
-
+echo 11
+limit coredumpsize 4000
 ~ $i frobnatz || fail match '*' in switch
+echo 13
 
 submatch '()=()' 'rc: null variable name' 'assignment diagnostic'
+echo 15
 submatch 'fn () {eval}' 'rc: null function name' 'assigning null function name'
 
+echo 17
 #
 # prompt
 #
 fn prompt {echo hi}
+echo 18
 prompt=() if (!~ `{$rc -i /dev/null>[2]/dev/null} hi) fail fn prompt
+echo 19
 fn prompt
+echo 20
 
 #
 # history
 #
 history=$tmpdir/hist.$pid prompt='' echo 'history=()' | $rc -i
+echo 21
 
 if (!~ `{cat $tmpdir/hist.$pid} 'history=()')
 	fail output to history file
+echo 22
 
 history=$tmpdir/hist.$pid prompt='' echo 'history=()' | $rc -i
+echo 23
 
 if (!~ `` () {cat $tmpdir/hist.$pid} 'history=()
 history=()
