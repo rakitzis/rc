@@ -99,7 +99,7 @@ typedef enum yytoken {
     TWIDDLE = 277,
     WHILE = 278,
     WORD = 279,
-    HUH = 280,
+    HUH = 280
 } yytoken;
 #endif /* !YYTOKEN_IS_DECLARED */
 #define YYERRCODE 256

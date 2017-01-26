@@ -13,7 +13,7 @@ typedef enum calctoken {
     CALC_NUMBER = 266,
     CALC_VAR = 267,
     CALC_END_TOKEN = 268,
-    CALC_BAD_TOKEN = 269,
+    CALC_BAD_TOKEN = 269
 } calctoken;
 #endif /* !YYTOKEN_IS_DECLARED */
 #ifdef YYSTYPE
