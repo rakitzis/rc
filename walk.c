@@ -116,10 +116,10 @@ top:	sigchk();
 			cond = oldcond;
 			break;
 		}
-		break_data.jb = &break_jb;
-		except(eBreak, break_data, &break_stack);
 		if (sigsetjmp(break_jb.j, 1))
 			break;
+		break_data.jb = &break_jb;
+		except(eBreak, break_data, &break_stack);
 
 		do {
 			cond = oldcond;
@@ -134,8 +134,6 @@ top:	sigchk();
 					Jbwrap cont_jb;
 					Edata  cont_data;
 					Estack cont_stack;
-					cont_data.jb = &cont_jb;
-					except(eContinue, cont_data, &cont_stack);
 					/* From http://en.cppreference.com/w/c/program/setjmp
 					 * According to the C standard setjmp() must appear only in the following 4 constructs:
 					 *   switch (setjmp(args)) {statements}
@@ -144,6 +142,8 @@ top:	sigchk();
 					 *   setjmp(args);
 					 */
 					if (sigsetjmp(cont_jb.j, 1) == 0) {
+						cont_data.jb = &cont_jb;
+						except(eContinue, cont_data, &cont_stack);
 						walk(n->u[1].p, TRUE);
 						unexcept(eContinue);
 					}
@@ -163,10 +163,10 @@ top:	sigchk();
 		Jbwrap break_jb;
 		Edata  break_data;
 		Estack break_stack;
-		break_data.jb = &break_jb;
-		except(eBreak, break_data, &break_stack);
 		if (sigsetjmp(break_jb.j, 1))
 			break;
+		break_data.jb = &break_jb;
+		except(eBreak, break_data, &break_stack);
 
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
 			if (FACTORED_LOOP) {
@@ -181,9 +181,9 @@ top:	sigchk();
 					Jbwrap cont_jb;
 					Edata  cont_data;
 					Estack cont_stack;
-					cont_data.jb = &cont_jb;
-					except(eContinue, cont_data, &cont_stack);
 					if (sigsetjmp(cont_jb.j, 1) == 0) {
+						cont_data.jb = &cont_jb;
+						except(eContinue, cont_data, &cont_stack);
 						walk(n->u[2].p, TRUE);
 						unexcept(eContinue);
 					}
@@ -443,9 +443,9 @@ static void loop_body(Node* nd)
 	Edata  cont_data;
 	Estack cont_stack;
 
-	cont_data.jb = &cont_jb;
-	except(eContinue, cont_data, &cont_stack);
 	if (sigsetjmp(cont_jb.j, 1) == 0) {
+		cont_data.jb = &cont_jb;
+		except(eContinue, cont_data, &cont_stack);
 		walk(n, TRUE);
 		unexcept(eContinue);
 	}
