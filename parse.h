@@ -25,7 +25,7 @@ typedef enum yytoken {
     TWIDDLE = 278,
     WHILE = 279,
     WORD = 280,
-    HUH = 281,
+    HUH = 281
 } yytoken;
 #endif /* !YYTOKEN_IS_DECLARED */
 #ifdef YYSTYPE
