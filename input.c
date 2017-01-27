@@ -264,9 +264,9 @@ extern Node *doit(bool clobberexecitIn) {
 	if (dashen)
 		clobberexecit = FALSE;
 	execit = clobberexecit;
-	sigsetjmp(j.j, 1);
-	jerror.jb = &j;
-	except(eError, jerror, &e1);
+	sigsetjmp(j.j, 1);           /* This sigsetjmp(j.j, 1) must occur before except(eError, jerror, &e1) below. */
+	jerror.jb = &j;              /* The reason: after syntax error longjmp comes here and needs another         */
+	except(eError, jerror, &e1); /* except(eError) to match unexcept(eError) after the for(eof) loop            */
 	for (eof = FALSE; !eof;) {
 		Edata block;
 		Estack e2;

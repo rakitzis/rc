@@ -69,3 +69,13 @@ sigsetjmp() is first, so we choose everywhere the same order
     Edata.jb = &Jbwrap;
     except(e, Edata, &Estack);
 
+/****************************************************************************/
+In input.c there is another requirement:
+    except(eError, jerror, &e1);
+must be called before
+    setjmp(j.j, 1);
+
+The reason is that after parsing error longjmp() comes back to this setjmp(j.j,1)
+and since the second time except() is not called (because it is after setjmp),
+unexcept(eError) will encounter an empty stack.
+
