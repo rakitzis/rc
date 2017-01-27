@@ -130,25 +130,8 @@ top:	sigchk();
 				Estack iter_stack;
 				iter_data.b = newblock();
 				except(eArena, iter_data, &iter_stack);
-				{
-					Jbwrap cont_jb;
-					Edata  cont_data;
-					Estack cont_stack;
-					/* From http://en.cppreference.com/w/c/program/setjmp
-					 * According to the C standard setjmp() must appear only in the following 4 constructs:
-					 *   switch (setjmp(args)) {statements}
-					 *   if (setjmp(args) == 0) {statements} with any of operators: ==,!=,<,>,<=,>=
-					 *   while (! setjmp(args)) {statements}
-					 *   setjmp(args);
-					 */
-					if (sigsetjmp(cont_jb.j, 1) == 0) {
-						cont_data.jb = &cont_jb;
-						except(eContinue, cont_data, &cont_stack);
-						walk(n->u[1].p, TRUE);
-						unexcept(eContinue);
-					}
-				}
-				testtrue = walk(n->u[0].p, TRUE); /* n might be used after longjmp, need volatile */
+				loop_body(n->u[1].p);
+				testtrue = walk(n->u[0].p, TRUE);
 				unexcept(eArena);
 			}
 			cond = TRUE;
@@ -177,17 +160,7 @@ top:	sigchk();
 				assign(var, word(l->w, NULL), FALSE);
 				iter_data.b = newblock();
 				except(eArena, iter_data, &iter_stack);
-				{
-					Jbwrap cont_jb;
-					Edata  cont_data;
-					Estack cont_stack;
-					if (sigsetjmp(cont_jb.j, 1) == 0) {
-						cont_data.jb = &cont_jb;
-						except(eContinue, cont_data, &cont_stack);
-						walk(n->u[2].p, TRUE);
-						unexcept(eContinue);
-					}
-				}
+				loop_body(n->u[2].p);
 				unexcept(eArena);
 			}
 		}
@@ -436,6 +409,14 @@ static void for_iter(Node *n, List *var, List *l)
 	unexcept(eArena);
 }
 
+/* From http://en.cppreference.com/w/c/program/setjmp
+ * According to the C standard setjmp() must appear only in the following 4 constructs:
+ *   switch (setjmp(args)) {statements}
+ *   if (setjmp(args) == 0) {statements} with any of 
+ *          operators: ==,!=,<,>,<=,>=
+ *   while (! setjmp(args)) {statements}
+ *   setjmp(args);
+*/
 static void loop_body(Node* nd)
 {
 	Node *volatile n = nd;
