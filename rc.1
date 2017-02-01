@@ -1968,13 +1968,14 @@ grammar, edited to remove semantic actions.
 %term ANDAND BACKBACK BANG CASE COUNT DUP ELSE END FLAT FN FOR IF IN
 %term OROR PIPE REDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
 
-%left '^' '='
-%left WHILE ')' ELSE
-%left ANDAND OROR '\en'
-%left BANG SUBSHELL
-%left PIPE
-%right '$'
-%left SUB
+%left     '^' '='
+%left     WHILE ')' ELSE
+%left     ANDAND OROR '\en'
+%nonassoc BANG SUBSHELL
+%left     PIPE
+%nonassoc REDIR_PREC
+%right    '$'
+%left     SUB
 
 %start rc
 
@@ -2022,7 +2023,7 @@ cmd	: /* empty */	%prec WHILE
 	| cmd ANDAND optnl cmd
 	| cmd OROR optnl cmd
  	| cmd PIPE optnl cmd
-	| redir cmd	%prec BANG
+	| redir cmd	%prec REDIRE_PREC
 	| assign cmd	%prec BANG
 	| BANG optcaret cmd
 	| SUBSHELL optcaret cmd
