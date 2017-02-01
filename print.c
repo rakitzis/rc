@@ -1,7 +1,6 @@
 /* print.c -- formatted printing routines (Paul Haahr, 12/91) */
 
 #include "rc.h"
-#include <setjmp.h>
 
 #define	PRINT_ALLOCSIZE	((size_t)64)
 #define	SPRINT_BUFSIZ	((size_t)1024)
