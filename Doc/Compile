@@ -14,6 +14,7 @@ Yydebug=true
 Yyacc = false
 Fortify=2
 CheckTime=false
+Sanitize=false
 
 while (! ~ $#* 0) {
     switch(x$1) {
@@ -48,6 +49,9 @@ while (! ~ $#* 0) {
         Fortify=$2
         shift
 
+    case x--sanitize
+        Sanitize=true
+
     case x-*
         Fatal Bad option $1
     case *
@@ -68,6 +72,9 @@ if (~ $OPT ()) {
     OptimizationOpts=(-O3)
 } else {
     OptimizationOpts=(-O$OPT)
+}
+if (~ $OPT 0) {
+    Fortify=()
 }
 
 LangOpts=(
@@ -158,18 +165,46 @@ if ($FORCE_CLANG) {
     COMPILER=clang
 } else if ($FORCE_GCC) {
     COMPILER=gcc
-    CompileOpts=(
-        $CompileOpts
-        $Clobbered
-    )
 } else if (whatis clang >[2]/dev/null) {
     COMPILER=clang
 } else {
-    CompileOpts=($CompileOpts $Clobbered)
     COMPILER=gcc
 }
 whatis $COMPILER
 $COMPILER --version
+
+########################################################################################
+if ($Sanitize) {
+    CompileOpts=(
+        $CompileOpts
+        -fsanitize=undefined
+    )
+    if (~ $COMPILER clang) {
+        CompileOpts=(
+            $CompileOpts
+            -Wno-extended-offsetof
+        )
+    }
+    LinkOpts=(
+        $LinkOpts
+        -lubsan
+    )
+}
+
+if (~ $COMPILER clang) {
+    CompileOpts=(
+        $CompileOpts
+    )
+    LinkOpts=(
+        $LinkOpts
+    )
+} else {
+    CompileOpts=(
+        $CompileOpts
+        $Clobbered
+    )
+}
+
 ########################################################################################
 # Store object files in a subdir to prevent polution
 if (! ~ $#objDir 0 && ! test -d $objDir) {

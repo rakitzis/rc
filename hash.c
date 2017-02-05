@@ -39,21 +39,22 @@ extern void inithash() {
 		vpp->name = fpp->name = NULL;
 }
 
-#define ADV()   {if ((c = *s++) == '\0') break;}
+#define ADV()   {if ((c = (*s++) & 0xff) == '\0') break;}
 
 /* hash function courtesy of paul haahr */
 
 static int hash(const char *s, int size) {
-	int c, n = 0;
+	unsigned int c;
+	int n = 0;
 	while (1) {
 		ADV();
-		n += (c << 17) ^ (c << 11) ^ (c << 5) ^ (c >> 1);
+		n += (c << 17u) ^ (c << 11u) ^ (c << 5u) ^ (c >> 1u);
 		ADV();
-		n ^= (c << 14) + (c << 7) + (c << 4) + c;
+		n ^= (c << 14u) + (c << 7u) + (c << 4u) + c;
 		ADV();
-		n ^= (~c << 11) | ((c << 3) ^ (c >> 1));
+		n ^= (~c << 11u) | ((c << 3u) ^ (c >> 1u));
 		ADV();
-		n -= (c << 16) | (c << 9) | (c << 2) | (c & 3);
+		n -= (c << 16u) | (c << 9u) | (c << 2u) | (c & 3u);
 	}
 	if (n < 0)
 		n = ~n;
