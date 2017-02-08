@@ -1,5 +1,6 @@
 /*#define const   const*/
 #undef NDEBUG
+#include <stddef.h>
 #include "config.h"
 #include "proto.h"
 
