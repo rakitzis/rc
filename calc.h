@@ -15,7 +15,7 @@ typedef struct CalcLexData {
     const char* m_CalcCmdName;
 } CalcLexData;
 
-extern const char* calcCmdName;
+
 
 extern int CalcError(const char *s, const CalcLexData* lexData);
 extern int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData);
