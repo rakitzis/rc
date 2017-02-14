@@ -34,9 +34,11 @@ extern void uerror(const char *s) {
 #define PANICMSG "rc panic: "
 
 extern void panic(const char *s) {
-	write(2, PANICMSG, conststrlen(PANICMSG));
-	write(2, s, strlen(s));
-	write(2, "!\n", 2);
+	int ignore; /* All bets are off: cannot check write */
+	ignore = write(2, PANICMSG, conststrlen(PANICMSG));
+	ignore = write(2, s, strlen(s));
+	ignore = write(2, "!\n", 2);
+	(void) ignore;
 	exit(1);
 }
 

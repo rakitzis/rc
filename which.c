@@ -107,9 +107,11 @@ extern char *which(char *name, bool verbose) {
 #else
 		ngroups = NGROUPS;
 #endif
-		if (ngroups) {	
+		if (ngroups) {
+			int ignore;
 			gidset = enew_arr(GETGROUPS_T, ngroups);
-			getgroups(ngroups, gidset);
+			ignore = getgroups(ngroups, gidset);
+			(void) ignore;
 		}
 #endif
 	}
