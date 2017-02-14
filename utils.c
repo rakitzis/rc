@@ -38,7 +38,7 @@ extern void panic(const char *s) {
 	ignore = write(2, PANICMSG, conststrlen(PANICMSG));
 	ignore = write(2, s, strlen(s));
 	ignore = write(2, "!\n", 2);
-	(void)ignore;
+	(void) ignore;
 	exit(1);
 }
 

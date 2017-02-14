@@ -111,7 +111,7 @@ extern char *which(char *name, bool verbose) {
 			int ignore;
 			gidset = enew_arr(GETGROUPS_T, ngroups);
 			ignore = getgroups(ngroups, gidset);
-			(void)ignore;
+			(void) ignore;
 		}
 #endif
 	}
