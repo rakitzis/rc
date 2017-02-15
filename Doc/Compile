@@ -15,6 +15,7 @@ Yyacc = false
 Fortify=2
 CheckTime=false
 Sanitize=false
+Offset=false
 
 while (! ~ $#* 0) {
     switch(x$1) {
@@ -51,6 +52,9 @@ while (! ~ $#* 0) {
 
     case x--sanitize
         Sanitize=true
+
+    case x--offset
+        Offset=true
 
     case x-*
         Fatal Bad option $1
@@ -180,14 +184,17 @@ if ($Sanitize) {
         -fsanitize=undefined
     )
     if (~ $COMPILER clang) {
-        CompileOpts=(
-            $CompileOpts
-            -Wno-extended-offsetof
-        )
+        Offset=true
     }
     LinkOpts=(
         $LinkOpts
         -lubsan
+    )
+}
+if ($Offset) {
+    CompileOpts=(
+        $CompileOpts
+        -Wno-extended-offsetof
     )
 }
 
