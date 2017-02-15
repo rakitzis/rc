@@ -183,13 +183,13 @@ if ($Sanitize) {
         $CompileOpts
         -fsanitize=undefined
     )
-    if (~ $COMPILER clang) {
-        Offset=true
-    }
     LinkOpts=(
         $LinkOpts
         -lubsan
     )
+}
+if (~ $COMPILER clang) {
+    Offset=true
 }
 if ($Offset) {
     CompileOpts=(
