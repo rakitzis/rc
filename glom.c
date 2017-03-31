@@ -55,9 +55,9 @@ extern List *concat(List *s1, List *s2) {
 	if ((n1 = listnel(s1)) != (n2 = listnel(s2)) && n1 != 1 && n2 != 1)
 		rc_error("bad concatenation");
 	for (r = top = nnew(List); 1; r = r->n = nnew(List)) {
-		size_t x = strlen(s1->w);
-		size_t y = strlen(s2->w);
-		size_t z = x + y + 1;
+		const size_t x = strlen(s1->w);
+		const size_t y = strlen(s2->w);
+		const size_t z = x + y + 1;
 		r->w = nnew_arr(char, z);
 		strcpy(r->w, s1->w);
 		strcat(r->w, s2->w);
