@@ -425,6 +425,6 @@ extern void waitforall(void);
 extern bool forked;
 
 /* walk.c */
-extern bool walk(Node *, bool);
+extern bool walk(const Node *, bool);
 extern bool cond;
 

@@ -16,9 +16,9 @@ bool cond = FALSE;
 static bool haspreredir(Node *);
 static bool isallpre(Node *);
 static bool dofork(bool);
-static void dopipe(Node *);
-static bool while_iter(Node *n);
-static void for_iter(Node *n, List *var, List *l);
+static void dopipe(const Node *);
+static bool while_iter(const Node *n);
+static void for_iter(const Node *n, List *var, List *l);
 static void loop_body(Node* n);
 
 
@@ -28,9 +28,9 @@ static void loop_body(Node* n);
 
 /* walk the parse-tree. "obvious". */
 
-extern bool walk(Node *nd, bool parent) {
+extern bool walk(const Node *nd, bool parent) {
 	enum { FACTORED_LOOP = 0 };
-	Node *volatile n = nd;
+	const Node *volatile n = nd;
 top:	sigchk();
 	if (n == NULL) {
 		if (!parent)
@@ -330,10 +330,10 @@ static bool dofork(bool parent) {
 	return FALSE;
 }
 
-static void dopipe(Node *n) {
+static void dopipe(const Node *n) {
 	int i, j, sp, pid, fd_prev, fd_out, pids[512], stats[512], p[2];
 	bool intr;
-	Node *r;
+	const Node *r;
 
 	fd_prev = fd_out = 1;
 	for (r = n, i = 0; r != NULL && r->type == nPipe; r = r->u[2].p, i++) {
@@ -383,7 +383,7 @@ static void dopipe(Node *n) {
 	sigchk();
 }
 
-static bool while_iter(Node *n)
+static bool while_iter(const Node *n)
 {
 	Edata  iter_data;
 	Estack iter_stack;
@@ -397,7 +397,7 @@ static bool while_iter(Node *n)
 	return testtrue;
 }
 
-static void for_iter(Node *n, List *var, List *l)
+static void for_iter(const Node *n, List *var, List *l)
 {
 	Edata  iter_data;
 	Estack iter_stack;

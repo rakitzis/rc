@@ -6,7 +6,7 @@
 #include <signal.h>
 #include <errno.h>
 
-static List *backq(Node *, Node *);
+static List *backq(const Node *, const Node *);
 static List *bqinput(List *, int);
 static List *count(const List *);
 static List *mkcmdarg(const Node *);
@@ -252,7 +252,7 @@ static List *bqinput(List *ifs, int fd) {
 	return top;
 }
 
-static List *backq(Node *ifs, Node *n) {
+static List *backq(const Node *ifs, const Node *n) {
 	int p[2], sp;
 	pid_t pid;
 	List *bq;
