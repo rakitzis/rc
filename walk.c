@@ -13,13 +13,13 @@
 */
 bool cond = FALSE;
 
-static bool haspreredir(Node *);
-static bool isallpre(Node *);
+static bool haspreredir(const Node *);
+static bool isallpre(const Node *);
 static bool dofork(bool);
 static void dopipe(const Node *);
 static bool while_iter(const Node *n);
 static void for_iter(const Node *n, List *var, List *l);
-static void loop_body(Node* n);
+static void loop_body(const Node* n);
 
 
 /* Tail-recursive version of walk() */
@@ -296,7 +296,7 @@ top:	sigchk();
 
 /* checks to see whether there are any pre-redirections left in the tree */
 
-static bool haspreredir(Node *n) {
+static bool haspreredir(const Node *n) {
 	while (n != NULL && n->type == nPre) {
 		if (n->u[0].p->type == nDup || n->u[0].p->type == nRedir)
 			return TRUE;
@@ -307,7 +307,7 @@ static bool haspreredir(Node *n) {
 
 /* checks to see whether a subtree is all pre-command directives, i.e., assignments and redirs only */
 
-static bool isallpre(Node *n) {
+static bool isallpre(const Node *n) {
 	while (n != NULL && n->type == nPre)
 		n = n->u[1].p;
 	return n == NULL || n->type == nRedir || n->type == nAssign || n->type == nDup;
@@ -417,9 +417,9 @@ static void for_iter(const Node *n, List *var, List *l)
  *   while (! setjmp(args)) {statements}
  *   setjmp(args);
 */
-static void loop_body(Node* nd)
+static void loop_body(const Node* nd)
 {
-	Node *volatile n = nd;
+	const Node *volatile n = nd;
 	Jbwrap cont_jb;
 	Edata  cont_data;
 	Estack cont_stack;
