@@ -4,8 +4,8 @@
 
 #include "input.h"
 
-static void colonassign(const char *, List *, bool);
-static void listassign(const char *, List *, bool);
+static void colonassign(const char *, const List *, bool);
+static void listassign(const char *, const List *, bool);
 static int hasalias(const char *);
 
 static const char *const aliases[] = {
@@ -14,7 +14,7 @@ static const char *const aliases[] = {
 
 /* assign a variable in List form to a name, stacking if appropriate */
 
-extern void varassign(const char *name, List *def, bool stack) {
+extern void varassign(const char *name, const List *def, bool stack) {
 	Variable *new;
 	List *newdef = listcpy(def, ealloc); /* important to do the listcpy first; get_var_place() frees old values */
 	new = get_var_place(name, stack);
@@ -159,7 +159,7 @@ extern void starassign(char *dollarzero, char **a, bool stack) {
 
 /* (ugly name, huh?) assign a colon-separated value to a variable (e.g., PATH) from a List (e.g., path) */
 
-static void colonassign(const char *name, List *def, bool stack) {
+static void colonassign(const char *name, const List *def, bool stack) {
 	List dud;
 	if (def == NULL) {
 		varassign(name, NULL, stack);
@@ -172,7 +172,7 @@ static void colonassign(const char *name, List *def, bool stack) {
 
 /* assign a List variable (e.g., path) from a colon-separated string (e.g., PATH) */
 
-static void listassign(const char *name, List *def, bool stack) {
+static void listassign(const char *name, const List *def, bool stack) {
 	List *val, *r;
 	char *v, *w;
 	if (def == NULL) {
@@ -206,7 +206,7 @@ static int hasalias(const char *name) {
 /* alias a variable to its lowercase equivalent. function pointers are used to specify the conversion function */
 
 extern void alias(const char *name, List *s, bool stack) {
-	static void (*vectors[])(const char *, List *, bool) = {
+	static void (*vectors[])(const char *, const List *, bool) = {
 		varassign, varassign, colonassign, listassign, colonassign, listassign
 	};
 	int i = hasalias(name);

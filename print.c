@@ -294,7 +294,7 @@ extern int fmtprint(Format *format, const char *fmt,...) {
 }
 
 static void fprint_flush(Format *format, size_t ignore) {
-	size_t n = format->buf - format->bufbegin;
+	const size_t n = format->buf - format->bufbegin;
 	const char *buf = format->bufbegin;
 
 	format->flushed += n;
@@ -326,7 +326,7 @@ extern int fprint(int fd, const char *fmt,...) {
 static void memprint_grow(Format *format, size_t more) {
 	char *buf;
 	size_t len = format->bufend - format->bufbegin + 1;
-	size_t used = format->buf - format->bufbegin;
+	const size_t used = format->buf - format->bufbegin;
 
 	len = (len >= more)
 		? len * 2

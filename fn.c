@@ -256,6 +256,6 @@ extern void whatare_all_signals() {
 		}
 }
 
-extern void prettyprint_fn(int fd, const char *name, Node *n) {
+extern void prettyprint_fn(int fd, const char *name, const Node *n) {
 	fprint(fd, "fn %S {%T}\n", name, n);
 }

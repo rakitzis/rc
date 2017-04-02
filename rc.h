@@ -111,7 +111,7 @@ struct Word {
 };
 
 struct Rq {
-	Node *r;
+	const Node *r;
 	struct Rq *n;
 };
 
@@ -237,10 +237,10 @@ extern List *glob(List *);
 
 /* glom.c */
 extern void assign(const List *, List *, bool);
-extern void qredir(Node *);
+extern void qredir(const Node *);
 extern List *append(List *, List*);
 extern List *flatten(List *);
-extern List *glom(Node *);
+extern List *glom(const Node *);
 extern List *concat(List *, List *);
 extern List *varsub(const List *, const List *);
 extern List *word(char *, char *);
@@ -251,14 +251,14 @@ extern char *fnlookup_string(const char *);
 extern void fnassign(const char *, const Node *);
 extern void fnassign_string(const char *);
 extern void fnrm(const char *);
-extern void prettyprint_fn(int, const char *, Node *);
+extern void prettyprint_fn(int, const char *, const Node *);
 
 /* var.c */
 extern void starassign(char *, char **, bool);
 extern List *varlookup(const char *);
 extern bool varassign_string(const char *);
 extern char *varlookup_string(const char *);
-extern void varassign(const char *, List *, bool);
+extern void varassign(const char *, const List *, bool);
 extern void varrm(const char *, bool);
 extern void prettyprint_var(int, const char *, const List *);
 
@@ -381,7 +381,7 @@ extern void set(bool);
 extern void setN(int code);
 extern void setstatus(pid_t, int);
 extern List *sgetstatus(void);
-extern void setpipestatus(int [], int);
+extern void setpipestatus(const int [], int);
 extern void statprint(pid_t, int);
 extern void ssetstatus(char* const*);
 extern char *strstatus(int s);
@@ -425,6 +425,6 @@ extern void waitforall(void);
 extern bool forked;
 
 /* walk.c */
-extern bool walk(Node *, bool);
+extern bool walk(const Node *, bool);
 extern bool cond;
 

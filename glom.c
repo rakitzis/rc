@@ -6,10 +6,10 @@
 #include <signal.h>
 #include <errno.h>
 
-static List *backq(Node *, Node *);
+static List *backq(const Node *, const Node *);
 static List *bqinput(List *, int);
 static List *count(const List *);
-static List *mkcmdarg(Node *);
+static List *mkcmdarg(const Node *);
 
 Rq *redirq = NULL;
 
@@ -252,7 +252,7 @@ static List *bqinput(List *ifs, int fd) {
 	return top;
 }
 
-static List *backq(Node *ifs, Node *n) {
+static List *backq(const Node *ifs, const Node *n) {
 	int p[2], sp;
 	pid_t pid;
 	List *bq;
@@ -279,7 +279,7 @@ static List *backq(Node *ifs, Node *n) {
 	return bq;
 }
 
-extern void qredir(Node *n) {
+extern void qredir(const Node *n) {
 	Rq *next;
 	if (redirq == NULL) {
 		next = redirq = nnew(Rq);
@@ -294,7 +294,7 @@ extern void qredir(Node *n) {
 }
 
 #if HAVE_DEV_FD || HAVE_PROC_SELF_FD
-static List *mkcmdarg(Node *n) {
+static List *mkcmdarg(const Node *n) {
 	char *name;
 	List *ret = nnew(List);
 	Estack *e = nnew(Estack);
@@ -373,14 +373,14 @@ static List *mkcmdarg(Node *n) {
 
 #else
 
-static List *mkcmdarg(Node *n) {
+static List *mkcmdarg(const Node *n) {
 	rc_error("command arguments are not supported");
 	return NULL;
 }
 
 #endif
 
-extern List *glom(Node *n) {
+extern List *glom(const Node *n) {
 	List *v, *head, *tail;
 	Node *words;
 	if (n == NULL)

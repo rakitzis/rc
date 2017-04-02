@@ -11,7 +11,7 @@
 
 #define giveupif(x) { if (x) goto fail; }
 
-extern int rc_execve(char *path, char **av, char **ev) {
+extern int rc_execve(char *path, char *const*av, char **ev) {
 	int fd, len, fst, snd, end;
 	bool noarg;
 	char pb[256]; /* arbitrary but generous limit */
