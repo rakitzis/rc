@@ -111,7 +111,7 @@ struct Word {
 };
 
 struct Rq {
-	Node *r;
+	const Node *r;
 	struct Rq *n;
 };
 
@@ -237,10 +237,10 @@ extern List *glob(List *);
 
 /* glom.c */
 extern void assign(const List *, List *, bool);
-extern void qredir(Node *);
+extern void qredir(const Node *);
 extern List *append(List *, List*);
 extern List *flatten(List *);
-extern List *glom(Node *);
+extern List *glom(const Node *);
 extern List *concat(List *, List *);
 extern List *varsub(const List *, const List *);
 extern List *word(char *, char *);

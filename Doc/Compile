@@ -266,6 +266,7 @@ fn Compile LinkOneObj { f=$1 obj=() {
 
 
 ########################################################################################
+{
 for (s in mksignal mkstatval) {
     Compile $s
     LinkOneObj $s
@@ -369,4 +370,5 @@ Compile tripping
 LinkOneObj tripping
 
 $COMPILER --version
+} >[2=1] | tee comp.log
 
