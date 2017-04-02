@@ -65,7 +65,7 @@ extern void set(bool code) {
 
 /* take a pipeline and store the exit statuses. Check to see whether any of the children dumped core */
 
-extern void setpipestatus(int stats[], int num) {
+extern void setpipestatus(const int stats[], int num) {
 	int i;
 	for (i = 0; i < (pipelength = num); i++) {
 		statprint(-1, stats[i]);

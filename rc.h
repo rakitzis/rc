@@ -258,7 +258,7 @@ extern void starassign(char *, char **, bool);
 extern List *varlookup(const char *);
 extern bool varassign_string(const char *);
 extern char *varlookup_string(const char *);
-extern void varassign(const char *, List *, bool);
+extern void varassign(const char *, const List *, bool);
 extern void varrm(const char *, bool);
 extern void prettyprint_var(int, const char *, const List *);
 
@@ -381,7 +381,7 @@ extern void set(bool);
 extern void setN(int code);
 extern void setstatus(pid_t, int);
 extern List *sgetstatus(void);
-extern void setpipestatus(int [], int);
+extern void setpipestatus(const int [], int);
 extern void statprint(pid_t, int);
 extern void ssetstatus(const char* const*);
 extern char *strstatus(int s);
