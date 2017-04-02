@@ -359,7 +359,7 @@ int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData)
 
 #if YYDEBUG
     {
-        const char * const yys = getenv("YYDEBUG");
+        const char * const yys = getenv("CALCDEBUG");
         if (yys != 0) {
             const int yyn = *yys;
             if (yyn >= '0' && yyn <= '9') {
