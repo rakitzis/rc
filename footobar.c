@@ -49,7 +49,7 @@ static int defaultfd(int op) {
 
 static bool Tconv(Format *f, int ignore) {
 	bool dollar = f->flags & FMT_altform;
-	Node *n = va_arg(f->args, Node *);
+	const Node *n = va_arg(f->args, const Node *);
 
 	if (n == NULL) {
 		fmtprint(f, "()");

@@ -251,7 +251,7 @@ extern char *fnlookup_string(const char *);
 extern void fnassign(const char *, const Node *);
 extern void fnassign_string(const char *);
 extern void fnrm(const char *);
-extern void prettyprint_fn(int, const char *, Node *);
+extern void prettyprint_fn(int, const char *, const Node *);
 
 /* var.c */
 extern void starassign(char *, char **, bool);
