@@ -212,8 +212,9 @@ static void inittab(void) {
 		fmttab[i] = digitconv;
 }
 
-extern bool (*fmtinstall(int c, bool (*f)(Format *, int)))(Format *, int) {
-/*Conv fmtinstall(int c, Conv f) {*/
+extern bool (*fmtinstall(int c, bool (*f)(Format *, int)))(Format *, int)
+/*Conv fmtinstall(int c, Conv f)*/
+{
 	Conv oldf;
 	if (fmttab[0] == NULL)
 		inittab();
