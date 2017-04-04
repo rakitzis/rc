@@ -48,7 +48,7 @@ static int defaultfd(int op) {
 /* convert a function in Node * form into something rc can parse (and humans can read?) */
 
 static bool Tconv(Format *f, int ignore) {
-	bool dollar = f->flags & FMT_altform;
+	const bool dollar = f->flags & FMT_altform;
 	const Node *n = va_arg(f->args, const Node *);
 
 	if (n == NULL) {
@@ -349,8 +349,8 @@ static bool Wconv(Format *f, int ignore) {
 static bool Sconv(Format *f, int ignore) {
 	int c;
 	unsigned char *s = va_arg(f->args, unsigned char *), *t = s;
-	bool quoted    = (f->flags & FMT_altform)  != 0;	/* '#' */
-	bool metaquote = (f->flags & FMT_leftside) != 0;	/* '-' */
+	const bool quoted    = (f->flags & FMT_altform)  != 0;	/* '#' */
+	const bool metaquote = (f->flags & FMT_leftside) != 0;	/* '-' */
 	if (*s == '\0') {
 		fmtprint(f, "''");
 		return FALSE;

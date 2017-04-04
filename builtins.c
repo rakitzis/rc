@@ -419,7 +419,7 @@ static void b_whatis(char **av) {
 /* push a string to be eval'ed onto the input stack. evaluate it */
 
 static void b_eval(char **av) {
-	bool i = interactive;
+	const bool i = interactive;
 	if (av[1] == NULL)
 		return;
 	interactive = FALSE;
