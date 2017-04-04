@@ -88,7 +88,7 @@ extern List *concat(List *s1, List *s2) {
 
 extern List *varsub(const List *var, const List *subs) {
 	List *r, *top;
-	int n = listnel(var);
+	const int n = listnel(var);
 	for (top = r = NULL; subs != NULL; subs = subs->n) {
 		int i = a2u(subs->w);
 		if (i < 1)

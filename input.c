@@ -80,7 +80,7 @@ static void history() {
 		/* line matches [ \t]*[^#\n] so it's ok to write out */
 		if (c != ' ' && c != '\t') {
 			char *name = hist->w;
-			int fd = rc_open(name, rAppend);
+			const int fd = rc_open(name, rAppend);
 			if (fd < 0)
 				uerror(name);
 			else {
@@ -324,7 +324,7 @@ extern Node *doit(bool clobberexecitIn) {
 /* parse a function imported from the environment */
 
 extern Node *parseline(char *extdef) {
-	bool i = interactive;
+	const bool i = interactive;
 	char *in[2];
 	Node *fun;
 	in[0] = extdef;

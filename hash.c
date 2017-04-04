@@ -115,12 +115,12 @@ static int find(const char *s, Htab *ht, int size) {
 }
 
 extern rc_Function *lookup_fn(const char *s) {
-	int h = find(s, fp, fsize);
+	const int h = find(s, fp, fsize);
 	return (fp[h].name == NULL) ? NULL : fp[h].u.f;
 }
 
 extern Variable *lookup_var(const char *s) {
-	int h = find(s, vp, vsize);
+	const int h = find(s, vp, vsize);
 	return (vp[h].name == NULL) ? NULL : vp[h].u.v;
 }
 
@@ -167,7 +167,7 @@ extern Variable *get_var_place(const char *s, bool stack) {
 }
 
 extern void delete_fn(const char *s) {
-	int h = fnfind(s);
+	const int h = fnfind(s);
 	if (fp[h].name == NULL)
 		return; /* not found */
 	env_dirty = TRUE;
@@ -183,7 +183,7 @@ extern void delete_fn(const char *s) {
 }
 
 extern void delete_var(const char *s, bool stack) {
-	int h = varfind(s);
+	const int h = varfind(s);
 	Variable *v;
 	if (vp[h].name == NULL)
 		return; /* not found */

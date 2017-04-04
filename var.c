@@ -124,7 +124,7 @@ extern char *varlookup_string(const char *name) {
 /* remove a variable from the symtab. "stack" determines whether a level of scoping is popped or not */
 
 extern void varrm(const char *name, bool stack) {
-	int i = hasalias(name);
+	const int i = hasalias(name);
 	if (streq(name, "*") && !stack) { /* when assigning () to $*, we want to preserve $0 */
 		varassign("*", varlookup("0"), FALSE);
 		return;
@@ -209,7 +209,7 @@ extern void alias(const char *name, List *s, bool stack) {
 	static void (*vectors[])(const char *, const List *, bool) = {
 		varassign, varassign, colonassign, listassign, colonassign, listassign
 	};
-	int i = hasalias(name);
+	const int i = hasalias(name);
 	if (i != -1)
 		(*vectors[i])(aliases[i^1], s, stack); /* xor hack to reverse case of alias entry */
 }

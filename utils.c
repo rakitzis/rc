@@ -47,7 +47,7 @@ extern void panic(const char *s) {
 extern int n2u(const char *s, unsigned int base) {
 	unsigned int i;
 	for (i = 0; *s != '\0'; s++) {
-		unsigned int j = (unsigned int) *s - '0';
+		const unsigned int j = (unsigned int) *s - '0';
 		if (j >= base) /* small hack with unsigned ints -- one compare for range test */
 			return -1;
 		i = i * base + j;
@@ -72,7 +72,7 @@ extern bool isabsolute(const char *path) {
 
 extern int mvfd(int i, int j) {
 	if (i != j) {
-		int s = dup2(i, j);
+		const int s = dup2(i, j);
 		close(i);
 		return s;
 	}

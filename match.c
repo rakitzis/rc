@@ -72,8 +72,8 @@ extern bool match(const char *p, const char *m, const char *s) {
 */
 
 static int rangematch(const char *p, char c) {
-	const char *orig = p;
-	bool neg = (*p == '~');
+	const char * const orig = p;
+	const bool neg = (*p == '~');
 	bool matched = FALSE;
 	if (neg)
 		p++;

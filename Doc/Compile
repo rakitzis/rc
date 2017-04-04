@@ -251,7 +251,7 @@ fn Compile LinkOneObj { f=$1 obj=() {
     }
     #--------------------------------------------------------------------
     if (~ $0 Compile) {
-        if ({! $CheckTime} || {test $f.c -nt $obj} || {test $f.c -ot rc.h}) {
+        if ({! $CheckTime} || {! test $obj -nt $f.c -a $obj -nt rc.h}) {
             CompileWithOpts   -MT $obj -MF .deps/$f.Tpo -c -o $obj $f.c
         }
     } else {

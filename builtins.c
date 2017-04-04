@@ -419,7 +419,7 @@ static void b_whatis(char **av) {
 /* push a string to be eval'ed onto the input stack. evaluate it */
 
 static void b_eval(char **av) {
-	bool i = interactive;
+	const bool i = interactive;
 	if (av[1] == NULL)
 		return;
 	interactive = FALSE;
@@ -435,7 +435,8 @@ static void b_eval(char **av) {
 
 extern void b_dot(char **av) {
 	int fd;
-	bool old_i = interactive, i = FALSE;
+	const bool old_i = interactive;
+	bool i = FALSE;
 	Estack e;
 	Edata star;
 	av++;
@@ -546,7 +547,7 @@ static void printlimit(const struct Limit *limit, bool hard) {
 
 static bool parselimit(const struct Limit *resource, rlim_t *limit, char *s) {
 	char *t;
-	int len = strlen(s);
+	const int len = strlen(s);
 	const struct Suffix *suf = resource->suffix;
 
 	*limit = 1;

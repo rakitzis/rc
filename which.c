@@ -74,7 +74,7 @@ static bool rc_access(const char *path, bool verbose) {
 /* replace non-printing characters with question marks in a freshly
  * allocated string */
 static char *protect(const char *in) {
-	int l = strlen(in);
+	const int l = strlen(in);
 	char *out = enew_arr(char, l + 1);
 	int i;
 
