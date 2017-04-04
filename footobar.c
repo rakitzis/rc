@@ -27,7 +27,7 @@ static bool Fconv(Format *f, int ignore) {
 
 static bool Dconv(Format *f, int ignore) {
 	const char *name = "?";
-	int n = va_arg(f->args, int);
+	const int n = va_arg(f->args, int);
 	switch (n) {
 	case rCreate:		name = ">";	break;
 	case rAppend:		name = ">>";	break;
@@ -144,7 +144,7 @@ static bool Tconv(Format *f, int ignore) {
 			fmtprint(f, " %T", n->u[1].p);
 		break;
 	case nPipe: {
-		int ofd = n->u[0].i, ifd = n->u[1].i;
+		const int ofd = n->u[0].i, ifd = n->u[1].i;
 		fmtprint(f, "%T|", n->u[2].p);
 		if (ifd != 0)
 			fmtprint(f, "[%d=%d]", ofd, ifd);
@@ -154,7 +154,7 @@ static bool Tconv(Format *f, int ignore) {
 		break;
 	}
 	case nRedir: {
-		int op = n->u[0].i;
+		const int op = n->u[0].i;
 		fmtprint(f, "%D", op);
 		if (n->u[1].i != defaultfd(op))
 			fmtprint(f, "[%d]", n->u[1].i);
@@ -162,7 +162,7 @@ static bool Tconv(Format *f, int ignore) {
 		break;
 	}
 	case nNmpipe: {
-		int op = n->u[0].i;
+		const int op = n->u[0].i;
 		fmtprint(f, "%D", op);
 		if (n->u[1].i != defaultfd(op))
 			fmtprint(f, "[%d]", n->u[1].i);

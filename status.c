@@ -85,7 +85,7 @@ extern void setstatus(pid_t pid, int i) {
 
 extern void statprint(pid_t pid, int i) {
 	if (WIFSIGNALED(i)) {
-		int t = WTERMSIG(i);
+		const int t = WTERMSIG(i);
 		const char *msg = ((t > 0) && (t < NUMOFSIGNALS) ? signals[WTERMSIG(i)].msg : "");
 		if (pid != -1)
 			fprint(2, "%ld: ", (long)pid);
@@ -122,7 +122,7 @@ extern List *sgetstatus() {
 
 extern char *strstatus(int s) {
 	if (WIFSIGNALED(s)) {
-		int t = WTERMSIG(s);
+		const int t = WTERMSIG(s);
 		const char *core = myWIFDUMPED(s) ? "+core" : "";
 		if ((t > 0) && (t < NUMOFSIGNALS) && *signals[t].name != '\0')
 			return nprint("%s%s", signals[t].name, core);

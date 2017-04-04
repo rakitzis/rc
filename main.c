@@ -170,7 +170,7 @@ static void assigndefault(const char *name,...) {
 /* open an fd on /dev/null if it is inherited closed */
 
 static void checkfd(int fd, enum redirtype r) {
-	int new = rc_open("/dev/null", r);
+	const int new = rc_open("/dev/null", r);
 	if (new != fd && new != -1)
 		close(new);
 }
