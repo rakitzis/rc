@@ -8,6 +8,7 @@ fn Fatal { Error $*; exit 1 }
 objDir=./obj
 FORCE_CLANG=false
 FORCE_GCC=false
+# DESCRIPTION=$(git describe || echo '(git description unavailable)')
 
 Clobber=true 
 Yydebug=true
