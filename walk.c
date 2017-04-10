@@ -332,12 +332,13 @@ static bool dofork(bool parent) {
 }
 
 static void dopipe(const Node *n) {
-	int i, j, sp, pid, fd_prev, fd_out, pids[512], stats[512], p[2];
+	int i, j, pid, fd_prev, fd_out, pids[512], stats[arraysize(pids)];
 	bool intr;
 	const Node *r;
 
 	fd_prev = fd_out = 1;
 	for (r = n, i = 0; r != NULL && r->type == nPipe; r = r->u[2].p, i++) {
+		int p[2];
 		if (i > 500) /* the only hard-wired limit in rc? */
 			rc_error("pipe too long");
 		if (pipe(p) < 0) {
@@ -376,6 +377,7 @@ static void dopipe(const Node *n) {
 
 	intr = FALSE;
 	for (j = 0; j < i; j++) {
+		int sp;
 		rc_wait4(pids[j], &sp, TRUE);
 		stats[j] = sp;
 		intr |= (sp == SIGINT);
