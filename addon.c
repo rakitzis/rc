@@ -219,18 +219,19 @@ void b_calc (char **av)
 
 
 /******************************************************/
-CalcValue CalcPower(CalcValue a, CalcValue b)
+CalcValue CalcPower(const CalcValue A, const CalcValue B)
 {
-    CalcValue z = 1;   /* z*a^b = A^B */
+    CalcValue a = A, b = B;
+    CalcValue z = 1;   /* z * a^b = A^B */
     while (b > 0) {
         if (b & 1) { /* odd */
-            /* z*a^b = z*a * a^(b-1) */
-            --b;
-            z *= a;
+            /*  z * a^b = (z * a) * (a^(b-1)) */
+            z = z * a;
+            b = b - 1;
         } else {
-            /* z*a^(2k) = z * (a^2)^k */
-            b /= 2;
-            a *= a;
+            /*  z * a^(2k) = z * (a*a)^k */
+            a = a * a;
+            b = b / 2;
         }
     }
     return z;
