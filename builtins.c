@@ -354,11 +354,8 @@ static bool issig(const char *s) {
 
 static void b_whatis(char **av) {
 	bool ess, eff, vee, pee, bee;
-	bool f, found;
+	bool found;
 	int i, ac, c;
-	List *s;
-	Node *n;
-	const char *e;
 	for (rc_optind = ac = 0; av[ac] != NULL; ac++)
 		; /* count the arguments for getopt */
 	ess = eff = vee = pee = bee = FALSE;
@@ -389,7 +386,10 @@ static void b_whatis(char **av) {
 	}
 	found = TRUE;
 	for (i = 0; av[i] != NULL; i++) {
-		f = FALSE;
+		const char *e;
+		List *s;
+		Node *n;
+		bool f = FALSE;
 		errno = ENOENT;
 		if (show(vee) && (s = varlookup(av[i])) != NULL) {
 			f = TRUE;
