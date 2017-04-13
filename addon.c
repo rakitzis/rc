@@ -184,8 +184,8 @@ void b_calc (char **av)
             if (0==parse_status) {
                 const char* const varName = &lexData.m_Indent[0];
                 if ('\0' != varName[0]) { /* assignment */
-                    List val;
                     if (check_var_name(varName)) {
+                        List val;
                         val.w = nprint("%ld", parse_value);
                         val.n = NULL;
                         varassign(varName, &val, FALSE);
