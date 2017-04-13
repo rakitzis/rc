@@ -144,7 +144,7 @@ static void b_echo(char **av) {
 	const char *format = "%A\n";
 	if (*++av != NULL) {
 		if (streq(*av, "-n"))
-                	format = "%A", av++;
+			format = "%A", av++;
 		else if (streq(*av, "--"))
 			av++;
 	}
