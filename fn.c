@@ -147,10 +147,10 @@ static void dud_handler(int ignore) {
 extern void fnassign(const char *name, const Node *def) {
 	Node *newdef = treecpy(def == NULL ? &null : def, ealloc); /* important to do the treecopy first */
 	rc_Function *new = get_fn_place(name);
-	int i;
 	new->def = newdef;
 	new->extdef = NULL;
 	if (strncmp_fast(name, "sig", conststrlen("sig")) == 0) { /* slight optimization */
+		int i;
 #if HAVE_SYSV_SIGCLD /* System V machines treat SIGCLD very specially */
 		if (streq(name, "sigcld"))
 			rc_error("can't trap SIGCLD");
