@@ -200,12 +200,12 @@ extern char **list2array(const List *s, bool print) {
 extern char *get_name(const char *s) {
 	const char *eq = strchr(s, '=');
 	char *r, *result;
-	int c;
 	
 	if (eq == NULL)
 		return NULL;
 	r = result = nnew_arr(char, eq - s + 1);
 	while (1)
+		int c;
 		switch (c = *s++) {
 		case '=':
 			*r++ = '\0';
@@ -235,15 +235,17 @@ extern char *get_name(const char *s) {
    by anything other than ^A or ^B is preserved. */
 
 extern List *parse_var(const char *extdef) {
-	const char *begin, *end, *from;
+	const char *begin;
 	char *to;
-	int len;
-	List *first, *last, *new;
+	List *first, *last;
 
 	first = last = NULL;
 	begin = strchr(extdef, '=');
 	assert(begin); /* guaranteed by initenv() */
 	while (*begin) {
+		List *new;
+		int len;
+		const char *end, *from;
 		++begin;
 		end = begin;
 		len = 0;
