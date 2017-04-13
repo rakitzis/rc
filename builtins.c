@@ -169,9 +169,6 @@ static void update_cwd_var(void)
 /* cd. traverse $cdpath if the directory given is not an absolute pathname */
 
 static void b_cd(char **av) {
-	List *s;
-	char *path = NULL;
-	size_t t, pathlen = 0;
 	if (*++av == NULL) {
 		List *s2 = varlookup("home");
 		*av = (s2 == NULL) ? "/" : s2->w;
@@ -188,8 +185,10 @@ static void b_cd(char **av) {
 			set(TRUE);
 		}
 	} else {
+		char *path = NULL;
+		size_t pathlen = 0;
 		List nil;
-		s = varlookup("cdpath");
+		List *s = varlookup("cdpath");
 		if (s == NULL) {
 			s = &nil;
 			nil.w = "";
@@ -197,7 +196,7 @@ static void b_cd(char **av) {
 		}
 		do {
 			if (s != &nil && *s->w != '\0') {
-				t = strlen(*av) + strlen(s->w) + 2;
+				const size_t t = strlen(*av) + strlen(s->w) + 2;
 				if (t > pathlen)
 					path = nnew_arr(char, pathlen = t);
 				strcpy(path, s->w);
