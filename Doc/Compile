@@ -217,6 +217,7 @@ if (~ $COMPILER clang) {
     )
 }
 
+STATUS = 0
 ########################################################################################
 # Store object files in a subdir to prevent polution
 if (! ~ $#objDir 0 && ! test -d $objDir) {
@@ -235,6 +236,9 @@ fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
     cmd = ($COMPILER $allOpts $*)
     echo $cmd
     $cmd
+    if (! ~ $status 0) {
+        STATUS=$status
+    }
 }}
 
 ########################################################################################
@@ -371,5 +375,6 @@ Compile tripping
 LinkOneObj tripping
 
 $COMPILER --version
+exit $STATUS
 } >[2=1] | tee comp.log
 
