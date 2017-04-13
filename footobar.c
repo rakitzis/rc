@@ -204,7 +204,7 @@ extern char *get_name(const char *s) {
 	if (eq == NULL)
 		return NULL;
 	r = result = nnew_arr(char, eq - s + 1);
-	while (1)
+	while (1) {
 		int c;
 		switch (c = *s++) {
 		case '=':
@@ -228,6 +228,7 @@ extern char *get_name(const char *s) {
 			*r++ = c;
 			break;
 		}
+	}
 }
 
 /* interpret a variable from environment.  ^A separates list elements;
