@@ -547,7 +547,6 @@ static void printlimit(const struct Limit *limit, bool hard) {
 
 static bool parselimit(const struct Limit *resource, rlim_t *limit, char *s) {
 	char *t;
-	const int len = strlen(s);
 	const struct Suffix *suf = resource->suffix;
 
 	*limit = 1;
@@ -563,6 +562,7 @@ static bool parselimit(const struct Limit *resource, rlim_t *limit, char *s) {
 		*limit = 60 * min + sec;
 	} else {
 		int n;
+		const int len = strlen(s);
 		for (; suf != NULL; suf = suf->next)
 			if (streq(suf->name, s + len - strlen(suf->name))) {
 				s[len - strlen(suf->name)] = '\0';
