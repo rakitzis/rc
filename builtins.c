@@ -169,7 +169,7 @@ static void update_cwd_var(void)
 /* cd. traverse $cdpath if the directory given is not an absolute pathname */
 
 static void b_cd(char **av) {
-	List *s, nil;
+	List *s;
 	char *path = NULL;
 	size_t t, pathlen = 0;
 	if (*++av == NULL) {
@@ -188,6 +188,7 @@ static void b_cd(char **av) {
 			set(TRUE);
 		}
 	} else {
+		List nil;
 		s = varlookup("cdpath");
 		if (s == NULL) {
 			s = &nil;
