@@ -236,7 +236,6 @@ extern char *get_name(const char *s) {
 
 extern List *parse_var(const char *extdef) {
 	const char *begin;
-	char *to;
 	List *first, *last;
 
 	first = last = NULL;
@@ -246,6 +245,8 @@ extern List *parse_var(const char *extdef) {
 		List *new;
 		int len;
 		const char *end, *from;
+		char *to;
+
 		++begin;
 		end = begin;
 		len = 0;
