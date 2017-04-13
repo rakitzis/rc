@@ -48,7 +48,6 @@ static int defaultfd(int op) {
 /* convert a function in Node * form into something rc can parse (and humans can read?) */
 
 static bool Tconv(Format *f, int ignore) {
-	const bool dollar = f->flags & FMT_altform;
 	const Node *n = va_arg(f->args, const Node *);
 
 	if (n == NULL) {
@@ -74,10 +73,12 @@ static bool Tconv(Format *f, int ignore) {
 	case nWhile:	fmtprint(f, "while(%T)%T", n->u[0].p, n->u[1].p);	break;
 	case nForin:	fmtprint(f, "for(%T in %T)%T", n->u[0].p, n->u[1].p, n->u[2].p); break;
 	case nVarsub:	fmtprint(f, "$%T(%T)", n->u[0].p, n->u[1].p);		break;
-	case nWord:
+	case nWord: {
+		const bool dollar = f->flags & FMT_altform;
 		fmtprint(f, n->u[2].i && quotep(n->u[0].s, dollar) ?
 				"%#S" : "%S", n->u[0].s);
 		break;
+	}
 	case nLappend: {
 		static bool inlist;
 		if (!inlist) {
@@ -199,12 +200,12 @@ extern char **list2array(const List *s, bool print) {
 extern char *get_name(const char *s) {
 	const char *eq = strchr(s, '=');
 	char *r, *result;
-	int c;
 	
 	if (eq == NULL)
 		return NULL;
 	r = result = nnew_arr(char, eq - s + 1);
 	while (1)
+		int c;
 		switch (c = *s++) {
 		case '=':
 			*r++ = '\0';
@@ -234,15 +235,18 @@ extern char *get_name(const char *s) {
    by anything other than ^A or ^B is preserved. */
 
 extern List *parse_var(const char *extdef) {
-	const char *begin, *end, *from;
-	char *to;
-	int len;
-	List *first, *last, *new;
+	const char *begin;
+	List *first, *last;
 
 	first = last = NULL;
 	begin = strchr(extdef, '=');
 	assert(begin); /* guaranteed by initenv() */
 	while (*begin) {
+		List *new;
+		int len;
+		const char *end, *from;
+		char *to;
+
 		++begin;
 		end = begin;
 		len = 0;
