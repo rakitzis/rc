@@ -111,7 +111,7 @@ top:	sigchk();
 		Edata  break_data;
 		Estack break_stack;
 		bool testtrue;
-        const bool oldcond = cond;
+		const bool oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) { /* prevent spurious breaks inside test */
 			cond = oldcond;

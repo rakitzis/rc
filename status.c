@@ -133,13 +133,13 @@ extern char *strstatus(int s) {
 }
 
 extern void ssetstatus(char * const*av) {
-	int i, j, k, l;
-	bool found;
+	int i, l;
 	for (l = 0; av[l] != NULL; l++)
 		; /* count up array length */
 	--l;
 	for (i = 0; av[i] != NULL; i++) {
-		j = a2u(av[i]);
+		int k, j = a2u(av[i]);
+		bool found;
 		if (j >= 0) {
 			statuses[l - i] = j << 8;
 			continue;
@@ -152,7 +152,7 @@ extern void ssetstatus(char * const*av) {
 				break;
 			} 
 			else {
-				size_t len = strlen(signals[k].name);
+				const size_t len = strlen(signals[k].name);
 				if (strncmp_fast(signals[k].name, av[i], len) == 0 && streq(av[i] + len, "+core")) {
 					statuses[l - i] = k + 0x80;
 					found = TRUE;

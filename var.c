@@ -80,7 +80,7 @@ extern List *varlookup(const char *name) {
 		q->m = NULL;
 		q->n = NULL;
 		return q;
-    }
+	}
 	if (*name != '\0' && (sub = a2u(name)) != -1) { /* handle $1, $2, etc. */
 		for (l = varlookup("*"); l != NULL && sub != 0; --sub)
 			l = l->n;

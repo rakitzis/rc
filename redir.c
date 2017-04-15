@@ -14,16 +14,16 @@
 */
 
 extern void doredirs() {
-	List *fname;
-	int fd, p[2];
-	Rq *r;
+	const Rq *r;
 	for (r = redirq; r != NULL; r = r->n) {
 		switch(r->r->type) {
 		default:
 			panic("unexpected node in doredirs");
 			/* NOTREACHED */
-		case nRedir:
+		case nRedir: {
+			const List *fname;
 			if (r->r->u[0].i == rHerestring) {
+				int p[2];
 				fname = flatten(glom(r->r->u[2].p)); /* fname is really a string */
 				if (pipe(p) < 0) {
 					uerror("pipe");
@@ -41,6 +41,7 @@ extern void doredirs() {
 						rc_error(NULL);
 				}
 			} else {
+				int fd;
 				fname = glob(glom(r->r->u[2].p));
 				if (fname == NULL)
 					rc_error("null filename in redirection");
@@ -62,6 +63,7 @@ extern void doredirs() {
 					rc_error(NULL);
 			}
 			break;
+		}
 		case nDup:
 			if (r->r->u[2].i == -1)
 				close(r->r->u[1].i);
