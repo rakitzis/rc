@@ -170,7 +170,8 @@ static bool Tconv(Format *f, int ignore) {
 		fmtprint(f, "{%T}", n->u[2].p);
 		break;
 	}
- 	}
+
+	}
 	return FALSE;
 }
 
@@ -337,7 +338,7 @@ static bool Wconv(Format *f, int ignore) {
 	l = va_arg(f->args, List *);
 	for (; l != NULL; l = n) {
 		char c;
-        const char *s;
+		const char *s;
 
 		for (s = l->w; (c = *s) != '\0'; ++s) {
 			if (c == ENV_SEP || c == ENV_ESC)

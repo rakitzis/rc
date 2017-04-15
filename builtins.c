@@ -155,14 +155,14 @@ static void b_echo(char **av) {
 
 static void update_cwd_var(void)
 {
-  char b[PATH_MAX+1];
-  List val;
-  const char* ret = getcwd(b, arraysize(b) - 1);
-  if (ret) {
-    val.w = nprint("%s", b);
-    val.n = NULL;
-    varassign("pwd", &val, FALSE);
-  }
+    char b[PATH_MAX+1];
+    List val;
+    const char* ret = getcwd(b, arraysize(b) - 1);
+    if (ret) {
+        val.w = nprint("%s", b);
+        val.n = NULL;
+        varassign("pwd", &val, FALSE);
+    }
 }
 
 
