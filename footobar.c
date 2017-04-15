@@ -112,7 +112,7 @@ static bool Tconv(Format *f, int ignore) {
 			fmtprint(f, "%D[%d=]", n->u[0].i, n->u[1].i);
 		break;
 	case nBackq: {
-		Node *n0 = n->u[0].p, *n00;
+		const Node *n0 = n->u[0].p, *n00;
 		if (n0 != NULL && n0->type == nVar
 		    && (n00 = n0->u[0].p) != NULL && n00->type == nWord && streq(n00->u[0].s, "ifs"))
 			fmtprint(f, "`");
@@ -123,7 +123,7 @@ static bool Tconv(Format *f, int ignore) {
 	}
 	case nCbody:
 	case nBody: {
-		Node *n0 = n->u[0].p;
+		const Node *n0 = n->u[0].p;
 		if (n0 != NULL)
 			fmtprint(f, "%T", n->u[0].p);
 		if (n->u[1].p != NULL) {
@@ -288,7 +288,7 @@ extern List *parse_var(const char *extdef) {
 #define PREFIX "fn x"
 #define PRELEN conststrlen(PREFIX)
 extern Node *parse_fn(const char *extdef) {
-	Node *def;
+	const Node *def;
 	char *s, old[PRELEN];
 	if ((s = strchr(extdef, '=')) == NULL)
 		return NULL;
@@ -300,7 +300,7 @@ extern Node *parse_fn(const char *extdef) {
 }
 
 static bool Aconv(Format *f, int ignore) {
-	char **a = va_arg(f->args, char **);
+	const char **a = va_arg(f->args, const char **);
 	if (*a != NULL) {
 		fmtcat(f, *a);
 		while (*++a != NULL)
@@ -312,12 +312,12 @@ static bool Aconv(Format *f, int ignore) {
 /* %L -- print a list */
 static bool Lconv(Format *f, int ignore) {
 	bool plain;
-	char *sep;
-	List *l, *n;
+	const char *sep;
+	const List *l, *n;
 
 	plain = f->flags & FMT_leftside;
 	l = va_arg(f->args, List *);
-	sep = va_arg(f->args, char *);
+	sep = va_arg(f->args, const char *);
 	if (l == NULL && (f->flags & FMT_leftside) == 0)
 		fmtprint(f, "()");
 	else {
@@ -332,11 +332,12 @@ static bool Lconv(Format *f, int ignore) {
 
 /* %W -- print a list for exporting */
 static bool Wconv(Format *f, int ignore) {
-	List *l, *n;
+	const List *l, *n;
 
 	l = va_arg(f->args, List *);
 	for (; l != NULL; l = n) {
-		char c, *s;
+		char c;
+        const char *s;
 
 		for (s = l->w; (c = *s) != '\0'; ++s) {
 			if (c == ENV_SEP || c == ENV_ESC)
@@ -353,7 +354,7 @@ static bool Wconv(Format *f, int ignore) {
 
 static bool Sconv(Format *f, int ignore) {
 	int c;
-	unsigned char *s = va_arg(f->args, unsigned char *), *t = s;
+	const unsigned char *s = va_arg(f->args, const unsigned char *), *t = s;
 	const bool quoted    = (f->flags & FMT_altform)  != 0;	/* '#' */
 	const bool metaquote = (f->flags & FMT_leftside) != 0;	/* '-' */
 	if (*s == '\0') {

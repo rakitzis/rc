@@ -112,7 +112,6 @@ extern List *varsub(const List *var, const List *subs) {
 
 extern List *flatten(List *s) {
 	List *r;
-	size_t step;
 	char *f;
 	if (s == NULL || s->n == NULL)
 		return s;
@@ -123,6 +122,7 @@ extern List *flatten(List *s) {
 	strcpy(f, s->w);
 	f += strlen(s->w);
 	do {
+		size_t step;
 		*f++ = ' ';
 		s = s->n;
 		step = strlen(s->w);
@@ -182,16 +182,18 @@ extern void assign(const List *s1, List *s2, bool stack) {
 #define BUFSIZE	((size_t) 1000)
 
 static List *bqinput(List *ifs, int fd) {
-	char *end, *bufend, *s;
+	char *end;
 	List *r, *top, *prev;
 	size_t remain, bufsize;
 	char isifs[256];
-	int n, state; /* a simple FSA is used to read in data */
+	int state; /* a simple FSA is used to read in data */
 
 	memzero(isifs, sizeof isifs);
-	for (isifs['\0'] = TRUE; ifs != NULL; ifs = ifs->n)
+	for (isifs['\0'] = TRUE; ifs != NULL; ifs = ifs->n) {
+		const char *s;
 		for (s = ifs->w; *s != '\0'; s++)
 			isifs[*(unsigned char *)s] = TRUE;
+	}
 	remain = bufsize = BUFSIZE;
 	top = r = nnew(List);
 	r->w = end = nnew_arr(char, bufsize + 1);
@@ -200,6 +202,8 @@ static List *bqinput(List *ifs, int fd) {
 	prev = NULL;
 
 	while (1) {
+		char *bufend;
+		int n;
 		if (remain == 0) { /* is the string bigger than the buffer? */
 			size_t m = end - r->w;
 			char *buf;
@@ -381,15 +385,14 @@ static List *mkcmdarg(const Node *n) {
 #endif
 
 extern List *glom(const Node *n) {
-	List *v, *head, *tail;
-	Node *words;
+	List *v, *head;
 	if (n == NULL)
 		return NULL;
 	switch (n->type) {
 	case nArgs:
-	case nLappend:
-		words = n->u[0].p;
-		tail = NULL;
+	case nLappend: {
+		const Node *words = n->u[0].p;
+		List *tail = NULL;
 		while (words != NULL && (words->type == nArgs || words->type == nLappend)) {
 			if (words->u[1].p != NULL && words->u[1].p->type != nWord)
 				break;
@@ -402,6 +405,7 @@ extern List *glom(const Node *n) {
 		}
 		v = append(glom(words), tail); /* force left to right evaluation */
 		return append(v, glom(n->u[1].p));
+	}
 	case nBackq:
 		return backq(n->u[0].p, n->u[1].p);
 	case nConcat:

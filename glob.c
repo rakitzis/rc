@@ -89,7 +89,7 @@ static List *dmatch(const char *d, const char *p, const char *m) {
 	bool matched;
 	List *top, *r;
 	static DIR *dirp;
-	static struct dirent *dp;
+	static const struct dirent *dp;
 	static struct stat s;
 	int i;
 
