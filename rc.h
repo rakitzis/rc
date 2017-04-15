@@ -64,7 +64,7 @@ typedef enum redirtype {
 typedef bool (*Conv)(Format *, int);
 #define USE_FUNCTION_TYPE 1
 #if USE_FUNCTION_TYPE
-typedef void (*SigHandler)(int);
+typedef void (*SignalHandler)(int);
 #endif
 
 union Edata {
@@ -378,9 +378,9 @@ extern void initsignal(void);
 extern void catcher(int);
 extern void sigchk(void);
 #if USE_FUNCTION_TYPE
-extern SigHandler rc_signal(int, SigHandler);
-extern SigHandler sys_signal(int, SigHandler);
-extern SigHandler sighandlers[];
+extern SignalHandler rc_signal(int, SignalHandler);
+extern SignalHandler sys_signal(int, SignalHandler);
+extern SignalHandler sighandlers[];
 #else
 extern void (*rc_signal(int, void (*)(int)))(int);
 extern void (*sys_signal(int, void (*)(int)))(int);

@@ -134,12 +134,12 @@ extern char *strstatus(int s) {
 
 extern void ssetstatus(char * const*av) {
 	int i, l;
-	bool found;
 	for (l = 0; av[l] != NULL; l++)
 		; /* count up array length */
 	--l;
 	for (i = 0; av[i] != NULL; i++) {
 		int k, j = a2u(av[i]);
+		bool found;
 		if (j >= 0) {
 			statuses[l - i] = j << 8;
 			continue;

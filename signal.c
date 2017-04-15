@@ -12,7 +12,7 @@
 
 #if HAVE_SIGACTION
 #if USE_FUNCTION_TYPE
-SigHandler sys_signal(int signum, SigHandler handler)
+SignalHandler sys_signal(int signum, SignalHandler handler)
 #else
 void (*sys_signal(int signum, void (*handler)(int)))(int)
 #endif
@@ -28,7 +28,7 @@ void (*sys_signal(int signum, void (*handler)(int)))(int)
 }
 #else
 #if USE_FUNCTION_TYPE
-SigHandler sys_signal(int signum, SigHandler handler)
+SignalHandler sys_signal(int signum, SignalHandler handler)
 #else
 void (*sys_signal(int signum, void (*handler)(int)))(int)
 #endif
@@ -38,7 +38,7 @@ void (*sys_signal(int signum, void (*handler)(int)))(int)
 #endif
 
 #if USE_FUNCTION_TYPE
-SigHandler sighandlers[NUMOFSIGNALS];
+SignalHandler sighandlers[NUMOFSIGNALS];
 #else
 void (*sighandlers[NUMOFSIGNALS])(int);
 #endif
@@ -61,7 +61,7 @@ extern void catcher(int s) {
 
 extern void sigchk() {
 #if USE_FUNCTION_TYPE
-	SigHandler h;
+	SignalHandler h;
 #else
 	void (*h)(int);
 #endif
@@ -88,12 +88,16 @@ extern void sigchk() {
 }
 
 #if USE_FUNCTION_TYPE
-SigHandler rc_signal(int s, SigHandler h)
+SignalHandler rc_signal(int s, SignalHandler h)
 #else
 extern void (*rc_signal(int s, void (*h)(int)))(int)
 #endif
 {
+#if USE_FUNCTION_TYPE
+	SignalHandler old;
+#else
 	void (*old)(int);
+#endif
 	sigchk();
 	old = sighandlers[s];
 	sighandlers[s] = h;
@@ -106,7 +110,7 @@ extern void (*rc_signal(int s, void (*h)(int)))(int)
 
 extern void initsignal() {
 #if USE_FUNCTION_TYPE
-	SigHandler h;
+	SignalHandler h;
 #else
 	void (*h)(int);
 #endif
