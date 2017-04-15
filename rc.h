@@ -62,6 +62,10 @@ typedef enum redirtype {
 } redirtype;
 
 typedef bool (*Conv)(Format *, int);
+#define USE_FUNCTION_TYPE 1
+#if USE_FUNCTION_TYPE
+typedef void (*SigHandler)(int);
+#endif
 
 union Edata {
 	Jbwrap *jb;
@@ -318,12 +322,15 @@ extern bool makeblocking(int);
 extern bool makesamepgrp(int);
 
 /* print.c */
+#if USE_FUNCTION_TYPE
+extern Conv fmtinstall(int, Conv);
 /*
    The following prototype should be:
-extern Conv fmtinstall(int, Conv);
    but this freaks out SGI's compiler under IRIX3.3.2
 */
+#else
 extern bool (*fmtinstall(int, bool (*)(Format *, int)))(Format *, int);
+#endif
 extern int printfmt(Format *, const char *);
 extern int fmtprint(Format *, const char *,...);
 extern void fmtappend(Format *, const char *, size_t);
@@ -369,9 +376,15 @@ extern void doredirs(void);
 extern void initsignal(void);
 extern void catcher(int);
 extern void sigchk(void);
+#if USE_FUNCTION_TYPE
+extern SigHandler rc_signal(int, SigHandler);
+extern SigHandler sys_signal(int, SigHandler);
+extern SigHandler sighandlers[];
+#else
 extern void (*rc_signal(int, void (*)(int)))(int);
 extern void (*sys_signal(int, void (*)(int)))(int);
 extern void (*sighandlers[])(int);
+#endif
 
 
 /* status.c */
