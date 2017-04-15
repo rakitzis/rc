@@ -9,8 +9,14 @@
 #include "sigmsgs.h"
 #include "jbwrap.h"
 
+
 #if HAVE_SIGACTION
-void (*sys_signal(int signum, void (*handler)(int)))(int) {
+#if USE_FUNCTION_TYPE
+SigHandler sys_signal(int signum, SigHandler handler)
+#else
+void (*sys_signal(int signum, void (*handler)(int)))(int)
+#endif
+{
 	struct sigaction new, old;
 
 	new.sa_handler = handler;
@@ -21,12 +27,21 @@ void (*sys_signal(int signum, void (*handler)(int)))(int) {
 	return SIG_DFL;
 }
 #else
-void (*sys_signal(int signum, void (*handler)(int)))(int) {
+#if USE_FUNCTION_TYPE
+SigHandler sys_signal(int signum, SigHandler handler)
+#else
+void (*sys_signal(int signum, void (*handler)(int)))(int)
+#endif
+{
 	return signal(signum, handler);
 }
 #endif
 
+#if USE_FUNCTION_TYPE
+SigHandler sighandlers[NUMOFSIGNALS];
+#else
 void (*sighandlers[NUMOFSIGNALS])(int);
+#endif
 
 static volatile sig_atomic_t sigcount, caught[NUMOFSIGNALS];
 
@@ -45,7 +60,11 @@ extern void catcher(int s) {
 }
 
 extern void sigchk() {
+#if USE_FUNCTION_TYPE
+	SigHandler h;
+#else
 	void (*h)(int);
+#endif
 	int s, i;
 
 	if (sigcount == 0)
@@ -68,7 +87,12 @@ extern void sigchk() {
 	(*h)(s);
 }
 
-extern void (*rc_signal(int s, void (*h)(int)))(int) {
+#if USE_FUNCTION_TYPE
+SigHandler rc_signal(int s, SigHandler h)
+#else
+extern void (*rc_signal(int s, void (*h)(int)))(int)
+#endif
+{
 	void (*old)(int);
 	sigchk();
 	old = sighandlers[s];
@@ -81,7 +105,11 @@ extern void (*rc_signal(int s, void (*h)(int)))(int) {
 }
 
 extern void initsignal() {
+#if USE_FUNCTION_TYPE
+	SigHandler h;
+#else
 	void (*h)(int);
+#endif
 	int i;
 
 #if HAVE_SYSV_SIGCLD
