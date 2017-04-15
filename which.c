@@ -119,7 +119,7 @@ extern char *which(char *name, bool verbose) {
 		return rc_access(name, verbose) ? name : NULL;
 	len = strlen(name);
 	for (path = varlookup("path"); path != NULL; path = path->n) {
-		size_t need = strlen(path->w) + len + 2; /* one for null terminator, one for the '/' */
+		const size_t need = strlen(path->w) + len + 2; /* one for null terminator, one for the '/' */
 		if (testlen < need) {
 			efree(test);
 			test = enew_arr(char, testlen = need);
