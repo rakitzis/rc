@@ -326,6 +326,7 @@ extern bool makesamepgrp(int);
 extern Conv fmtinstall(int, Conv);
 /*
    The following prototype should be:
+        extern Conv fmtinstall(int, Conv);
    but this freaks out SGI's compiler under IRIX3.3.2
 */
 #else
