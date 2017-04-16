@@ -286,7 +286,6 @@ static bool fn_exportable(const char *s) {
 
 extern char **makeenv() {
 	int ep, i;
-	char *v;
 	if (!env_dirty)
 		return env;
 	env_dirty = FALSE;
@@ -296,6 +295,7 @@ extern char **makeenv() {
 		env = erenew_arr(char*, env, envsize);
 	}
 	for (i = 0; i < vsize; i++) {
+		char *v;
 		if (vp[i].name == NULL || vp[i].name == dead || !var_exportable(vp[i].name))
 			continue;
 		v = varlookup_string(vp[i].name);
