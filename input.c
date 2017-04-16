@@ -79,7 +79,7 @@ static void history() {
 
 		/* line matches [ \t]*[^#\n] so it's ok to write out */
 		if (c != ' ' && c != '\t') {
-			char *name = hist->w;
+			const char *name = hist->w;
 			const int fd = rc_open(name, rAppend);
 			if (fd < 0)
 				uerror(name);

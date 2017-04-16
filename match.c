@@ -9,7 +9,7 @@ enum { RANGE_FAIL = -1, RANGE_ERROR = -2 };
 /* match() matches a single pattern against a single string. */
 
 extern bool match(const char *p, const char *m, const char *s) {
-	int i, j;
+	int i;
 	if (m == NULL)
 		return streq(p, s);
 	i = 0;
@@ -31,7 +31,8 @@ extern bool match(const char *p, const char *m, const char *s) {
 					if (match(p + i, m + i, s++))
 						return TRUE;
 				return FALSE;
-			case '[':
+			case '[': {
+				int j;
 				if (*s == '\0')
 					return FALSE;
 				switch (j = rangematch(p + i, *s)) {
@@ -46,6 +47,7 @@ extern bool match(const char *p, const char *m, const char *s) {
 				}
 				s++;
 				break;
+            }
 			default:
 				panic("bad metacharacter in match");
 				/* NOTREACHED */
