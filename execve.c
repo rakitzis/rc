@@ -12,7 +12,7 @@
 #define giveupif(x) { if (x) goto fail; }
 
 extern int rc_execve(char *path, char *const*av, char **ev) {
-	int fd, len, fst, snd, end;
+	int fd, len, fst, snd;
 	bool noarg;
 	char pb[256]; /* arbitrary but generous limit */
 	execve(path, av, ev);
@@ -38,6 +38,7 @@ extern int rc_execve(char *path, char *const*av, char **ev) {
 		giveupif(snd == len);
 		noarg = (pb[snd] == '\n'); /* could have trailing whitespace after only one arg */
 		if (!noarg) {
+			int end;
 			for (end = snd; end < len && pb[end] != ' ' && pb[end] != '\t' && pb[end] != '\n'; end++)
 				; /* skip to the end of the second arg */
 			giveupif(end == len);
