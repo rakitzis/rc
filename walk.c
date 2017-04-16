@@ -414,11 +414,11 @@ static void for_iter(const Node *n, List *var, List *l)
 
 /* From http://en.cppreference.com/w/c/program/setjmp
  * According to the C standard setjmp() must appear only in the following 4 constructs:
- *   switch (setjmp(args)) {statements}
- *   if (setjmp(args) == 0) {statements} with any of 
- *          operators: ==,!=,<,>,<=,>=
- *   while (! setjmp(args)) {statements}
- *   setjmp(args);
+ *   1. switch (setjmp(args)) {statements}
+ *   2. if (setjmp(args) == Const) {statements} with any of 
+ *             operators: ==, !=, <, >, <=, >=
+ *   3. while (! setjmp(args)) {statements}
+ *   4. setjmp(args);
 */
 static void loop_body(const Node* nd)
 {
