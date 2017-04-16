@@ -62,7 +62,7 @@ static int hash(const char *s, int size) {
 }
 
 static bool rehash(Htab *ht) {
-	int i, j, size;
+	int i, size;
 	int newsize, newused;
 	Htab *newhtab;
 	if (ht == fp) {
@@ -80,6 +80,7 @@ static bool rehash(Htab *ht) {
 		newhtab[i].name = NULL;
 	for (i = newused = 0; i < size; i++)
 		if (ht[i].name != NULL && ht[i].name != dead) {
+			int j;
 			newused++;
 			j = hash(ht[i].name, newsize);
 			while (newhtab[j].name != NULL) {
@@ -139,7 +140,6 @@ extern rc_Function *get_fn_place(const char *s) {
 }
 
 extern Variable *get_var_place(const char *s, bool stack) {
-	Variable *new;
 	int h = varfind(s);
 
 	env_dirty = TRUE;
@@ -153,6 +153,7 @@ extern Variable *get_var_place(const char *s, bool stack) {
 		vp[h].u.v->n = NULL;
 		return vp[h].u.v;
 	} else {
+		Variable *new;
 		if (stack) {	/* increase the stack by 1 */
 			new = enew(Variable);
 			new->n = vp[h].u.v;

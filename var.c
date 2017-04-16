@@ -31,7 +31,7 @@ extern bool varassign_string(const char *extdef) {
 	static bool aliasset[arraysize(aliases)] = {
 		FALSE, FALSE, FALSE, FALSE, FALSE, FALSE
 	};
-	char *name = get_name(extdef);
+	const char *name = get_name(extdef);
 	Variable *new;
 	int i;
 	if (name == NULL)
@@ -61,7 +61,7 @@ extern bool varassign_string(const char *extdef) {
 
 extern List *varlookup(const char *name) {
 	Variable *look;
-	List *ret, *l;
+	List *ret;
 	int sub;
 	if (streq(name, "apids"))
 		return sgetapids();
@@ -82,6 +82,7 @@ extern List *varlookup(const char *name) {
 		return q;
 	}
 	if (*name != '\0' && (sub = a2u(name)) != -1) { /* handle $1, $2, etc. */
+		const List *l;
 		for (l = varlookup("*"); l != NULL && sub != 0; --sub)
 			l = l->n;
 		if (l == NULL)
