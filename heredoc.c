@@ -25,7 +25,6 @@ static bool dead = FALSE;
  */
 
 static char *readheredoc(const char *eof) {
-	int c;
 	char *t, *buf, *bufend;
 	size_t bufsize;
 	t = buf = nnew_arr(char, bufsize = 512);
@@ -42,6 +41,7 @@ static char *readheredoc(const char *eof) {
 	}
 	for (;;) {
 		unsigned char *s;
+		int c;
 		nextline();
 		for (s = (unsigned char *) eof; (c = gchar()) == *s; s++)
 			;
