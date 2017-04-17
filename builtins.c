@@ -236,7 +236,7 @@ static void b_shift(char **av) {
 		--shift;
 	}
 	if (s == NULL && shift != 0) {
-		fprint(2, "cannot shift\n");
+		fprint(2, "rc: cannot shift\n");
 		set(FALSE);
 	} else {
 		varassign("*", append(dollarzero, s), FALSE);
