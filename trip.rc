@@ -597,3 +597,9 @@ x=$tmpdir/qux*/foo
 ~ $x $tmpdir/qux/foo || { rm -rf $tmpdir/qux; fail broken symlink globbing }
 
 rm -rf $tmpdir
+
+# test support for unquoted =
+submatch 'echo foo = bar' 'foo = bar' 'unquoted equals 2'
+submatch 'echo foo=bar' 'foo=bar' 'unquoted equals 2'
+submatch 'echo foo=' 'foo=' 'unquoted equals 3'
+submatch 'echo =bar; whatis -v echo' 'echo=bar' 'unquoted equals 4'
