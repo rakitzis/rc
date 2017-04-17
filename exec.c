@@ -14,7 +14,6 @@
 
 extern void exec(const List *s, bool parent) {
 	char **av, **ev = NULL;
-	int stat;
 	pid_t pid;
 	builtin_t *b;
 	char *path = NULL;
@@ -107,7 +106,8 @@ extern void exec(const List *s, bool parent) {
 		uerror(*av);
 		rc_exit(1);
 		/* NOTREACHED */
-	default:
+	default: {
+		int stat;
 		redirq = NULL;
 		rc_wait4(pid, &stat, TRUE);
 		setstatus(-1, stat);
@@ -127,5 +127,6 @@ extern void exec(const List *s, bool parent) {
 		sigchk();
 		nl_on_intr = TRUE;
 		pop_cmdarg(TRUE);
+    }
 	}
 }
