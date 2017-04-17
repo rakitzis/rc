@@ -1869,9 +1869,9 @@ The
 builtin only shifts
 .Cr "$*" .
 This function can shift any variable (except
-.Cr "$lshift" ).
+.Cr "$_lshift" ).
 .Ds
-.Cr "fn lshift { lshift=$*; *=$$1; shift $lshift(2); $lshift(1)=$* }"
+.Cr "fn lshift { _lshift=$* *=$$1 { shift $_lshift(2); $_lshift(1)=$* } }"
 .De
 .PP
 With this definition in place,
