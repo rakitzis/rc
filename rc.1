@@ -1927,6 +1927,45 @@ if every command in the pipeline did; otherwise it exits
 can be made to exit with a particular status using the
 .B exit
 builtin.
+.SH "LINE EDITING"
+.I rc
+is typically built against a line editing library.
+On GNU/Linux systems this will usually be the GNU
+.I readline
+library.
+On *BSD systems it is more likely to be the BSD
+.I editline
+library.
+Please consult the appropriate library documentation for details of how to use
+and configure line editing.
+.SS "Tilde Expansion"
+Since
+.I rc
+does not support tilde expansion (converting
+.Cr ~foo
+to the home directory of user
+.Cr foo ),
+it is sometimes suggested by users as a
+possible enhancement.
+The authors and maintainers of
+.I rc
+have a proud history of resisting such feature requests.
+So it is worth noting here that GNU
+.I readline
+can expand tildes.
+Add this line to the file
+.Cr .inputrc
+in your home directory.
+.Ds
+.Cr "set expand-tilde on"
+.De
+.PP
+and then use the key sequence
+.Cr "M-~"
+to perform tilde expansion on the current word.
+See the
+.I readline
+documentation for further details.
 .SH GRAMMAR
 Here is
 .IR rc 's
@@ -2173,12 +2212,12 @@ the
 and
 .Cr version
 variables,
-the support for the GNU
-.IR readline (3)
-library,
-and the support for the
+the
 .Cr prompt
-function.
+function,
+support for GNU
+.IR readline
+and other line editing libraries.
 This
 .I rc
 also sets
