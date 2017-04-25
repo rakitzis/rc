@@ -132,10 +132,11 @@ top:	sigchk();
 				iter_data.b = newblock();
 				except(eArena, iter_data, &iter_stack);
 				loop_body(n->u[1].p);
+				cond = TRUE;
 				testtrue = walk(n->u[0].p, TRUE);
+				cond = oldcond;
 				unexcept(eArena);
 			}
-			cond = TRUE;
 		} while (testtrue);
 		cond = oldcond;
 		unexcept(eBreak);
