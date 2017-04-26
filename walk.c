@@ -17,8 +17,6 @@ static bool haspreredir(const Node *);
 static bool isallpre(const Node *);
 static bool dofork(bool);
 static void dopipe(const Node *);
-static bool while_iter(const Node *n);
-static void for_iter(const Node *n, List *var, List *l);
 static void loop_body(const Node* n);
 
 
@@ -29,7 +27,6 @@ static void loop_body(const Node* n);
 /* walk the parse-tree. "obvious". */
 
 extern bool walk(const Node *nd, bool parent) {
-	enum { FACTORED_LOOP = 0 };
 	const Node *volatile n = nd;
 top:	sigchk();
 	if (n == NULL) {
@@ -124,19 +121,15 @@ top:	sigchk();
 
 		do {
 			cond = oldcond;
-			if (FACTORED_LOOP) {
-				testtrue = while_iter(n);
-			} else {
-				Edata  iter_data;
-				Estack iter_stack;
-				iter_data.b = newblock();
-				except(eArena, iter_data, &iter_stack);
-				loop_body(n->u[1].p);
-				cond = TRUE;
-				testtrue = walk(n->u[0].p, TRUE);
-				cond = oldcond;
-				unexcept(eArena);
-			}
+			Edata  iter_data;
+			Estack iter_stack;
+			iter_data.b = newblock();
+			except(eArena, iter_data, &iter_stack);
+			loop_body(n->u[1].p);
+			cond = TRUE;
+			testtrue = walk(n->u[0].p, TRUE);
+			cond = oldcond;
+			unexcept(eArena);
 		} while (testtrue);
 		cond = oldcond;
 		unexcept(eBreak);
@@ -154,17 +147,13 @@ top:	sigchk();
 		except(eBreak, break_data, &break_stack);
 
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			if (FACTORED_LOOP) {
-				for_iter(n, var, l);
-			} else {
-				Edata  iter_data;
-				Estack iter_stack;
-				assign(var, word(l->w, NULL), FALSE);
-				iter_data.b = newblock();
-				except(eArena, iter_data, &iter_stack);
-				loop_body(n->u[2].p);
-				unexcept(eArena);
-			}
+			Edata  iter_data;
+			Estack iter_stack;
+			assign(var, word(l->w, NULL), FALSE);
+			iter_data.b = newblock();
+			except(eArena, iter_data, &iter_stack);
+			loop_body(n->u[2].p);
+			unexcept(eArena);
 		}
 		unexcept(eBreak);
 		break;
@@ -385,32 +374,6 @@ static void dopipe(const Node *n) {
 	}
 	setpipestatus(stats, i);
 	sigchk();
-}
-
-static bool while_iter(const Node *n)
-{
-	Edata  iter_data;
-	Estack iter_stack;
-	bool   testtrue;
-
-	iter_data.b = newblock();
-	except(eArena, iter_data, &iter_stack);
-	loop_body(n->u[1].p);
-	testtrue = walk(n->u[0].p, TRUE); /* n might be used after longjmp, need volatile */
-	unexcept(eArena);
-	return testtrue;
-}
-
-static void for_iter(const Node *n, List *var, List *l)
-{
-	Edata  iter_data;
-	Estack iter_stack;
-
-	assign(var, word(l->w, NULL), FALSE);
-	iter_data.b = newblock();
-	except(eArena, iter_data, &iter_stack);
-	loop_body(n->u[2].p);
-	unexcept(eArena);
 }
 
 /* From http://en.cppreference.com/w/c/program/setjmp
