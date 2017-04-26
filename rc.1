@@ -226,8 +226,12 @@ will exit if any command fails (exits with non-zero status). However
 .I "rc -e"
 does not exit if a conditional fails. A conditional is the test of an
 .Cr "if ()"
+command, the test of a
+.Cr "while ()"
 command, or the left hand side of the
 .Cr ||
+or the 
+.Cr &&
 operator.
 .TP
 .Cr \-i
