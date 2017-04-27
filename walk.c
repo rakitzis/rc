@@ -119,8 +119,8 @@ top:	sigchk();
 		break_data.jb = &break_jb;
 		except(eBreak, break_data, &break_stack);
 
+		cond = oldcond;
 		do {
-			cond = oldcond;
 			Edata  iter_data;
 			Estack iter_stack;
 			iter_data.b = newblock();
