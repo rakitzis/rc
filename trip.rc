@@ -823,6 +823,8 @@ if (!~ $L(5) g) {
 }
 C=() L=()
 
+submatch continue 'rc: continue outside of loop' 'continue outside of loop'
+
 #############################################################################
 ## check builtin continue in for loop (2)
 #############################################################################
