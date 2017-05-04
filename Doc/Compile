@@ -187,6 +187,8 @@ if ($Sanitize) {
     CompileOpts=(
         $CompileOpts
         -fsanitize=undefined
+        #-fsanitize=address ## these two sanitize flags have problem in linking
+        #-fsanitize=integer
     )
     LinkOpts=(
         $LinkOpts
