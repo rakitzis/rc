@@ -114,6 +114,7 @@ top:	sigchk();
 			cond = oldcond;
 			break;
 		}
+		cond = oldcond;
 		if (sigsetjmp(break_jb.j, 1))
 			break;
 		break_data.jb = &break_jb;
@@ -136,8 +137,8 @@ top:	sigchk();
 		break;
 	}
 	case nForin: {
-		List *volatile l;
-		List *var = glom(n->u[0].p);
+		const List *volatile l;
+		List * const var = glom(n->u[0].p);
 		Jbwrap break_jb;
 		Edata  break_data;
 		Estack break_stack;
@@ -175,7 +176,7 @@ top:	sigchk();
 		dopipe(n);
 		break;
 	case nNewfn: {
-		List *l = glom(n->u[0].p);
+		const List * l = glom(n->u[0].p);
 		if (l == NULL)
 			rc_error("null function name");
 		while (l != NULL) {
@@ -188,7 +189,7 @@ top:	sigchk();
 		break;
 	}
 	case nRmfn: {
-		List *l = glom(n->u[0].p);
+		const List *l = glom(n->u[0].p);
 		while (l != NULL) {
 			if (dashex)
 				fprint(2, "fn %S\n", l->w);
@@ -202,14 +203,14 @@ top:	sigchk();
 		redirq = NULL;
 		break; /* Null command */
 	case nMatch: {
-		List *a = glob(glom(n->u[0].p)), *b = glom(n->u[1].p);
+		const List *a = glob(glom(n->u[0].p)), *b = glom(n->u[1].p);
 		if (dashex)
 			fprint(2, (a != NULL && a->n != NULL) ? "~ (%L) %L\n" : "~ %L %L\n", a, " ", b, " ");
 		set(lmatch(a, b));
 		break;
 	}
 	case nSwitch: {
-		List *v = glom(n->u[0].p);
+		const List *v = glom(n->u[0].p);
 		while (1) {
 			do {
 				n = n->u[1].p;
@@ -225,7 +226,6 @@ top:	sigchk();
 		break;
 	}
 	case nPre: {
-		List *v;
 		if (n->u[0].p->type == nRedir || n->u[0].p->type == nDup) {
 			if (redirq == NULL && !dofork(parent)) /* subshell on first preredir */
 				break;
@@ -243,7 +243,7 @@ top:	sigchk();
 			} else {
 				Estack e;
 				Edata var;
-				v = glom(n->u[0].p->u[0].p);
+				const List *v = glom(n->u[0].p->u[0].p);
 				assign(v, glob(glom(n->u[0].p->u[1].p)), TRUE);
 				var.name = v->w;
 				except(eVarstack, var, &e);
