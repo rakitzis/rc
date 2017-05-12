@@ -202,7 +202,7 @@ top:	sigchk();
 		redirq = NULL;
 		break; /* Null command */
 	case nMatch: {
-		List *a = glob(glom(n->u[0].p)), *b = glom(n->u[1].p);
+		const List *a = glob(glom(n->u[0].p)), *b = glom(n->u[1].p);
 		if (dashex)
 			fprint(2, (a != NULL && a->n != NULL) ? "~ (%L) %L\n" : "~ %L %L\n", a, " ", b, " ");
 		set(lmatch(a, b));
