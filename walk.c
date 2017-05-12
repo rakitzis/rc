@@ -110,6 +110,7 @@ top:	sigchk();
 			cond = oldcond;
 			break;
 		}
+		cond = oldcond;
 		if (sigsetjmp(j.j, 1))
 			break;
 		jbreak.jb = &j;
@@ -117,12 +118,12 @@ top:	sigchk();
 		do {
 			Edata block;
 			block.b = newblock();
-			cond = oldcond;
 			except(eArena, block, &e2);
 			walk(n->u[1].p, TRUE);
-			testtrue = walk(n->u[0].p, TRUE);
-			unexcept(); /* eArena */
 			cond = TRUE;
+			testtrue = walk(n->u[0].p, TRUE);
+			cond = oldcond;
+			unexcept(); /* eArena */
 		} while (testtrue);
 		cond = oldcond;
 		unexcept(); /* eBreak */
