@@ -603,3 +603,9 @@ submatch 'echo foo = bar' 'foo = bar' 'unquoted equals 2'
 submatch 'echo foo=bar' 'foo=bar' 'unquoted equals 2'
 submatch 'echo foo=' 'foo=' 'unquoted equals 3'
 submatch 'echo =bar; whatis -v echo' 'echo=bar' 'unquoted equals 4'
+###############################################################
+X=`{ $rc -ec 'b=true; while($b){b=false}; echo YYY' }
+if (! ~ $X YYY) {
+    fail '"rc -e" exits when condition in the while statement fails in the second iteration'
+}
+###############################################################
