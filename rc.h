@@ -171,12 +171,13 @@ enum {
 #define o2u(x) n2u(x, 8)
 #define arraysize(a) ((int)(sizeof(a)/sizeof((a)[0])))
 #define memzero(s, n) memset(s, 0, n)
-#define enew(x) ((x *) ealloc(sizeof(x)))
+#define enew(T) ((T *) ealloc(sizeof(T)))
 #define enew_arr(T,n) ((T *) ealloc((n)*sizeof(T)))
-#define ecpy(x) strcpy((char *) ealloc(strlen(x) + 1), x)
-#define nnew(x) ((x *) nalloc(sizeof(x)))
+#define erenew_arr(T,oldp,n) ((T *) erealloc((oldp),(n)*sizeof(T)))
+#define ecpy(s) (strcpy(enew_arr(char, (strlen(s) + 1)), s))
+#define nnew(T) ((T *) nalloc(sizeof(T)))
 #define nnew_arr(T,n) ((T *) nalloc((n)*sizeof(T)))
-#define ncpy(x) (strcpy((char *) nalloc(strlen(x) + 1), x))
+#define ncpy(s) (strcpy(nnew_arr(char, (strlen(s) + 1)), s))
 #ifndef offsetof
 #define offsetof(t, m) ((size_t) (((char *) &((t *) 0)->m) - (char *)0))
 #endif
@@ -309,7 +310,6 @@ extern bool match(const char *, const char *, const char *);
 /* alloc.c */
 extern void *ealloc(size_t);
 extern void *erealloc(void *, size_t);
-#define erenew_arr(T,oldp,n) ((T *) erealloc(oldp,(n)*sizeof(T)))
 extern void efree(void *);
 extern Block *newblock(void);
 extern void *nalloc(size_t);
