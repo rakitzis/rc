@@ -896,10 +896,9 @@ if (! ~ $x YYY) {
     fail $msg
 }
 
-x=${ $rc -ec 'b=true; while ($b) { b=false }; echo YYY' }
-if (! ~ $x YYY) {
-    msg='rc -e exits when the command in the "while" condition fails the second time'
-    fail $msg
+X=`{ $rc -ec 'b=true; while($b){b=false}; echo YYY' }
+if (! ~ $X YYY) {
+    fail '"rc -e" exits when condition in the while statement fails in the second iteration'
 }
 
 x=${ $rc -ec 'if (false) { true }; echo YYY' }
@@ -938,4 +937,3 @@ if (~ $x YYY) {
     fail $msg
 }
 #############################################################################
-
