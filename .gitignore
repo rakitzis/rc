@@ -9,6 +9,7 @@ config.status
 configure
 depcomp
 .deps/
+INSTALL
 install-sh
 Makefile
 Makefile.in
