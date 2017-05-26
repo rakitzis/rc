@@ -898,50 +898,39 @@ submatch 'echo foo=' 'foo=' 'unquoted equals 3'
 submatch 'echo =bar; whatis -v echo' 'echo=bar' 'unquoted equals 4'
 
 #############################################################################
-x=${ $rc -ec 'while (false) { false }; echo YYY' }
-if (! ~ $x YYY) {
-    msg='rc -e exits when the command in the "while" condition fails the first time'
-    fail $msg
-}
+fn testCondExit { shouldExitShell=$1 code=$2 errMsg=() X=() {
+    shift 2
+    errMsg=$*
+    #whatis shouldExitShell code errMsg
+    X=${ $rc -ec $code^'; echo YYY' }
+    if ($shouldExitShell) {
+        if (~ $X YYY) {
+            fail '"rc -e"' $errMsg
+        }
+    } else {
+        if (! ~ $X YYY) {
+            fail '"rc -e"' $errMsg
+        }
+    }
+}}
 
-X=`{ $rc -ec 'b=true; while($b){b=false}; echo YYY' }
-if (! ~ $X YYY) {
-    fail '"rc -e" exits when condition in the while statement fails in the second iteration'
-}
+testCondExit false 'while(false){false}'  (exits when the command in the while condition fails the first time)
 
-x=${ $rc -ec 'if (false) { true }; echo YYY' }
-if (! ~ $x YYY) {
-    msg='rc -e exits when the command in the "if" condition fails'
-    fail $msg
-}
+testCondExit false 'b=true; while($b){b=false}' (exits when condition in the while statement
+                                                 fails in the second iteration)
 
-x=${ $rc -ec 'if (true) { false }; echo YYY' }
-if (~ $x YYY) {
-    msg='rc -e did not exit when the command in the "if" body fails'
-    fail $msg
-}
+testCondExit false 'if (false){true}'     (exits when the command in the if condition fails)
 
-x=${ $rc -ec 'false && true; echo YYY' }
-if (! ~ $x YYY) {
-    msg='rc -e exits when the first command in "&&" fails'
-    fail $msg
-}
+testCondExit true  'if (true) { false }'  (does not exit when the command in the if body fails)
 
-x=${ $rc -ec 'true && false ; echo YYY' }
-if (~ $x YYY) {
-    msg='rc -e did not exit when the second command in "&&" fails'
-    fail $msg
-}
+testCondExit false 'false && true'        (exits when the first command in '"&&"' fails)
 
-x=${ $rc -ec 'false || true; echo YYY' }
-if (! ~ $x YYY) {
-    msg='rc -e exits when the first command in "||" fails'
-    fail $msg
-}
+testCondExit true  'true && false'        (does not exit when the second command in '"&&"' fails)
 
-x=${ $rc -ec 'false || false; echo YYY' }
-if (~ $x YYY) {
-    msg='rc -e did not exit when the second command in "||" fails'
-    fail $msg
-}
+testCondExit false 'false || true'        (exits when the first command in '"||"' fails)
+
+testCondExit true  'false || false'       (does not exit when the second command in '"||"' fails)
+
+fn testCondExit
 #############################################################################
+
