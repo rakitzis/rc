@@ -898,11 +898,11 @@ submatch 'echo foo=' 'foo=' 'unquoted equals 3'
 submatch 'echo =bar; whatis -v echo' 'echo=bar' 'unquoted equals 4'
 
 #############################################################################
-fn testCondExit { shouldExitShell=$1 code=$2 errMsg=() X=() {
+fn testCondExit { shouldExitShell=$1 script=$2 errMsg=() X=() {
     shift 2
     errMsg=$*
-    #whatis shouldExitShell code errMsg
-    X=${ $rc -ec $code^'; echo YYY' }
+    #whatis shouldExitShell script errMsg
+    X=${ $rc -ec $script^'; echo YYY' }
     if ($shouldExitShell) {
         if (~ $X YYY) {
             fail '"rc -e"' $errMsg
@@ -930,6 +930,8 @@ testCondExit true  'true && false'        (does not exit when the second command
 testCondExit false 'false || true'        (exits when the first command in '"||"' fails)
 
 testCondExit true  'false || false'       (does not exit when the second command in '"||"' fails)
+
+testCondExit false 'false && false'       (exits when the first command in '"&&"' fails)
 
 fn testCondExit
 #############################################################################
