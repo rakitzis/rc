@@ -88,7 +88,7 @@ struct List {
 
 struct Node {
 	nodetype type;
-	union {
+	union NodeUnion {
 		char *s;
 		int i;
 		Node *p;
