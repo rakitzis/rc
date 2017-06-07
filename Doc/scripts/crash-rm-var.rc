@@ -1,0 +1,13 @@
+## This used to cause a crash because in delete_var() vp[h].u.v was not reset to NULL
+## delete_var() is called when local var is removed when a block finishes.
+
+fn f1 { v=x {
+}}
+
+fn f2 {
+    f1  1
+    f1  2
+}
+
+f2
+
