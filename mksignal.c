@@ -14,7 +14,7 @@ struct signaming {
     const char *sigmsg;
 };
 
-static struct signaming signamings[] = {
+static const struct signaming signamings[] = {
 #ifdef SIGABRT
     { SIGABRT,	"sigabrt",	"abort"},
 #endif
@@ -200,7 +200,7 @@ static void barf(const char *msg) {
 int main(void) {
     int maxsig = NUMSIG-1;
     int s;
-    struct signaming *snp;
+    const struct signaming *snp;
     FILE *outf;
 
     for (snp = signamings; snp->signo; ++snp)
