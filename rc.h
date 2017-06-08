@@ -247,7 +247,6 @@ extern List *append(List *, List*);
 extern List *flatten(List *);
 extern List *glom(const Node *);
 extern List *concat(List *, List *);
-extern List *varsub(const List *, const List *);
 extern List *word(char *, char *);
 
 /* fn.c */

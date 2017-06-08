@@ -86,7 +86,7 @@ extern List *concat(List *s1, List *s2) {
 	return top;
 }
 
-extern List *varsub(const List *var, const List *subs) {
+static List *varsub(const List *var, const List *subs) {
 	List *r, *top;
 	const int n = listnel(var);
 	for (top = r = NULL; subs != NULL; subs = subs->n) {

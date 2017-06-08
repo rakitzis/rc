@@ -18,7 +18,6 @@ typedef struct CalcLexData {
 
 
 extern int CalcError(const char *s, const CalcLexData* lexData);
-extern int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData);
 extern CalcValue CalcPower(CalcValue a, CalcValue b);
 
 typedef CalcToken (*CalcLexerType)(CalcLexData *lexData, YYSTYPE* calclval);

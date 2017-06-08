@@ -79,7 +79,7 @@ void b_kill (char **av)
     set(ret);
 }
 
-extern int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData);
+static int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData);
 
 #if 0
 static void set_var (char *varname, long R)
@@ -350,7 +350,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 #if YYDEBUG
 extern int calcdebug;
 #endif
-int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData)
+static int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData)
 {
     int status;
 
