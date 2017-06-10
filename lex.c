@@ -32,6 +32,7 @@ typedef enum wordstates {
 } wordstates;
 
 static void getpair(int);
+static void scanerror(const char *s);
 
 int lineno;
 
@@ -348,7 +349,7 @@ extern void yyerror(const char *s) {
 		fprint(2, "rc: %s\n", s);
 }
 
-extern void scanerror(const char *s) {
+static void scanerror(const char *s) {
 	skiptonl(); /* flush up to newline */
 	yyerror(s);
 	errset = prerror = TRUE;

@@ -294,7 +294,6 @@ extern bool quotep(const char *, bool);
 extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);
-extern void scanerror(const char *);
 extern const char nw[], dnw[];
 
 /* list.c */
@@ -312,7 +311,6 @@ extern void *erealloc(void *, size_t);
 extern void efree(void *);
 extern Block *newblock(void);
 extern void *nalloc(size_t);
-/*extern void nfree(void);*/
 extern void restoreblock(Block *);
 
 /* open.c */
@@ -331,9 +329,7 @@ extern Conv fmtinstall(int, Conv);
 #else
 extern bool (*fmtinstall(int, bool (*)(Format *, int)))(Format *, int);
 #endif
-/*extern int printfmt(Format *, const char *);*/
 extern int fmtprint(Format *, const char *,...);
-/*extern void fmtappend(Format *, const char *, size_t);*/
 extern void fmtcat(Format *, const char *);
 extern int fprint(int fd, const char *fmt,...);
 extern char *mprint(const char *fmt,...);
@@ -374,15 +370,12 @@ extern void doredirs(void);
 
 /* signal.c */
 extern void initsignal(void);
-/*extern void catcher(int);*/
 extern void sigchk(void);
 #if USE_FUNCTION_TYPE
 extern SignalHandler rc_signal(int, SignalHandler);
-/*extern SignalHandler sys_signal(int, SignalHandler);*/
 extern SignalHandler sighandlers[];
 #else
 extern void (*rc_signal(int, void (*)(int)))(int);
-/*extern void (*sys_signal(int, void (*)(int)))(int);*/
 extern void (*sighandlers[])(int);
 #endif
 
