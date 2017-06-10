@@ -7,6 +7,9 @@
 
 #define	MAXCONV 256
 
+static void fmtappend(Format *format, const char *s, size_t len);
+static int printfmt(Format *format, const char *fmt);
+
 /*
  * conversion functions
  *	true return -> flag changes only, not a conversion
@@ -233,7 +236,7 @@ extern bool (*fmtinstall(int c, bool (*f)(Format *, int)))(Format *, int)
  * functions for inserting strings in the format buffer
  */
 
-extern void fmtappend(Format *format, const char *s, size_t len) {
+static void fmtappend(Format *format, const char *s, size_t len) {
 	while (format->buf + len > format->bufend) {
 		size_t split = format->bufend - format->buf;
 		memcpy(format->buf, s, split);
@@ -254,7 +257,7 @@ extern void fmtcat(Format *format, const char *s) {
  * printfmt -- the driver routine
  */
 
-extern int printfmt(Format *format, const char *fmt) {
+static int printfmt(Format *format, const char *fmt) {
 	unsigned const char *s = (unsigned const char *) fmt;
 
 	if (fmttab[0] == NULL)

@@ -65,7 +65,7 @@ extern void *nalloc(size_t n) {
 
 #define MAXMEM 500000
 
-extern void nfree() {
+static void nfree() {
 	size_t count;
 	Block *r;
 	if (ul == NULL)
