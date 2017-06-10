@@ -12,9 +12,9 @@
 
 #if HAVE_SIGACTION
 #if USE_FUNCTION_TYPE
-SignalHandler sys_signal(int signum, SignalHandler handler)
+static SignalHandler sys_signal(int signum, SignalHandler handler)
 #else
-void (*sys_signal(int signum, void (*handler)(int)))(int)
+static void (*sys_signal(int signum, void (*handler)(int)))(int)
 #endif
 {
 	struct sigaction new, old;
@@ -28,9 +28,9 @@ void (*sys_signal(int signum, void (*handler)(int)))(int)
 }
 #else
 #if USE_FUNCTION_TYPE
-SignalHandler sys_signal(int signum, SignalHandler handler)
+static SignalHandler sys_signal(int signum, SignalHandler handler)
 #else
-void (*sys_signal(int signum, void (*handler)(int)))(int)
+static void (*sys_signal(int signum, void (*handler)(int)))(int)
 #endif
 {
 	return signal(signum, handler);
@@ -45,7 +45,7 @@ void (*sighandlers[NUMOFSIGNALS])(int);
 
 static volatile sig_atomic_t sigcount, caught[NUMOFSIGNALS];
 
-extern void catcher(int s) {
+static void catcher(int s) {
 	if (caught[s] == 0) {
 		sigcount++;
 		caught[s] = 1;
