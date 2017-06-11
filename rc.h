@@ -62,9 +62,17 @@ typedef enum redirtype {
 } redirtype;
 
 typedef bool (*Conv)(Format *, int);
+
 #define USE_FUNCTION_TYPE 1
+
 #if USE_FUNCTION_TYPE
 typedef void (*SignalHandler)(int);
+#define DECL_SIGNAL_HANDLER_PTR(handler) SignalHandler handler
+#define DECL_SIGNAL_HANDLER_FUN(func, sig, handler) SignalHandler func(int sig, SignalHandler handler)
+#else
+#define DECL_SIGNAL_HANDLER_PTR(handler) void (*handler)(int)
+#define DECL_SIGNAL_HANDLER_FUN(func, sig, handler) \
+    DECL_SIGNAL_HANDLER_PTR(func(int sig, DECL_SIGNAL_HANDLER_PTR(handler)))
 #endif
 
 union Edata {
@@ -371,13 +379,8 @@ extern void doredirs(void);
 /* signal.c */
 extern void initsignal(void);
 extern void sigchk(void);
-#if USE_FUNCTION_TYPE
-extern SignalHandler rc_signal(int, SignalHandler);
-extern SignalHandler sighandlers[];
-#else
-extern void (*rc_signal(int, void (*)(int)))(int);
-extern void (*sighandlers[])(int);
-#endif
+extern DECL_SIGNAL_HANDLER_FUN(rc_signal, sig, handler);
+extern DECL_SIGNAL_HANDLER_PTR(sighandlers[]);
 
 
 /* status.c */
