@@ -11,7 +11,7 @@
 
 
 #if HAVE_SIGACTION
-static DECL_SIGNAL_HANDLER_FUN(sys_signal, signum, handler)
+static SignalHandler sys_signal(int signum, SignalHandler handler)
 {
 	struct sigaction new, old;
 
@@ -23,13 +23,13 @@ static DECL_SIGNAL_HANDLER_FUN(sys_signal, signum, handler)
 	return SIG_DFL;
 }
 #else
-static DECL_SIGNAL_HANDLER_FUN(sys_signal, signum, handler)
+static SignalHandler sys_signal(int signum, SignalHandler handler)
 {
 	return signal(signum, handler);
 }
 #endif
 
-DECL_SIGNAL_HANDLER_PTR(sighandlers[NUMOFSIGNALS]);
+SignalHandler sighandlers[NUMOFSIGNALS];
 
 static volatile sig_atomic_t sigcount, caught[NUMOFSIGNALS];
 
@@ -48,7 +48,7 @@ static void catcher(int s) {
 }
 
 extern void sigchk() {
-	DECL_SIGNAL_HANDLER_PTR(h);
+	SignalHandler h;
 	int s, i;
 
 	if (sigcount == 0)
@@ -71,9 +71,9 @@ extern void sigchk() {
 	(*h)(s);
 }
 
-extern DECL_SIGNAL_HANDLER_FUN(rc_signal, s, h)
+extern SignalHandler rc_signal(int s, SignalHandler h)
 {
-	DECL_SIGNAL_HANDLER_PTR(old);
+	SignalHandler old;
 	sigchk();
 	old = sighandlers[s];
 	sighandlers[s] = h;
@@ -85,7 +85,7 @@ extern DECL_SIGNAL_HANDLER_FUN(rc_signal, s, h)
 }
 
 extern void initsignal() {
-	DECL_SIGNAL_HANDLER_PTR(h);
+	SignalHandler h;
 	int i;
 
 #if HAVE_SYSV_SIGCLD

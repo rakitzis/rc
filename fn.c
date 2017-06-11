@@ -16,9 +16,9 @@ static void fn_handler(int), dud_handler(int);
 static bool runexit = FALSE;
 static Node *handlers[NUMOFSIGNALS], null;
 
-static DECL_SIGNAL_HANDLER_PTR(def_sigint) = SIG_DFL;
-static DECL_SIGNAL_HANDLER_PTR(def_sigquit) = SIG_DFL;
-static DECL_SIGNAL_HANDLER_PTR(def_sigterm) = SIG_DFL;
+static SignalHandler def_sigint = SIG_DFL;
+static SignalHandler def_sigquit = SIG_DFL;
+static SignalHandler def_sigterm = SIG_DFL;
 
 /*
    Set signals to default values for rc. This means that interactive
