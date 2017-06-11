@@ -215,13 +215,9 @@ static void inittab(void) {
 		fmttab[i] = digitconv;
 }
 
-#if USE_FUNCTION_TYPE
 extern Conv fmtinstall(int c, Conv f)
-#else
-extern bool (*fmtinstall(int c, bool (*f)(Format *, int)))(Format *, int)
-#endif
 {
-	Conv oldf;
+    Conv oldf;
 	if (fmttab[0] == NULL)
 		inittab();
 	c &= MAXCONV - 1;

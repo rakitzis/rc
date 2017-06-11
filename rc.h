@@ -61,19 +61,10 @@ typedef enum redirtype {
 	rFrom, rCreate, rAppend, rHeredoc, rHerestring
 } redirtype;
 
+
 typedef bool (*Conv)(Format *, int);
-
-#define USE_FUNCTION_TYPE 1
-
-#if USE_FUNCTION_TYPE
 typedef void (*SignalHandler)(int);
-#define DECL_SIGNAL_HANDLER_PTR(handler) SignalHandler handler
-#define DECL_SIGNAL_HANDLER_FUN(func, sig, handler) SignalHandler func(int sig, SignalHandler handler)
-#else
-#define DECL_SIGNAL_HANDLER_PTR(handler) void (*handler)(int)
-#define DECL_SIGNAL_HANDLER_FUN(func, sig, handler) \
-    DECL_SIGNAL_HANDLER_PTR(func(int sig, DECL_SIGNAL_HANDLER_PTR(handler)))
-#endif
+
 
 union Edata {
 	Jbwrap *jb;
@@ -327,16 +318,14 @@ extern bool makeblocking(int);
 extern bool makesamepgrp(int);
 
 /* print.c */
-#if USE_FUNCTION_TYPE
-extern Conv fmtinstall(int, Conv);
 /*
-   The following prototype should be:
-        extern Conv fmtinstall(int, Conv);
-   but this freaks out SGI's compiler under IRIX3.3.2
+ * The following prototype should be:
+ *      extern Conv fmtinstall(int, Conv);
+ * but this freaks out SGI's compiler under IRIX3.3.2
+ * extern bool (*fmtinstall(int, bool (*)(Format *, int)))(Format *, int);
 */
-#else
-extern bool (*fmtinstall(int, bool (*)(Format *, int)))(Format *, int);
-#endif
+extern Conv fmtinstall(int, Conv);
+
 extern int fmtprint(Format *, const char *,...);
 extern void fmtcat(Format *, const char *);
 extern int fprint(int fd, const char *fmt,...);
@@ -379,8 +368,8 @@ extern void doredirs(void);
 /* signal.c */
 extern void initsignal(void);
 extern void sigchk(void);
-extern DECL_SIGNAL_HANDLER_FUN(rc_signal, sig, handler);
-extern DECL_SIGNAL_HANDLER_PTR(sighandlers[]);
+extern SignalHandler rc_signal(int sig, SignalHandler handler);
+extern SignalHandler sighandlers[];
 
 
 /* status.c */
