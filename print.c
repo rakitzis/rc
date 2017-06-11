@@ -217,7 +217,7 @@ static void inittab(void) {
 
 extern Conv fmtinstall(int c, Conv f)
 {
-    Conv oldf;
+	Conv oldf;
 	if (fmttab[0] == NULL)
 		inittab();
 	c &= MAXCONV - 1;
