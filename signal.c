@@ -11,11 +11,7 @@
 
 
 #if HAVE_SIGACTION
-#if USE_FUNCTION_TYPE
-static SignalHandler sys_signal(int signum, SignalHandler handler)
-#else
-static void (*sys_signal(int signum, void (*handler)(int)))(int)
-#endif
+static DECL_SIGNAL_HANDLER_FUN(sys_signal, signum, handler)
 {
 	struct sigaction new, old;
 
@@ -27,21 +23,13 @@ static void (*sys_signal(int signum, void (*handler)(int)))(int)
 	return SIG_DFL;
 }
 #else
-#if USE_FUNCTION_TYPE
-static SignalHandler sys_signal(int signum, SignalHandler handler)
-#else
-static void (*sys_signal(int signum, void (*handler)(int)))(int)
-#endif
+static DECL_SIGNAL_HANDLER_FUN(sys_signal, signum, handler)
 {
 	return signal(signum, handler);
 }
 #endif
 
-#if USE_FUNCTION_TYPE
-SignalHandler sighandlers[NUMOFSIGNALS];
-#else
-void (*sighandlers[NUMOFSIGNALS])(int);
-#endif
+DECL_SIGNAL_HANDLER_PTR(sighandlers[NUMOFSIGNALS]);
 
 static volatile sig_atomic_t sigcount, caught[NUMOFSIGNALS];
 
@@ -60,11 +48,7 @@ static void catcher(int s) {
 }
 
 extern void sigchk() {
-#if USE_FUNCTION_TYPE
-	SignalHandler h;
-#else
-	void (*h)(int);
-#endif
+	DECL_SIGNAL_HANDLER_PTR(h);
 	int s, i;
 
 	if (sigcount == 0)
@@ -87,17 +71,9 @@ extern void sigchk() {
 	(*h)(s);
 }
 
-#if USE_FUNCTION_TYPE
-SignalHandler rc_signal(int s, SignalHandler h)
-#else
-extern void (*rc_signal(int s, void (*h)(int)))(int)
-#endif
+extern DECL_SIGNAL_HANDLER_FUN(rc_signal, s, h)
 {
-#if USE_FUNCTION_TYPE
-	SignalHandler old;
-#else
-	void (*old)(int);
-#endif
+	DECL_SIGNAL_HANDLER_PTR(old);
 	sigchk();
 	old = sighandlers[s];
 	sighandlers[s] = h;
@@ -109,11 +85,7 @@ extern void (*rc_signal(int s, void (*h)(int)))(int)
 }
 
 extern void initsignal() {
-#if USE_FUNCTION_TYPE
-	SignalHandler h;
-#else
-	void (*h)(int);
-#endif
+	DECL_SIGNAL_HANDLER_PTR(h);
 	int i;
 
 #if HAVE_SYSV_SIGCLD
