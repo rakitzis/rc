@@ -21,6 +21,7 @@ Node *parsetree;	/* not using yylval because bison declares it as an auto */
 %left ANDAND OROR '\n'
 %left BANG SUBSHELL
 %left PIPE
+%left PREDIR /* fictitious */
 %right '$' 
 %left SUB
 /*
@@ -110,7 +111,7 @@ cmd	: /* empty */	%prec WHILE		{ $$ = NULL; }
 	| cmd ANDAND optnl cmd			{ $$ = mk(nAndalso,$1,$4); }
 	| cmd OROR optnl cmd			{ $$ = mk(nOrelse,$1,$4); }
  	| cmd PIPE optnl cmd			{ $$ = mk(nPipe,$2.left,$2.right,$1,$4); }
-	| redir cmd	%prec BANG		{ $$ = ($2 != NULL ? mk(nPre,$1,$2) : $1); }
+	| redir cmd	%prec PREDIR		{ $$ = ($2 != NULL ? mk(nPre,$1,$2) : $1); }
 	| assign cmd	%prec BANG		{ $$ = ($2 != NULL ? mk(nPre,$1,$2) : $1); }
 	| BANG optcaret cmd			{ $$ = mk(nBang,$3); }
 	| SUBSHELL optcaret cmd			{ $$ = mk(nSubshell,$3); }
