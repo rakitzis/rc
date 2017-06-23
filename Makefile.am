@@ -19,6 +19,10 @@ else
 SYSTEM = system.o
 endif
 
+if AMC_DEVELOP
+DEVELOP = develop.o
+endif
+
 bin_PROGRAMS = rc
 noinst_PROGRAMS = mksignal mkstatval tripping $(HISTORY)
 
@@ -26,8 +30,8 @@ rc_SOURCES = builtins.c except.c exec.c fn.c footobar.c getopt.c glob.c glom.c h
 
 EXTRA_rc_SOURCES = addon.c edit-edit.c edit-editline.c edit-null.c edit-readline.c edit-vrl.c execve.c system.c system-bsd.c
 
-rc_DEPENDENCIES = sigmsgs.o $(ADDON) $(EDIT) $(EXECVE) $(SYSTEM)
-rc_LDADD = sigmsgs.o $(ADDON) $(EDIT) $(EXECVE) $(SYSTEM)
+rc_DEPENDENCIES = sigmsgs.o $(ADDON) $(DEVELOP) $(EDIT) $(EXECVE) $(SYSTEM)
+rc_LDADD = sigmsgs.o $(ADDON) $(DEVELOP) $(EDIT) $(EXECVE) $(SYSTEM)
 
 noinst_HEADERS = edit.h getgroups.h input.h jbwrap.h parse.h proto.h rc.h rlimit.h stat.h wait.h
 

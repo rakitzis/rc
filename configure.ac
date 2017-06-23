@@ -145,6 +145,19 @@ yes)	AC_CACHE_CHECK(extant directories for default path, rc_cv_def_path,[
 	;;
 esac
 
+
+AC_ARG_ENABLE(develop,
+	[  --enable-develop        Include extra code for developers],[
+	case "$enableval" in
+	yes)
+		rc_develop=true
+		AC_DEFINE([RC_DEVELOP], 1, [Enable developer options]) ;;
+	no)  ;;
+	*)   AC_MSG_ERROR([bad value $enableval for --enable-develop]) ;;
+	esac])
+AM_CONDITIONAL(AMC_DEVELOP, test "$rc_develop" = true)
+
+
 AC_ARG_WITH(history,
 	[  --with-history          Build history subprograms],[
 	case "$withval" in

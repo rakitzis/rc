@@ -4,6 +4,7 @@
 
 #include <errno.h>
 
+#include "develop.h"
 #include "edit.h"
 #include "input.h"
 #include "jbwrap.h"
@@ -306,6 +307,8 @@ extern Node *doit(bool clobberexecit) {
 			rc_raise(eError);
 		eof = (lastchar == EOF); /* "lastchar" can be clobbered during a walk() */
 		if (parsetree != NULL) {
+			if (RC_DEVELOP)
+                                tree_dump(parsetree);
 			if (execit)
 				walk(parsetree, TRUE);
 			else if (dashex && dashen)
