@@ -18,6 +18,7 @@ void *edit_begin(int fd) {
 	List *hist;
 	struct cookie *c;
 
+	rl_initialize();
 	rl_catch_signals = 0;
 	rl_completer_quote_characters = "'";
 	rl_filename_quote_characters = "\t\n !#$&'()*;<=>?@[\\]^`{|}~";
@@ -49,6 +50,7 @@ char *edit_alloc(void *cookie, size_t *count) {
 	oldint = sys_signal(SIGINT, edit_catcher);
 	oldquit = sys_signal(SIGQUIT, edit_catcher);
 
+	rl_reset_screen_size();
 	c->buffer = readline(prompt);
 
 	sys_signal(SIGINT, oldint);
