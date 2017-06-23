@@ -25,6 +25,7 @@ esac
 AC_SYS_LARGEFILE
 
 AC_PROG_CPP
+AC_PROG_YACC
 AC_CHECK_PROGS(LN, ln cp)
 
 AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
@@ -144,6 +145,19 @@ yes)	AC_CACHE_CHECK(extant directories for default path, rc_cv_def_path,[
 	;;
 esac
 
+
+AC_ARG_ENABLE(develop,
+	[  --enable-develop        Include extra code for developers],[
+	case "$enableval" in
+	yes)
+		rc_develop=true
+		AC_DEFINE([RC_DEVELOP], 1, [Enable developer options]) ;;
+	no)  ;;
+	*)   AC_MSG_ERROR([bad value $enableval for --enable-develop]) ;;
+	esac])
+AM_CONDITIONAL(AMC_DEVELOP, test "$rc_develop" = true)
+
+
 AC_ARG_WITH(history,
 	[  --with-history          Build history subprograms],[
 	case "$withval" in
@@ -243,5 +257,6 @@ dnl AM_CONDITIONAL(AMC_READLINE, test "${with_readline+set}" = set)
 
 dnl For some reason CPPFLAGS doesn't get propagated.
 dnl AC_SUBST(CPPFLAGS)
+
 
 AC_OUTPUT(Makefile)

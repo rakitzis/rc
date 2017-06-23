@@ -935,4 +935,8 @@ testCondExit false 'false && false'       (exits when the first command in '"&&"
 
 fn testCondExit
 #############################################################################
+# test for counter intuitive redirection parse
+A=``($nl){ $rc -c 'mkdir / >[2=1] | tr a-z A-Z' }
+B=``($nl){ $rc -c '>[2=1] mkdir / | tr a-z A-Z' }
+~ $A $B || fail counter intuitive redirection bug, $A '!=' $B
 
