@@ -603,9 +603,14 @@ submatch 'echo foo = bar' 'foo = bar' 'unquoted equals 2'
 submatch 'echo foo=bar' 'foo=bar' 'unquoted equals 2'
 submatch 'echo foo=' 'foo=' 'unquoted equals 3'
 submatch 'echo =bar; whatis -v echo' 'echo=bar' 'unquoted equals 4'
-###############################################################
+
+# test for github issue #34
 X=`{ $rc -ec 'b=true; while($b){b=false}; echo YYY' }
 if (! ~ $X YYY) {
     fail '"rc -e" exits when condition in the while statement fails in the second iteration'
 }
-###############################################################
+
+# test for counter intuitive redirection parse
+A=``($nl){ $rc -c 'mkdir / >[2=1] | tr a-z A-Z' }
+B=``($nl){ $rc -c '>[2=1] mkdir / | tr a-z A-Z' }
+~ $A $B || fail counter intuitive redirection bug, $A '!=' $B
