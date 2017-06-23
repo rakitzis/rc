@@ -25,6 +25,7 @@ esac
 AC_SYS_LARGEFILE
 
 AC_PROG_CPP
+AC_PROG_YACC
 AC_CHECK_PROGS(LN, ln cp)
 
 AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
@@ -243,5 +244,6 @@ dnl AM_CONDITIONAL(AMC_READLINE, test "${with_readline+set}" = set)
 
 dnl For some reason CPPFLAGS doesn't get propagated.
 dnl AC_SUBST(CPPFLAGS)
+
 
 AC_OUTPUT(Makefile)
