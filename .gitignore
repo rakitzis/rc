@@ -22,8 +22,8 @@ mkstatval
 *.o
 parse.c
 parse.h
-calc.tab.h
-calc.tab.c
+calc.h
+calc.c
 rc
 sigmsgs.c
 sigmsgs.h

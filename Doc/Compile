@@ -14,7 +14,6 @@ FORCE_GCC=false
 
 Clobber=true 
 Yydebug=true
-Yyacc = false
 Fortify=2
 CheckTime=false
 Sanitize=false
@@ -33,9 +32,6 @@ while (! ~ $#* 0) {
     case x-no-yydebug x--no-yydebug x-noyydebug x--noyydebug
         Yydebug=false
         
-    case x-yacc x--yacc
-        Yyacc = true
-
     case x--check_time x--check-time
         CheckTime=true
 
@@ -355,22 +351,34 @@ if (~ $objDir ()) {
 ########################################################################################
 YaccExe=byacc
 yaccOpts = (-t -v -d)
-if ($Yyacc || ! test -r parse.c || ! test -r parse.h) {
-    if ({! $CheckTime} || {! test parse.c -nt parse.y}) {
-        cmd=($YaccExe $yaccOpts -o parse.c parse.y)
+
+fn RunYacc { stem=() args=() yFile=() cFile=() hFile=() run=() {
+
+    stem=$1
+    shift
+    args=$*
+
+    yFile=$stem.y cFile=$stem.c hFile=$stem.h run=false
+    if ($CheckTime) {
+        if (test -r $cFile -a -r $hFile && test $cFile -nt $yFile -a $hFile -nt $yFile) {
+            run = false
+        } else {
+            run = true
+        }
+    } else {
+        run = true
+    }
+
+    if ($run) {
+        cmd=($YaccExe $yaccOpts $args -o $cFile $yFile)
         echo $cmd
         $cmd
     }
-}
-if ($Yyacc || ! test -r calc.c || ! test -r calc.h) {
-    if ($AddOn) {
-        if ({! $CheckTime} || {! test calc.c -nt calc.y}) {
-            cmd=($YaccExe $yaccOpts -P -o calc.c -p calc calc.y)
-            echo $cmd
-            $cmd
-        }
-    }
-}
+}}
+
+########################################################################################
+RunYacc parse
+RunYacc calc   -P -p calc
 
 ########################################################################################
 for (s in $sources) {
