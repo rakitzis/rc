@@ -2,7 +2,7 @@
 #define CALC_H_INCLUDE
 
 typedef long int CalcValue;
-#include "calc.tab.h"
+#include "calc.h"
 
 typedef calctoken CalcToken;
 

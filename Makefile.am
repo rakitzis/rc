@@ -62,8 +62,8 @@ parse.c parse.h: $(srcdir)/parse.y
 	mv y.tab.c parse.c
 	mv y.tab.h parse.h
 
-calc.tab.c: $(srcdir)/calc.y
-	$(YACC) -d -b calc -p calc $(srcdir)/calc.y
+calc.c calc.h : $(srcdir)/calc.y
+	$(YACC) -d -o calc -p calc $(srcdir)/calc.y
 
 check: trip
 
