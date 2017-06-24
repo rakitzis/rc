@@ -10,7 +10,7 @@
 
 extern int printf(const char *, ...);
 
-#include "calc.h"
+#include "calc_decl.h"
 
 
 
