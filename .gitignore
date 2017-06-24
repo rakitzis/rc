@@ -1,5 +1,5 @@
 .deps/
-obj
+obj/
 aclocal.m4
 autom4te.cache/
 *~
@@ -22,6 +22,8 @@ mkstatval
 *.o
 parse.c
 parse.h
+calc.tab.h
+calc.tab.c
 rc
 sigmsgs.c
 sigmsgs.h
