@@ -358,15 +358,11 @@ fn RunYacc { stem=() args=() yFile=() cFile=() hFile=() run=() {
     shift
     args=$*
 
-    yFile=$stem.y cFile=$stem.c hFile=$stem.h run=false
-    if ($CheckTime) {
-        if (test -r $cFile -a -r $hFile && test $cFile -nt $yFile -a $hFile -nt $yFile) {
-            run = false
-        } else {
-            run = true
-        }
-    } else {
-        run = true
+    yFile=$stem.y cFile=$stem.c hFile=$stem.h
+    run=true
+
+    if ($CheckTime && test -r $cFile -a -r $hFile && test $cFile -nt $yFile -a $hFile -nt $yFile) {
+        run = false
     }
 
     if ($run) {
