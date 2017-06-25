@@ -10,8 +10,8 @@
 #include "jbwrap.h"
 
 
-#if HAVE_SIGACTION
 SignalHandler sys_signal(int signum, SignalHandler handler)
+#if HAVE_SIGACTION
 {
 	struct sigaction new, old;
 
@@ -23,7 +23,6 @@ SignalHandler sys_signal(int signum, SignalHandler handler)
 	return SIG_DFL;
 }
 #else
-SignalHandler sys_signal(int signum, SignalHandler handler)
 {
 	return signal(signum, handler);
 }
