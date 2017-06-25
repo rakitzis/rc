@@ -369,6 +369,7 @@ extern void doredirs(void);
 extern void initsignal(void);
 extern void sigchk(void);
 extern SignalHandler rc_signal(int, SignalHandler);
+extern SignalHandler sys_signal(int, SignalHandler);
 extern SignalHandler sighandlers[];
 
 

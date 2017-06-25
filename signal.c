@@ -11,7 +11,7 @@
 
 
 #if HAVE_SIGACTION
-static SignalHandler sys_signal(int signum, SignalHandler handler)
+SignalHandler sys_signal(int signum, SignalHandler handler)
 {
 	struct sigaction new, old;
 
@@ -23,7 +23,7 @@ static SignalHandler sys_signal(int signum, SignalHandler handler)
 	return SIG_DFL;
 }
 #else
-static SignalHandler sys_signal(int signum, SignalHandler handler)
+SignalHandler sys_signal(int signum, SignalHandler handler)
 {
 	return signal(signum, handler);
 }
