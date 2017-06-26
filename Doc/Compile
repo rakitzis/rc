@@ -29,6 +29,9 @@ while (! ~ $#* 0) {
     case x-noclob* x--noclob*
         Clobber=false
 
+    case x-yydebug x--yydebug
+        Yydebug=true
+        
     case x-no-yydebug x--no-yydebug x-noyydebug x--noyydebug
         Yydebug=false
         
