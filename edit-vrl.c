@@ -8,7 +8,7 @@
 extern char *readline(char *);
 extern void add_history(char *);
 
-bool editing = 1;
+const bool editing = 1;
 
 struct cookie {
 	char *buffer;
