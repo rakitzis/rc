@@ -1,4 +1,4 @@
-extern bool editing;
+extern const bool editing;
 
 extern void *edit_begin(int fd);
 
