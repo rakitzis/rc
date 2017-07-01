@@ -29,7 +29,7 @@ void *edit_begin(int fd) {
 }
 
 /*
-static SignalHandler oldint, oldquit;
+static Sigfunc *oldint, *oldquit;
 
 static void edit_catcher(int sig) {
 	sys_signal(SIGINT, oldint);

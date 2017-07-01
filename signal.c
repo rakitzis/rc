@@ -10,7 +10,7 @@
 #include "jbwrap.h"
 
 
-SignalHandler sys_signal(int signum, SignalHandler handler)
+Sigfunc* sys_signal(int signum, Sigfunc* handler)
 #if HAVE_SIGACTION
 {
 	struct sigaction new, old;
@@ -28,7 +28,7 @@ SignalHandler sys_signal(int signum, SignalHandler handler)
 }
 #endif
 
-SignalHandler sighandlers[NUMOFSIGNALS];
+Sigfunc* sighandlers[NUMOFSIGNALS];
 
 static volatile sig_atomic_t sigcount, caught[NUMOFSIGNALS];
 
@@ -47,7 +47,7 @@ static void catcher(int s) {
 }
 
 extern void sigchk() {
-	SignalHandler h;
+	Sigfunc* h;
 	int s, i;
 
 	if (sigcount == 0)
@@ -70,9 +70,9 @@ extern void sigchk() {
 	(*h)(s);
 }
 
-extern SignalHandler rc_signal(int s, SignalHandler h)
+extern Sigfunc* rc_signal(int s, Sigfunc* h)
 {
-	SignalHandler old;
+	Sigfunc* old;
 	sigchk();
 	old = sighandlers[s];
 	sighandlers[s] = h;
@@ -84,7 +84,7 @@ extern SignalHandler rc_signal(int s, SignalHandler h)
 }
 
 extern void initsignal() {
-	SignalHandler h;
+	Sigfunc* h;
 	int i;
 
 #if HAVE_SYSV_SIGCLD

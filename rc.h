@@ -63,7 +63,7 @@ typedef enum redirtype {
 
 
 typedef bool (*Conv)(Format *, int);
-typedef void (*SignalHandler)(int);
+typedef void Sigfunc(int); /* See Advanced Programming in Unix Env - Stevens, section 10.3 */
 
 
 union Edata {
@@ -368,9 +368,9 @@ extern void doredirs(void);
 /* signal.c */
 extern void initsignal(void);
 extern void sigchk(void);
-extern SignalHandler rc_signal(int, SignalHandler);
-extern SignalHandler sys_signal(int, SignalHandler);
-extern SignalHandler sighandlers[];
+extern Sigfunc* rc_signal(int, Sigfunc*);
+extern Sigfunc* sys_signal(int, Sigfunc*);
+extern Sigfunc* sighandlers[];
 
 
 /* status.c */
