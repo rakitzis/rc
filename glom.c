@@ -149,28 +149,30 @@ extern void assign(const List *s1, List *s2, bool stack) {
 	List *val = s2;
 	if (s1 == NULL)
 		rc_error("null variable name");
-	if (s1->n != NULL)
+	else if (s1->n != NULL)
 		rc_error("multi-word variable name");
-	if (*s1->w == '\0')
+	else if (*s1->w == '\0')
 		rc_error("zero-length variable name");
-	if (a2u(s1->w) != -1)
+	else if (a2u(s1->w) != -1)
 		rc_error("numeric variable name");
-	if (strchr(s1->w, '=') != NULL)
+	else if (strchr(s1->w, '=') != NULL)
 		rc_error("'=' in variable name");
-	if (find_str(s1->w, read_only, arraysize(read_only)) >= 0) {
-		return;
-	}
-	if (*s1->w == '*' && s1->w[1] == '\0')
-		val = append(varlookup("0"), s2); /* preserve $0 when * is assigned explicitly */
-	if (s2 != NULL || stack) {
-		if (dashex)
-			prettyprint_var(2, s1->w, val);
-		varassign(s1->w, val, stack);
-		alias(s1->w, varlookup(s1->w), stack);
-	} else {
-		if (dashex)
-			prettyprint_var(2, s1->w, NULL);
-		varrm(s1->w, stack);
+	else {
+		if (find_str(s1->w, read_only, arraysize(read_only)) >= 0) {
+			return;
+		}
+		if (*s1->w == '*' && s1->w[1] == '\0')
+			val = append(varlookup("0"), s2); /* preserve $0 when * is assigned explicitly */
+		if (s2 != NULL || stack) {
+			if (dashex)
+				prettyprint_var(2, s1->w, val);
+			varassign(s1->w, val, stack);
+			alias(s1->w, varlookup(s1->w), stack);
+		} else {
+			if (dashex)
+				prettyprint_var(2, s1->w, NULL);
+			varrm(s1->w, stack);
+		}
 	}
 }
 
@@ -427,24 +429,27 @@ extern List *glom(const Node *n) {
 		*/
 		if ((v = glom(n->u[0].p)) == NULL)
 			rc_error("null variable name");
-		if (v->n != NULL)
+		else if (v->n != NULL)
 			rc_error("multi-word variable name");
-		if (*v->w == '\0')
+		else if (*v->w == '\0')
 			rc_error("zero-length variable name");
-		v = (*v->w == '*' && v->w[1] == '\0') ? varlookup(v->w)->n : varlookup(v->w);
-		switch (n->type) {
-		default:
-			panic("unexpected node in glom");
-			exit(1);
-			/* NOTREACHED */
-		case nCount:
-			return count(v);
-		case nFlat:
-			return flatten(v);
-		case nVar:
-			return v;
-		case nVarsub:
-			return varsub(v, glom(n->u[1].p));
+		else {
+			v = (*v->w == '*' && v->w[1] == '\0') ? varlookup(v->w)->n : varlookup(v->w);
+			switch (n->type) {
+			default:
+				panic("unexpected node in glom");
+				exit(1);
+				/* NOTREACHED */
+			case nCount:
+				return count(v);
+			case nFlat:
+				return flatten(v);
+			case nVar:
+				return v;
+			case nVarsub:
+				return varsub(v, glom(n->u[1].p));
+			}
 		}
+		return NULL;
 	}
 }

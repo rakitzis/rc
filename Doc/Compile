@@ -7,56 +7,60 @@ fn Error { echo >[1=2] $* }
 fn Fatal { Error $*; exit 1 }
 
 ########################################################################################
-objDir=./obj
-FORCE_CLANG=false
-FORCE_GCC=false
-# DESCRIPTION=$(git describe || echo '(git description unavailable)')
+objDir = ./obj
+FORCE_CLANG = false
+FORCE_GCC = false
+# DESCRIPTION = $(git describe || echo '(git description unavailable)')
 
-Clobber=true 
-Yydebug=true
-Fortify=2
-CheckTime=false
-Sanitize=false
-Offset=false
+Clobber = true 
+Yydebug = true
+Fortify = 2
+CheckTime = false
+Sanitize = false
+Offset = false
+ScanCmd = ()
 
 while (! ~ $#* 0) {
     switch(x$1) {
     case x-force-clang  x--force-clang x-clang x--clang
-        FORCE_CLANG=true
+        FORCE_CLANG = true
     case x-force-gcc    x--force-gcc   x-gcc   x--gcc
-        FORCE_GCC=true
+        FORCE_GCC = true
 
     case x-noclob* x--noclob*
-        Clobber=false
+        Clobber = false
 
     case x-yydebug x--yydebug
-        Yydebug=true
+        Yydebug = true
         
     case x-no-yydebug x--no-yydebug x-noyydebug x--noyydebug
-        Yydebug=false
+        Yydebug = false
         
     case x--check_time x--check-time
-        CheckTime=true
+        CheckTime = true
 
     case x--opt 
         if (~ $#* 0 1) {
             Fatal Option $1 needs value
         }
-        OPT=$2
+        OPT = $2
         shift
 
     case x--fortify
         if (~ $#* 0 1) {
             Fatal Option $1 needs value
         }
-        Fortify=$2
+        Fortify = $2
         shift
 
     case x--sanitize
-        Sanitize=true
+        Sanitize = true
 
     case x--offset
-        Offset=true
+        Offset = true
+
+    case x--scan
+        ScanCmd = scan-build
 
     case x-*
         Fatal Bad option $1
@@ -67,28 +71,28 @@ while (! ~ $#* 0) {
 }
 
 ########################################################################################
-AddOn=false
-AddOn=true    ## for builtins: calc, kill
+AddOn = false
+AddOn = true    ## for builtins: calc, kill
 
 ########################################################################################
 # Standard options
 if (~ $OPT ()) {
-    OptimizationOpts=()
-    OptimizationOpts=(-O2)
-    OptimizationOpts=(-O3)
+    OptimizationOpts = ()
+    OptimizationOpts = (-O2)
+    OptimizationOpts = (-O3)
 } else {
-    OptimizationOpts=(-O$OPT)
+    OptimizationOpts = (-O$OPT)
 }
 if (~ $OPT 0) {
-    Fortify=()
+    Fortify = ()
 }
 
-LangOpts=(
+LangOpts = (
     -m32
     '-std=c99'
 )
 
-LangOpts=(
+LangOpts = (
     #-m32
     '-std=gnu99'
     -m64
@@ -101,26 +105,26 @@ CommonOpts = (
 
 ########################################################################################
 # Security options (stack randomization, etc.)
-SecurityCompileOpts=(
+SecurityCompileOpts = (
     -fPIE
     ## -fstack-protector does not work on older systems (e.g., RedHat 4, 5)
     -fstack-protector
 )
 if (! ~ $#Fortify 0) {
-    SecurityCompileOpts=(
+    SecurityCompileOpts = (
         $SecurityCompileOpts
         '-D_FORTIFY_SOURCE='$Fortify
     )
 }
 
-SecurityLinkOpts=(
+SecurityLinkOpts = (
     -pie 
     -Wl,-z,now,-z,relro   ## a single option / no spaces 
 )
 
 ########################################################################################
 # Other options
-RegularCompileOpts=(
+RegularCompileOpts = (
     -DHAVE_CONFIG_H
     -I.
     -g  
@@ -135,13 +139,13 @@ RegularCompileOpts=(
     # -Werror  ## makes warnings errors
 )
 if ($Yydebug) {
-    RegularCompileOpts=(
+    RegularCompileOpts = (
         $RegularCompileOpts
         '-DYYDEBUG=1'  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
     )
 }
 
-RegularLinkOpts=(
+RegularLinkOpts = (
     -Wall
     -g
 )
@@ -154,7 +158,7 @@ CompileOpts = (
     $SecurityCompileOpts
 )
 
-LinkOpts=(
+LinkOpts = (
     $CommonOpts
     $RegularLinkOpts
     $SecurityLinkOpts
@@ -163,21 +167,21 @@ LinkOpts=(
 ########################################################################################
 # Clobbering by setjmp/longjmp
 if ($Clobber) {
-    Clobbered=(
+    Clobbered = (
         -Wclobbered
     )
 }
 if ($FORCE_CLANG) {
-    COMPILER=clang
+    COMPILER = clang
 } else if ($FORCE_GCC) {
-    COMPILER=gcc
+    COMPILER = gcc
 } else if (whatis clang >[2]/dev/null) {
-    COMPILER=clang
+    COMPILER = clang
 } else {
     if (~ $CC ()) {
-        COMPILER=gcc
+        COMPILER = gcc
     } else {
-        COMPILER=$CC
+        COMPILER = $CC
     }
 }
 whatis $COMPILER
@@ -185,36 +189,36 @@ $COMPILER --version
 
 ########################################################################################
 if ($Sanitize) {
-    CompileOpts=(
+    CompileOpts = (
         $CompileOpts
         -fsanitize=undefined
         #-fsanitize=address ## these two sanitize flags have problem in linking
         #-fsanitize=integer
     )
-    LinkOpts=(
+    LinkOpts = (
         $LinkOpts
         -lubsan
     )
 }
 if (~ $COMPILER clang) {
-    Offset=true
+    Offset = true
 }
 if ($Offset) {
-    CompileOpts=(
+    CompileOpts = (
         $CompileOpts
         -Wno-extended-offsetof
     )
 }
 
 if (~ $COMPILER clang) {
-    CompileOpts=(
+    CompileOpts = (
         $CompileOpts
     )
-    LinkOpts=(
+    LinkOpts = (
         $LinkOpts
     )
 } else {
-    CompileOpts=(
+    CompileOpts = (
         $CompileOpts
         $Clobbered
     )
@@ -228,7 +232,7 @@ if (! ~ $#objDir 0 && ! test -d $objDir) {
 }
 ########################################################################################
 ########################################################################################
-fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
+fn CompileWithOpts LinkWithOpts { cmd = () securityOpts = () allOpts = () {
     #--------------------------------------------------------------------
     if (~ $0 LinkWithOpts) {
         allOpts = ($LinkOpts)
@@ -236,21 +240,21 @@ fn CompileWithOpts LinkWithOpts { cmd=() securityOpts=() allOpts=() {
         allOpts = ($CompileOpts)
     }
     #--------------------------------------------------------------------
-    cmd = ($COMPILER $allOpts $*)
+    cmd = ($ScanCmd $COMPILER $allOpts $*)
     echo $cmd
     $cmd
     if (! ~ $status 0) {
-        STATUS=$status
+        STATUS = $status
     }
 }}
 
 ########################################################################################
-fn Compile LinkOneObj { f=$1 obj=() {
+fn Compile LinkOneObj { f = $1 obj = () {
     if (~ $objDir ()) {
         obj = $f.o
         exe = $f
     } else {
-        obj=$objDir/$f.o
+        obj = $objDir/$f.o
         if (~ $f *tripping*) {
             exe = $f
         } else {
@@ -299,14 +303,14 @@ $mkstatExe > statval.h
 ## CompileWithOpts rc source
 
 if ($AddOn) {
-    addon=(addon)
-    calc=(calc)
+    addon = (addon)
+    calc = (calc)
 } else {
-    addon=()
-    calc=()
+    addon = ()
+    calc = ()
 }
 
-sources=(
+sources = (
     $addon
     $calc
     builtins
@@ -352,24 +356,24 @@ if (~ $objDir ()) {
 }
 
 ########################################################################################
-YaccExe=byacc
+YaccExe = byacc
 yaccOpts = (-t -v -d)
 
-fn RunYacc { stem=() args=() yFile=() cFile=() hFile=() run=() {
+fn RunYacc { stem = () args = () yFile = () cFile = () hFile = () run = () {
 
-    stem=$1
+    stem = $1
     shift
-    args=$*
+    args = $*
 
-    yFile=$stem.y cFile=$stem.c hFile=$stem.h
-    run=true
+    yFile = $stem.y cFile = $stem.c hFile = $stem.h
+    run = true
 
     if ($CheckTime && test -r $cFile -a -r $hFile && test $cFile -nt $yFile -a $hFile -nt $yFile) {
         run = false
     }
 
     if ($run) {
-        cmd=($YaccExe $yaccOpts $args -o $cFile $yFile)
+        cmd = ($YaccExe $yaccOpts $args -o $cFile $yFile)
         echo $cmd
         $cmd
     }
