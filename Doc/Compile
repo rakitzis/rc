@@ -358,7 +358,9 @@ if (~ $objDir ()) {
 ########################################################################################
 if (whatis byacc >[2] /dev/null) {
     YaccExe = byacc
+    calc_opts = (-P)
 } else {
+    calc_opts = ()
     YaccExe = bison
 }
 yaccOpts = (-t -v -d)
@@ -386,7 +388,7 @@ fn RunYacc { stem = () args = () yFile = () cFile = () hFile = () run = () {
 
 ########################################################################################
 RunYacc parse
-RunYacc calc   -P -p calc
+RunYacc calc  $calc_opts  -p calc
 
 ########################################################################################
 for (s in $sources) {
