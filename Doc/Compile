@@ -356,7 +356,11 @@ if (~ $objDir ()) {
 }
 
 ########################################################################################
-YaccExe = byacc
+if (whatis byacc >[2] /dev/null) {
+    YaccExe = byacc
+} else {
+    YaccExe = bison
+}
 yaccOpts = (-t -v -d)
 
 fn RunYacc { stem = () args = () yFile = () cFile = () hFile = () run = () {
