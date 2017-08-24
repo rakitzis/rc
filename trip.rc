@@ -388,11 +388,11 @@ Pwd=`{/bin/pwd -P} cdpath=/ { # some local assignments
 		fail could not cd to '$home'
 
 	cdpath=/ cd tmp
-	if (!~ `{/bin/pwd P} `{sh -c 'cd /tmp; /bin/pwd -P'})
-	#	fail could not cd to /tmp
+	if (!~ `{/bin/pwd -P} `{sh -c 'cd /tmp; /bin/pwd -P'})
+		fail could not cd to /tmp
 
 	cd $Pwd
-	if (!~ `/bin/pwd `{sh -c 'cd $Pwd; /bin/pwd'})
+	if (!~ `{/bin/pwd -P} `{sh -c 'cd $Pwd; /bin/pwd -P'})
 		fail could not cd to current directory!
 	if (!~ $Pwd $pwd) {
 		fail 'Pwd('$Pwd') != pwd ('$pwd')' 
