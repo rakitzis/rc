@@ -143,7 +143,7 @@ static List *count(const List *l) {
 
 extern void assign(const List *s1, List *s2, bool stack) {
 	static const char* const read_only[] = {
-		"apid", "apids", "bqstatus", "pid", "ppid", "status",
+		"apid", "apids", "bqstatus", "pid", "ppid","pwd", "status",
 	};
 
 	List *val = s2;
