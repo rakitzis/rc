@@ -244,17 +244,17 @@ if (~ `{echo -n} ?)
 if (!~ `` '' {echo --} $nl)
 	fail echo --
 
-pwd=`/bin/pwd cdpath=/ { # some local assignments
+pwd=`{/bin/pwd -P} cdpath=/ { # some local assignments
 	home=/tmp cd
-	if (!~ `/bin/pwd `{sh -c 'cd /tmp; /bin/pwd'})
+	if (!~ `{/bin/pwd -P} `{sh -c 'cd /tmp; /bin/pwd -P'})
 		fail could not cd to '$home'
 
 	cdpath=/ cd tmp
-	if (!~ `/bin/pwd `{sh -c 'cd /tmp; /bin/pwd'})
+	if (!~ `{/bin/pwd -P} `{sh -c 'cd /tmp; /bin/pwd -P'})
 		fail could not cd to /tmp
 
 	cd $pwd
-	if (!~ `/bin/pwd `{sh -c 'cd $pwd; /bin/pwd'})
+	if (!~ `{/bin/pwd -P} `{sh -c 'cd $pwd; /bin/pwd -P'})
 		fail could not cd to current directory!
 }
 
