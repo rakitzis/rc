@@ -335,7 +335,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
         }
         break;
     case '\0':
-        tok = 0;
+        tok = (CalcToken)(0);
         break;
     default:
         tok = CALC_BAD_TOKEN;
