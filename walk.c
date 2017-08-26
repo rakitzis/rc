@@ -17,6 +17,7 @@ static bool haspreredir(Node *);
 static bool isallpre(Node *);
 static bool dofork(bool);
 static void dopipe(Node *);
+static void loop_body(Node* n);
 
 /* Tail-recursive version of walk() */
 
@@ -101,52 +102,58 @@ top:	sigchk();
 		WALK(true_cmd, parent);
 	}
 	case nWhile: {
-		Jbwrap j;
-		Edata jbreak;
-		Estack e1, e2;
-		bool testtrue, oldcond = cond;
+		Jbwrap break_jb;
+		Edata  break_data;
+		Estack break_stack;
+		bool testtrue;
+		const bool oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) { /* prevent spurious breaks inside test */
 			cond = oldcond;
 			break;
 		}
 		cond = oldcond;
-		if (sigsetjmp(j.j, 1))
+		if (sigsetjmp(break_jb.j, 1))
 			break;
-		jbreak.jb = &j;
-		except(eBreak, jbreak, &e1);
+		break_data.jb = &break_jb;
+		except(eBreak, break_data, &break_stack);
+
+		cond = oldcond;
 		do {
-			Edata block;
-			block.b = newblock();
-			except(eArena, block, &e2);
-			walk(n->u[1].p, TRUE);
+			Edata  iter_data;
+			Estack iter_stack;
+			iter_data.b = newblock();
+			except(eArena, iter_data, &iter_stack);
+			loop_body(n->u[1].p);
 			cond = TRUE;
 			testtrue = walk(n->u[0].p, TRUE);
 			cond = oldcond;
-			unexcept(); /* eArena */
+			unexcept(eArena);
 		} while (testtrue);
 		cond = oldcond;
-		unexcept(); /* eBreak */
+		unexcept(eBreak);
 		break;
 	}
 	case nForin: {
 		List *l, *var = glom(n->u[0].p);
-		Jbwrap j;
-		Estack e1, e2;
-		Edata jbreak;
-		if (sigsetjmp(j.j, 1))
+		Jbwrap break_jb;
+		Edata  break_data;
+		Estack break_stack;
+		if (sigsetjmp(break_jb.j, 1))
 			break;
-		jbreak.jb = &j;
-		except(eBreak, jbreak, &e1);
+		break_data.jb = &break_jb;
+		except(eBreak, break_data, &break_stack);
+
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			Edata block;
+			Edata  iter_data;
+			Estack iter_stack;
 			assign(var, word(l->w, NULL), FALSE);
-			block.b = newblock();
-			except(eArena, block, &e2);
-			walk(n->u[2].p, TRUE);
-			unexcept(); /* eArena */
+			iter_data.b = newblock();
+			except(eArena, iter_data, &iter_stack);
+			loop_body(n->u[2].p);
+			unexcept(eArena);
 		}
-		unexcept(); /* eBreak */
+		unexcept(eBreak);
 		break;
 	}
 	case nSubshell:
@@ -240,7 +247,7 @@ top:	sigchk();
 				except(eVarstack, var, &e);
 				walk(n->u[1].p, parent);
 				varrm(v->w, TRUE);
-				unexcept(); /* eVarstack */
+				unexcept(eVarstack);
 			}
 		} else
 			panic("unexpected node in preredir section of walk");
@@ -364,3 +371,27 @@ static void dopipe(Node *n) {
 	setpipestatus(stats, i);
 	sigchk();
 }
+
+/* From http://en.cppreference.com/w/c/program/setjmp
+ * According to the C standard setjmp() must appear only in the following 4 constructs:
+ *   1. switch (setjmp(args)) {statements}
+ *   2. if (setjmp(args) == Const) {statements} with any of 
+ *             operators: ==, !=, <, >, <=, >=
+ *   3. while (! setjmp(args)) {statements}
+ *   4. setjmp(args);
+*/
+static void loop_body(Node* nd)
+{
+	Node *volatile n = nd;
+	Jbwrap cont_jb;
+	Edata  cont_data;
+	Estack cont_stack;
+
+	if (sigsetjmp(cont_jb.j, 1) == 0) {
+		cont_data.jb = &cont_jb;
+		except(eContinue, cont_data, &cont_stack);
+		walk(n, TRUE);
+		unexcept(eContinue);
+	}
+}
+

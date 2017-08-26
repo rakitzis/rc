@@ -20,7 +20,7 @@
 #include "rlimit.h"
 #include "sigmsgs.h"
 
-static void b_break(char **), b_cd(char **), b_eval(char **), b_exit(char **),
+static void b_break(char **), b_cd(char **), b_continue(char **), b_eval(char **), b_exit(char **),
 	b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
 	b_wait(char **), b_whatis(char **);
 
@@ -39,6 +39,7 @@ static struct {
 	{ b_break,	"break" },
 	{ b_builtin,	"builtin" },
 	{ b_cd,		"cd" },
+	{ b_continue,   "continue" },
 #if RC_ECHO
 	{ b_echo,	"echo" },
 #endif
@@ -83,8 +84,8 @@ extern void funcall(char **av) {
 	except(eVarstack, star, &e2);
 	walk(treecpy(fnlookup(*av), nalloc), TRUE);
 	varrm("*", TRUE);
-	unexcept(); /* eVarstack */
-	unexcept(); /* eReturn */
+	unexcept(eVarstack); 
+	unexcept(eReturn); 
 }
 
 static void arg_count(char *name) {
@@ -214,6 +215,16 @@ static void b_break(char **av) {
 		return;
 	}
 	rc_raise(eBreak);
+}
+
+/* raise a "continue" exception to finish early an iteration of 'for' and 'while' loops */
+
+static void b_continue(char **av) {
+	if (av[1] != NULL) {
+		arg_count("continue");
+		return;
+	}
+	rc_raise(eContinue);
 }
 
 /* shift $* n places (default 1) */
@@ -401,7 +412,7 @@ extern void b_dot(char **av) {
 	except(eVarstack, star, &e);
 	doit(TRUE);
 	varrm("*", TRUE);
-	unexcept(); /* eVarstack */
+	unexcept(eVarstack);
 	interactive = old_i;
 }
 

@@ -41,7 +41,7 @@ typedef enum nodetype {
 } nodetype;
 
 typedef enum ecodes {
-	eError, eBreak, eReturn, eVarstack, eArena, eFifo, eFd
+	eError, eBreak, eReturn, eVarstack, eArena, eFifo, eFd, eContinue
 } ecodes;
 
 typedef enum bool {
@@ -185,7 +185,7 @@ extern bool outstanding_cmdarg(void);
 extern void pop_cmdarg(bool);
 extern void rc_raise(ecodes);
 extern void except(ecodes, Edata, Estack *);
-extern void unexcept(void);
+extern void unexcept(ecodes e);
 extern void rc_error(char *);
 extern void sigint(int);
 

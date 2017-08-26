@@ -22,13 +22,14 @@ extern void except(ecodes e, Edata data, Estack *ex) {
 	estack = ex;
 	estack->e = e;
 	estack->data = data;
-	if (e == eError || e == eBreak || e == eReturn)
+	if (e == eError || e == eBreak || e == eReturn || e == eContinue)
 		estack->interactive = interactive;
 }
 
 /* remove an exception, restore last interactive value */
 
-extern void unexcept() {
+extern void unexcept(ecodes e) {
+	assert(e == estack->e);
 	switch (estack->e) {
 	default:
 		break;
@@ -66,8 +67,10 @@ extern void rc_raise(ecodes e) {
 		exit(1); /* child processes exit on an error/signal */
 	for (; estack != NULL; estack = estack->prev)
 		if (estack->e != e) {
-			if (e == eBreak && estack->e != eArena && estack->e != eVarstack)
+			if (e == eBreak && (estack->e != eArena && estack->e != eVarstack && estack->e != eContinue))
 				rc_error("break outside of loop");
+			else if (e == eContinue && (estack->e != eVarstack))
+				rc_error("continue outside of loop");
 			else if (e == eReturn && estack->e == eError) /* can return from loops inside functions */
 				rc_error("return outside of function");
 			switch (estack->e) {
