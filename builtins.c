@@ -84,8 +84,8 @@ extern void funcall(char **av) {
 	except(eVarstack, star, &e2);
 	walk(treecpy(fnlookup(*av), nalloc), TRUE);
 	varrm("*", TRUE);
-	unexcept(eVarstack); 
-	unexcept(eReturn); 
+	unexcept(eVarstack);
+	unexcept(eReturn);
 }
 
 static void arg_count(char *name) {
