@@ -898,14 +898,18 @@ q=''''
 C=$q^while-continue$q
 L=()
 
+save_star = *
 ten = a^(1 2 3 4 5 6 7 8 9 10)
 * = $ten
-for (n) {
+while (! ~ $#* 0) {
+  n = $1; shift
   if (~ $n a2 a3) {
     continue
   }
   L=($L $n)
 }
+* = $save_star; save_star = ()
+
 if (!~ $#L 8) {
   fail Wrong length of list from $C: $#L
 }
