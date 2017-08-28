@@ -891,6 +891,82 @@ for (varname in apid apids bqstatus pid ppid status ) {
 #############################################################################
 rm -rf $tmpdir
 
+#############################################################################
+## Check builtin continue in while loop.
+#############################################################################
+q=''''
+C=$q^while-continue$q
+L=()
+
+save_star = *
+ten = a^(1 2 3 4 5 6 7 8 9 10)
+* = $ten
+while (! ~ $#* 0) {
+  n = $1; shift
+  if (~ $n a2 a3) {
+    continue
+  }
+  L=($L $n)
+}
+* = $save_star; save_star = ()
+
+if (!~ $#L 8) {
+  fail Wrong length of list from $C: $#L
+}
+if (!~ $L(1) a1) {
+  fail First element of $C list is not a1: $L(1)
+}
+if (!~ $L(2) a4) {
+  fail Second element of $C list is not a4: $L(2)
+}
+C=() L=()
+
+#############################################################################
+## Check builtin continue in for loop.
+#############################################################################
+C=$q^for-continue$q
+L=()
+
+for (x in a b c d e f g) {
+  if (~ $x c f) {
+    continue
+  }
+  L=($L $x)
+}
+if (!~ $#L 5) {
+  fail Wrong length of list from $C
+}
+if (!~ $L(1) a) {
+  fail First element of $C list is not a: $L(1)
+}
+if (!~ $L(3) d) {
+  fail Third element of $C list is not d: $L(3)
+}
+if (!~ $L(5) g) {
+  fail Fifth element of $C list is not g: $L(5)
+}
+C=() L=()
+
+submatch continue 'rc: continue outside of loop' 'continue outside of loop'
+
+#############################################################################
+## check builtin continue in for loop (2)
+#############################################################################
+L=()
+for (x in a b c d e f g) {
+  if (~ $x b d) {
+    continue
+  }
+  L=($L $x)
+  if (~ $x f) {
+    break;
+  }
+}
+
+if (!~ $^L 'a c e f') {
+  fail List should be '(a c e f)', but is $L
+}
+
 # test support for unquoted =
 submatch 'echo foo = bar' 'foo = bar' 'unquoted equals 2'
 submatch 'echo foo=bar' 'foo=bar' 'unquoted equals 2'
