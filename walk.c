@@ -121,10 +121,10 @@ top:	sigchk();
 
 		cond = oldcond;
 		do {
-			Edata  iter_data;
-			Estack iter_stack;
-			iter_data.b = newblock();
-			except(eArena, iter_data, &iter_stack);
+			Edata  arena_data;
+			Estack arena_stack;
+			arena_data.b = newblock();
+			except(eArena, arena_data, &arena_stack);
 			loop_body(n->u[1].p);
 			cond = TRUE;
 			testtrue = walk(n->u[0].p, TRUE);
@@ -147,11 +147,11 @@ top:	sigchk();
 		except(eBreak, break_data, &break_stack);
 
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			Edata  iter_data;
-			Estack iter_stack;
+			Edata  arena_data;
+			Estack arena_stack;
 			assign(var, word(l->w, NULL), FALSE);
-			iter_data.b = newblock();
-			except(eArena, iter_data, &iter_stack);
+			arena_data.b = newblock();
+			except(eArena, arena_data, &arena_stack);
 			loop_body(n->u[2].p);
 			unexcept(eArena);
 		}
