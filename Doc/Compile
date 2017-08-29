@@ -19,6 +19,7 @@ CheckTime = false
 Sanitize = false
 Offset = false
 ScanCmd = ()
+Edit = null
 
 while (! ~ $#* 0) {
     switch(x$1) {
@@ -61,6 +62,15 @@ while (! ~ $#* 0) {
 
     case x--scan
         ScanCmd = scan-build
+
+    case x--edit
+        Edit = edit
+    case x--readline x--read
+        Edit = readline
+    case x--editline
+        Edit = editline
+    case x--vrl
+        Edit = vrl
 
     case x-*
         Fatal Bad option $1
@@ -343,7 +353,7 @@ sources = (
     walk
     which
     sigmsgs
-    edit-null
+    edit-$Edit
     system
 )
 
