@@ -71,8 +71,10 @@ while (! ~ $#* 0) {
         Edit = readline
     case x--editline
         Edit = editline
+        Libs = ($Libs -ledit -ltermcap)
     case x--vrl
         Edit = vrl
+        Libs = ($Libs -ledit -ltermcap)
 
     case x-*
         Fatal Bad option $1
