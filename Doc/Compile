@@ -19,8 +19,7 @@ CheckTime = false
 Sanitize = false
 Offset = false
 ScanCmd = ()
-Libs = ()
-Edit = null
+Edit = null; Libs = ()
 
 while (! ~ $#* 0) {
     switch(x$1) {
