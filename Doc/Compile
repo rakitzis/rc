@@ -84,6 +84,39 @@ while (! ~ $#* 0) {
 }
 
 ########################################################################################
+fn UpToDateMultiSrcs { Dst=1 Srcs=2 src=3 {
+    if (! $CheckTime) {
+        return 1
+    }
+    Dst=$1; shift
+    Srcs=$*
+    if (! test -r $Dst) {
+        return 1
+    }
+    for (src in $Srcs) {
+        if (! test $src -ot $Dst) {
+            return 1
+        }
+    }
+    return 0
+}}
+
+########################################################################################
+fn UpToDateMultiDsts { Src=1 Dsts=2 dst=3 {
+    if (! $CheckTime) {
+        return 1
+    }
+    Src=$1; shift
+    Dsts=$*
+    for (dst in $Dsts) {
+        if (! test -r $dst -a $Src -ot $dst) {
+            return 1
+        }
+    }
+    return 0
+}}
+
+########################################################################################
 AddOn = false
 AddOn = true    ## for builtins: calc, kill
 
@@ -276,11 +309,11 @@ fn Compile LinkOneObj { f = $1 obj = () {
     }
     #--------------------------------------------------------------------
     if (~ $0 Compile) {
-        if ({! $CheckTime} || {! test $obj -nt $f.c -a $obj -nt rc.h}) {
+        if (! UpToDateMultiSrcs $obj $f.c rc.h) {
             CompileWithOpts   -MT $obj -MF .deps/$f.Tpo -c -o $obj $f.c
         }
     } else {
-        if ({! $CheckTime} || {test $obj -nt $exe}) {
+        if (! UpToDateMultiSrcs $exe $obj) {
             LinkWithOpts      -o $exe $obj  
         }
     }
@@ -306,15 +339,15 @@ if (~ $objDir ()) {
     mkstatExe = $objDir/mkstatval
 }
 
-if ({! $CheckTime} || test $mksignalExe -nt sigmsgs.h) {
-    echo $mksignalExe
+if (! UpToDateMultiDsts $mksignalExe sigmsgs.h sigmsgs.c) {
+    echo $mksignalExe : sigmsgs.h sigmsgs.c
     $mksignalExe
 }
 
 ## Status value defines, must be done before compiling rc
 ## Making mkstatval does not depend on singals created by mksignal
-if ({! $CheckTime} || test $mkstatExe -nt statval.h) {
-    echo $mkstatExe
+if (! UpToDateMultiDsts $mkstatExe statval.h) {
+    echo $mkstatExe : statval.h
     $mkstatExe > statval.h
 }
 
@@ -393,8 +426,7 @@ fn RunYacc { stem = () args = () yFile = () cFile = () hFile = () run = () {
     yFile = $stem.y cFile = $stem.c hFile = $stem.h
     run = true
 
-    if ($CheckTime &&
-            test -r $cFile -a -r $hFile -a $cFile -nt $yFile -a $hFile -nt $yFile) {
+    if (UpToDateMultiDsts $yFile $cFile $hFile) {
         run = false
     }
 
@@ -414,7 +446,9 @@ for (s in $sources) {
     Compile $s
 }
 ## Link rc
-LinkWithOpts -o rc     $rc_objs  $Libs
+if (! UpToDateMultiSrcs rc $rc_objs) {
+    LinkWithOpts -o rc     $rc_objs  $Libs
+}
 
 ########################################################################################
 ## Make test (trip)
