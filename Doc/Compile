@@ -305,12 +305,18 @@ if (~ $objDir ()) {
     mksignalExe = $objDir/mksignal
     mkstatExe = $objDir/mkstatval
 }
-echo $mksignalExe
-$mksignalExe
+
+if ({! $CheckTime} || test $mksignalExe -nt sigmsgs.h) {
+    echo $mksignalExe
+    $mksignalExe
+}
+
 ## Status value defines, must be done before compiling rc
 ## Making mkstatval does not depend on singals created by mksignal
-echo $mkstatExe
-$mkstatExe > statval.h
+if ({! $CheckTime} || test $mkstatExe -nt statval.h) {
+    echo $mkstatExe
+    $mkstatExe > statval.h
+}
 
 ########################################################################################
 ## CompileWithOpts rc source
