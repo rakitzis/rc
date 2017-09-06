@@ -2,18 +2,38 @@
 ##########################################################################
 CC=clang
 
+
+
 Compile() {
-    local f=$1 cmd
-    cmd="${CC} -std=gnu99 -m64 -O3 -DHAVE_CONFIG_H -I. -g -MD -MP -Wall -pedantic -Wextra -W -Wno-unused-parameter -DYYDEBUG=1 -fPIE -fstack-protector -D_FORTIFY_SOURCE=2 -Wno-extended-offsetof -MT ./obj/$f.o -MF .deps/$f.Tpo -c -o ./obj/$f.o $f.c"
+    local file=$1 cmd flags
+    flags="-DHAVE_CONFIG_H -I.  -MD -MP -pedantic -Wextra -W -Wno-unused-parameter -DYYDEBUG=1 -fPIE -fstack-protector -D_FORTIFY_SOURCE=2 -Wno-extended-offsetof"
+
+    cmd="${CC} -std=gnu99 -m64 -O3 -Wall -g"
+    cmd="${cmd} $flags"
+    cmd="${cmd} -MT ./obj/$file.o -MF .deps/$file.Tpo -c -o ./obj/$file.o $file.c"
     echo $cmd
     $cmd
 }
 
+Link() {
+    local cmd 
+    cmd="${CC} -std=gnu99 -m64 -O3 -Wall -g"
+    #cmd="${cmd} -pie -Wl,-z,now,-z,relro"
+    echo $cmd "$@"
+    $cmd "$@"
+}
+
+LinkOne() {
+    local file=$1
+    Link -o ./obj/$file ./obj/$file.o
+}
+
+
 ##########################################################################
-Compile mksignal
-${CC} -std=gnu99 -m64 -O3 -Wall -g -pie -Wl,-z,now,-z,relro -o ./obj/mksignal ./obj/mksignal.o
-Compile mkstatval
-${CC} -std=gnu99 -m64 -O3 -Wall -g -pie -Wl,-z,now,-z,relro -o ./obj/mkstatval ./obj/mkstatval.o
+for f in mksignal mkstatval; do
+    Compile $f
+    LinkOne $f
+done
 ./obj/mksignal
 ./obj/mkstatval > statval.h
 
@@ -69,10 +89,10 @@ do
 done
 
 ##########################################################################
-${CC} -std=gnu99 -m64 -O3 -Wall -g -pie -Wl,-z,now,-z,relro -o rc $OBJ
+Link -o rc $OBJ
 
 ##########################################################################
 Compile tripping
-${CC} -std=gnu99 -m64 -O3 -Wall -g -pie -Wl,-z,now,-z,relro -o tripping ./obj/tripping.o
+LinkOne tripping
 ##########################################################################
 
