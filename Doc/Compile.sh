@@ -3,13 +3,17 @@
 CC=clang
 
 
+##########################################################################
+CC_CommonFlags="-std=gnu99 -m64 -O3 -Wall -g"
+CC_CompileFlags="-DHAVE_CONFIG_H -I.  -MD -MP -pedantic -Wextra -W -Wno-unused-parameter -DYYDEBUG=1 -fPIE -fstack-protector -D_FORTIFY_SOURCE=2 -Wno-extended-offsetof"
+CC_LinkFlags="-pie -Wl,-z,now,-z,relro"  ## Linux
+CC_LinkFlags=""                          ## MacOS
 
+##########################################################################
 Compile() {
-    local file=$1 cmd flags
-    flags="-DHAVE_CONFIG_H -I.  -MD -MP -pedantic -Wextra -W -Wno-unused-parameter -DYYDEBUG=1 -fPIE -fstack-protector -D_FORTIFY_SOURCE=2 -Wno-extended-offsetof"
+    local file=$1 cmd
 
-    cmd="${CC} -std=gnu99 -m64 -O3 -Wall -g"
-    cmd="${cmd} $flags"
+    cmd="${CC} ${CC_CommonFlags} ${CC_CompileFlags}"
     cmd="${cmd} -MT ./obj/$file.o -MF .deps/$file.Tpo -c -o ./obj/$file.o $file.c"
     echo $cmd
     $cmd
@@ -17,8 +21,7 @@ Compile() {
 
 Link() {
     local cmd 
-    cmd="${CC} -std=gnu99 -m64 -O3 -Wall -g"
-    #cmd="${cmd} -pie -Wl,-z,now,-z,relro"
+    cmd="${CC} ${CC_CommonFlags} ${CC_LinkFlags}"
     echo $cmd "$@"
     $cmd "$@"
 }
@@ -43,6 +46,7 @@ byacc -t -v -d -P -p calc -o calc.c calc.y
 
 ##########################################################################
 EDIT=edit-null
+
 SRC="
  addon
  calc
