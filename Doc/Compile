@@ -164,7 +164,7 @@ if (! ~ $#Fortify 0) {
 }
 
 SecurityLinkOpts = (
-    -pie 
+    #-pie 
     -Wl   ## a single option / no spaces 
 )
 
