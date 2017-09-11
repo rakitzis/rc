@@ -20,6 +20,7 @@ Sanitize = false
 Offset = false
 ScanCmd = ()
 Edit = null; Libs = ()
+Debug=(-g)
 
 while (! ~ $#* 0) {
     switch(x$1) {
@@ -37,6 +38,9 @@ while (! ~ $#* 0) {
     case x-no-yydebug x--no-yydebug x-noyydebug x--noyydebug
         Yydebug = false
         
+    case x-no-debug x--no-debug
+        Debug=()
+
     case x--check_time x--check-time
         CheckTime = true
 
@@ -173,7 +177,7 @@ SecurityLinkOpts = (
 RegularCompileOpts = (
     -DHAVE_CONFIG_H
     -I.
-    -g  
+    $Debug
     -MD
     -MP
 
@@ -193,7 +197,7 @@ if ($Yydebug) {
 
 RegularLinkOpts = (
     -Wall
-    -g
+    $Debug
 )
 
 ########################################################################################
