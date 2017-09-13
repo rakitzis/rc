@@ -10,7 +10,7 @@ extern bool match(const char *p, const char *m, const char *s) {
 	struct { const char *p, *m, *s; } next;
 	if (m == NULL)
 		return streq(p, s);
-	next.s = NULL;
+	next.p = next.m = next.s = NULL;
 	while (*p || *s) {
 		if (*p) {
 			if (!*m || *p == '~') {
