@@ -17,7 +17,7 @@ static Estack *estack;
 
 /* add an exception to the input stack. */
 
-extern void except(ecodes e, Edata data, Estack *ex) {
+extern void except(const ecodes e, Edata data, Estack *ex) {
 	ex->prev = estack;
 	estack = ex;
 	estack->e = e;
@@ -28,7 +28,7 @@ extern void except(ecodes e, Edata data, Estack *ex) {
 
 /* remove an exception, restore last interactive value */
 
-extern void unexcept(ecodes e) {
+extern void unexcept(const ecodes e) {
 	assert(e == estack->e);
 	switch (estack->e) {
 	default:
@@ -62,7 +62,7 @@ extern void unexcept(ecodes e) {
    call (for $*) or a local assignment).
 */
 
-extern void rc_raise(ecodes e) {
+extern void rc_raise(const ecodes e) {
 	if (e == eError && rc_pid != getpid())
 		exit(1); /* child processes exit on an error/signal */
 	for (; estack != NULL; estack = estack->prev)
