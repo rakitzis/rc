@@ -205,9 +205,9 @@ extern int find_str(const char * const s, const char* const arr[], int sz);
 extern bool nl_on_intr;
 extern bool outstanding_cmdarg(void);
 extern void pop_cmdarg(bool);
-extern void rc_raise(ecodes);
-extern void except(ecodes, Edata, Estack *);
-extern void unexcept(ecodes);
+extern void rc_raise(const ecodes);
+extern void except(const ecodes, Edata, Estack *);
+extern void unexcept(const ecodes);
 extern void rc_error(const char *);
 extern void sigint(int);
 
