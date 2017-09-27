@@ -1,3 +1,5 @@
+#! /usr/bin/env bash
+
 Error () { echo 1>&2 "$@"; }
 Fatal () { Error "$@"; exit 1; }
 

@@ -1,3 +1,5 @@
+#! /usr/bin/env rc
+
 fn Error { echo >[1=2]$* }
 fn Fatal { Error $*; exit 1 }
 
