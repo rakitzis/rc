@@ -1,0 +1,38 @@
+#! /usr/bin/env rc
+
+fn Error { echo >[1=2]$* }
+fn Fatal { Error $*; exit 1 }
+
+###################################################################################################################
+if (! ~ $#* 1) {
+    Fatal Usage: $0 '<POSITIVE_NUMBER>'
+}
+if (! calc N=$1) {
+    Fatal Usage: $0 '<POSITIVE_NUMBER>'
+}
+if (calc $N '<=' 0) {
+    Fatal Usage: $0 '<POSITIVE_NUMBER>'
+}
+
+###################################################################################################################
+str='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+i=0
+pat=''
+
+###################################################################################################################
+while (calc $i '<' $N) {
+    pat=$pat^'a*'
+    calc i=$i+1
+}
+pat=$pat^'b'
+
+###################################################################################################################
+cmd = 'if (~ '$str' '$pat') { echo if-yes } else { echo if-no }'
+#echo $cmd
+eval $cmd
+
+cmd = 'switch ('$str') { case '$pat'; echo case-yes; case *; echo case-no }'
+#echo $cmd; echo
+eval $cmd
+
