@@ -30,8 +30,12 @@ do
 done
 pat=$pat'b'
 
+echo 'shell=sh, N='$N
+ECHO_CMD=false
 ###################################################################################################################
 cmd='case '$str' in ('$pat') echo case-yes;; (*) echo case-no;; esac'
-#echo $cmd; echo
+if $ECHO_CMD; then
+    echo $cmd; echo
+fi
 eval $cmd
 

@@ -27,12 +27,18 @@ while (calc $i '<' $N) {
 }
 pat=$pat^'b'
 
+echo 'shell=rc, N='$N
+ECHO_CMD=false
 ###################################################################################################################
 cmd = 'if (~ '$str' '$pat') { echo if-yes } else { echo if-no }'
-#echo $cmd
+if ($ECHO_CMD) {
+    echo $cmd
+}
 eval $cmd
 
 cmd = 'switch ('$str') { case '$pat'; echo case-yes; case *; echo case-no }'
-#echo $cmd; echo
+if ($ECHO_CMD) {
+    echo $cmd; echo
+}
 eval $cmd
 
