@@ -1,7 +1,9 @@
 #! /usr/bin/env bash
 
+Script=$0
 Error () { echo 1>&2 "$@"; }
 Fatal () { Error "$@"; exit 1; }
+Usage () { Fatal Usage: $Script '[-if|-switch|-file|-echo]' '<POSITIVE_NUMBER>'; }
 
 DO_CASE=false
 DO_FILE=false

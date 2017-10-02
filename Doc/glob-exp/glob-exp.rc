@@ -1,12 +1,14 @@
 #! /usr/bin/env rc
 
+Script=$0
 fn Error { echo >[1=2]$* }
 fn Fatal { Error $*; exit 1 }
+fn Usage { Fatal Usage: $Script '[-if|-switch|-file|-echo]' '<POSITIVE_NUMBER>' }
 
-DO_IF = false
+DO_IF     = false
 DO_SWITCH = false
-DO_FILE = false
-ECHO_CMD=false
+DO_FILE   = false
+ECHO_CMD  = false
 ###########################################################################
 while (! ~ $#* 0) {
     switch (x$1) {
@@ -20,9 +22,9 @@ while (! ~ $#* 0) {
 }
 
 ###########################################################################
-~ $#* 1        || Fatal Usage: $0 '<POSITIVE_NUMBER>'
-calc N=$1      || Fatal Usage: $0 '<POSITIVE_NUMBER>'
-calc $N '<=' 0 && Fatal Usage: $0 '<POSITIVE_NUMBER>'
+~ $#* 1        || Usage
+calc N=$1      || Usage
+calc $N '<=' 0 && Usage
 
 ###########################################################################
 str='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
