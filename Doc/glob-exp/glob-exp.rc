@@ -14,7 +14,7 @@ while (! ~ $#* 0) {
     case x-switch; DO_SWITCH = true
     case x-file;   DO_FILE = true
     case x-echo;   ECHO_CMD = true
-    case *;       break
+    case *;        break
     }
     shift
 }
@@ -29,7 +29,6 @@ str='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 i=0
 pat=''
-
 ###########################################################################
 while (calc $i '<' $N) {
     pat=$pat^'a*'

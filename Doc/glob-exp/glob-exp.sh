@@ -5,7 +5,7 @@ Fatal () { Error "$@"; exit 1; }
 
 DO_CASE=false
 DO_FILE=false
-
+ECHO_CMD=false
 ###########################################################################
 while let "$# > 0"
 do
@@ -28,7 +28,6 @@ str='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 i=0
 pat=''
-
 ###########################################################################
 while let "$i < $N"; do
     pat=$pat'a*'
@@ -37,7 +36,6 @@ done
 pat=$pat'b'
 
 echo 'shell=sh, N='$N
-ECHO_CMD=false
 
 ###########################################################################
 ###########################################################################
