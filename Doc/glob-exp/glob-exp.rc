@@ -3,24 +3,34 @@
 fn Error { echo >[1=2]$* }
 fn Fatal { Error $*; exit 1 }
 
-###################################################################################################################
-if (! ~ $#* 1) {
-    Fatal Usage: $0 '<POSITIVE_NUMBER>'
-}
-if (! calc N=$1) {
-    Fatal Usage: $0 '<POSITIVE_NUMBER>'
-}
-if (calc $N '<=' 0) {
-    Fatal Usage: $0 '<POSITIVE_NUMBER>'
+DO_IF = false
+DO_SWITCH = false
+DO_FILE = false
+ECHO_CMD=false
+###########################################################################
+while (! ~ $#* 0) {
+    switch (x$1) {
+    case x-if;     DO_IF = true
+    case x-switch; DO_SWITCH = true
+    case x-file;   DO_FILE = true
+    case x-echo;   ECHO_CMD = true
+    case *;       break
+    }
+    shift
 }
 
-###################################################################################################################
+###########################################################################
+~ $#* 1        || Fatal Usage: $0 '<POSITIVE_NUMBER>'
+calc N=$1      || Fatal Usage: $0 '<POSITIVE_NUMBER>'
+calc $N '<=' 0 && Fatal Usage: $0 '<POSITIVE_NUMBER>'
+
+###########################################################################
 str='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 
 i=0
 pat=''
 
-###################################################################################################################
+###########################################################################
 while (calc $i '<' $N) {
     pat=$pat^'a*'
     calc i=$i+1
@@ -28,17 +38,31 @@ while (calc $i '<' $N) {
 pat=$pat^'b'
 
 echo 'shell=rc, N='$N
-ECHO_CMD=false
-###################################################################################################################
-cmd = 'if (~ '$str' '$pat') { echo if-yes } else { echo if-no }'
-if ($ECHO_CMD) {
-    echo $cmd
-}
-eval $cmd
 
-cmd = 'switch ('$str') { case '$pat'; echo case-yes; case *; echo case-no }'
-if ($ECHO_CMD) {
-    echo $cmd; echo
+fn EvalCmd { cmd=$1 {
+    if ($ECHO_CMD) {
+        echo $cmd
+    }
+    eval $cmd
+}}
+
+###########################################################################
+###########################################################################
+if ($DO_IF) {
+    cmd = 'if (~ '$str' '$pat') { echo if-yes } else { echo if-no }'
+    EvalCmd $cmd
 }
-eval $cmd
+
+#--------------------------------------------------------------------------
+if ($DO_SWITCH) {
+    cmd = 'switch ('$str') { case '$pat'; echo case-yes; case *; echo case-no }'
+    EvalCmd $cmd
+}
+
+#--------------------------------------------------------------------------
+if ($DO_FILE) {
+    test -f $str || touch $str
+    s='ls '^$pat
+    time rc -c $s
+}
 
