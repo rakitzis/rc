@@ -1,0 +1,3 @@
+byacc -t -v -d [-P] -b let -p let let.y
+byacc -t -v -d -o parse.c parse.y
+
