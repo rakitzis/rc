@@ -232,7 +232,7 @@ extern void rc_exit(int); /* here for odd reasons; user-defined signal handlers 
 /* getopt.c */
 extern int rc_getopt(int, char * const *, const char *);
 
-extern int rc_optind, rc_opterr, rc_optopt;
+extern int rc_optind;
 extern char *rc_optarg;
 
 /* glob.c */
@@ -358,8 +358,6 @@ extern int yyparse(YYPARSE_PARAM_TYPE YYPARSE_PARAM);
 extern void initparse(void);
 
 /* readline */
-extern volatile sig_atomic_t rl_active;
-extern struct Jbwrap rl_buf;
 
 /* redir.c */
 extern void doredirs(void);
