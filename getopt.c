@@ -1,8 +1,8 @@
 #include "rc.h"
 
-static int     rc_opterr = 1;
+int     rc_opterr = 1;
 int     rc_optind = 1;
-static int     rc_optopt;
+int     rc_optopt;
 char    *rc_optarg;
 
 /* getopt routine courtesy of David Sanderson */
