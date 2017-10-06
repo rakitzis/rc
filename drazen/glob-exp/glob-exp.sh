@@ -12,10 +12,14 @@ ECHO_CMD=false
 while let "$# > 0"
 do
     case x$1 in
-    (x-case)   DO_CASE=true ;;
-    (x-file)   DO_FILE=true ;;
-    (x-echo)   ECHO_CMD=true ;;
-    (*)        break ;;
+    (x-case|x--case)
+        DO_CASE=true ;;
+    (x-file|x--file|x-ls|x--ls)
+        DO_FILE=true ;;
+    (x-echo|x--echo)
+        ECHO_CMD=true ;;
+    (*)
+        break ;;
     esac
     shift
 done
@@ -39,21 +43,31 @@ pat=$pat'b'
 
 echo 'shell=sh, N='$N
 
+
+EvalCmd () { 
+    local cmds="$@"
+    if $ECHO_CMD; then
+        echo "Cmd: $cmds"
+        echo -n 'Result: '
+    fi
+    eval "$cmds"
+}
+
 ###########################################################################
 ###########################################################################
 if $DO_CASE; then
     cmd='case '$str' in ('$pat') echo case-yes;; (*) echo case-no;; esac'
-    if $ECHO_CMD; then
-        echo $cmd; echo
-    fi
-    eval $cmd
+    EvalCmd $cmd
 fi
 
 #--------------------------------------------------------------------------
 if $DO_FILE; then
     test -f $str || touch $str
-    s="ls $pat"
-    time bash -c "$s"
+    cmd="ls $pat"
+
+    EvalCmd "$cmd"
+
+    rm -f $str
 fi
 
 #--------------------------------------------------------------------------

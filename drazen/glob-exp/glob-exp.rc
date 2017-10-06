@@ -12,11 +12,16 @@ ECHO_CMD  = false
 ###########################################################################
 while (! ~ $#* 0) {
     switch (x$1) {
-    case x-if;     DO_IF = true
-    case x-switch; DO_SWITCH = true
-    case x-file;   DO_FILE = true
-    case x-echo;   ECHO_CMD = true
-    case *;        break
+    case x-if x--if;
+        DO_IF = true
+    case x-switch x--switch x-case x--case;
+        DO_SWITCH = true
+    case x-file x--file x-ls x--ls;
+        DO_FILE = true
+    case x-echo x--echo;
+        ECHO_CMD = true
+    case *;
+        break
     }
     shift
 }
@@ -40,11 +45,12 @@ pat=$pat^'b'
 
 echo 'shell=rc, N='$N
 
-fn EvalCmd { cmd=$1 {
+fn EvalCmd { cmds=$* {
     if ($ECHO_CMD) {
-        echo $cmd
+        echo Cmd: $cmds
+        echo -n 'Result: '
     }
-    eval $cmd
+    eval $cmds
 }}
 
 ###########################################################################
@@ -63,7 +69,10 @@ if ($DO_SWITCH) {
 #--------------------------------------------------------------------------
 if ($DO_FILE) {
     test -f $str || touch $str
-    s='ls '^$pat
-    time rc -c $s
+    cmd='ls '^$pat
+
+    EvalCmd $cmd
+
+    rm -f $str
 }
 
