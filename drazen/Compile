@@ -21,6 +21,7 @@ Offset = false
 ScanCmd = ()
 Edit = null; Libs = ()
 Debug=(-g)
+ForceOpt=false
 
 while (! ~ $#* 0) {
     switch(x$1) {
@@ -48,6 +49,7 @@ while (! ~ $#* 0) {
         if (~ $#* 0 1) {
             Fatal Option $1 needs value
         }
+        ForceOpt=true
         OPT = $2
         shift
 
@@ -126,6 +128,9 @@ AddOn = true    ## for builtins: calc, kill
 
 ########################################################################################
 # Standard options
+if (! ~ $Debug () && ! $ForceOpt) {
+    OPT=0
+}
 if (~ $OPT ()) {
     OptimizationOpts = ()
     OptimizationOpts = (-O2)

@@ -850,6 +850,27 @@ y=$random
 if (~ $x $y) {
     fail Two random value not different: $x $y
 }
+z=()
+if (random=3) { z=a } else { z = b }
+if (! ~ $z a) {
+    fail Assignment 'random=3' should not fail
+}
+z=c
+expect rc: Variable random must be assigned a positive integer value
+
+if (random=/) { z=a } else { z = b }
+if (! ~ $z c) {
+    fail Assignment 'random=/' should fail
+}
+random=23
+x=$random
+y=$random
+random=23
+x2=$random
+y2=$random
+if (! ~ $x-$y $x2-$y2) {
+    fail Random values should repeat after assignment to variable random
+}
 
 #############################################################################
 ## Check '=' as keyword (in the middle of a command).

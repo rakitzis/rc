@@ -16,7 +16,20 @@ static const char *const aliases[] = {
 
 extern void varassign(const char *name, const List *def, bool stack) {
 	Variable *new;
-	List *newdef = listcpy(def, ealloc); /* important to do the listcpy first; get_var_place() frees old values */
+	List *newdef;
+	if (streq(name, "random")) {
+		int val;
+		if (def->n) {
+			rc_error("Variable random cannot be assigned a list");
+		}
+		val = n2u(def->w, 10);
+		if (val < 0) {
+			rc_error("Variable random must be assigned a positive integer value");
+		}
+		srandom(val);
+		return;
+	}
+	newdef = listcpy(def, ealloc); /* important to do the listcpy first; get_var_place() frees old values */
 	new = get_var_place(name, stack);
 	new->def = newdef;
 	new->extdef = NULL;
@@ -68,15 +81,15 @@ extern List *varlookup(const char *name) {
 	if (streq(name, "status"))
 		return sgetstatus();
 	if (streq(name, "ppid")) {
-		List *q = nnew(List);
+		List * const q = nnew(List);
 		q->w = nprint("%d", rc_ppid);
 		q->m = NULL;
 		q->n = NULL;
 		return q;
 	}
 	if (streq(name, "random")) {
-		List *q = nnew(List);
-		q->w = nprint("%d", random());
+		List * const q = nnew(List);
+		q->w = nprint("%ld", random());
 		q->m = NULL;
 		q->n = NULL;
 		return q;
