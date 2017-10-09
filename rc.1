@@ -1452,6 +1452,12 @@ If this function is defined, then it gets executed every time
 is about to print
 .Cr "$prompt(1)" .
 .TP
+.Cr random " (no-export)"
+Returns a new random value each time it is referenced via 
+.I $random 
+(using a random number generator).
+To restart the random number generator, assign a positive integer value to the variable random.
+.TP
 .Cr status " (no-export read-only)"
 The exit status of the last command.
 If the command exited with a numeric value, that number is the status.
