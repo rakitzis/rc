@@ -172,10 +172,26 @@ if (! ~ $#Fortify 0) {
     )
 }
 
-SecurityLinkOpts = (
-    -pie 
-    -Wl,-z,now,-z,relro   ## a single option / no spaces 
-)
+fn qMacOS { s=() {
+    s=${uname -s}
+    switch ($s) {
+    case Darwin
+        return 0
+    case *
+        return 1
+    }
+}}
+
+if (qMacOS) {
+    SecurityLinkOpts = (
+        -Wl   ## a single option / no spaces 
+    )
+} else {
+    SecurityLinkOpts = (
+        -pie 
+        -Wl,-z,now,-z,relro   ## a single option / no spaces 
+    )
+}
 
 ########################################################################################
 # Other options
