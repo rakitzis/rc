@@ -289,8 +289,9 @@ submatch 'cat<<(eof eof)' 'rc: eof-marker not a single literal word' 'bad heredo
 # lexical analysis
 #
 
+objDir=obj
 expect warning
-./tripping 0 > $tmp
+./$objDir/tripping 0 > $tmp
 $rc $tmp
 rm -f $tmp
 
@@ -698,7 +699,7 @@ expect date
 { date & wait } |cat
 
 # Making rc's input non-blocking should have no untoward side effects.
-x=`{ { sleep 1; echo echo foo } | { ./tripping n; $rc >[2=1] } }
+x=`{ { sleep 1; echo echo foo } | { ./$objDir/tripping n; $rc >[2=1] } }
 if (!~ foo $x)
 	fail input file descriptor nonblocking
 
@@ -725,7 +726,7 @@ x = `{{ wc | wc } < /dev/null }; if (~ $x trip) fail sigexit in children
 ~ () '**' && fail globber problem
 
 # check for ctrl-a bug
-x=`{./tripping a}
+x=`{./$objDir/tripping a}
 ~ `{$rc -c 'echo $x'} $x || fail ctrl-a bug detected
 
 # check for hilarious quoting bug introduced while fixing ctrl-a

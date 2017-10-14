@@ -320,22 +320,18 @@ fn CompileWithOpts LinkWithOpts { cmd = () securityOpts = () allOpts = () {
 }}
 
 ########################################################################################
-fn Compile LinkOneObj { f = $1 obj = () {
+fn Compile LinkOneObj { file = $1 obj = () {
     if (~ $objDir ()) {
-        obj = $f.o
-        exe = $f
+        obj = $file.o
+        exe = $file
     } else {
-        obj = $objDir/$f.o
-        if (~ $f *tripping*) {
-            exe = $f
-        } else {
-            exe = $objDir/$f
-        }
+        obj = $objDir/$file.o
+        exe = $objDir/$file
     }
     #--------------------------------------------------------------------
     if (~ $0 Compile) {
-        if (! UpToDateMultiSrcs $obj $f.c rc.h) {
-            CompileWithOpts   -MT $obj -MF .deps/$f.Tpo -c -o $obj $f.c
+        if (! UpToDateMultiSrcs $obj $file.c rc.h) {
+            CompileWithOpts   -MT $obj -MF .deps/$file.Tpo -c -o $obj $file.c
         }
     } else {
         if (! UpToDateMultiSrcs $exe $obj) {
