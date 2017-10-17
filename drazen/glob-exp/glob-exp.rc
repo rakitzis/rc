@@ -45,12 +45,12 @@ pat=$pat^'b'
 
 echo 'shell=rc, N='$N
 
-fn EvalCmd { cmds=$* {
+fn EvalCmd { cmd=$* {
     if ($ECHO_CMD) {
-        echo Cmd: $cmds
+        echo Cmd: $cmd
         echo -n 'Result: '
     }
-    eval $cmds
+    eval $cmd
 }}
 
 ###########################################################################
