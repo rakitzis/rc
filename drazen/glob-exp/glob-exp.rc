@@ -1,7 +1,7 @@
 #! /usr/bin/env rc
 
 Script=$0
-fn Error { echo >[1=2]$* }
+fn Error { echo >[1=2] $* }
 fn Fatal { Error $*; exit 1 }
 fn Usage { Fatal Usage: $Script '[-if|-switch|-file|-echo]' '<POSITIVE_NUMBER>' }
 
