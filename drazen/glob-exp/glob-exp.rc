@@ -3,7 +3,7 @@
 Script=$0
 fn Error { echo >[1=2] $* }
 fn Fatal { Error $*; exit 1 }
-fn Usage { Fatal Usage: $Script '[-if|-switch|-file|-echo]' '<POSITIVE_NUMBER>' }
+fn Usage { Fatal Usage: $Script '[--if|--switch|--file|--all|--echo]' '<POSITIVE_NUMBER>' }
 
 DO_IF     = false
 DO_SWITCH = false
@@ -17,6 +17,10 @@ while (! ~ $#* 0) {
     case x-switch x--switch x-case x--case;
         DO_SWITCH = true
     case x-file x--file x-ls x--ls;
+        DO_FILE = true
+    case x-all x--all
+        DO_IF = true
+        DO_SWITCH = true
         DO_FILE = true
     case x-echo x--echo;
         ECHO_CMD = true
@@ -56,13 +60,13 @@ fn EvalCmd { cmd=$* {
 ###########################################################################
 ###########################################################################
 if ($DO_IF) {
-    cmd = 'if (~ '$str' '$pat') { echo if-yes } else { echo if-no }'
+    cmd = 'if (~ '$str' '$pat') { echo if: yes match } else { echo if: no match }'
     EvalCmd $cmd
 }
 
 #--------------------------------------------------------------------------
 if ($DO_SWITCH) {
-    cmd = 'switch ('$str') { case '$pat'; echo case-yes; case *; echo case-no }'
+    cmd = 'switch ('$str') { case '$pat'; echo case: yes match; case *; echo case: no match }'
     EvalCmd $cmd
 }
 
