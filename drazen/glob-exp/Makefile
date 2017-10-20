@@ -9,3 +9,11 @@ rc-all :
 sh-all :
 	time bash $(sh_script) --all $N
 
+rc-ALL :
+	time rc $(rc_script) --if $N
+	time rc $(rc_script) --switch $N
+	time rc $(rc_script) --file $N
+
+sh-ALL :
+	time bash $(sh_script) --case $N
+	time bash $(sh_script) --file $N
