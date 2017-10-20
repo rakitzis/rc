@@ -6,6 +6,16 @@
 fn Error { echo >[1=2] $* }
 fn Fatal { Error $*; exit 1 }
 
+fn qMacOS { s=() {
+    s=${uname -s}
+    switch ($s) {
+    case Darwin
+        return 0
+    case *
+        return 1
+    }
+}}
+
 ########################################################################################
 objDir = ./obj
 FORCE_CLANG = false
@@ -19,10 +29,17 @@ CheckTime = false
 Sanitize = false
 Offset = false
 ScanCmd = ()
-Edit = null; Libs = ()
+if (qMacOS) {
+    Edit = edit
+    EditLibs = (-ledit -ltermcap)
+} else {
+    Edit = null
+    EditLibs = ()
+}
 Debug=(-g)
 ForceOpt=false
 
+########################################################################################
 while (! ~ $#* 0) {
     switch(x$1) {
     case x-force-clang  x--force-clang x-clang x--clang
@@ -71,15 +88,18 @@ while (! ~ $#* 0) {
 
     case x--edit
         Edit = edit
-        Libs = ($Libs -ledit -ltermcap)
+        EditLibs = (-ledit -ltermcap)
     case x--readline x--read
         Edit = readline
     case x--editline
         Edit = editline
-        Libs = ($Libs -ledit -ltermcap)
+        EditLibs = (-ledit -ltermcap)
     case x--vrl
         Edit = vrl
-        Libs = ($Libs -ledit -ltermcap)
+        EditLibs = (-ledit -ltermcap)
+    case x--noedit
+        Edit = null
+        EditLibs = ()
 
     case x-*
         Fatal Bad option $1
@@ -171,16 +191,6 @@ if (! ~ $#Fortify 0) {
         '-D_FORTIFY_SOURCE='$Fortify
     )
 }
-
-fn qMacOS { s=() {
-    s=${uname -s}
-    switch ($s) {
-    case Darwin
-        return 0
-    case *
-        return 1
-    }
-}}
 
 if (qMacOS) {
     SecurityLinkOpts = (
@@ -468,7 +478,7 @@ for (s in $sources) {
 }
 ## Link rc
 if (! UpToDateMultiSrcs rc $rc_objs) {
-    LinkWithOpts -o rc     $rc_objs  $Libs
+    LinkWithOpts -o rc     $rc_objs  $EditLibs
 }
 
 ########################################################################################
