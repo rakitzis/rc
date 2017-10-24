@@ -843,6 +843,7 @@ for (x in a b c d e f g) {
 if (!~ $^L 'a c e f') {
   fail List should be '(a c e f)', but is $L
 }
+
 #############################################################################
 ## Check $random
 #############################################################################
@@ -851,18 +852,7 @@ y=$random
 if (~ $x $y) {
     fail Two random value not different: $x $y
 }
-z=()
-if (random=3) { z=a } else { z = b }
-if (! ~ $z a) {
-    fail Assignment 'random=3' should not fail
-}
-z=c
-expect rc: Variable random must be assigned a positive integer value
 
-if (random=/) { z=a } else { z = b }
-if (! ~ $z c) {
-    fail Assignment 'random=/' should fail
-}
 random=23
 x=$random
 y=$random
@@ -1037,4 +1027,6 @@ fn testCondExit
 A=``($nl){ $rc -c 'mkdir / >[2=1] | tr a-z A-Z' }
 B=``($nl){ $rc -c '>[2=1] mkdir / | tr a-z A-Z' }
 ~ $A $B || fail counter intuitive redirection bug, $A '!=' $B
+
+#############################################################################
 

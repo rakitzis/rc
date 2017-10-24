@@ -20,11 +20,13 @@ extern void varassign(const char *name, const List *def, bool stack) {
 	if (streq(name, "random")) {
 		int val;
 		if (def->n) {
-			rc_error("Variable random cannot be assigned a list");
+			fprint(2, "Variable random cannot be assigned a list\n");
+			return;
 		}
 		val = n2u(def->w, 10);
 		if (val < 0) {
-			rc_error("Variable random must be assigned a positive integer value");
+			fprint(2, "Variable random must be assigned a positive integer value\n");
+			return;
 		}
 		srandom(val);
 		return;
