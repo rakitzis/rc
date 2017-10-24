@@ -68,8 +68,10 @@ extern void set(bool code) {
 extern void setpipestatus(const int stats[], int num) {
 	int i;
 	for (i = 0; i < (pipelength = num); i++) {
-		statprint(-1, stats[i]);
 		statuses[i] = stats[i];
+	}
+	for (i = 0; i < (pipelength = num); i++) {
+		statprint(-1, stats[i]);
 	}
 }
 

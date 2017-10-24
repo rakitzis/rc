@@ -26,6 +26,7 @@ fn sigexit {
 }
 tmpdir=`{ mktemp -d -t rc-trip.XXXXXX }
 tmp=$tmpdir/tmp
+q=''''
 nl='
 '
 
@@ -69,7 +70,7 @@ fn testOneCalc { e=$1 v=$2 a=() x=() {
 }}
 
 ######################################################################
-fn calcExprErr { exp=$1 msg=$2 s=() n=() q='''' {
+fn calcExprErr { exp=$1 msg=$2 s=() n=() {
   expect error on expr $q$exp$q^': '^$msg
   calc n=$exp; s = $status
   if (!~ $n ()) {
@@ -163,8 +164,6 @@ fn testManyCalcs { numEntries=() {
       shift 2
     }
   }
-
-  q=''''
 
   calcExprErr  '2 / 0'       'division by 0'
 
@@ -773,7 +772,6 @@ if (!~ $z 1) {
 #############################################################################
 ## Check builtin continue in while loop.
 #############################################################################
-q=''''
 C=$q^while-continue$q
 L=()
 
@@ -906,7 +904,6 @@ rm -rf $tmpdir
 #############################################################################
 ## Check builtin continue in while loop.
 #############################################################################
-q=''''
 C=$q^while-continue$q
 L=()
 
@@ -1029,4 +1026,6 @@ B=``($nl){ $rc -c '>[2=1] mkdir / | tr a-z A-Z' }
 ~ $A $B || fail counter intuitive redirection bug, $A '!=' $B
 
 #############################################################################
+$rc -c  'false|false' && fail $rc -c $q'false|false'$q should fail
+$rc -ec 'false|false' && fail $rc -c $q'false|false'$q should fail
 
