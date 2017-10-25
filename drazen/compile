@@ -36,7 +36,7 @@ if (qMacOS) {
     Edit = null
     EditLibs = ()
 }
-Debug=(-g)
+Debug=()
 ForceOpt=false
 
 ########################################################################################
@@ -58,6 +58,9 @@ while (! ~ $#* 0) {
         
     case x-no-debug x--no-debug
         Debug=()
+
+    case x-debug x--debug
+        Debug = (-g)
 
     case x--check_time x--check-time
         CheckTime = true
