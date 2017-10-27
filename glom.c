@@ -279,7 +279,7 @@ static List *backq(const Node *ifs, const Node *n) {
 	bq = bqinput(glom(ifs), p[0]);
 	close(p[0]);
 	rc_wait4(pid, &sp, TRUE);
-	statprint(-1, sp);
+	setstatus(-1, sp);
 	varassign("bqstatus", word(strstatus(sp), NULL), FALSE);
 	sigchk();
 	return bq;

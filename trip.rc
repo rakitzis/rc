@@ -1026,8 +1026,8 @@ B=``($nl){ $rc -c '>[2=1] mkdir / | tr a-z A-Z' }
 ~ $A $B || fail counter intuitive redirection bug, $A '!=' $B
 
 #############################################################################
-cmd = ($rc -c  'false|false')
-$cmd && fail '<'$^cmd'>' should fail
-cmd = ($rc -ec  'false|false')
-$cmd && fail '<'$^cmd'>' should fail
+for (flag in -c -ec) {
+    cmd = ($rc $flag  'false|false')
+    $cmd && fail '<'$^cmd'>' should fail
+}
 
