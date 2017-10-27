@@ -73,9 +73,6 @@ extern void setpipestatus(const int stats[], int num) {
 		statuses[i] = stats[i];
 		statprint(-1, stats[i]);
 	}
-	for (i = 0; i < (pipelength = num); i++) {
-		statprint(-1, stats[i]);
-	}
 }
 
 /* set a simple status, as opposed to a pipeline */
