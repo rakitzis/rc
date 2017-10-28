@@ -1031,3 +1031,13 @@ for (flag in -c -ec) {
     $cmd && fail '<'$^cmd'>' should fail
 }
 
+# test for github issue #40
+$rc -ec 'false | false'
+if (~ $status 0) {
+	fail '"rc -e" exits with zero status when command in pipeline returns non-zero'
+}
+$rc -ec 'X=`{false}'
+if (~ $status 0) {
+	fail '"rc -e" exits with zero status when backquote command returns non-zero'
+}
+
