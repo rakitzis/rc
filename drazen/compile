@@ -113,7 +113,7 @@ while (! ~ $#* 0) {
 }
 
 ########################################################################################
-fn UpToDateMultiSrcs { Dst=1 Srcs=2 src=3 {
+fn UpToDateMultiSrcs { Dst=$1 Srcs=$2 src=$3 {
     if (! $CheckTime) {
         return 1
     }
@@ -131,7 +131,7 @@ fn UpToDateMultiSrcs { Dst=1 Srcs=2 src=3 {
 }}
 
 ########################################################################################
-fn UpToDateMultiDsts { Src=1 Dsts=2 dst=3 {
+fn UpToDateMultiDsts { Src=$1 Dsts=$2 dst=$3 {
     if (! $CheckTime) {
         return 1
     }
