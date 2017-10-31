@@ -27,16 +27,23 @@ let "N=$1"    || Usage
 let "$N <= 0" && Usage
 
 ###########################################################################
-str='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+str=""
+i=0
+while let "$i < 100"; do
+    str="${str}a"
+    let "i = $i+1"
+done
+
+###########################################################################
+pat=''
 
 i=0
-pat=''
-###########################################################################
 while let "$i < $N"; do
     pat=$pat'a*'
     let "i = $i+1"
 done
 pat=$pat'b'
+###########################################################################
 
 echo 'shell=sh, N='$N
 

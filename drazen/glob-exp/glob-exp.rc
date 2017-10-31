@@ -36,16 +36,23 @@ calc N=$1      || Usage
 calc $N '<=' 0 && Usage
 
 ###########################################################################
-str='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+str=''
+i=0
+while (calc $i '<' 100) {
+    str=$str^a
+    calc i=$i+1
+}
+
+###########################################################################
+pat=''
 
 i=0
-pat=''
-###########################################################################
 while (calc $i '<' $N) {
     pat=$pat^'a*'
     calc i=$i+1
 }
 pat=$pat^'b'
+###########################################################################
 
 echo 'shell=rc, N='$N
 
