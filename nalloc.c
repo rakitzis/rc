@@ -1,4 +1,13 @@
 /* nalloc.c: a simple single-arena allocator for command-line-lifetime allocation */
+
+/*
+ * Maybe useful:
+ *
+ * Fast Allocation and Deallocation of Memory Based on Object Lifetimes
+ * David R.Hanson
+ * Software - Practice and Experience, Vol. 20(1), 5-12 (January 1990)
+ */
+
 #include "rc.h"
 
 static struct Block {
