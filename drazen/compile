@@ -235,11 +235,14 @@ RegularLinkOpts = (
 )
 
 ########################################################################################
+GIT_COMMIT=${git describe}
+########################################################################################
 # All compile and link options together
 CompileOpts = (
     $CommonOpts
     $RegularCompileOpts
     $SecurityCompileOpts
+    -DDESCRIPTION^'="'^$GIT_COMMIT^'"'
 )
 
 LinkOpts = (
