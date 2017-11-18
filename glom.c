@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
+#include <termios.h>
+#include <unistd.h>
 
 static List *backq(Node *, Node *);
 static List *bqinput(List *, int);
@@ -249,12 +251,15 @@ static List *backq(Node *ifs, Node *n) {
 	int p[2], sp;
 	pid_t pid;
 	List *bq;
+	struct termios t;
 	if (n == NULL)
 		return NULL;
 	if (pipe(p) < 0) {
 		uerror("pipe");
 		rc_error(NULL);
 	}
+	if (interactive)
+		tcgetattr(0, &t);
 	if ((pid = rc_fork()) == 0) {
 		mvfd(p[1], 1);
 		close(p[0]);
@@ -266,6 +271,8 @@ static List *backq(Node *ifs, Node *n) {
 	bq = bqinput(glom(ifs), p[0]);
 	close(p[0]);
 	rc_wait4(pid, &sp, TRUE);
+	if (interactive && WIFSIGNALED(sp))
+		tcsetattr(0, TCSANOW, &t);
 	setstatus(-1, sp);
 	varassign("bqstatus", word(strstatus(sp), NULL), FALSE);
 	sigchk();
