@@ -4,6 +4,8 @@
 
 #include <signal.h>
 #include <setjmp.h>
+#include <termios.h>
+#include <unistd.h>
 
 #include "jbwrap.h"
 
@@ -322,11 +324,16 @@ static bool isallpre(Node *n) {
 
 static bool dofork(bool parent) {
 	int pid, sp;
+	struct termios t;
 
+	if (interactive)
+		tcgetattr(0, &t);
 	if (!parent || (pid = rc_fork()) == 0)
 		return TRUE;
 	redirq = NULL; /* clear out the pre-redirection queue in the parent */
 	rc_wait4(pid, &sp, TRUE);
+	if (interactive && WIFSIGNALED(sp))
+		tcsetattr(0, TCSANOW, &t);
 	setstatus(-1, sp);
 	sigchk();
 	return FALSE;
@@ -336,7 +343,10 @@ static void dopipe(Node *n) {
 	int i, j, sp, pid, fd_prev, fd_out, pids[512], stats[512], p[2];
 	bool intr;
 	Node *r;
+	struct termios t;
 
+	if (interactive)
+		tcgetattr(0, &t);
 	fd_prev = fd_out = 1;
 	for (r = n, i = 0; r != NULL && r->type == nPipe; r = r->u[2].p, i++) {
 		if (i > 500) /* the only hard-wired limit in rc? */
@@ -379,8 +389,10 @@ static void dopipe(Node *n) {
 	for (j = 0; j < i; j++) {
 		rc_wait4(pids[j], &sp, TRUE);
 		stats[j] = sp;
-		intr |= (sp == SIGINT);
+		intr |= WIFSIGNALED(sp);
 	}
+	if (interactive && intr)
+		tcsetattr(0, TCSANOW, &t);
 	setpipestatus(stats, i);
 	sigchk();
 }
