@@ -54,11 +54,13 @@ while (calc $i '<' $N) {
 pat=$pat^'b'
 ###########################################################################
 
-echo 'shell=rc, N='$N
+Shell=rc
+echo 'shell='$Shell', N='$N; echo
 
-fn EvalCmd { cmd=$* {
+fn EvalCmd { cmd=$* a=false{
     if ($ECHO_CMD) {
-        echo Cmd: $cmd
+        cmd=$^cmd
+        #whatis cmd
         echo -n 'Result: '
     }
     eval $cmd
@@ -66,19 +68,37 @@ fn EvalCmd { cmd=$* {
 
 ###########################################################################
 ###########################################################################
+nl='
+'
+q=''''
+patWithStr='pattern'$nl'    '$pat$nl'with string'$nl'    '$str
+Matches='matches '$patWithStr
+NotMatches='does not match '$patWithStr
+
+#--------------------------------------------------------------------------
 if ($DO_IF) {
-    cmd = 'if (~ '$str' '$pat') { echo if: yes match } else { echo if: no match }'
-    EvalCmd $cmd
+    cmd = ('if (~ ' $str $pat ') { true } else { false }' )
+    if (EvalCmd $cmd) {
+        echo 'rc: '$q'~'$q $Matches 
+    } else {
+        echo 'rc: '$q'~'$q $NotMatches 
+    }
 }
 
 #--------------------------------------------------------------------------
 if ($DO_SWITCH) {
-    cmd = 'switch ('$str') { case '$pat'; echo case: yes match; case *; echo case: no match }'
-    EvalCmd $cmd
+    echo
+    cmd = ('switch (' $str ') { case ' $pat '; true; case *; false }')
+    if (EvalCmd $cmd) {
+        echo 'rc: ''switch'' '  $Matches 
+    } else {
+        echo 'rc: ''switch'' '  $NotMatches 
+    }
 }
 
 #--------------------------------------------------------------------------
 if ($DO_FILE) {
+    echo
     test -f $str || touch $str
     cmd='ls '^$pat
 
