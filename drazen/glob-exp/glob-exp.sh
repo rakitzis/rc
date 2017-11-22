@@ -45,27 +45,37 @@ done
 pat=$pat'b'
 ###########################################################################
 
-echo 'shell=sh, N='$N
+echo 'shell=sh, N='$N; echo
 
 
 EvalCmd () { 
-    typeset cmds="$@"
+    typeset cmd="$@"
     if $ECHO_CMD; then
-        echo "Cmd: $cmds"
+        echo "Cmd: $cmd"
         echo -n 'Result: '
     fi
-    eval "$cmds"
+    eval "$cmd"
 }
 
 ###########################################################################
 ###########################################################################
+nl="
+"
 if $DO_CASE; then
-    cmd='case '$str' in ('$pat') echo case: yes match;; (*) echo case: no match;; esac'
-    EvalCmd $cmd
+    patWithStr="pattern${nl}    ${pat}${nl}with string${nl}    ${str}"
+    Matches="sh: 'case' matches ${patWithStr}"
+    NotMatches="sh: 'case' does not match ${patWithStr}"
+    cmd="case ${str} in (${pat}) true ;; (*) false;; esac"
+    if EvalCmd $cmd; then
+        echo "$Matches"
+    else
+        echo "$NotMatches"
+    fi
 fi
 
 #--------------------------------------------------------------------------
 if $DO_FILE; then
+    echo
     test -f $str || touch $str
     cmd="ls $pat"
 
