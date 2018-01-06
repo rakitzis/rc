@@ -1,6 +1,10 @@
 
 ##########################################################################
-CC=clang
+if clang --version; then
+    CC=clang
+else
+    CC=gcc
+fi
 objDir=obj
 test -d $objDir || mkdir $objDir
 
