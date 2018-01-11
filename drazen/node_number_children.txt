@@ -1,0 +1,38 @@
+	
+child_count[nBang]     = 1;
+child_count[nNowait]   = 1;
+child_count[nCase]     = 1;
+child_count[nCount]    = 1;
+child_count[nFlat]     = 1;
+child_count[nRmfn]     = 1;
+child_count[nSubshell] = 1;
+child_count[nVar]      = 1;
+
+child_count[nAndalso]  = 2;
+child_count[nAssign]   = 2;
+child_count[nBackq]    = 2;
+child_count[nBody]     = 2;
+child_count[nBrace]    = 2;
+child_count[nConcat    = 2;
+child_count[nElse]     = 2;
+child_count[nEpilog]   = 2;
+child_count[nIf]       = 2;
+child_count[nNewfn]    = 2;
+child_count[nCbody     = 2;
+child_count[nOrelse]   = 2;
+child_count[nPre]      = 2;
+child_count[nArgs]     = 2;
+child_count[nSwitch    = 2;
+child_count[nMatch]    = 2;
+child_count[nVarsub]   = 2;
+child_count[nWhile]    = 2;
+child_count[nLappend]  = 2;
+
+child_count[nForin]    = 3;
+child_count[nRedir]    = 3;
+child_count[nNmpipe]   = 3;
+child_count[nDup]      = 3;
+child_count[nWord]     = 3;
+
+child_count[nPipe]     = 4;
+
