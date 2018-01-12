@@ -1,38 +1,105 @@
-	
-child_count[nBang]     = 1;
-child_count[nNowait]   = 1;
-child_count[nCase]     = 1;
-child_count[nCount]    = 1;
-child_count[nFlat]     = 1;
-child_count[nRmfn]     = 1;
-child_count[nSubshell] = 1;
-child_count[nVar]      = 1;
+/* This is C99 initialization syntax. */
 
-child_count[nAndalso]  = 2;
-child_count[nAssign]   = 2;
-child_count[nBackq]    = 2;
-child_count[nBody]     = 2;
-child_count[nBrace]    = 2;
-child_count[nConcat    = 2;
-child_count[nElse]     = 2;
-child_count[nEpilog]   = 2;
-child_count[nIf]       = 2;
-child_count[nNewfn]    = 2;
-child_count[nCbody     = 2;
-child_count[nOrelse]   = 2;
-child_count[nPre]      = 2;
-child_count[nArgs]     = 2;
-child_count[nSwitch    = 2;
-child_count[nMatch]    = 2;
-child_count[nVarsub]   = 2;
-child_count[nWhile]    = 2;
-child_count[nLappend]  = 2;
+int node_to_child_count[33] = {
+    [nBang]     = 1,
+    [nNowait]   = 1,
+    [nCase]     = 1,
+    [nCount]    = 1,
+    [nFlat]     = 1,
+    [nRmfn]     = 1,
+    [nSubshell] = 1,
+    [nVar]      = 1,
 
-child_count[nForin]    = 3;
-child_count[nRedir]    = 3;
-child_count[nNmpipe]   = 3;
-child_count[nDup]      = 3;
-child_count[nWord]     = 3;
+    [nAndalso]  = 2,
+    [nAssign]   = 2,
+    [nBackq]    = 2,
+    [nBody]     = 2,
+    [nBrace]    = 2,
+    [nConcat    = 2,
+    [nElse]     = 2,
+    [nEpilog]   = 2,
+    [nIf]       = 2,
+    [nNewfn]    = 2,
+    [nCbody     = 2,
+    [nOrelse]   = 2,
+    [nPre]      = 2,
+    [nArgs]     = 2,
+    [nSwitch    = 2,
+    [nMatch]    = 2,
+    [nVarsub]   = 2,
+    [nWhile]    = 2,
+    [nLappend]  = 2,
 
-child_count[nPipe]     = 4;
+    [nForin]    = 3,
+    [nRedir]    = 3,
+    [nNmpipe]   = 3,
+    [nDup]      = 3,
+    [nWord]     = 3,
 
+    [nPipe]     = 4,
+};
+
+typedef struct ChildCountToNodes {
+    int m_NumNodes;
+    nodetype m_Nodes[19];
+} ChildCountToNodes;
+
+ChildCountToNodes child_count_to_nodes[4] = {
+    [0] = {
+        .m_NumNodes = 0
+    },
+    [1] = {
+        .m_NumNodes = 8,
+        .m_Nodes = {
+            nBang,
+            nNowait,
+            nCase,
+            nCount,
+            nFlat,
+            nRmfn,
+            nSubshell,
+            nVar,
+        },
+    },
+
+    [2] = {
+        .m_NumNodes = 19,
+        .m_Nodes = {
+            nAndalso,
+            nAssign,
+            nBackq,
+            nBody,
+            nBrace,
+            nConcat    = 2,
+            nElse,
+            nEpilog,
+            nIf,
+            nNewfn,
+            nCbody     = 2,
+            nOrelse,
+            nPre,
+            nArgs,
+            nSwitch    = 2,
+            nMatch,
+            nVarsub,
+            nWhile,
+            nLappend,
+        },
+    },
+    [3] = {
+        .m_NumNodes = 5,
+        .m_Nodes = {
+            nForin,
+            nRedir,
+            nNmpipe,
+            nDup,
+            nWord,
+        },
+    },
+    [4] = {
+        .m_NumNodes = 1,
+        .m_Nodes = {
+            nPipe,
+        },
+    },
+};
