@@ -125,6 +125,8 @@ child_count_to_nodes[5] = {
 
 
 /**********************************************************************/
+/**********************************************************************/
+/**********************************************************************/
 extern int printf(const char* fmt, ...);
 
 int
@@ -135,7 +137,7 @@ main()
         int total_nodes = 0;
         int cld_cnt;
         for (cld_cnt = 0; cld_cnt < sizeof_array(child_count_to_nodes); ++cld_cnt) {
-            const ChildCountToNodes* cldcnt2nodes = &child_count_to_nodes[cld_cnt];
+            const ChildCountToNodes* const cldcnt2nodes = &child_count_to_nodes[cld_cnt];
             total_nodes += cldcnt2nodes->m_NumNodes;
             int nd_idx;
 
@@ -151,17 +153,24 @@ main()
         nodetype nd1;
         for (nd1 = 0; nd1 < sizeof_array(node_to_child_count); ++nd1) {
             const int cld_cnt1 = node_to_child_count[nd1];
+            int found = 0;
             int cld_cnt2;
             for (cld_cnt2 = 0; cld_cnt2 < sizeof_array(child_count_to_nodes); ++cld_cnt2) {
-                const ChildCountToNodes* cldcnt2nodes = &child_count_to_nodes[cld_cnt2];
+                const ChildCountToNodes* const cldcnt2nodes = &child_count_to_nodes[cld_cnt2];
                 int nd_idx2;
 
                 for (nd_idx2 = 0; nd_idx2 < cldcnt2nodes->m_NumNodes; ++nd_idx2) {
                     if (cldcnt2nodes->m_Nodes[nd_idx2] == nd1) { /* found nd in nodes for cld_cnt2 */
                         assert(cld_cnt2 == cld_cnt1);
+                        found = 1;
+                        break;
                     }
                 }
+                if (found) {
+                    break;
+                }
             }
+            assert(found);
         }
     }
 }
