@@ -67,6 +67,7 @@ static bool Tconv(Format *f, int ignore) {
 	case nElse:	fmtprint(f, "{%T}else %T", n->u[0].p, n->u[1].p);	break;
 	case nNewfn:	fmtprint(f, "fn %T {%T}", n->u[0].p, n->u[1].p);	break;
 	case nIf:	fmtprint(f, "if(%T)%T", n->u[0].p, n->u[1].p);		break;
+	case nIfnot:	fmtprint(f, "if not %T", n->u[0].p);			break;
 	case nOrelse:	fmtprint(f, "%T||%T", n->u[0].p, n->u[1].p);		break;
 	case nArgs:	fmtprint(f, "%T %T", n->u[0].p, n->u[1].p);		break;
 	case nSwitch:	fmtprint(f, "switch(%T){%T}", n->u[0].p, n->u[1].p);	break;

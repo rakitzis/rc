@@ -26,11 +26,11 @@ extern Node *mk(int /*nodetype*/ t,...) {
 		break;
 	case nBang: case nNowait:
 	case nCount: case nFlat: case nRmfn: case nSubshell:
-	case nVar: case nCase:
+	case nVar: case nCase: case nIfnot:
 		n = nalloc(offsetof(Node, u[1]));
 		n->u[0].p = va_arg(ap, Node *);
 		break;
-	case nAndalso: case nAssign: case nBackq: case nBody: case nBrace: case nConcat:
+        case nAndalso: case nAssign: case nBackq: case nBody: case nBrace: case nConcat:
 	case nElse: case nEpilog: case nIf: case nNewfn: case nCbody:
 	case nOrelse: case nPre: case nArgs: case nSwitch:
 	case nMatch: case nVarsub: case nWhile: case nLappend:
@@ -60,6 +60,14 @@ extern Node *mk(int /*nodetype*/ t,...) {
 		break;
  	}
 	n->type = t;
+        if (t == nBody &&
+                        n->u[1].p->type == nIfnot) {
+                if (n->u[0].p->type == nIf) {
+                        fprint(2, "here i am!\n");
+                } else
+                        rc_error("`if not' must follow `if'");
+
+        }
 	va_end(ap);
 	return n;
 }
