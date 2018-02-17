@@ -29,10 +29,7 @@ extern void inithandler() {
 	null.type = nBody;
 	null.u[0].p = null.u[1].p = NULL;
 	for (i = 1; i < NUMOFSIGNALS; i++)
-#if HAVE_SYSV_SIGCLD
-		if (i != SIGCLD)
-#endif
-		if (sighandlers[i] == SIG_IGN)
+		if (i != SIGCHLD && sighandlers[i] == SIG_IGN)
 			fnassign(signals[i].name, NULL); /* ignore incoming ignored signals */
 	if (interactive || sighandlers[SIGINT] != SIG_IGN) {
 		def_sigint = sigint;
@@ -151,10 +148,8 @@ extern void fnassign(char *name, Node *def) {
 	new->def = newdef;
 	new->extdef = NULL;
 	if (strncmp(name, "sig", conststrlen("sig")) == 0) { /* slight optimization */
-#if HAVE_SYSV_SIGCLD /* System V machines treat SIGCLD very specially */
-		if (streq(name, "sigcld"))
-			rc_error("can't trap SIGCLD");
-#endif
+		if (streq(name, "sigchld") || streq(name, "sigcld"))
+			rc_error("can't trap SIGCHLD");
 		if (streq(name, "sigexit"))
 			runexit = TRUE;
 		for (i = 1; i < NUMOFSIGNALS; i++) /* zero is a bogus signal */

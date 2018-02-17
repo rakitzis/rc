@@ -63,8 +63,6 @@ RC_TYPE_RLIM_T
 
 RC_TYPE_SIG_ATOMIC_T
 
-RC_SYS_V_SIGCLD
-
 dnl Does the kernel handle `#! /interpreter'?
 AC_SYS_INTERPRETER
 case "$ac_cv_sys_interpreter" in
