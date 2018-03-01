@@ -7,6 +7,8 @@
 
 /* status == the wait() value of the last command in the pipeline, or the last command */
 
+static void statprint(pid_t, int);
+
 static int statuses[512];
 static int pipelength = 1;
 
@@ -49,8 +51,8 @@ extern void set(bool code) {
 extern void setpipestatus(int stats[], int num) {
 	int i;
 	for (i = 0; i < (pipelength = num); i++) {
-		statprint(-1, stats[i]);
 		statuses[i] = stats[i];
+		statprint(-1, stats[i]);
 	}
 }
 
@@ -64,7 +66,7 @@ extern void setstatus(pid_t pid, int i) {
 
 /* print a message if termination was with a signal, and if the child dumped core. exit on error if -e is set */
 
-extern void statprint(pid_t pid, int i) {
+static void statprint(pid_t pid, int i) {
 	if (WIFSIGNALED(i)) {
 		int t = WTERMSIG(i);
 		char *msg = ((t > 0) && (t < NUMOFSIGNALS) ? signals[WTERMSIG(i)].msg : "");

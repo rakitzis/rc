@@ -690,3 +690,13 @@ if (! ~ $X YYY) {
 A=``($nl){ $rc -c 'mkdir / >[2=1] | tr a-z A-Z' }
 B=``($nl){ $rc -c '>[2=1] mkdir / | tr a-z A-Z' }
 ~ $A $B || fail counter intuitive redirection bug, $A '!=' $B
+
+# test for github issue #40
+$rc -ec 'false | false'
+if (~ $status 0) {
+	fail '"rc -e" exits with zero status when command in pipeline returns non-zero'
+}
+$rc -ec 'X=`{false}'
+if (~ $status 0) {
+	fail '"rc -e" exits with zero status when backquote command returns non-zero'
+}
