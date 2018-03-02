@@ -60,8 +60,7 @@ extern Node *mk(int /*nodetype*/ t,...) {
 		break;
  	}
 	n->type = t;
-        if (t == nBody &&
-                        n->u[1].p->type == nIfnot) {
+        if (t == nBody && n->u[1].p && n->u[1].p->type == nIfnot) {
                 if (n->u[0].p->type == nIf) {
                         fprint(2, "here i am!\n");
                 } else
