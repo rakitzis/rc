@@ -18,6 +18,7 @@ static bool isallpre(Node *);
 static bool dofork(bool);
 static void dopipe(Node *);
 static void loop_body(Node* n);
+static int if_state = 2; /* last if, for "if not" interactive top-level */
 
 /* Tail-recursive version of walk() */
 
@@ -33,6 +34,7 @@ top:	sigchk();
 		set(TRUE);
 		return TRUE;
 	}
+	if (parent && n->type != nIfnot) if_state = 2;
 	switch (n->type) {
 	case nArgs: case nBackq: case nConcat: case nCount:
 	case nFlat: case nLappend: case nRedir: case nVar:
@@ -96,10 +98,17 @@ top:	sigchk();
 			true_cmd = true_cmd->u[0].p;
 		}
 		cond = TRUE;
-		if (!walk(n->u[0].p, TRUE))
-			true_cmd = false_cmd; /* run the else clause */
+                if_state = walk(n->u[0].p, TRUE);
 		cond = oldcond;
-		WALK(true_cmd, parent);
+		WALK(if_state ? true_cmd : false_cmd, parent);
+	}
+        case nIfnot: {
+		if (if_state == 2) 
+                        rc_error("`if not' must follow `if'");
+		if (if_state == 0)
+			walk(n->u[0].p, TRUE);
+		if_state = 2;
+		break;
 	}
 	case nWhile: {
 		Jbwrap break_jb;

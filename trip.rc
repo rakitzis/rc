@@ -17,8 +17,11 @@ fn expect {
 fn submatch {
 	if (!~ $#* 3)
 		fail incorrect invocation of submatch
-	prompt=$nl if (!~ `` $nl {$rc -ic $1>[2=1]} $2)
+	got = `` $nl { prompt=$nl $rc -ic $1>[2=1] }
+	if (!~ $got $2) {
+		echo got $got expected $2
 		fail $3
+	}
 }
 fn sigexit sigint sigquit sigsegv
 fn sigexit {
@@ -675,7 +678,7 @@ if (!~ $^L 'a c e f') {
 }
 
 # test support for unquoted =
-submatch 'echo foo = bar' 'foo = bar' 'unquoted equals 2'
+submatch 'echo foo = bar' 'foo = bar' 'unquoted equals 1'
 submatch 'echo foo=bar' 'foo=bar' 'unquoted equals 2'
 submatch 'echo foo=' 'foo=' 'unquoted equals 3'
 submatch 'echo =bar; whatis -v echo' 'echo=bar' 'unquoted equals 4'
@@ -700,3 +703,7 @@ $rc -ec 'X=`{false}'
 if (~ $status 0) {
 	fail '"rc -e" exits with zero status when backquote command returns non-zero'
 }
+
+# exercise "if not"
+submatch 'if (false) echo foo; if not echo bar' 'bar' 'if not 1'
+submatch 'if (false) echo foo; echo qux; if not echo bar' 'rc: `if not'' must follow `if''' 'if not 2'
