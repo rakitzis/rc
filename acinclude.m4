@@ -128,42 +128,6 @@ AC_DEFUN([RC_TYPE_SIG_ATOMIC_T], [
 ])
 
 
-dnl Do we have SysV SIGCLD semantics?  In other words, if we set the
-dnl action for SIGCLD to SIG_IGN does wait() always say ECHILD?  Linux,
-dnl of course, is bizarre here.  It basically implements the SysV
-dnl semantics, but if the parent calls wait() before the child calls
-dnl exit(), wait() returns with the PID of the child as normal.  (Real
-dnl SysV waits for all children to exit, then returns with ECHILD.)
-dnl Anyway, this is why the `sleep(1)' is there.
-AC_DEFUN([RC_SYS_V_SIGCLD], [
-	AC_CACHE_CHECK(for SysV SIGCLD semantics, rc_cv_sysv_sigcld,
-		AC_TRY_RUN([
-#include <errno.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-int main(void) {
-	int i;
-	signal(SIGCLD, SIG_IGN);
-	switch (fork()) {
-	case -1:
-		return 1;
-	case 0:
-		return 0;
-	default:
-		sleep(1);
-		if (wait(&i) == -1 && errno == ECHILD) return 0;
-		else return 1;
-	}
-}
-		], rc_cv_sysv_sigcld=yes, rc_cv_sysv_sigcld=no, rc_cv_sysv_sigcld=yes))
-	case "$rc_cv_sysv_sigcld" in
-	yes)	AC_DEFINE(HAVE_SYSV_SIGCLD, 1, [Has SysV SIGCLD]) ;;
-	esac
-])
-
-
 dnl Do we have /dev/fd or /proc/self/fd?
 AC_DEFUN([RC_SYS_DEV_FD], [
 	AC_CACHE_CHECK(for /dev/fd, rc_cv_sys_dev_fd,

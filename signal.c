@@ -87,14 +87,12 @@ extern void initsignal() {
 	Sigfunc* h;
 	int i;
 
-#if HAVE_SYSV_SIGCLD
-	/* Ensure that SIGCLD is not SIG_IGN.  Solaris's rshd does this.  :-( */
-	h = sys_signal(SIGCLD, SIG_IGN);
+	/* Ensure that SIGCHLD is not SIG_IGN.  Solaris's rshd does this.  :-( */
+	h = sys_signal(SIGCHLD, SIG_IGN);
 	if (h != SIG_IGN && h != SIG_ERR)
-		sys_signal(SIGCLD, h);
+		sys_signal(SIGCHLD, h);
 	else
-		sys_signal(SIGCLD, SIG_DFL);
-#endif
+		sys_signal(SIGCHLD, SIG_DFL);
 
 	for (i = 1; i < NUMOFSIGNALS; i++) {
 #ifdef SIGKILL

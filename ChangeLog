@@ -903,3 +903,11 @@ Changes since rc-1.5b2
 2015-05-13
 
   Release: rc-1.7.4.
+
+[... needs completing]
+
+2018-03-05
+
+  Bug: the grammar disallowed local assignments and redirections in the true
+  branch of `if` when there was an `else` clause (thanks Dražen Borković and
+  Bert Münnich; github #31).
