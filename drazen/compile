@@ -242,7 +242,7 @@ CompileOpts = (
     $CommonOpts
     $RegularCompileOpts
     $SecurityCompileOpts
-    -DDESCRIPTION^'="'^$GIT_COMMIT^'"'
+    # -DDESCRIPTION^'="'^$GIT_COMMIT^'"'
 )
 
 LinkOpts = (
