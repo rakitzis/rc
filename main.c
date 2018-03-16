@@ -8,6 +8,7 @@
 
 bool dashdee, dashee, dashvee, dashex, dasheye,
 	dashen, dashpee, interactive;
+char *dashsee[2];
 pid_t rc_pid;
 
 static bool dashEYE, dashell, dashoh, dashess;
@@ -16,7 +17,7 @@ static void assigndefault(char *,...);
 static void checkfd(int, enum redirtype);
 
 extern int main(int argc, char *argv[], char *envp[]) {
-	char *dashsee[2], *dollarzero, *null[1];
+	char *dollarzero, *null[1];
 	int c;
 	initprint();
 	dashsee[0] = dashsee[1] = NULL;

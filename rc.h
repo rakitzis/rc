@@ -171,6 +171,7 @@ enum {
 /* main.c */
 extern Rq *redirq;
 extern bool dashdee, dashee, dashvee, dashex, dasheye, dashen, dashpee, interactive;
+extern char *dashsee[];
 extern pid_t rc_pid;
 extern int lineno;
 
