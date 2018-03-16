@@ -211,11 +211,7 @@ static void b_flag(char **av) {
 		return;
 	}
 	f = av[0][0];
-	if (av[0][1] != '\0') {
-		fprint(2, usage);
-		set(FALSE);
-		return;
-	}
+	if (f == '\0' || av[0][1] != '\0') goto flag_usage;
 	if (*++av == NULL) {
 		mode = 2;
 	} else if (av[0][0] == '+' && av[0][1] == '\0') {
@@ -223,25 +219,52 @@ static void b_flag(char **av) {
 	} else if (av[0][0] == '-' && av[0][1] == '\0') {
 		mode = 0;
 	}
-	if (mode == 3) {
-		fprint(2, usage);
-		set(FALSE);
-		return;
-	}
+	if (mode == 3) goto flag_usage;
 	switch (f) {
 		case 'c':
-			if (mode == 2) {
-				set(dashsee[0] != NULL);
-				return;
-			} else {
-				fprint(2, RC "flag immutable\n");
-				set(FALSE);
-				return;
-			}
-
-
+			if (mode != 2) goto flag_immutable;
+			set(dashsee[0] != NULL);
+			return;
+		case 'd':
+			if (mode != 2) goto flag_immutable;
+			flagp = &dashdee; break;
 		case 'e': flagp = &dashee; break;
+		case 'I': if (mode != 2) mode = !mode; /* fallthrough */
+		case 'i': flagp = &dasheye; break;
+		case 'l':
+			  if (mode != 2) goto flag_immutable;
+			  flagp = &dashell; break;
+		case 'n': flagp = &dashen; break;
+		case 'o':
+			  if (mode != 2) goto flag_immutable;
+			  flagp = &dashoh; break;
+		case 'p':
+			  if (mode != 2) goto flag_immutable;
+			  flagp = &dashpee; break;
+		case 's':
+			  if (mode != 2) goto flag_immutable;
+			  flagp = &dashess; break;
+		case 'v': flagp = &dashvee; break;
+		case 'x': flagp = &dashex; break;
         }
+	if (flagp != NULL) {
+		if (mode == 2)
+			set(*flagp);
+		else {
+			*flagp = mode;
+			set(TRUE);
+		}
+	} else {
+		fprint(2, RC "unknown flag");
+		set(FALSE);
+	}
+	return;
+flag_immutable:
+	fprint(2, RC "flag immutable\n");
+	set(FALSE);
+	return;
+flag_usage:
+	fprint(2, usage);
 	set(FALSE);
 }
 

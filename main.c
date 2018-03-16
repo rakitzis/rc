@@ -8,10 +8,10 @@
 
 bool dashdee, dashee, dashvee, dashex, dasheye,
 	dashen, dashpee, interactive;
+bool dashEYE, dashell, dashoh, dashess;
 char *dashsee[2];
 pid_t rc_pid;
 
-static bool dashEYE, dashell, dashoh, dashess;
 
 static void assigndefault(char *,...);
 static void checkfd(int, enum redirtype);
