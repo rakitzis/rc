@@ -1662,6 +1662,17 @@ With no argument,
 changes the current directory to
 .Cr "$home" .
 .TP
+.B continue
+Continues the innermost
+.Cr for
+or
+.Cr while
+loop,
+as in C.
+It is an error to invoke
+.B continue
+outside of a loop.
+.TP
 \fBecho \fR[\fB\-n\fR] [\fB\-\|\-\fR] [\fIarg ...\fR]
 Prints its arguments to standard output, terminated by a newline.
 Arguments are separated by spaces.

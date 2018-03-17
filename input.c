@@ -314,10 +314,10 @@ extern Node *doit(bool clobberexecit) {
 			else if (dashex && dashen)
 				fprint(2, "%T\n", parsetree);
 		}
-		unexcept(); /* eArena */
+		unexcept(eArena);
 	}
 	popinput();
-	unexcept(); /* eError */
+	unexcept(eError);
 	return parsetree;
 }
 

@@ -20,9 +20,9 @@
 #include "rlimit.h"
 #include "sigmsgs.h"
 
-static void b_break(char **), b_cd(char **), b_eval(char **), b_exit(char **),
-	b_flag(char **), b_newpgrp(char **), b_return(char **),
-	b_shift(char **), b_umask(char **), b_wait(char **), b_whatis(char **);
+static void b_break(char **), b_cd(char **), b_continue(char **), b_eval(char **), b_exit(char **),
+	b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
+	b_wait(char **), b_whatis(char **);
 
 #if HAVE_SETRLIMIT
 static void b_limit(char **);
@@ -39,6 +39,7 @@ static struct {
 	{ b_break,	"break" },
 	{ b_builtin,	"builtin" },
 	{ b_cd,		"cd" },
+	{ b_continue,	"continue" },
 #if RC_ECHO
 	{ b_echo,	"echo" },
 #endif
@@ -72,20 +73,20 @@ extern builtin_t *isbuiltin(char *s) {
 /* funcall() is the wrapper used to invoke shell functions. pushes $*, and "return" returns here. */
 
 extern void funcall(char **av) {
-    Jbwrap j;
-    Estack e1, e2;
-    Edata jreturn, star;
-    if (sigsetjmp(j.j, 1))
-        return;
-    starassign(*av, av+1, TRUE);
-    jreturn.jb = &j;
-    star.name = "*";
-    except(eReturn, jreturn, &e1);
-    except(eVarstack, star, &e2);
-    walk(treecpy(fnlookup(*av), nalloc), TRUE);
-    varrm("*", TRUE);
-    unexcept(); /* eVarstack */
-    unexcept(); /* eReturn */
+	Jbwrap j;
+	Estack e1, e2;
+	Edata jreturn, star;
+	if (sigsetjmp(j.j, 1))
+		return;
+	starassign(*av, av+1, TRUE);
+	jreturn.jb = &j;
+	star.name = "*";
+	except(eReturn, jreturn, &e1);
+	except(eVarstack, star, &e2);
+	walk(treecpy(fnlookup(*av), nalloc), TRUE);
+	varrm("*", TRUE);
+	unexcept(eVarstack);
+	unexcept(eReturn);
 }
 
 static void arg_count(char *name) {
@@ -285,6 +286,16 @@ static void b_break(char **av) {
 	rc_raise(eBreak);
 }
 
+/* raise a "continue" exception to finish early an iteration of 'for' and 'while' loops */
+
+static void b_continue(char **av) {
+	if (av[1] != NULL) {
+		arg_count("continue");
+		return;
+	}
+	rc_raise(eContinue);
+}
+
 /* shift $* n places (default 1) */
 
 static void b_shift(char **av) {
@@ -470,7 +481,7 @@ extern void b_dot(char **av) {
 	except(eVarstack, star, &e);
 	doit(TRUE);
 	varrm("*", TRUE);
-	unexcept(); /* eVarstack */
+	unexcept(eVarstack);
 	interactive = old_i;
 }
 
