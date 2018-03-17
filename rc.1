@@ -1706,6 +1706,36 @@ If no argument is given, the current value of
 .Cr $status
 is used.
 .TP
+\fBflag\fR \fIf\fR [ \fB+\fR | \fB\-\fR ]
+Test, set (\fB+\fR), or reset (\fB\-\fR) command-line flag
+.IR f .
+For example, a script that requires ``exit if command fails'' semantics can say
+.Ds
+.Cr "flag e +"
+.De
+.TP
+\&
+Some flags cannot be set or reset using
+.BR flag ,
+but they can still be tested. These are
+.BR c ,
+.BR d ,
+.BR l ,
+.BR o ,
+.BR p ,
+and
+.BR s .
+As a special case,
+.Cr "flag i"
+operates on
+.BR rc 's
+internal
+.IR interactive
+flag, which may have been set by
+.Cr -i
+on the command line, or if standard input was a terminal; there is no
+.Cr "flag I" .
+.TP
 \fBlimit \fR[\fB\-h\fR] [\fIresource \fR[\fIvalue\fR]]
 Similar to the
 .IR csh (1)

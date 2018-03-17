@@ -6,9 +6,10 @@
 
 #include "input.h"
 
-bool dashdee, dashee, dashvee, dashex, dasheye,
-	dashen, dashpee, interactive;
-bool dashEYE, dashell, dashoh, dashess;
+bool dashdee, dashee, dasheye, dashell, dashen;
+bool dashpee, dashoh, dashess, dashvee, dashex;
+bool interactive;
+static bool dashEYE;
 char *dashsee[2];
 pid_t rc_pid;
 
@@ -68,8 +69,10 @@ extern int main(int argc, char *argv[], char *envp[]) {
 		}
 quitopts:
 	argv += rc_optind;
-	/* use isatty() iff neither -i nor -I is set, and iff the input is not from a script or -c flags */
-	if (!dasheye && !dashEYE && dashsee[0] == NULL && (dashess || *argv == NULL))
+	/* use isatty() iff neither -i nor -I is set, and iff the input is not
+	 * from a script or -c flags */
+	if (!dasheye && !dashEYE && dashsee[0] == NULL &&
+			(dashess || *argv == NULL))
 		interactive = isatty(0);
 	if (!dashoh) {
 		checkfd(0, rFrom);

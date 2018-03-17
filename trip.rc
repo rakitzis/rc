@@ -624,3 +624,11 @@ $rc -ec 'X=`{false}'
 if (~ $status 0) {
 	fail '"rc -e" exits with zero status when backquote command returns non-zero'
 }
+
+# exercise flag builtin
+submatch 'flag' 'rc: not enough arguments to flag' 'flag no args'
+submatch 'flag a b c' 'usage: flag f [ + | - ]' 'flag 3 args'
+submatch 'flag xx' 'usage: flag f [ + | - ]' 'flag wrong first arg'
+submatch 'flag x x' 'usage: flag f [ + | - ]' 'flag wrong second arg'
+submatch 'flag c && echo yes' yes 'flag c'
+submatch 'flag x +; flag x -' 'flag x -' 'setting x flag'
