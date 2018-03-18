@@ -22,8 +22,8 @@
 #include "rlimit.h"
 #include "sigmsgs.h"
 
-static void b_break(char **), b_cd(char **), b_continue(char **), b_eval(char **), b_exit(char **),
-	b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
+static void b_break(char **), b_cd(char **), b_continue(char **), b_eval(char **), b_flag(char **),
+	b_exit(char **), b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
 	b_wait(char **), b_whatis(char **);
 
 #if HAVE_SETRLIMIT
@@ -56,6 +56,7 @@ builtins[] = {
 	{ b_eval,       "eval" },
 	{ b_exec,       "exec" },
 	{ b_exit,       "exit" },
+        { b_flag,	"flag" },
 #ifdef RC_ADDON
 	{ b_kill,       "kill" },
 	{ b_calc,       "let" },
@@ -63,12 +64,12 @@ builtins[] = {
 #if HAVE_SETRLIMIT
 	{ b_limit,      "limit" },
 #endif
-	{ b_newpgrp,    "newpgrp" },
-	{ b_return,     "return" },
-	{ b_shift,      "shift" },
-	{ b_umask,      "umask" },
-	{ b_wait,       "wait" },
-	{ b_whatis,     "whatis" },
+	{ b_newpgrp,	"newpgrp" },
+	{ b_return,	"return" },
+	{ b_shift,	"shift" },
+	{ b_umask,	"umask" },
+	{ b_wait,	"wait" },
+	{ b_whatis,	"whatis" },
 };
 
 extern bool q_builtins_ordered(void)
@@ -222,31 +223,99 @@ static void b_cd(char **av) {
 }
 
 static void b_umask(char **av) {
-	int i;
-	if (*++av == NULL) {
-		set(TRUE);
-		i = umask(0);
-		umask(i);
-		fprint(1, "0%o\n", i);
-	} else if (av[1] == NULL) {
-		i = o2u(*av);
-		if ((unsigned int) i > 0777) {
-			fprint(2, "bad umask\n");
-			set(FALSE);
-		} else {
-			umask(i);
-			set(TRUE);
-		}
-	} else {
-		arg_count("umask");
-		return;
-	}
+    int i;
+    if (*++av == NULL) {
+        set(TRUE);
+        i = umask(0);
+        umask(i);
+        fprint(1, "0%o\n", i);
+    } else if (av[1] == NULL) {
+        i = o2u(*av);
+        if ((unsigned int) i > 0777) {
+            fprint(2, "bad umask\n");
+            set(FALSE);
+        } else {
+            umask(i);
+            set(TRUE);
+        }
+    } else {
+        arg_count("umask");
+        return;
+    }
 }
 
 static void b_exit(char **av) {
 	if (*++av != NULL)
 		ssetstatus(av);
 	rc_exit(getstatus());
+}
+
+static void b_flag(char **av) {
+	bool *flagp = NULL;
+	char f;
+        int mode = 3; /* 0 = reset (-), 1 = set (+), 2 = test */
+	const char *usage = "usage: flag f [ + | - ]\n";
+
+	if (*++av == NULL) {
+		fprint(2, RC "not enough arguments to flag\n");
+		set(FALSE);
+		return;
+	}
+	f = av[0][0];
+	if (f == '\0' || av[0][1] != '\0') goto flag_usage;
+	if (*++av == NULL) {
+		mode = 2;
+	} else if (av[0][0] == '+' && av[0][1] == '\0') {
+		mode = 1;
+	} else if (av[0][0] == '-' && av[0][1] == '\0') {
+		mode = 0;
+	}
+	if (mode == 3) goto flag_usage;
+	switch (f) {
+		case 'c':
+			if (mode != 2) goto flag_immutable;
+			set(dashsee[0] != NULL);
+			return;
+		case 'd':
+			if (mode != 2) goto flag_immutable;
+			flagp = &dashdee; break;
+		case 'e': flagp = &dashee; break;
+		case 'i': flagp = &interactive; break;
+		case 'l':
+			  if (mode != 2) goto flag_immutable;
+			  flagp = &dashell; break;
+		case 'n': flagp = &dashen; break;
+		case 'o':
+			  if (mode != 2) goto flag_immutable;
+			  flagp = &dashoh; break;
+		case 'p':
+			  if (mode != 2) goto flag_immutable;
+			  flagp = &dashpee; break;
+		case 's':
+			  if (mode != 2) goto flag_immutable;
+			  flagp = &dashess; break;
+		case 'v': flagp = &dashvee; break;
+		case 'x': flagp = &dashex; break;
+        }
+	if (flagp != NULL) {
+		if (mode == 2)
+			set(*flagp);
+		else {
+			*flagp = mode;
+			set(TRUE);
+		}
+	} else {
+		fprint(2, RC "unknown flag");
+		set(FALSE);
+	}
+	return;
+flag_immutable:
+	fprint(2, RC "flag immutable\n");
+	set(FALSE);
+	return;
+flag_usage:
+	fprint(2, usage);
+	set(FALSE);
 }
 
 /* raise a "return" exception, i.e., return from a function. if an integer argument is present, set $status to it */
