@@ -911,3 +911,7 @@ Changes since rc-1.5b2
   Bug: the grammar disallowed local assignments and redirections in the true
   branch of `if` when there was an `else` clause (thanks Dražen Borković and
   Bert Münnich; github #31).
+
+2018-03-19
+
+  Feature: default values for $nl and $tab (github #43).
