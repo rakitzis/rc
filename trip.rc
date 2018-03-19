@@ -706,7 +706,8 @@ if (~ $status 0) {
 
 # exercise "if not"
 submatch 'if (false) echo foo; if not echo bar' 'bar' 'if not 1'
-submatch 'if (false) echo foo; echo qux; if not echo bar' 'rc: `if not'' must follow `if''' 'if not 2'
+submatch 'if (false) echo -n foo; if not echo -n bar; echo qux' 'barqux' 'if not 2'
+submatch 'if (false) echo foo; echo qux; if not echo bar' 'rc: `if not'' must follow `if''' 'if not 3'
 
 # exercise flag builtin
 submatch 'flag' 'rc: not enough arguments to flag' 'flag no args'

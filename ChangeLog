@@ -911,3 +911,11 @@ Changes since rc-1.5b2
   Bug: the grammar disallowed local assignments and redirections in the true
   branch of `if` when there was an `else` clause (thanks Dražen Borković and
   Bert Münnich; github #31).
+
+2018-03-17
+
+  Feature: implement the `flag` builtin.
+
+2018-03-19
+
+  Feature: implement `if not`.

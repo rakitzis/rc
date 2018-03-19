@@ -371,7 +371,7 @@ extern volatile sig_atomic_t slow;
 
 
 /* tree.c */
-extern Node *mk(int /*nodetype*/,...);
+extern Node *mk(enum nodetype, ...);
 extern Node *treecpy(Node *, void *(*)(size_t));
 extern void treefree(Node *);
 
