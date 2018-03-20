@@ -1199,14 +1199,15 @@ Alternative syntax for backquote substitution is:
 By default,
 .Cr $ifs
 has the value space-tab-newline.
+.PP
 The braces may be omitted if the command is a single word.
 Thus
 .Cr \`ls
 may be used instead of
 .Cr "\`{ls}" .
-This last feature is useful when defining functions that expand
-to useful argument lists.
-A frequent use is:
+This last feature can be used to create shortcuts by defining functions that
+expand to useful argument lists.
+For example:
 .Ds
 .Cr "fn src { echo *.[chy] }"
 .De
@@ -1216,8 +1217,8 @@ followed by
 .Cr "wc \`src"
 .De
 .PP
-(This will print out a word-count of all C source files in the current
-directory.)
+This will print out a word-count of all C source files in the current
+directory.
 .PP
 In order to override the value of
 .Cr $ifs
@@ -1237,10 +1238,31 @@ For example:
 .PP
 splits up
 .Cr /etc/passwd
-into fields, assuming that
+into fields.
+.PP
+As a convenience,
+.I rc
+defines
 .Cr $nl
-contains a newline
-as its value.
+to contain the newline character, and
+.Cr $tab
+to contain the tab character. Thus, if you want to process everything in the
+current directory, but in a random order, you could use:
+.Ds
+.Cr "for (f in \`\` $nl {ls | shuf}) { ... process $f }"
+.De
+.PP
+This will correctly handle filenames that contain spaces.
+.PP
+Note that
+.I rc
+scripts that use backquote substitution should avoid relying on the default
+values of
+.Cr $ifs ,
+.Cr $nl ,
+or
+.Cr $tab .
+Instead, they should explicitly set what they need.
 .SH "SPECIAL VARIABLES"
 Several variables are known to
 .I rc
@@ -1392,6 +1414,11 @@ backquote commands for digestion as a list. On startup,
 assigns the list containing the characters space, tab, and newline to
 .Cr $ifs .
 .TP
+.Cr nl " (default)"
+Contains the newline character (see
+.BR "Backquote substitution"
+above).
+.TP
 .Cr path " (alias)"
 This is a list of directories to search in for commands.
 The empty string stands for the current directory.
@@ -1479,6 +1506,11 @@ usually sets
 .Cr $status
 to
 .Cr "(0 0)" .
+.TP
+.Cr tab " (default)"
+Contains the tab character (see
+.BR "Backquote substitution"
+above).
 .TP
 .Cr version " (default)"
 On startup, the first element of this list variable is initialized to
