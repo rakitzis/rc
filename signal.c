@@ -16,8 +16,8 @@ void (*sys_signal(int signum, void (*handler)(int)))(int) {
 	new.sa_flags = 0; /* clear SA_RESTART */
 	sigfillset(&new.sa_mask);
 	if (sigaction(signum, &new, &old) == 0)
-                return old.sa_handler;
-        return SIG_DFL;
+		return old.sa_handler;
+	return SIG_DFL;
 }
 #else
 void (*sys_signal(int signum, void (*handler)(int)))(int) {

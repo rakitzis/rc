@@ -58,7 +58,7 @@ extern Node *mk(int /*nodetype*/ t,...) {
 		n->u[1].i = va_arg(ap, int);
 		n->u[2].p = va_arg(ap, Node *);
 		break;
- 	}
+	}
 	n->type = t;
 	va_end(ap);
 	return n;

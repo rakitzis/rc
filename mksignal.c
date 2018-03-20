@@ -224,7 +224,7 @@ int main(void) {
 
     /* yes, we could avoid the quadratic searching with an aux array. fap. */
     for (s = 1; s <= maxsig; ++s) {
-        for (snp = signamings; snp->signo && snp->signo != s; ++snp)
+	for (snp = signamings; snp->signo && snp->signo != s; ++snp)
 	    /* */;
 	if (snp->signo)
 	    fprintf(outf, "\t{\"%s\",\t\"%s\"},\n",

@@ -125,11 +125,11 @@ $abc^n $x^here$x^doc
 EOF
 {if (!~ `` $nl cat '	') fail quoted heredoc} << ' '
 	
- 
+
 
 <<<[9] ``''{cat $bigfile} \
 {
- 	if(!~ ``''{cat <[0=9]}``'' cat)fail large herestrings
+	if(!~ ``''{cat <[0=9]}``'' cat)fail large herestrings
 } < \
 $bigfile
 

@@ -113,7 +113,7 @@ cmd	: /* empty */	%prec WHILE		{ $$ = NULL; }
 	| TWIDDLE optcaret word words		{ $$ = mk(nMatch,$3,$4); }
 	| cmd ANDAND optnl cmd			{ $$ = mk(nAndalso,$1,$4); }
 	| cmd OROR optnl cmd			{ $$ = mk(nOrelse,$1,$4); }
- 	| cmd PIPE optnl cmd			{ $$ = mk(nPipe,$2.left,$2.right,$1,$4); }
+	| cmd PIPE optnl cmd			{ $$ = mk(nPipe,$2.left,$2.right,$1,$4); }
 	| redir cmd	%prec PREDIR		{ $$ = ($2 != NULL ? mk(nPre,$1,$2) : $1); }
 	| assign cmd	%prec BANG		{ $$ = ($2 != NULL ? mk(nPre,$1,$2) : $1); }
 	| BANG optcaret cmd			{ $$ = mk(nBang,$3); }

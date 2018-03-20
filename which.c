@@ -83,7 +83,7 @@ static char *protect(char *in) {
 	out[i] = '\0';
 	return out;
 }
-		    
+
 /* return a full pathname by searching $path, and by checking the status of the file */
 
 extern char *which(char *name, bool verbose) {

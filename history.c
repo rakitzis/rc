@@ -13,7 +13,7 @@
 
 	BUGS:
 	There is an implicit assumption that commands are no
-	more than 1k characters long. 
+	more than 1k characters long.
 */
 
 #include "rc.h"
@@ -318,7 +318,7 @@ next:	s = getcommand();
 		if (!isin(s, replace[i].old))
 			goto next;
 		else {
-		    	int j;
+			int j;
 			for (j = 0; j <= replace[i].reps; j++)
 			      s = sub(s, replace[i].old, replace[i].new);
 		}

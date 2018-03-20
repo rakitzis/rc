@@ -21,8 +21,8 @@ void *edit_begin(int fd) {
 	struct cookie *c;
 
 
-        hist = varlookup("history");
-        if (hist != NULL)
+	hist = varlookup("history");
+	if (hist != NULL)
 		;
 		/* XXX will need to loop calling add_history() */
 
