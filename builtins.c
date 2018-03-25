@@ -56,7 +56,7 @@ builtins[] = {
 	{ b_eval,       "eval" },
 	{ b_exec,       "exec" },
 	{ b_exit,       "exit" },
-        { b_flag,	"flag" },
+	{ b_flag,	"flag" },
 #ifdef RC_ADDON
 	{ b_kill,       "kill" },
 	{ b_calc,       "let" },
@@ -160,9 +160,9 @@ static void update_cwd_var(void)
     List val;
     const char* ret = getcwd(b, arraysize(b) - 1);
     if (ret) {
-        val.w = nprint("%s", b);
-        val.n = NULL;
-        varassign("pwd", &val, FALSE);
+	val.w = nprint("%s", b);
+	val.n = NULL;
+	varassign("pwd", &val, FALSE);
     }
 }
 
@@ -225,22 +225,22 @@ static void b_cd(char **av) {
 static void b_umask(char **av) {
     int i;
     if (*++av == NULL) {
-        set(TRUE);
-        i = umask(0);
-        umask(i);
-        fprint(1, "0%o\n", i);
+	set(TRUE);
+	i = umask(0);
+	umask(i);
+	fprint(1, "0%o\n", i);
     } else if (av[1] == NULL) {
-        i = o2u(*av);
-        if ((unsigned int) i > 0777) {
-            fprint(2, "bad umask\n");
-            set(FALSE);
-        } else {
-            umask(i);
-            set(TRUE);
-        }
+	i = o2u(*av);
+	if ((unsigned int) i > 0777) {
+	    fprint(2, "bad umask\n");
+	    set(FALSE);
+	} else {
+	    umask(i);
+	    set(TRUE);
+	}
     } else {
-        arg_count("umask");
-        return;
+	arg_count("umask");
+	return;
     }
 }
 
@@ -253,7 +253,7 @@ static void b_exit(char **av) {
 static void b_flag(char **av) {
 	bool *flagp = NULL;
 	char f;
-        int mode = 3; /* 0 = reset (-), 1 = set (+), 2 = test */
+	int mode = 3; /* 0 = reset (-), 1 = set (+), 2 = test */
 	const char *usage = "usage: flag f [ + | - ]\n";
 
 	if (*++av == NULL) {
@@ -296,7 +296,7 @@ static void b_flag(char **av) {
 			  flagp = &dashess; break;
 		case 'v': flagp = &dashvee; break;
 		case 'x': flagp = &dashex; break;
-        }
+	}
 	if (flagp != NULL) {
 		if (mode == 2)
 			set(*flagp);

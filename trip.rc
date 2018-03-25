@@ -266,7 +266,7 @@ EOF
 
 <<<[9] ``''{cat $bigfile} \
 {
- 	if(!~ ``''{cat <[0=9]}``'' cat)fail large herestrings
+	if(!~ ``''{cat <[0=9]}``'' cat)fail large herestrings
 } < \
 $bigfile
 
@@ -894,7 +894,7 @@ for (varname in apid apids bqstatus pid ppid status ) {
     x = $$varname
     $varname = 1-$x-2
     if (! ~ $x $$varname) {
-        fail 'Assigning to a read-only variable. Old value:' $x 'New value:' $$varname
+	fail 'Assigning to a read-only variable. Old value:' $x 'New value:' $$varname
     }
 }
 
@@ -989,20 +989,20 @@ fn testCondExit { shouldExitShell=$1 script=$2 errMsg=() X=() {
     #whatis shouldExitShell script errMsg
     X=${ $rc -ec $script^'; echo YYY' }
     if ($shouldExitShell) {
-        if (~ $X YYY) {
-            fail '"rc -e"' $errMsg
-        }
+	if (~ $X YYY) {
+	    fail '"rc -e"' $errMsg
+	}
     } else {
-        if (! ~ $X YYY) {
-            fail '"rc -e"' $errMsg
-        }
+	if (! ~ $X YYY) {
+	    fail '"rc -e"' $errMsg
+	}
     }
 }}
 
 testCondExit false 'while(false){false}'  (exits when the command in the while condition fails the first time)
 
 testCondExit false 'b=true; while($b){b=false}' (exits when condition in the while statement
-                                                 fails in the second iteration)
+						 fails in the second iteration)
 
 testCondExit false 'if (false){true}'     (exits when the command in the if condition fails)
 

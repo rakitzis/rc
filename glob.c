@@ -94,7 +94,7 @@ static List *dmatch(const char *d, const char *p, const char *m) {
 	int i;
 
 	/*
- 	   return a match if there are no metacharacters; allows globbing through
+	   return a match if there are no metacharacters; allows globbing through
 	   directories with no read permission. make sure the file exists, though.
 	 */
 	matched = TRUE;

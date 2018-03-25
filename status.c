@@ -46,17 +46,17 @@ extern void setN(int code) {
     int scode = 0;
     switch (code) {
     case 0:
-        scode = STATUS0;
-        break;
+	scode = STATUS0;
+	break;
     case 1:
-        scode = STATUS1;
-        break;
+	scode = STATUS1;
+	break;
     case 2:
-        scode = STATUS2;
-        break;
+	scode = STATUS2;
+	break;
     default:
-        scode = STATUS1;
-        break;
+	scode = STATUS1;
+	break;
     }
     setstatus(-1, scode);
 }

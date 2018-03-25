@@ -2134,7 +2134,7 @@ cmd	: /* empty */	%prec WHILE
 	| TWIDDLE optcaret word words
 	| cmd ANDAND optnl cmd
 	| cmd OROR optnl cmd
- 	| cmd PIPE optnl cmd
+	| cmd PIPE optnl cmd
 	| redir cmd	%prec REDIR_PREC
 	| assign cmd	%prec BANG
 	| BANG optcaret cmd

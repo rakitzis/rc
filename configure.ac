@@ -101,7 +101,7 @@ AC_ARG_ENABLE(protect-env, [  --disable-protect-env   Don't protect environment 
 
 AC_ARG_ENABLE(def-interp,
 [  --enable-def-interp=/bin/foo
-                          Use /bin/foo as default interpreter [[/bin/sh]]],
+			  Use /bin/foo as default interpreter [[/bin/sh]]],
 [
 	case "$enableval" in
 	no)
@@ -117,8 +117,8 @@ AC_ARG_ENABLE(def-interp,
 
 AC_ARG_ENABLE(def-path,
 [  --enable-def-path=\"/usr/local/bin/\",\"/usr/bin\"
-                          Default path [[All of these that exist
-                          (/usr/local/bin /usr/bin /usr/bsd /usr/ucb /bin .)]]],
+			  Default path [[All of these that exist
+			  (/usr/local/bin /usr/bin /usr/bsd /usr/ucb /bin .)]]],
 [
 	case "$enableval" in
 	no|yes)	;;
@@ -159,9 +159,9 @@ AM_CONDITIONAL(AMC_DEVELOP, test "$rc_develop" = true)
 AC_ARG_WITH(history,
 	[  --with-history          Build history subprograms],[
 	case "$withval" in
-        yes) rc_history=yes ;;
-        *) rc_history=no ;;
-        esac
+	yes) rc_history=yes ;;
+	*) rc_history=no ;;
+	esac
 	], rc_history=no)
 AM_CONDITIONAL(AMC_HISTORY, test "$rc_history" = yes)
 

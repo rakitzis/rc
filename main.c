@@ -94,7 +94,7 @@ quitopts:
 	inithash();
 	initparse();
 	assigndefault("ifs", " ", "\t", "\n", (void *)0);
-        assigndefault("nl", "\n", (void *)0);
+	assigndefault("nl", "\n", (void *)0);
 #ifdef DEFAULTPATH
 	assigndefault("path", DEFAULTPATH, (void *)0);
 #endif
@@ -108,11 +108,11 @@ quitopts:
 		} 
 	} 
 	assigndefault("prompt", "; ", "", (void *)0);
-        assigndefault("tab", "\t", (void *)0);
+	assigndefault("tab", "\t", (void *)0);
 	assigndefault("version",
-                VERSION,
-                "$Release: @(#)" PACKAGE " " VERSION " " DESCRIPTION " $",
-                (void *)0 );
+		VERSION,
+		"$Release: @(#)" PACKAGE " " VERSION " " DESCRIPTION " $",
+		(void *)0 );
 	initenv(envp);
 	initinput();
 	null[0] = NULL;
