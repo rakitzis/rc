@@ -17,11 +17,11 @@ void *edit_begin(int fd) {
 	List *hist;
 	struct cookie *c;
 
-        hist = varlookup("history");
-        if (hist != NULL)
-                if (read_history(hist->w) != 0 &&
+	hist = varlookup("history");
+	if (hist != NULL)
+		if (read_history(hist->w) != 0 &&
 				errno != ENOENT) /* ignore if missing */
-                        uerror(hist->w);
+			uerror(hist->w);
 
 	c = ealloc(sizeof *c);
 	c->buffer = NULL;

@@ -170,7 +170,7 @@ static bool Tconv(Format *f, int ignore) {
 		fmtprint(f, "{%T}", n->u[2].p);
 		break;
 	}
- 	}
+	}
 	return FALSE;
 }
 

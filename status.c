@@ -133,7 +133,7 @@ extern void ssetstatus(char **av) {
 				statuses[l - i] = k;
 				found = TRUE;
 				break;
-			} 
+			}
 			else {
 				size_t len = strlen(signals[k].name);
 				if (strncmp(signals[k].name, av[i], len) == 0 && streq(av[i] + len, "+core")) {

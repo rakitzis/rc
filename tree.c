@@ -27,10 +27,10 @@ static Node *desugar_ifnot(Node *n) {
 			Node *no = n->u[1].p->u[0].p;
 			Node *els = nalloc(offsetof(Node, u[2]));
 			els->type = nElse;
-                        els->u[1].p = no->u[0].p;
-                        els->u[0].p = yes->u[1].p;
-                        yes->u[1].p = els;
-                        n->u[1].p = n->u[1].p->u[1].p;
+			els->u[1].p = no->u[0].p;
+			els->u[0].p = yes->u[1].p;
+			yes->u[1].p = els;
+			n->u[1].p = n->u[1].p->u[1].p;
 		} else goto fail;
 	}
 
@@ -68,7 +68,7 @@ extern Node *mk(enum nodetype t,...) {
 		n = nalloc(offsetof(Node, u[1]));
 		n->u[0].p = va_arg(ap, Node *);
 		break;
-        case nAndalso: case nAssign: case nBackq: case nBody: case nBrace: case nConcat:
+	case nAndalso: case nAssign: case nBackq: case nBody: case nBrace: case nConcat:
 	case nElse: case nEpilog: case nIf: case nNewfn: case nCbody:
 	case nOrelse: case nPre: case nArgs: case nSwitch:
 	case nMatch: case nVarsub: case nWhile: case nLappend:
@@ -96,7 +96,7 @@ extern Node *mk(enum nodetype t,...) {
 		n->u[1].i = va_arg(ap, int);
 		n->u[2].p = va_arg(ap, Node *);
 		break;
- 	}
+	}
 	n->type = t;
 
 	n = desugar_ifnot(n);

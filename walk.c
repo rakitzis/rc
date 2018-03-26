@@ -98,13 +98,13 @@ top:	sigchk();
 			true_cmd = true_cmd->u[0].p;
 		}
 		cond = TRUE;
-                if_state = walk(n->u[0].p, TRUE);
+		if_state = walk(n->u[0].p, TRUE);
 		cond = oldcond;
 		WALK(if_state ? true_cmd : false_cmd, parent);
 	}
-        case nIfnot: {
-		if (if_state == 2) 
-                        rc_error("`if not' must follow `if'");
+	case nIfnot: {
+		if (if_state == 2)
+			rc_error("`if not' must follow `if'");
 		if (if_state == 0)
 			walk(n->u[0].p, TRUE);
 		if_state = 2;

@@ -46,27 +46,27 @@ static struct {
 	{ b_eval,	"eval" },
 	{ b_exec,	"exec" },
 	{ b_exit,	"exit" },
-        { b_flag,	"flag" },
+	{ b_flag,	"flag" },
 #if HAVE_SETRLIMIT
-        { b_limit,	"limit" },
+	{ b_limit,	"limit" },
 #endif
-        { b_newpgrp,	"newpgrp" },
-        { b_return,	"return" },
-        { b_shift,	"shift" },
-        { b_umask,	"umask" },
-        { b_wait,	"wait" },
-        { b_whatis,	"whatis" },
-        { b_dot,	"." },
+	{ b_newpgrp,	"newpgrp" },
+	{ b_return,	"return" },
+	{ b_shift,	"shift" },
+	{ b_umask,	"umask" },
+	{ b_wait,	"wait" },
+	{ b_whatis,	"whatis" },
+	{ b_dot,	"." },
 #ifdef ADDONS
-        ADDONS
+	ADDONS
 #endif
 };
 
 extern builtin_t *isbuiltin(char *s) {
     int i;
     for (i = 0; i < arraysize(builtins); i++)
-        if (streq(builtins[i].name, s))
-            return builtins[i].p;
+	if (streq(builtins[i].name, s))
+	    return builtins[i].p;
     return NULL;
 }
 
@@ -110,10 +110,10 @@ extern void b_exec(char **ignore) {
 static void b_echo(char **av) {
     char *format = "%A\n";
     if (*++av != NULL) {
-        if (streq(*av, "-n"))
-            format = "%A", av++;
-        else if (streq(*av, "--"))
-            av++;
+	if (streq(*av, "-n"))
+	    format = "%A", av++;
+	else if (streq(*av, "--"))
+	    av++;
     }
     fprint(1, format, av);
     set(TRUE);
@@ -127,70 +127,70 @@ static void b_cd(char **av) {
     char *path = NULL;
     size_t t, pathlen = 0;
     if (*++av == NULL) {
-        s = varlookup("home");
-        *av = (s == NULL) ? "/" : s->w;
+	s = varlookup("home");
+	*av = (s == NULL) ? "/" : s->w;
     } else if (av[1] != NULL) {
-        arg_count("cd");
-        return;
+	arg_count("cd");
+	return;
     }
     if (isabsolute(*av) || streq(*av, ".") || streq(*av, "..")) { /* absolute pathname? */
-        if (chdir(*av) < 0) {
-            set(FALSE);
-            uerror(*av);
-        } else
-            set(TRUE);
+	if (chdir(*av) < 0) {
+	    set(FALSE);
+	    uerror(*av);
+	} else
+	    set(TRUE);
     } else {
-        s = varlookup("cdpath");
-        if (s == NULL) {
-            s = &nil;
-            nil.w = "";
-            nil.n = NULL;
-        }
-        do {
-            if (s != &nil && *s->w != '\0') {
-                t = strlen(*av) + strlen(s->w) + 2;
-                if (t > pathlen)
-                    path = nalloc(pathlen = t);
-                strcpy(path, s->w);
-                if (!streq(s->w, "/")) /* "//" is special to POSIX */
-                    strcat(path, "/");
-                strcat(path, *av);
-            } else {
-                pathlen = 0;
-                path = *av;
-            }
-            if (chdir(path) >= 0) {
-                set(TRUE);
-                if (interactive && *s->w != '\0' && !streq(s->w, "."))
-                    fprint(1, "%s\n", path);
-                return;
-            }
-            s = s->n;
-        } while (s != NULL);
-        fprint(2, "couldn't cd to %s\n", *av);
-        set(FALSE);
+	s = varlookup("cdpath");
+	if (s == NULL) {
+	    s = &nil;
+	    nil.w = "";
+	    nil.n = NULL;
+	}
+	do {
+	    if (s != &nil && *s->w != '\0') {
+		t = strlen(*av) + strlen(s->w) + 2;
+		if (t > pathlen)
+		    path = nalloc(pathlen = t);
+		strcpy(path, s->w);
+		if (!streq(s->w, "/")) /* "//" is special to POSIX */
+		    strcat(path, "/");
+		strcat(path, *av);
+	    } else {
+		pathlen = 0;
+		path = *av;
+	    }
+	    if (chdir(path) >= 0) {
+		set(TRUE);
+		if (interactive && *s->w != '\0' && !streq(s->w, "."))
+		    fprint(1, "%s\n", path);
+		return;
+	    }
+	    s = s->n;
+	} while (s != NULL);
+	fprint(2, "couldn't cd to %s\n", *av);
+	set(FALSE);
     }
 }
 
 static void b_umask(char **av) {
     int i;
     if (*++av == NULL) {
-        set(TRUE);
-        i = umask(0);
-        umask(i);
-        fprint(1, "0%o\n", i);
+	set(TRUE);
+	i = umask(0);
+	umask(i);
+	fprint(1, "0%o\n", i);
     } else if (av[1] == NULL) {
-        i = o2u(*av);
-        if ((unsigned int) i > 0777) {
-            fprint(2, "bad umask\n");
-            set(FALSE);
-        } else {
-            umask(i);
-            set(TRUE);
-        }
+	i = o2u(*av);
+	if ((unsigned int) i > 0777) {
+	    fprint(2, "bad umask\n");
+	    set(FALSE);
+	} else {
+	    umask(i);
+	    set(TRUE);
+	}
     } else {
-        arg_count("umask");
-        return;
+	arg_count("umask");
+	return;
     }
 }
 
@@ -203,7 +203,7 @@ static void b_exit(char **av) {
 static void b_flag(char **av) {
 	bool *flagp = NULL;
 	char f;
-        int mode = 3; /* 0 = reset (-), 1 = set (+), 2 = test */
+	int mode = 3; /* 0 = reset (-), 1 = set (+), 2 = test */
 	const char *usage = "usage: flag f [ + | - ]\n";
 
 	if (*++av == NULL) {
@@ -246,7 +246,7 @@ static void b_flag(char **av) {
 			  flagp = &dashess; break;
 		case 'v': flagp = &dashvee; break;
 		case 'x': flagp = &dashex; break;
-        }
+	}
 	if (flagp != NULL) {
 		if (mode == 2)
 			set(*flagp);

@@ -44,13 +44,13 @@ static void getblock(size_t n) {
 extern void *nalloc(size_t n) {
 	size_t base;
 	Block *ulp;
-        n = alignto(n, sizeof(align_t));
+	n = alignto(n, sizeof(align_t));
 	ulp = ul;
 	if (ulp != NULL && n + (base = ulp->used) < ulp->size) {
 		ulp->used = base + n;
 		return &ulp->mem[base];
 	} else {
-		getblock(n); 
+		getblock(n);
 		assert(ul->used == 0);
 		(ulp = ul)->used = n;
 		return &ulp->mem[0];
