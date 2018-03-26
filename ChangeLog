@@ -174,19 +174,19 @@ Changes since rc-1.4:
 
 General changes:
 
-        Some small memory leaks/uninit references revealed by Purify.
+	Some small memory leaks/uninit references revealed by Purify.
 
-        $bqstatus for querying the exit status of a backquote.
+	$bqstatus for querying the exit status of a backquote.
 
-        Globbing through unreadable directories.
+	Globbing through unreadable directories.
 
-        More options to whatis.
+	More options to whatis.
 
-        History append which always re-opens the file (avoids
-        inconsistencies over multiple NFS-mounted accesses to
-        $history).
+	History append which always re-opens the file (avoids
+	inconsistencies over multiple NFS-mounted accesses to
+	$history).
 
-        Support "rc -s".
+	Support "rc -s".
 
 ---------
 
@@ -921,3 +921,8 @@ Changes since rc-1.5b2
   Feature: implement `if not`.
 
   Feature: default values for $nl and $tab (github #43).
+
+2018-03-20
+
+  Tidiness: be consistent about using tabs everywhere, and add a .vimrc to
+  keep it so in the future.

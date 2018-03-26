@@ -110,19 +110,19 @@ in your path.)
 
 #!/bin/rc
 if (~ $#* 0)
-        exec openfile
+	exec openfile
 create = ()
 files = ()
 for (i in $*)
-        if (test -f $i) {
-                files = ($files $i)
-        } else {
-                create = ($create $i)
+	if (test -f $i) {
+		files = ($files $i)
+	} else {
+		create = ($create $i)
 	}
 create = `{ pick $create }
 files = ($files $create)
 for (i in $create)
-        > $i
+	> $i
 if (! ~ $#files 0)
 	openfile $files
 
@@ -139,12 +139,12 @@ to set $foo to a single line from the terminal.
 (due to John Mackin <john@syd.dit.csiro.au>)
 
 fn read {
-        x=() {
-                x = `` ($nl) { awk '{print; print 0; exit}' ^ $nl ^ \
-                                   'END {print 1; print 1}' }
-                $1 = $x(1)
-                return $x(2)
-        }
+	x=() {
+		x = `` ($nl) { awk '{print; print 0; exit}' ^ $nl ^ \
+				   'END {print 1; print 1}' }
+		$1 = $x(1)
+		return $x(2)
+	}
 }
 
 From cs.wisc.edu!dws Fri Aug  2 18:16:14 1991
@@ -280,62 +280,62 @@ static void b_kill(char **av)
     boolean res;
 
     if (!av[1]) {
-        set(TRUE);
-        return;
+	set(TRUE);
+	return;
     }
 #undef  STRCMP
 #define STRCMP strcmp
     if ( '-' == av[1][0]) {
-        char *p = 1+av[1];
-        if (0 == strcmp(av[1], "-l")){
-            int r; const int nsig = NUMOFSIGNALS;
-            const int C = 4, R = 1 + (int)((nsig-2)/C);
-            for (r=1; r<=R; r++){
-              int j;
-              for (j=r; j<nsig; j+=R){
-                fprint(1, "%s%d. %s\t", j<10?" ":"", j, signals[j][0]);
-              }
-              fprint(1,"\n");
-            }
-            set(TRUE);
-            return;
-        }
-        n++;
-        if ( (signal=a2u(p)) < 0){
-            int i;
-            for (i = 1; i < NUMOFSIGNALS; i++){
-                char UPPER[31], *u=UPPER, *q;
-                for (q=signals[i][0]; *q; q++, u++) *u = toupper(*q);
-                *u = '\0';
+	char *p = 1+av[1];
+	if (0 == strcmp(av[1], "-l")){
+	    int r; const int nsig = NUMOFSIGNALS;
+	    const int C = 4, R = 1 + (int)((nsig-2)/C);
+	    for (r=1; r<=R; r++){
+	      int j;
+	      for (j=r; j<nsig; j+=R){
+		fprint(1, "%s%d. %s\t", j<10?" ":"", j, signals[j][0]);
+	      }
+	      fprint(1,"\n");
+	    }
+	    set(TRUE);
+	    return;
+	}
+	n++;
+	if ( (signal=a2u(p)) < 0){
+	    int i;
+	    for (i = 1; i < NUMOFSIGNALS; i++){
+		char UPPER[31], *u=UPPER, *q;
+		for (q=signals[i][0]; *q; q++, u++) *u = toupper(*q);
+		*u = '\0';
 
-                if (*signals[i][0] &&
-                  (!STRCMP(signals[i][0], p) || !STRCMP(3+signals[i][0],p)
-                   || !STRCMP(UPPER, p) || !STRCMP(3+UPPER, p) )  )
-                {
-                    signal = i;
-                    break;
-                }
-            }
-            if (signal < 0){
-                fprint(2,"kill: bad signal %s\n", av[1]);
-                set(FALSE);
-                return;
-            }
-        }
+		if (*signals[i][0] &&
+		  (!STRCMP(signals[i][0], p) || !STRCMP(3+signals[i][0],p)
+		   || !STRCMP(UPPER, p) || !STRCMP(3+UPPER, p) )  )
+		{
+		    signal = i;
+		    break;
+		}
+	    }
+	    if (signal < 0){
+		fprint(2,"kill: bad signal %s\n", av[1]);
+		set(FALSE);
+		return;
+	    }
+	}
     }
 #undef STRCMP
 
     for (res=TRUE; av[n]; n++){
-        if( (pid = (pid_t) a2u(av[n])) < 0){
-            fprint(2, "kill: bad process number %s\n", av[n]);
-            res = FALSE;
-            continue;
-        }
-        if (kill(pid,signal)){
-            uerror("kill");
-            res = FALSE;
-            continue;
-        }
+	if( (pid = (pid_t) a2u(av[n])) < 0){
+	    fprint(2, "kill: bad process number %s\n", av[n]);
+	    res = FALSE;
+	    continue;
+	}
+	if (kill(pid,signal)){
+	    uerror("kill");
+	    res = FALSE;
+	    continue;
+	}
     }
     set(res);
 }
@@ -513,13 +513,13 @@ while (~ $1 -*)
 	macros=$1;
       case -k
 	fflag=(); kflag=1;
-        shift;
-        break;
+	shift;
+	break;
       case -f
 	# locate related too filenames
 	kflag=(); fflag=1;
-        shift;
-        break;
+	shift;
+	break;
       case -*
 	echo bad flag '`'^$1^'''' >[1=2];
 	usage;
@@ -585,7 +585,7 @@ while (!~ $1 ()) {
 	dont=()
 	for (x in $Cat) {
 	  if (~ `{echo $x |  sed 's/\/[mc]a[nt][1-8l]//'} \
-	        `{echo $file |  sed 's/\/[mc]a[nt][1-8l]//'}) {
+		`{echo $file |  sed 's/\/[mc]a[nt][1-8l]//'}) {
 	    dont=1;
 	    break;
 	  }

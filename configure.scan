@@ -43,7 +43,7 @@ AC_FUNC_STAT
 AC_CHECK_FUNCS([dup2 memset mkfifo strchr strerror strrchr strspn])
 
 AC_CONFIG_FILES([Makefile
-                 rc-1.7s20020820/Makefile
-                 rc-1.7s20021127/=build/Makefile
-                 rc-1.7s20021127/Makefile])
+		 rc-1.7s20020820/Makefile
+		 rc-1.7s20021127/=build/Makefile
+		 rc-1.7s20021127/Makefile])
 AC_OUTPUT
