@@ -2135,7 +2135,7 @@ cmd	: /* empty */	%prec WHILE
 	| cmd ANDAND optnl cmd
 	| cmd OROR optnl cmd
 	| cmd PIPE optnl cmd
-	| redir cmd	%prec REDIR_PREC
+	| redir cmd	%prec BANG
 	| assign cmd	%prec BANG
 	| BANG optcaret cmd
 	| SUBSHELL optcaret cmd

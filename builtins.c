@@ -42,34 +42,37 @@ typedef struct BuiltinMap {
 
 static const BuiltinMap
 builtins[] = {
-	{ b_dot,        "." },
-	{ b_break,      "break" },
-	{ b_builtin,    "builtin" },
+	{ b_dot,		"." },
+	{ b_break,		"break" },
+	{ b_builtin,	"builtin" },
 #ifdef RC_ADDON
-	{ b_calc,       "calc" },
+	{ b_calc,		"calc" },
 #endif
-	{ b_cd,         "cd" },
-	{ b_continue,   "continue" },
+	{ b_cd,			"cd" },
+	{ b_continue,	"continue" },
 #if RC_ECHO
-	{ b_echo,       "echo" },
+	{ b_echo,		"echo" },
 #endif
-	{ b_eval,       "eval" },
-	{ b_exec,       "exec" },
-	{ b_exit,       "exit" },
-	{ b_flag,	"flag" },
+	{ b_eval,		"eval" },
+	{ b_exec,		"exec" },
+	{ b_exit,		"exit" },
+	{ b_flag,		"flag" },
 #ifdef RC_ADDON
-	{ b_kill,       "kill" },
-	{ b_calc,       "let" },
+	{ b_kill,		"kill" },
+	{ b_calc,		"let" },
 #endif
 #if HAVE_SETRLIMIT
-	{ b_limit,      "limit" },
+	{ b_limit,		"limit" },
 #endif
 	{ b_newpgrp,	"newpgrp" },
-	{ b_return,	"return" },
-	{ b_shift,	"shift" },
-	{ b_umask,	"umask" },
-	{ b_wait,	"wait" },
-	{ b_whatis,	"whatis" },
+	{ b_return,		"return" },
+	{ b_shift,		"shift" },
+	{ b_umask,		"umask" },
+	{ b_wait,		"wait" },
+	{ b_whatis,		"whatis" },
+#ifdef ADDONS
+	ADDONS
+#endif
 };
 
 extern bool q_builtins_ordered(void)
@@ -79,6 +82,8 @@ extern bool q_builtins_ordered(void)
 
 	for (i = 0, j = 1; j < N; ++i, ++j) {
 		if (strcmp_fast(builtins[i].name, builtins[j].name) >= 0) {
+            fprint(2, "Builtin '%s' at %d is listed before builtin '%s' at %d, but is larger\n",
+                builtins[i].name, i, builtins[j].name, j);
 			return FALSE;
 		}
 	}

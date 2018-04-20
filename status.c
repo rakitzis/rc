@@ -152,7 +152,7 @@ extern void ssetstatus(char * const*av) {
 				statuses[l - i] = k;
 				found = TRUE;
 				break;
-			} 
+			}
 			else {
 				const size_t len = strlen(signals[k].name);
 				if (strncmp_fast(signals[k].name, av[i], len) == 0 && streq(av[i] + len, "+core")) {

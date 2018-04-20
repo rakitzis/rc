@@ -13,8 +13,8 @@ static Node *star, *nolist;
 Node *parsetree;	/* not using yylval because bison declares it as an auto */
 %}
 
-%token ANDAND BACKBACK BANG CASE COUNT DUP ELSE END FLAT FN FOR IF IN
-%token OROR PIPE REDIR REDIR_PREC SREDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
+%token ANDAND BACKBACK BANG CASE COUNT DUP ELSE END FLAT FN FOR IF IN NOT
+%token OROR PIPE REDIR SREDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
 
 %left '^' '='
 %right ELSE TWIDDLE
@@ -106,6 +106,7 @@ cmd	: /* empty */	%prec WHILE		{ $$ = NULL; }
 	| simple
 	| brace epilog				{ $$ = mk(nBrace,$1,$2); }
 	| IF paren optnl iftail			{ $$ = mk(nIf,$2,$4); }
+	| IF NOT optnl cmd			{ $$ = mk(nIfnot,$4); }
 	| FOR '(' word IN words ')' optnl cmd	{ $$ = mk(nForin,$3,$5,$8); }
 	| FOR '(' word ')' optnl cmd		{ $$ = mk(nForin,$3,star,$6); }
 	| WHILE paren optnl cmd			{ $$ = mk(nWhile,$2,$4); }
@@ -159,6 +160,7 @@ keyword	: FOR		{ $$ = "for"; }
 	| IN		{ $$ = "in"; }
 	| WHILE		{ $$ = "while"; }
 	| IF		{ $$ = "if"; }
+	| NOT		{ $$ = "not"; }
 	| SWITCH	{ $$ = "switch"; }
 	| FN		{ $$ = "fn"; }
 	| ELSE		{ $$ = "else"; }

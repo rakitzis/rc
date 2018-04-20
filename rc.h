@@ -38,7 +38,7 @@ typedef union Edata Edata;
 typedef enum nodetype {
 	nAndalso, nAssign, nBackq, nBang, nBody, nCbody, nNowait, nBrace,
 	nConcat, nCount, nElse, nFlat, nDup, nEpilog, nNewfn, nForin, nIf,
-	nOrelse, nPipe, nPre, nRedir, nRmfn, nArgs, nSubshell, nCase,
+	nIfnot, nOrelse, nPipe, nPre, nRedir, nRmfn, nArgs, nSubshell, nCase,
 	nSwitch, nMatch, nVar, nVarsub, nWhile, nWord, nLappend, nNmpipe
 } nodetype;
 
@@ -405,7 +405,7 @@ extern volatile sig_atomic_t slow;
 
 
 /* tree.c */
-extern Node *mk(int /*nodetype*/,...);
+extern Node *mk(enum nodetype, ...);
 extern Node *treecpy(const Node *, void *(*)(size_t));
 extern void treefree(Node *);
 

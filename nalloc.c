@@ -59,7 +59,7 @@ extern void *nalloc(size_t n) {
 		ulp->used = base + n;
 		return &ulp->mem[base];
 	} else {
-		getblock(n); 
+		getblock(n);
 		assert(ul->used == 0);
 		(ulp = ul)->used = n;
 		return &ulp->mem[0];

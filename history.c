@@ -13,7 +13,7 @@
 
 	BUGS:
 	There is an implicit assumption that commands are no
-	more than 1k characters long. 
+	more than 1k characters long.
 */
 
 #include "rc.h"

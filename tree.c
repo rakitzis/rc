@@ -2,9 +2,47 @@
 
 #include "rc.h"
 
+/* convert if followed by ifnot to else */
+static Node *desugar_ifnot(Node *n) {
+	if (n->type == nBody && n->u[1].p && n->u[1].p->type == nIfnot) {
+		/* (body (if c x) (if-not y)) => (body (if c (else x y))) */
+		if (n->u[0].p->type == nIf) {
+			Node *yes = n->u[0].p;
+			Node *no = n->u[1].p;
+			Node *els = nalloc(offsetof(Node, u[2]));
+			els->type = nElse;
+			els->u[1].p = no->u[0].p;
+			els->u[0].p = yes->u[1].p;
+			yes->u[1].p = els;
+			n->u[1].p = NULL;
+		} else goto fail;
+	} else if (n->type == nBody &&
+			n->u[1].p && n->u[1].p->type == nBody &&
+			n->u[1].p->u[0].p &&
+				n->u[1].p->u[0].p->type == nIfnot) {
+		/* (body (if c x) (body (if-not y) z)) =>
+			(body (if c (else x y)) z) */
+		if (n->u[0].p->type == nIf) {
+			Node *yes = n->u[0].p;
+			Node *no = n->u[1].p->u[0].p;
+			Node *els = nalloc(offsetof(Node, u[2]));
+			els->type = nElse;
+			els->u[1].p = no->u[0].p;
+			els->u[0].p = yes->u[1].p;
+			yes->u[1].p = els;
+			n->u[1].p = n->u[1].p->u[1].p;
+		} else goto fail;
+	}
+
+	return n;
+fail:
+	rc_error("`if not' must follow `if'");
+	return NULL;
+}
+
 /* make a new node, pass it back to yyparse. Used to generate the parsetree. */
 
-extern Node *mk(int /*nodetype*/ t,...) {
+extern Node *mk(enum nodetype t,...) {
 	va_list ap;
 	Node *n;
 	va_start(ap, t);
@@ -26,7 +64,7 @@ extern Node *mk(int /*nodetype*/ t,...) {
 		break;
 	case nBang: case nNowait:
 	case nCount: case nFlat: case nRmfn: case nSubshell:
-	case nVar: case nCase:
+	case nVar: case nCase: case nIfnot:
 		n = nalloc(offsetof(Node, u[1]));
 		n->u[0].p = va_arg(ap, Node *);
 		break;
@@ -60,6 +98,8 @@ extern Node *mk(int /*nodetype*/ t,...) {
 		break;
 	}
 	n->type = t;
+
+	n = desugar_ifnot(n);
 	va_end(ap);
 	return n;
 }

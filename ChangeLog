@@ -912,6 +912,17 @@ Changes since rc-1.5b2
   branch of `if` when there was an `else` clause (thanks Dražen Borković and
   Bert Münnich; github #31).
 
+2018-03-17
+
+  Feature: implement the `flag` builtin.
+
 2018-03-19
 
+  Feature: implement `if not`.
+
   Feature: default values for $nl and $tab (github #43).
+
+2018-03-20
+
+  Tidiness: be consistent about using tabs everywhere, and add a .vimrc to
+  keep it so in the future.

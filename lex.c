@@ -160,6 +160,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 			if (*buf == 'f' && buf[1] == 'n') return FN;
 			if (*buf == 'i' && buf[1] == 'n') return IN;
 		}
+		if (streq(buf, "not")) return NOT;
 		if (streq(buf, "for")) return FOR;
 		if (streq(buf, "else")) return ELSE;
 		if (streq(buf, "switch")) return SWITCH;
