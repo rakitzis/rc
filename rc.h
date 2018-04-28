@@ -180,7 +180,6 @@ extern int lineno;
 /* builtins.c */
 extern builtin_t *isbuiltin(char *);
 extern void b_exec(char **), funcall(char **), b_dot(char **), b_builtin(char **);
-extern char *which(char *, bool);
 extern char *compl_builtin(const char *, int);
 
 /* except.c */
@@ -398,3 +397,7 @@ extern bool forked;
 /* walk.c */
 extern bool walk(Node *, bool);
 extern bool cond;
+
+/* which.c */
+extern bool rc_access(char *, bool);
+extern char *which(char *, bool);

@@ -16,6 +16,19 @@ struct cookie {
 	char *buffer;
 };
 
+/* can the name which we found in the first element of path be exec()d? */
+static bool is_command(List *path, char *name) {
+	char *full;
+	size_t len;
+
+	len = strlen(path->w) + strlen(name) + 2;
+	full = nalloc(len);
+	strcpy(full, path->w);
+	strcat(full, "/");
+	strcat(full, name);
+	return rc_access(full, FALSE);
+}
+
 static char *compl_extcmd(const char *text, int state) {
 	static DIR *d;
 	static List *path;
@@ -32,7 +45,8 @@ static char *compl_extcmd(const char *text, int state) {
 		else {
 			struct dirent *e;
 			while ((e = readdir(d))) {
-				if (strncmp(e->d_name, text, len) == 0)
+				if (strncmp(e->d_name, text, len) == 0 &&
+					is_command(path, e->d_name))
 					return strdup(e->d_name);
 			}
 			closedir(d);
