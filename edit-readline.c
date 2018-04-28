@@ -20,31 +20,27 @@ static char *compl_extcmd(const char *text, int state) {
 	static DIR *d;
 	static List *path;
 	static size_t len;
-	char *name = NULL;
 
 	if (!state) {
 		d = NULL;
 		path = varlookup("path");
 		len = strlen(text);
 	}
-nextdir:
-	while (d == NULL) {
-		if (path == NULL)
-			return NULL;
-		d = opendir(path->w);
-		path = path->n;
-	}
-	while (name == NULL) {
-		struct dirent *e = readdir(d);
-		if (e == NULL) {
+	while (d || path) {
+		if (!d)
+			d = opendir(path->w);
+		else {
+			struct dirent *e;
+			while ((e = readdir(d))) {
+				if (strncmp(e->d_name, text, len) == 0)
+					return strdup(e->d_name);
+			}
 			closedir(d);
 			d = NULL;
-			goto nextdir;
+			path = path->n;
 		}
-		if (strncmp(e->d_name, text, len) == 0)
-			name = strdup(e->d_name);
 	}
-	return name;
+	return NULL;
 }
 
 static rl_compentry_func_t *const compl_cmd_funcs[] = {
