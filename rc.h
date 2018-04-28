@@ -4,6 +4,9 @@
 
 #include <assert.h>
 
+/* for struct stat */
+#include <sys/stat.h>
+
 #define RC "rc: "
 
 /* datatypes */
@@ -399,5 +402,5 @@ extern bool walk(Node *, bool);
 extern bool cond;
 
 /* which.c */
-extern bool rc_access(char *, bool);
+extern bool rc_access(char *, bool, struct stat *);
 extern char *which(char *, bool);

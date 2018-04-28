@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <dirent.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -16,44 +17,118 @@ struct cookie {
 	char *buffer;
 };
 
-/* can the name which we found in the first element of path be exec()d? */
-static bool is_command(List *path, char *name) {
-	char *full;
-	size_t len;
+/* Join two strings with a "/" between them, into a malloc string */
+static char *dir_join(char *a, char *b) {
+	char *p;
+	if (!a) return strdup(b);
+	if (!b) return strdup(a);
+	p = ealloc(strlen(a) + strlen(b) + 2);
+	strcpy(p, a);
+	if (p[strlen(p) - 1] != '/')
+		strcat(p, "/");
+	strcat(p, b);
+	return p;
+}
 
-	len = strlen(path->w) + strlen(name) + 2;
-	full = nalloc(len);
-	strcpy(full, path->w);
-	strcat(full, "/");
-	strcat(full, name);
-	return rc_access(full, FALSE);
+/* Suppose there is a subdirectory in one of the directories on $path,
+ * "/bin/sub/", and the user has typed "suTAB". We want to offer "sub/" as a
+ * completion, but we need to offer two things so it is not taken as the sole
+ * completion. We use "bodge" to hold "sub/" while we return "sub/..." the
+ * first time. Next time, we will notice that "bodge" is set, and return that
+ * instead. */
+static char *bodge;
+
+/* Decide if this directory entry is a completion candidate, either executable
+ * or a directory. "dname" is the absolute path of the directory, "name" is the
+ * current entry. "subdirs" is the name being completed up to and including the
+ * last slash (or NULL if there is no slash, "prefix" is the remainder of the
+ * name being completed, "len" is the length of "prefix".
+ */
+static char *entry(char *dname, char *name, char *subdirs,
+			char *prefix, size_t len) {
+	char *full;
+	struct stat st;
+
+	if (strncmp(name, prefix, len) != 0)
+		return NULL;
+	if (streq(name, ".") || streq(name, ".."))
+		return NULL;
+	full = dir_join(dname, name);
+	if (rc_access(full, FALSE, &st)) {
+		efree(full);
+		return dir_join(subdirs, name);
+	}
+	efree(full);
+	if (S_ISDIR(st.st_mode)) {
+		char *dir_ret = ealloc(strlen(name) + 5);
+		char *r;
+		strcpy(dir_ret, name);
+		strcat(dir_ret, "/");
+		bodge = dir_join(subdirs, dir_ret);
+		strcat(dir_ret, "...");
+		r = dir_join(subdirs, dir_ret);
+		efree(dir_ret);
+		return r;
+	}
+	return NULL;
+}
+
+/* Split a string "text" after the last "/" into "pre" and "post". If there is
+ * no "/", "pre" will be NULL. */
+void split_last_slash(const char *text, char **pre, char **post) {
+	char *last_slash = strrchr(text, '/');
+	if (last_slash) {
+		size_t l = last_slash + 1 - text;
+		*pre = ealloc(l + 1);
+		strncpy(*pre, text, l);
+		(*pre)[l] = '\0';
+		*post = last_slash + 1;
+	} else {
+		*pre = NULL;
+		*post = (char *)text;
+	}
 }
 
 static char *compl_extcmd(const char *text, int state) {
+	static char *dname, *prefix, *subdirs;
 	static DIR *d;
 	static List *path;
 	static size_t len;
 
 	if (!state) {
+		split_last_slash(text, &subdirs, &prefix);
 		d = NULL;
+		dname = NULL;
 		path = varlookup("path");
-		len = strlen(text);
+		len = strlen(prefix);
+		bodge = NULL;
+	}
+	if (bodge) {
+		char *r = bodge;
+		bodge = NULL;
+		return r;
 	}
 	while (d || path) {
-		if (!d)
-			d = opendir(path->w);
-		else {
+		if (!d) {
+			dname = dir_join(path->w, subdirs);
+			d = opendir(dname);
+			path = path->n;
+			if (!d) efree(dname);
+		} else {
 			struct dirent *e;
 			while ((e = readdir(d))) {
-				if (strncmp(e->d_name, text, len) == 0 &&
-					is_command(path, e->d_name))
-					return strdup(e->d_name);
+				char *x;
+				x = entry(dname, e->d_name, subdirs,
+						prefix, len);
+				if (x)
+					return x;
 			}
 			closedir(d);
+			efree(dname);
 			d = NULL;
-			path = path->n;
 		}
 	}
+	efree(subdirs);
 	return NULL;
 }
 

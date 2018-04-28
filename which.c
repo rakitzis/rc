@@ -47,23 +47,22 @@ static int ingidset(gid_t g) {
    Returns a bool instead of this -1 nonsense.
 */
 
-bool rc_access(char *path, bool verbose) {
-	struct stat st;
+bool rc_access(char *path, bool verbose, struct stat *stp) {
 	int mask;
-	if (stat(path, &st) != 0) {
+	if (stat(path, stp) != 0) {
 		if (verbose) /* verbose flag only set for absolute pathname */
 			uerror(path);
 		return FALSE;
 	}
 	if (uid == 0)
 		mask = X_ALL;
-	else if (uid == st.st_uid)
+	else if (uid == stp->st_uid)
 		mask = X_USR;
-	else if (gid == st.st_gid || ingidset(st.st_gid))
+	else if (gid == stp->st_gid || ingidset(stp->st_gid))
 		mask = X_GRP;
 	else
 		mask = X_OTH;
-	if (((st.st_mode & S_IFMT) == S_IFREG) && (st.st_mode & mask))
+	if (((stp->st_mode & S_IFMT) == S_IFREG) && (stp->st_mode & mask))
 		return TRUE;
 	errno = EACCES;
 	if (verbose)
@@ -91,6 +90,7 @@ extern char *which(char *name, bool verbose) {
 	static size_t testlen = 0;
 	List *path;
 	int len;
+	struct stat st;
 	if (name == NULL)	/* no filename? can happen with "> foo" as a command */
 		return NULL;
 	if (!initialized) {
@@ -114,7 +114,7 @@ extern char *which(char *name, bool verbose) {
 #endif
 	}
 	if (isabsolute(name)) /* absolute pathname? */
-		return rc_access(name, verbose) ? name : NULL;
+		return rc_access(name, verbose, &st) ? name : NULL;
 	len = strlen(name);
 	for (path = varlookup("path"); path != NULL; path = path->n) {
 		size_t need = strlen(path->w) + len + 2; /* one for null terminator, one for the '/' */
@@ -130,7 +130,7 @@ extern char *which(char *name, bool verbose) {
 				strcat(test, "/");
 			strcat(test, name);
 		}
-		if (rc_access(test, FALSE))
+		if (rc_access(test, FALSE, &st))
 			return test;
 	}
 	if (verbose) {
