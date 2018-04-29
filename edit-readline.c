@@ -35,13 +35,16 @@ static char *dir_join(char *a, char *b) {
  * completion, but we need to offer two things so it is not taken as the sole
  * completion. We use "bodge" to hold "sub/" while we return "sub/..." the
  * first time. Next time, we will notice that "bodge" is set, and return that
- * instead. */
+ * instead. (It would be better to persuade readline just to append the "/" as
+ * it does for filename completion, but it's not clear to me if this is
+ * possible.)
+ */
 static char *bodge;
 
 /* Decide if this directory entry is a completion candidate, either executable
  * or a directory. "dname" is the absolute path of the directory, "name" is the
  * current entry. "subdirs" is the name being completed up to and including the
- * last slash (or NULL if there is no slash, "prefix" is the remainder of the
+ * last slash (or NULL if there is no slash), "prefix" is the remainder of the
  * name being completed, "len" is the length of "prefix".
  */
 static char *entry(char *dname, char *name, char *subdirs,
@@ -98,7 +101,6 @@ static char *compl_extcmd(const char *text, int state) {
 	if (!state) {
 		split_last_slash(text, &subdirs, &prefix);
 		d = NULL;
-		dname = NULL;
 		path = varlookup("path");
 		len = strlen(prefix);
 		bodge = NULL;
