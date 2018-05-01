@@ -223,8 +223,13 @@ int main(void) {
 	if (snp->signo)
 	    fprintf(outf, "\t{\"%s\",\t\"%s\"},\n",
 		    snp->signame, snp->sigmsg);
+#if defined(SIGRTMIN) && defined(SIGRTMAX)
+	else if (s >= SIGRTMIN && s <= SIGRTMAX)
+	    fprintf(outf, "\t{\"sigrt%d\",\t\"real-time signal %d\"},\n",
+		    s - SIGRTMIN, s - SIGRTMIN);
+#endif
 	else
-	    fprintf(outf, "\t{\"sigunknown%d\",\t\"unknown signal %d\"},\n",
+	    fprintf(outf, "\t{\"sig%d\",\t\"unknown signal %d\"},\n",
 		    s, s);
     }
     fprintf(outf, "};\n");
