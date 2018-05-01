@@ -13,6 +13,8 @@
 
 bool editing = 1;
 
+static const char *quote_chars = "\t\n !#$&'()*;<=>?@[\\]^`{|}~";
+
 struct cookie {
 	char *buffer;
 };
@@ -42,13 +44,17 @@ static char *quote(char *text, int type, char *qp) {
 	return r;
 }
 
-char *unquote(char *text, int unused) {
+/* "unquote" is called with "text", the text of the word to be dequoted, and
+ * "quote_char", which is the quoting character that delimits the filename.
+ */
+char *unquote(char *text, int quote_char) {
 	char *p, *r;
 
 	p = r = ealloc(strlen(text) + 1);
 	while (*text) {
 		*p++ = *text++;
-		if (*(text - 1) == '\'' && *text == '\'') ++text;
+		if (quote_char && *(text - 1) == '\'' && *text == '\'')
+			++text;
 	}
 	*p = '\0';
 	return r;
@@ -64,6 +70,18 @@ static char *dir_join(char *a, char *b) {
 	if (p[strlen(p) - 1] != '/')
 		strcat(p, "/");
 	strcat(p, b);
+	return p;
+}
+
+char *maybe_quote(char *p) {
+	const char *q;
+	for (q = quote_chars; *q; ++q) {
+		if (strchr(p, *q)) {
+			char *r = quote(p, SINGLE_MATCH, "");
+			efree(p);
+			return r;
+		}
+	}
 	return p;
 }
 
@@ -96,7 +114,7 @@ static char *entry(char *dname, char *name, char *subdirs,
 	full = dir_join(dname, name);
 	if (rc_access(full, FALSE, &st)) {
 		efree(full);
-		return dir_join(subdirs, name);
+		return maybe_quote(dir_join(subdirs, name));
 	}
 	efree(full);
 	if (S_ISDIR(st.st_mode)) {
@@ -104,11 +122,11 @@ static char *entry(char *dname, char *name, char *subdirs,
 		char *r;
 		strcpy(dir_ret, name);
 		strcat(dir_ret, "/");
-		bodge = dir_join(subdirs, dir_ret);
+		bodge = maybe_quote(dir_join(subdirs, dir_ret));
 		strcat(dir_ret, "...");
 		r = dir_join(subdirs, dir_ret);
 		efree(dir_ret);
-		return r;
+		return maybe_quote(r);
 	}
 	return NULL;
 }
@@ -122,10 +140,10 @@ void split_last_slash(const char *text, char **pre, char **post) {
 		*pre = ealloc(l + 1);
 		strncpy(*pre, text, l);
 		(*pre)[l] = '\0';
-		*post = last_slash + 1;
+		*post = strdup(last_slash + 1);
 	} else {
 		*pre = NULL;
-		*post = (char *)text;
+		*post = strdup(text);
 	}
 }
 
@@ -136,7 +154,9 @@ static char *compl_extcmd(const char *text, int state) {
 	static size_t len;
 
 	if (!state) {
-		split_last_slash(text, &subdirs, &prefix);
+		char *utext = unquote((char *)text, *text);
+		split_last_slash(utext, &subdirs, &prefix);
+		efree(utext);
 		d = NULL;
 		path = varlookup("path");
 		len = strlen(prefix);
@@ -159,8 +179,7 @@ static char *compl_extcmd(const char *text, int state) {
 				char *x;
 				x = entry(dname, e->d_name, subdirs,
 						prefix, len);
-				if (x)
-					return x;
+				if (x) return x;
 			}
 			closedir(d);
 			efree(dname);
@@ -168,6 +187,7 @@ static char *compl_extcmd(const char *text, int state) {
 		}
 	}
 	efree(subdirs);
+	efree(prefix);
 	return NULL;
 }
 
@@ -266,11 +286,11 @@ void *edit_begin(int fd) {
 	rl_catch_signals = 0;
 	rl_completer_quote_characters = "'";
 	rl_filename_dequoting_function = unquote;
-	rl_filename_quote_characters = "\t\n !#$&'()*;<=>?@[\\]^`{|}~";
+	rl_filename_quote_characters = quote_chars;
 	rl_filename_quoting_function = quote;
 	rl_readline_name = "rc";
 
-	rl_add_funmap_entry("rc-complete-command",  rc_complete_command);
+	rl_add_funmap_entry("rc-complete-command", rc_complete_command);
 	rl_add_funmap_entry("rc-complete-filename", rc_complete_filename);
 	rl_add_funmap_entry("rc-complete-variable", rc_complete_variable);
 	rl_bind_keyseq("\e!", rc_complete_command);
@@ -279,7 +299,8 @@ void *edit_begin(int fd) {
 
 	hist = varlookup("history");
 	if (hist != NULL)
-		if (read_history(hist->w) != 0 && errno != ENOENT) /* ignore if missing */
+		if (read_history(hist->w) != 0 &&
+				errno != ENOENT) /* ignore if missing */
 			uerror(hist->w);
 
 	c = ealloc(sizeof *c);
@@ -328,10 +349,9 @@ void edit_free(void *cookie) {
 	struct cookie *c = cookie;
 
 	efree(c->buffer);
-	/* Set c->buffer to NULL, allowing us to "overfree" it.  This
-	   is a bit of a kludge, but it's otherwise hard to deal with
-	   the case where a signal causes an early return from
-	   readline. */
+	/* Set c->buffer to NULL, allowing us to "overfree" it. This is a bit
+	 * of a kludge, but it's otherwise hard to deal with the case where a
+	 * signal causes an early return from readline. */
 	c->buffer = NULL;
 }
 
