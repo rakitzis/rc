@@ -17,6 +17,43 @@ struct cookie {
 	char *buffer;
 };
 
+/* Teach readline how to quote a filename in rc. "text" is the filename to be
+ * quoted. "type" is either SINGLE_MATCH, if there is only one completion
+ * match, or MULT_MATCH. "qp" is a pointer to any opening quote character the
+ * user typed.
+ */
+static char *quote(char *text, int type, char *qp) {
+	char *p, *r;
+
+	/* worst case: string is entirely quote characters each of which will
+	 * be doubled, plus the initial and final quotes and \0 */
+	p = r = ealloc(strlen(text) * 2 + 3);
+	/* supply opening quote unless already there */
+	if (*qp != '\'')
+		*p++ = '\'';
+	while (*text) {
+		if (*text == '\'')
+			*p++ = '\''; /* double existing quote */
+		*p++ = *text++;
+	}
+	if (type == SINGLE_MATCH)
+		*p++ = '\'';
+	*p = '\0';
+	return r;
+}
+
+char *unquote(char *text, int unused) {
+	char *p, *r;
+
+	p = r = ealloc(strlen(text) + 1);
+	while (*text) {
+		*p++ = *text++;
+		if (*(text - 1) == '\'' && *text == '\'') ++text;
+	}
+	*p = '\0';
+	return r;
+}
+
 /* Join two strings with a "/" between them, into a malloc string */
 static char *dir_join(char *a, char *b) {
 	char *p;
@@ -222,10 +259,15 @@ void *edit_begin(int fd) {
 	struct cookie *c;
 
 	rl_initialize();
+
 	rl_attempted_completion_function = rc_completion;
+	rl_basic_quote_characters = "";
+	rl_basic_word_break_characters = " \t\n`@$><=;|&{(";
 	rl_catch_signals = 0;
 	rl_completer_quote_characters = "'";
+	rl_filename_dequoting_function = unquote;
 	rl_filename_quote_characters = "\t\n !#$&'()*;<=>?@[\\]^`{|}~";
+	rl_filename_quoting_function = quote;
 	rl_readline_name = "rc";
 
 	rl_add_funmap_entry("rc-complete-command",  rc_complete_command);
