@@ -1,7 +1,7 @@
 dnl Our package name, version, ...
 AC_INIT([rc], [1.7.4])
 
-dnl ... and release date
+dnl ... and git description
 DESCRIPTION=$(git describe || echo '(git description unavailable)')
 AC_DEFINE_UNQUOTED(DESCRIPTION, "$DESCRIPTION", [Release date])
 

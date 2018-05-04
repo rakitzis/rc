@@ -849,9 +849,8 @@ Changes since rc-1.5b2
 
 2014-09-01
 
-  Bug: quoting of glob characters was broken (thanks Christian
-  Neukirchen); fix the "sneaky parens" bug properly (thanks Wolfgang
-  Zekoll).
+  Bug: quoting of glob characters was broken (thanks Leah Neukirchen);
+  fix the "sneaky parens" bug properly (thanks Wolfgang Zekoll).
 
   Feature: allow $"x as a synonym for $^x
 
@@ -904,7 +903,88 @@ Changes since rc-1.5b2
 
   Release: rc-1.7.4.
 
-[... needs completing]
+2015-06-24
+
+  Portability: eschew GNU-specific "date -I" (thanks Ross Lonstein;
+  github #4).
+
+2015-10-26
+
+  Bug: fix use-after-free bug (thanks Dražen Borković; github #9 and
+  #13).
+
+2015-11-28
+
+  Bug: fix bug with signal handlers and readline (thanks Bert Münnich).
+
+2016-02-26
+
+  Bug: fix bug with "break" inside local variable block (thanks Dražen
+  Borković and Bert Münnich; github #11 and #21).
+
+2016-08-25
+
+  Bug: more signal / readline fixes (thanks Bert Münnich; github #14).
+
+2016-08-27
+
+  Portability: replace reldate with "git describe" (thanks @RamKromberg).
+
+  Documentation: "~ $x ()" is something of a special case. The man page
+  now goes into some more detail.
+
+2017-02-27
+
+  Feature: parse equals like a keyword, meaning it can appear unquoted in
+  commands. For example, rather than having to write
+
+    ls --color'='tty # or ls '--color=tty' or similar
+
+  one may now write simply
+
+    ls --color=tty
+
+  Special thanks to Bert Münnich for fixing this major irritation
+  (github #29).
+
+2017-05-11
+
+  Bug: the "-e" flag did the wrong thing with respect to "while" loops (thanks
+  Dražen Borković; github #34 and #35).
+
+2017-06-23
+
+  Feature: new developer mode, enabled with "--enable-develop" at the
+  "configure" stage, dumps each parse tree after it is built.
+
+  Bug: the precedence of prefix redirect was lower than pipe, which led to
+  some counter-intuitive parses (thanks Casper Ti. Vector; github #33).
+
+  Bug: rc with readline support failed to notice window size changes correctly
+  (thanks Chris Siebenmann; github #32).
+
+2017-08-25
+
+  Testing: use "pwd -P" which is friendlier to macOS (thanks Dražen Borković;
+  github #36).
+
+2017-08-25
+
+  Feature: add a "continue" builtin (thanks Casper Ti. Vector and Dražen
+  Borković; github #25 and #37).
+
+2017-10-27
+
+  Bug: using "-e" led to incorrect exit status (thanks @hallik and Bert
+  Münnich).
+
+  Portability: burning the build date into the binary makes a
+  reproducible build impossible. Replace it with the git description
+  (thanks @RamKromberg; github #26).
+
+2018-02-17
+
+  Portability: remove all references to SIGCLD (thanks Leah Neukirchen).
 
 2018-03-05
 
@@ -914,11 +994,11 @@ Changes since rc-1.5b2
 
 2018-03-17
 
-  Feature: implement the `flag` builtin.
+  Feature: implement the `flag` builtin (github #20).
 
 2018-03-19
 
-  Feature: implement `if not`.
+  Feature: implement `if not` (github #19).
 
   Feature: default values for $nl and $tab (github #43).
 

@@ -16,6 +16,7 @@ Node *parsetree;	/* not using yylval because bison declares it as an auto */
 %token ANDAND BACKBACK BANG CASE COUNT DUP ELSE END FLAT FN FOR IF IN NOT
 %token OROR PIPE REDIR SREDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
 
+%left NOT
 %left '^' '='
 %right ELSE TWIDDLE
 %left WHILE ')'
