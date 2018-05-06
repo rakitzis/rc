@@ -1,5 +1,8 @@
 #! /usr/bin/env rc
 
+RunPfx=()
+RunPfx=Run:
+
 ## ./configure --with-addon --with-edit=edit
 ########################################################################################
 # rc script to compile self.
@@ -329,7 +332,7 @@ fn CompileWithOpts LinkWithOpts { cmd = () securityOpts = () allOpts = () {
     }
     #--------------------------------------------------------------------
     cmd = ($ScanCmd $COMPILER $allOpts $*)
-    echo $cmd
+    echo $RunPfx $cmd
     $cmd
     if (! ~ $status 0) {
         STATUS = $status
@@ -470,7 +473,7 @@ fn RunYacc { stem = () args = () yFile = () cFile = () hFile = () run = () {
 
     if ($run) {
         cmd = ($YaccExe $yaccOpts $args -o $cFile $yFile)
-        echo $cmd
+        echo $RunPfx $cmd
         $cmd
     }
 }}
