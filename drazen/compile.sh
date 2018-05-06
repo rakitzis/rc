@@ -1,3 +1,15 @@
+## On Linux
+## ./configure --with-addon
+## On Mac
+## ./configure --with-addon --with-edit=edit
+function qMacOS {
+    local s
+    s=$(uname -s)
+    case $s in
+    (Darwin) return 0 ;;
+    (*) return 1;;
+    esac
+}
 
 ##########################################################################
 if clang --version; then
@@ -50,11 +62,18 @@ done
 ./$objDir/mkstatval > statval.h
 
 ##########################################################################
-byacc -t -v -d -o parse.c parse.y
-byacc -t -v -d -P -p calc -o calc.c calc.y
+yaccOpts="-t -v -d"
+byacc $yaccOpts -o parse.c parse.y
+byacc $yaccOpts -P -p calc -o calc.c calc.y
 
 ##########################################################################
-EDIT=edit-null
+if qMacOS; then
+    Edit=edit
+    EditLibs="-ledit -ltermcap"
+else
+    Edit=edit-null
+    EditLibs=""
+fi
 
 SRC="
  addon
@@ -89,7 +108,7 @@ SRC="
  walk
  which
  sigmsgs
- $EDIT
+ edit-$Edit
  system
 "
 
@@ -102,7 +121,7 @@ do
 done
 
 ##########################################################################
-Link -o rc $OBJ
+Link -o rc $OBJ $EditLibs
 
 ##########################################################################
 file=tripping
