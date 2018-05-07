@@ -1,5 +1,6 @@
 #! /usr/bin/env rc
 
+Verbose=false
 RunPfx=()
 RunPfx=Run:
 
@@ -68,6 +69,9 @@ while (! ~ $#* 0) {
 
     case x--check_time x--check-time
         CheckTime = true
+
+    case x--verbose
+        Verbose=true
 
     case x--opt 
         if (~ $#* 0 1) {
@@ -332,7 +336,11 @@ fn CompileWithOpts LinkWithOpts { cmd = () securityOpts = () allOpts = () {
     }
     #--------------------------------------------------------------------
     cmd = ($ScanCmd $COMPILER $allOpts $*)
-    echo $RunPfx $cmd
+    if ($Verbose) {
+        echo $RunPfx $cmd
+    } else {
+        echo CC $*($#*)
+    }
     $cmd
     if (! ~ $status 0) {
         STATUS = $status
@@ -473,7 +481,11 @@ fn RunYacc { stem = () args = () yFile = () cFile = () hFile = () run = () {
 
     if ($run) {
         cmd = ($YaccExe $yaccOpts $args -o $cFile $yFile)
-        echo $RunPfx $cmd
+        if ($Verbose) {
+            echo $RunPfx $cmd
+        } else {
+            echo YACC $yFile
+        }
         $cmd
     }
 }}
