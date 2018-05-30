@@ -640,4 +640,3 @@ static void b_limit(char **av) {
 extern char *compl_builtin(const char *text, int state) {
 	return compl_name(text, state, &builtins[0].name, arraysize(builtins), &builtins[1].name - &builtins[0].name);
 }
-

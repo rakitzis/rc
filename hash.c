@@ -340,4 +340,3 @@ extern char *compl_fn(const char *text, int state) {
 extern char *compl_var(const char *text, int state) {
 	return compl_name(text, state, &vp[0].name, vsize, &vp[1].name - &vp[0].name);
 }
-

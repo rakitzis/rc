@@ -1006,3 +1006,7 @@ Changes since rc-1.5b2
 
   Tidiness: be consistent about using tabs everywhere, and add a .vimrc to
   keep it so in the future.
+
+2018-05-30
+
+  Feature: readline can now complete commands.
