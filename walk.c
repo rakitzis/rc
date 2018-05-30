@@ -19,6 +19,7 @@ static bool dofork(bool);
 static void dopipe(Node *);
 static void loop_body(Node* n);
 static int if_state = 2; /* last if, for "if not" interactive top-level */
+static int old_if_state = 2;
 
 /* Tail-recursive version of walk() */
 
@@ -34,7 +35,7 @@ top:	sigchk();
 		set(TRUE);
 		return TRUE;
 	}
-	if (parent && n->type != nIfnot) if_state = 2;
+	if ((n->type != nIf) && (n->type != nIfnot)) if_state = 2;
 	switch (n->type) {
 	case nArgs: case nBackq: case nConcat: case nCount:
 	case nFlat: case nLappend: case nRedir: case nVar:
@@ -100,7 +101,10 @@ top:	sigchk();
 		cond = TRUE;
 		if_state = walk(n->u[0].p, TRUE);
 		cond = oldcond;
-		WALK(if_state ? true_cmd : false_cmd, parent);
+		old_if_state = if_state;
+		walk(if_state ? true_cmd : false_cmd, parent);
+		if_state = old_if_state;
+		break;
 	}
 	case nIfnot: {
 		if (if_state == 2)
