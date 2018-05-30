@@ -1009,4 +1009,5 @@ Changes since rc-1.5b2
 
 2018-05-30
 
-  Feature: readline can now complete commands.
+  Feature: readline can now complete commands (thanks Bert Münnich; github
+  #2).
