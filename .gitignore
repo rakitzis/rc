@@ -1,9 +1,10 @@
 .deps/
 obj/
 autom4te.cache/
-aclocal.m4
 *~
+.*.swp
 *.o
+aclocal.m4
 compile
 config.h
 config.h.in

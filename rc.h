@@ -6,6 +6,9 @@
 
 #include <assert.h>
 
+/* for struct stat */
+#include <sys/stat.h>
+
 #define RC "rc: "
 
 /* datatypes */
@@ -130,7 +133,7 @@ struct Variable {
 };
 
 struct Htab {
-	char *name;
+	const char *name;
 	union {
 		rc_Function *f;
 		Variable *v;
@@ -200,9 +203,9 @@ extern int lineno;
 /* builtins.c */
 extern builtin_t *isbuiltin(const char *);
 extern void b_exec(char **), funcall(char **), b_dot(char **), b_builtin(char **);
-extern char *which(char *, bool);
 extern bool q_builtins_ordered(void);
 extern int find_str(const char * const s, const char* const arr[], int sz);
+extern char *compl_builtin(const char *, int);
 
 /* except.c */
 extern bool nl_on_intr;
@@ -284,7 +287,12 @@ extern void whatare_all_vars(bool, bool);
 extern void whatare_all_signals(void);
 extern rc_Function *lookup_fn(const char* s);
 extern Variable * lookup_var(const char* s);
+/*
 extern void *lookup(const char *, Htab *);
+*/
+extern char *compl_name(const char *, int, const char* const *, size_t, ssize_t);
+extern char *compl_fn(const char *, int);
+extern char *compl_var(const char *, int);
 
 /* heredoc.c */
 extern int heredoc(int);
@@ -428,4 +436,8 @@ extern bool forked;
 /* walk.c */
 extern bool walk(const Node *, bool);
 extern bool cond;
+
+/* which.c */
+extern bool rc_access(const char *, bool, struct stat *);
+extern char *which(char *, bool);
 

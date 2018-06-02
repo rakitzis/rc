@@ -174,7 +174,7 @@ extern void delete_fn(const char *s) {
 	env_dirty = TRUE;
 	free_fn(fp[h].u.f);
 	efree(fp[h].u.f);
-	efree(fp[h].name);
+	efree((char*)fp[h].name);
 	if (fp[(h+1)&(fsize-1)].name == NULL) {
 		--fused;
 		fp[h].name = NULL;
@@ -203,7 +203,7 @@ extern void delete_var(const char *s, bool stack) {
 	} else { /* needs to be removed from the hash table */
 		efree(v);
 		vp[h].u.v = NULL; /* vp[hp].u.v == v */
-		efree(vp[h].name);
+		efree((char*)vp[h].name);
 		if (vp[(h+1)&(vsize-1)].name == NULL) {
 			--vused;
 			vp[h].name = NULL;
@@ -323,4 +323,28 @@ extern void whatare_all_vars(bool showfn, bool showvar) {
 		for (i = 0; i < fsize; i++)
 			if (fp[i].name != NULL && fp[i].name != dead)
 				prettyprint_fn(1, fp[i].name, fnlookup(fp[i].name));
+}
+
+extern char *compl_name(const char *text, int state, const char * const *p, size_t count, ssize_t inc) {
+	static const char * const *n;
+	static size_t i, len;
+	char *name;
+
+	if (!state) {
+		n = p;
+		i = 0;
+		len = strlen(text);
+	}
+	for (name = NULL; name == NULL && i < count; i++, n += inc)
+		if (*n != NULL && strncmp(*n, text, len) == 0)
+			name = strdup(*n);
+	return name;
+}
+
+extern char *compl_fn(const char *text, int state) {
+	return compl_name(text, state, &fp[0].name, fsize, &fp[1].name - &fp[0].name);
+}
+
+extern char *compl_var(const char *text, int state) {
+	return compl_name(text, state, &vp[0].name, vsize, &vp[1].name - &vp[0].name);
 }

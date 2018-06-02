@@ -40,7 +40,7 @@ typedef struct BuiltinMap {
 	const char *name;
 } BuiltinMap;
 
-static const BuiltinMap
+static BuiltinMap
 builtins[] = {
 	{ b_dot,		"." },
 	{ b_break,		"break" },
@@ -694,3 +694,7 @@ static void b_limit(char **av) {
 	}
 }
 #endif
+
+extern char *compl_builtin(const char *text, int state) {
+	return compl_name(text, state, &builtins[0].name, arraysize(builtins), &builtins[1].name - &builtins[0].name);
+}
