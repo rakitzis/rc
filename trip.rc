@@ -716,3 +716,28 @@ submatch 'flag xx' 'usage: flag f [ + | - ]' 'flag wrong first arg'
 submatch 'flag x x' 'usage: flag f [ + | - ]' 'flag wrong second arg'
 submatch 'flag c && echo yes' yes 'flag c'
 submatch 'flag x +; flag x -' 'flag x -' 'setting x flag'
+
+# if-not stack if_state check
+ss=(
+  'L=()'
+  'if (true) {'
+  '    if (false) {'
+  '        L=($L  a1)'
+  '    }'
+  '    if not L=($L  a2)'
+  '}'
+  'if not L=($L  a3)'
+  'echo $L'
+)
+
+s=''
+for (a in $ss) {
+  s=$s$a$nl
+}
+m=`{$rc -c $s}
+whatis -v s m
+if (! ~ $^m a2) {
+    fail '"if not" not correct'
+}
+
+
