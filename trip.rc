@@ -731,9 +731,6 @@ echo $L
 '
 
 m=`{$rc -c $s}
-whatis -v s m
 if (! ~ $^m a2) {
     fail '"if not" not correct'
 }
-
-
