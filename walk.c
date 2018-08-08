@@ -18,8 +18,9 @@ static bool isallpre(Node *);
 static bool dofork(bool);
 static void dopipe(Node *);
 static void loop_body(Node* n);
-static int if_state = 2; /* last if, for "if not" interactive top-level */
-static int old_if_state = 2;
+
+enum if_state { if_false, if_true, if_nothing };
+enum if_state if_last = if_nothing;
 
 /* Tail-recursive version of walk() */
 
@@ -35,7 +36,6 @@ top:	sigchk();
 		set(TRUE);
 		return TRUE;
 	}
-	if ((n->type != nIf) && (n->type != nIfnot)) if_state = 2;
 	switch (n->type) {
 	case nArgs: case nBackq: case nConcat: case nCount:
 	case nFlat: case nLappend: case nRedir: case nVar:
@@ -93,25 +93,25 @@ top:	sigchk();
 		break;
 	case nIf: {
 		bool oldcond = cond;
+		enum if_state if_this;
 		Node *true_cmd = n->u[1].p, *false_cmd = NULL;
 		if (true_cmd != NULL && true_cmd->type == nElse) {
 			false_cmd = true_cmd->u[1].p;
 			true_cmd = true_cmd->u[0].p;
 		}
 		cond = TRUE;
-		if_state = walk(n->u[0].p, TRUE);
+		if_this = walk(n->u[0].p, TRUE);
 		cond = oldcond;
-		old_if_state = if_state;
-		walk(if_state ? true_cmd : false_cmd, parent);
-		if_state = old_if_state;
+		if (if_last == if_nothing) if_last = if_this;
+		walk(if_this ? true_cmd : false_cmd, parent);
 		break;
 	}
 	case nIfnot: {
-		if (if_state == 2)
+		if (if_last == if_nothing)
 			rc_error("`if not' must follow `if'");
-		if (if_state == 0)
+		if (if_last == if_false)
 			walk(n->u[0].p, TRUE);
-		if_state = 2;
+		if_last = if_nothing;
 		break;
 	}
 	case nWhile: {
