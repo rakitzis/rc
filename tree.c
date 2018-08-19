@@ -2,11 +2,14 @@
 
 #include "rc.h"
 
+#include "develop.h"
+
 /* convert if followed by ifnot to else */
 static Node *desugar_ifnot(Node *n) {
 	if (n->type == nBody && n->u[1].p && n->u[1].p->type == nIfnot) {
 		/* (body (if c x) (if-not y)) => (body (if c (else x y))) */
-		if (n->u[0].p->type == nIf) {
+		if (n->u[0].p->type == nIf &&
+				n->u[0].p->u[1].p->type != nElse) {
 			Node *yes = n->u[0].p;
 			Node *no = n->u[1].p;
 			Node *els = nalloc(offsetof(Node, u[2]));
@@ -22,7 +25,8 @@ static Node *desugar_ifnot(Node *n) {
 				n->u[1].p->u[0].p->type == nIfnot) {
 		/* (body (if c x) (body (if-not y) z)) =>
 			(body (if c (else x y)) z) */
-		if (n->u[0].p->type == nIf) {
+		if (n->u[0].p->type == nIf &&
+				n->u[0].p->u[1].p->type != nElse) {
 			Node *yes = n->u[0].p;
 			Node *no = n->u[1].p->u[0].p;
 			Node *els = nalloc(offsetof(Node, u[2]));
@@ -99,6 +103,10 @@ extern Node *mk(enum nodetype t,...) {
 	}
 	n->type = t;
 
+	if (0 && RC_DEVELOP) {
+		tree_dump(n);
+		fprint(2, "---\n");
+	}
 	n = desugar_ifnot(n);
 	va_end(ap);
 	return n;
