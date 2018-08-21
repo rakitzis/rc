@@ -1048,16 +1048,9 @@ if (~ $status 0) {
 submatch 'if (false) echo foo; if not echo bar' 'bar' 'if not 1'
 submatch 'if (false) echo -n foo; if not echo -n bar; echo qux' 'barqux' 'if not 2'
 submatch 'if (false) echo foo; echo qux; if not echo bar' 'rc: `if not'' must follow `if''' 'if not 3'
+submatch 'if (false) { echo foo } else echo qux; if not echo bar' 'rc: `if not'' must follow `if''' 'if not 4'
 
-# exercise flag builtin
-submatch 'flag' 'rc: not enough arguments to flag' 'flag no args'
-submatch 'flag a b c' 'usage: flag f [ + | - ]' 'flag 3 args'
-submatch 'flag xx' 'usage: flag f [ + | - ]' 'flag wrong first arg'
-submatch 'flag x x' 'usage: flag f [ + | - ]' 'flag wrong second arg'
-submatch 'flag c && echo yes' yes 'flag c'
-submatch 'flag x +; flag x -' 'flag x -' 'setting x flag'
-
-# if-not stack if_state check
+# if-not stack if_state regression
 s='
 L=()
 if (true) {
@@ -1074,4 +1067,12 @@ m=`{$rc -c $s}
 if (! ~ $^m a2) {
     fail '"if not" not correct'
 }
+
+# exercise flag builtin
+submatch 'flag' 'rc: not enough arguments to flag' 'flag no args'
+submatch 'flag a b c' 'usage: flag f [ + | - ]' 'flag 3 args'
+submatch 'flag xx' 'usage: flag f [ + | - ]' 'flag wrong first arg'
+submatch 'flag x x' 'usage: flag f [ + | - ]' 'flag wrong second arg'
+submatch 'flag c && echo yes' yes 'flag c'
+submatch 'flag x +; flag x -' 'flag x -' 'setting x flag'
 
