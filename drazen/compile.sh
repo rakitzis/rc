@@ -41,7 +41,7 @@ Compile() {
 }
 
 Link() {
-    local cmd 
+    local cmd
     cmd="${CC} ${CC_CommonFlags} ${CC_LinkFlags}"
     echo $cmd "$@"
     $cmd "$@"
