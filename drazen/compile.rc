@@ -415,7 +415,7 @@ sources = (
     $addon
     $calc
     builtins
-	develop
+    develop
     except
     exec
     fn
