@@ -150,7 +150,7 @@ void split_last_slash(const char *text, char **pre, char **post) {
 static char *compl_extcmd(const char *text, int state) {
 	static char *dname, *prefix, *subdirs;
 	static DIR *d;
-	static List *path;
+	static List nil, *path;
 	static size_t len;
 
 	if (!state) {
@@ -158,7 +158,10 @@ static char *compl_extcmd(const char *text, int state) {
 		split_last_slash(utext, &subdirs, &prefix);
 		efree(utext);
 		d = NULL;
-		path = varlookup("path");
+		if (subdirs && isabsolute(subdirs))
+			path = &nil;
+		else
+			path = varlookup("path");
 		len = strlen(prefix);
 		bodge = NULL;
 	}
