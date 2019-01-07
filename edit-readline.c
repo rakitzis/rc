@@ -85,17 +85,6 @@ char *maybe_quote(char *p) {
 	return p;
 }
 
-/* Suppose there is a subdirectory in one of the directories on $path,
- * "/bin/sub/", and the user has typed "suTAB". We want to offer "sub/" as a
- * completion, but we need to offer two things so it is not taken as the sole
- * completion. We use "bodge" to hold "sub/" while we return "sub/..." the
- * first time. Next time, we will notice that "bodge" is set, and return that
- * instead. (It would be better to persuade readline just to append the "/" as
- * it does for filename completion, but it's not clear to me if this is
- * possible.)
- */
-static char *bodge;
-
 /* Decide if this directory entry is a completion candidate, either executable
  * or a directory. "dname" is the absolute path of the directory, "name" is the
  * current entry. "subdirs" is the name being completed up to and including the
@@ -112,22 +101,12 @@ static char *entry(char *dname, char *name, char *subdirs,
 	if (streq(name, ".") || streq(name, ".."))
 		return NULL;
 	full = dir_join(dname, name);
-	if (rc_access(full, FALSE, &st)) {
-		efree(full);
-		return maybe_quote(dir_join(subdirs, name));
-	}
+	int exe = rc_access(full, FALSE, &st);
 	efree(full);
-	if (S_ISDIR(st.st_mode)) {
-		char *dir_ret = ealloc(strlen(name) + 5);
-		char *r;
-		strcpy(dir_ret, name);
-		strcat(dir_ret, "/");
-		bodge = maybe_quote(dir_join(subdirs, dir_ret));
-		strcat(dir_ret, "...");
-		r = dir_join(subdirs, dir_ret);
-		efree(dir_ret);
-		return maybe_quote(r);
-	}
+	if (S_ISDIR(st.st_mode))
+		rl_completion_append_character = '/';
+	if (exe || S_ISDIR(st.st_mode))
+		return maybe_quote(dir_join(subdirs, name));
 	return NULL;
 }
 
@@ -163,12 +142,6 @@ static char *compl_extcmd(const char *text, int state) {
 		else
 			path = varlookup("path");
 		len = strlen(prefix);
-		bodge = NULL;
-	}
-	if (bodge) {
-		char *r = bodge;
-		bodge = NULL;
-		return r;
 	}
 	while (d || path) {
 		if (!d) {
