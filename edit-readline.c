@@ -25,46 +25,26 @@ struct cookie {
  * user typed.
  */
 static char *quote(char *text, int type, char *qp) {
-	char *p, *r;
-
-	/* worst case: string is entirely quote characters each of which will
-	 * be doubled, plus the initial and final quotes and \0 */
-	p = r = ealloc(strlen(text) * 2 + 3);
-	/* supply opening quote unless already there */
-	if (*qp != '\'')
-		*p++ = '\'';
-	while (*text) {
-		if (*text == '\'')
-			*p++ = '\''; /* double existing quote */
-		*p++ = *text++;
-	}
-	if (type == SINGLE_MATCH)
-		*p++ = '\'';
-	*p = '\0';
+	char *r = mprint("%#S", text);
+	if (type != SINGLE_MATCH)
+		r[strlen(r)-1] = '\0';
 	return r;
 }
 
 /* Join two strings with a "/" between them, into a malloc string */
-static char *dir_join(char *a, char *b) {
-	char *p;
-	if (!a) return strdup(b);
-	if (!b) return strdup(a);
-	p = ealloc(strlen(a) + strlen(b) + 2);
-	strcpy(p, a);
-	if (p[strlen(p) - 1] != '/')
-		strcat(p, "/");
-	strcat(p, b);
-	return p;
+static char *dir_join(const char *a, const char *b) {
+	size_t l;
+	if (!a) a = "";
+	if (!b) b = "";
+	l = strlen(a);
+	return mprint("%s%s%s", a, l && a[l-1] != '/' ? "/" : "", b);
 }
 
 char *maybe_quote(char *p) {
-	const char *q;
-	for (q = quote_chars; *q; ++q) {
-		if (strchr(p, *q)) {
-			char *r = quote(p, SINGLE_MATCH, "");
-			efree(p);
-			return r;
-		}
+	if (strpbrk(p, quote_chars)) {
+		char *r = quote(p, SINGLE_MATCH, "");
+		efree(p);
+		return r;
 	}
 	return p;
 }
@@ -101,7 +81,7 @@ void split_last_slash(const char *text, char **pre, char **post) {
 	if (last_slash) {
 		size_t l = last_slash + 1 - text;
 		*pre = ealloc(l + 1);
-		strncpy(*pre, text, l);
+		memcpy(*pre, text, l);
 		(*pre)[l] = '\0';
 		*post = last_slash + 1;
 	} else {
