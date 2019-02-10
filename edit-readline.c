@@ -44,22 +44,6 @@ static char *quote(char *text, int type, char *qp) {
 	return r;
 }
 
-/* "unquote" is called with "text", the text of the word to be dequoted, and
- * "quote_char", which is the quoting character that delimits the filename.
- */
-char *unquote(char *text, int quote_char) {
-	char *p, *r;
-
-	p = r = ealloc(strlen(text) + 1);
-	while (*text) {
-		*p++ = *text++;
-		if (quote_char && *(text - 1) == '\'' && *text == '\'')
-			++text;
-	}
-	*p = '\0';
-	return r;
-}
-
 /* Join two strings with a "/" between them, into a malloc string */
 static char *dir_join(char *a, char *b) {
 	char *p;
@@ -119,10 +103,10 @@ void split_last_slash(const char *text, char **pre, char **post) {
 		*pre = ealloc(l + 1);
 		strncpy(*pre, text, l);
 		(*pre)[l] = '\0';
-		*post = strdup(last_slash + 1);
+		*post = last_slash + 1;
 	} else {
 		*pre = NULL;
-		*post = strdup(text);
+		*post = (char *)text;
 	}
 }
 
@@ -133,9 +117,7 @@ static char *compl_extcmd(const char *text, int state) {
 	static size_t len;
 
 	if (!state) {
-		char *utext = unquote((char *)text, *text);
-		split_last_slash(utext, &subdirs, &prefix);
-		efree(utext);
+		split_last_slash(text, &subdirs, &prefix);
 		d = NULL;
 		if (subdirs && isabsolute(subdirs))
 			path = &nil;
@@ -163,7 +145,6 @@ static char *compl_extcmd(const char *text, int state) {
 		}
 	}
 	efree(subdirs);
-	efree(prefix);
 	return NULL;
 }
 
@@ -261,7 +242,6 @@ void *edit_begin(int fd) {
 	rl_basic_word_break_characters = " \t\n`@$><=;|&{(";
 	rl_catch_signals = 0;
 	rl_completer_quote_characters = "'";
-	rl_filename_dequoting_function = unquote;
 	rl_filename_quote_characters = quote_chars;
 	rl_filename_quoting_function = quote;
 	rl_readline_name = "rc";
