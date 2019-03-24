@@ -48,15 +48,15 @@ extern pid_t rc_fork() {
 }
 
 extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
-	Pid *r, *prev;
+	Pid **p, *r;
 
 	/* Find the child on the list. */
-	for (r = plist, prev = NULL; r != NULL; prev = r, r = r->n)
-		if (r->pid == pid)
+	for (p = &plist; *p; p = &(*p)->n)
+		if ((*p)->pid == pid || (pid == -1 && !(*p)->alive))
 			break;
 
 	/* Uh-oh, not there. */
-	if (r == NULL) {
+	if (pid != -1 && *p == NULL) {
 		errno = ECHILD; /* no children */
 		uerror("wait");
 		*stat = 0x100; /* exit(1) */
@@ -64,9 +64,9 @@ extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
 	}
 
 	/* If it's still alive, wait() for it. */
-	while (r->alive) {
+	while (*p == NULL || (*p)->alive) {
 		int ret;
-		Pid *q;
+		Pid **q;
 
 		ret = rc_wait(stat);
 
@@ -79,18 +79,19 @@ extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
 				return ret;
 		}
 
-		for (q = plist; q != NULL; q = q->n)
-			if (q->pid == ret) {
-				q->alive = FALSE;
-				q->stat = *stat;
+		for (q = &plist; *q; q = &(*q)->n)
+			if ((*q)->pid == ret) {
+				if (pid == -1)
+					p = q;
+				(*q)->alive = FALSE;
+				(*q)->stat = *stat;
 				break;
 			}
 	}
+	r = *p;
+	pid = r->pid;
 	*stat = r->stat;
-	if (prev == NULL)
-		plist = r->n; /* remove element from head of list */
-	else
-		prev->n = r->n;
+	*p = r->n; /* remove element from list */
 	efree(r);
 	return pid;
 }
@@ -115,7 +116,7 @@ extern void waitforall() {
 	int stat;
 
 	while (plist != NULL) {
-		pid_t pid = rc_wait4(plist->pid, &stat, FALSE);
+		pid_t pid = rc_wait4(-1, &stat, FALSE);
 		if (pid > 0)
 			setstatus(pid, stat);
 		else {
