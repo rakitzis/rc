@@ -160,10 +160,10 @@ static rl_compentry_func_t *compl_func(const char *text, int start, int end) {
 	char last = ';', *s, *t;
 
 	for (s = &rl_line_buffer[0], t = &rl_line_buffer[start]; s < t; s++) {
-		if (!quote && *s != ' ' && *s != '\t')
-			last = *s;
 		if (*s == '\'')
 			quote = !quote;
+		if (!quote && *s != ' ' && *s != '\t')
+			last = *s;
 	}
 	switch (last) {
 		case '`': case '@': case '|': case '&':
