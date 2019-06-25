@@ -183,12 +183,12 @@ static char **rc_completion(const char *text, int start, int end) {
 	if (compentry_func != NULL) {
 		func = compentry_func;
 		compentry_func = NULL;
-		rl_attempted_completion_over = 1;
 	} else
 		func = compl_func(text, start, end);
-	if (func != NULL)
+	if (func != NULL) {
+		rl_attempted_completion_over = 1;
 		return rl_completion_matches(text, func);
-	else
+	} else
 		return NULL;
 }
 
