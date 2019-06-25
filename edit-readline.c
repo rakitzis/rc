@@ -42,7 +42,9 @@ static char *dir_join(const char *a, const char *b) {
 
 char *maybe_quote(char *p) {
 	if (strpbrk(p, quote_chars)) {
-		char *r = quote(p, SINGLE_MATCH, "");
+		char *r = mprint("%#S", p);
+		if (rl_completion_suppress_quote && rl_completion_type != '*')
+			r[strlen(r)-1] = '\0';
 		efree(p);
 		return r;
 	}
@@ -70,7 +72,7 @@ static char *entry(char *dname, char *name, char *subdirs,
 	if (S_ISDIR(st.st_mode))
 		rl_completion_append_character = '/';
 	if (exe || S_ISDIR(st.st_mode))
-		return maybe_quote(dir_join(subdirs, name));
+		return dir_join(subdirs, name);
 	return NULL;
 }
 
@@ -178,6 +180,8 @@ static rl_compentry_func_t *compl_func(const char *text, int start, int end) {
 static rl_compentry_func_t *compentry_func;
 
 static char **rc_completion(const char *text, int start, int end) {
+	size_t i;
+	char **matches = NULL;
 	rl_compentry_func_t *func;
 
 	if (compentry_func != NULL) {
@@ -186,10 +190,19 @@ static char **rc_completion(const char *text, int start, int end) {
 	} else
 		func = compl_func(text, start, end);
 	if (func != NULL) {
+		matches = rl_completion_matches(text, func);
+		if (matches) {
+			if (matches[1])
+				rl_completion_suppress_quote = 1;
+			if (rl_completion_type != '?')
+				matches[0] = maybe_quote(matches[0]);
+			if (rl_completion_type == '*')
+				for (i = 1; matches[i]; i++)
+					matches[i] = maybe_quote(matches[i]);
+		}
 		rl_attempted_completion_over = 1;
-		return rl_completion_matches(text, func);
-	} else
-		return NULL;
+	}
+	return matches;
 }
 
 static int expl_complete(rl_compentry_func_t *func, int count, int key) {
