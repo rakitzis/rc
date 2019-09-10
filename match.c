@@ -4,56 +4,56 @@
 
 static int rangematch(char *, char);
 
-enum { RANGE_FAIL = -1, RANGE_ERROR = -2 };
-
 /* match() matches a single pattern against a single string. */
 
 extern bool match(char *p, char *m, char *s) {
-	int i, j;
+	struct { char *p, *m, *s; } next;
 	if (m == NULL)
 		return streq(p, s);
-	i = 0;
-	while (1) {
-		if (p[i] == '\0')
-			return *s == '\0';
-		else if (m[i]) {
-			switch (p[i++]) {
-			case '?':
-				if (*s++ == '\0')
-					return FALSE;
-				break;
-			case '*':
-				while (p[i] == '*' && m[i] == 1)	/* collapse multiple stars */
-					i++;
-				if (p[i] == '\0') 	/* star at end of pattern? */
-					return TRUE;
-				while (*s != '\0')
-					if (match(p + i, m + i, s++))
-						return TRUE;
-				return FALSE;
-			case '[':
-				if (*s == '\0')
-					return FALSE;
-				switch (j = rangematch(p + i, *s)) {
-				default:
-					i += j;
-					break;
-				case RANGE_FAIL:
-					return FALSE;
-				case RANGE_ERROR:
-					if (*s != '[')
-						return FALSE;
+	next.s = NULL;
+	while (*p || *s) {
+		if (*p) {
+			if (!*m) {
+				/* ordinary character */
+				if (*s == *p) {
+					p++, m++, s++;
+					continue;
 				}
-				s++;
+			} else switch (*p) {
+			case '?':
+				if (*s) {
+					p++, m++, s++;
+					continue;
+				}
 				break;
+			case '[': {
+				int r = 1 + rangematch(p+1, *s);
+				if (r > 0) {
+					p += r, m += r, s++;
+					continue;
+				}
+				break;
+			}
+			case '*':
+				next.p = p++;
+				next.m = m++;
+				next.s = *s ? s+1 : NULL;
+				continue;
 			default:
 				panic("bad metacharacter in match");
 				/* NOTREACHED */
 				return FALSE; /* hush up gcc -Wall */
 			}
-		} else if (p[i++] != *s++)
-			return FALSE;
+		}
+		if (next.s != NULL) {
+			p = next.p;
+			m = next.m;
+			s = next.s;
+			continue;
+		}
+		return FALSE;
 	}
+	return TRUE;
 }
 
 /*
@@ -83,7 +83,7 @@ static int rangematch(char *p, char c) {
 	}
 	for (; *p != ']'; p++) {
 		if (*p == '\0')
-			return RANGE_ERROR;	/* bad syntax */
+			return c == '[' ? 0 : -1;	/* no right-bracket */
 		if (p[1] == '-' && p[2] != ']') { /* check for [..-..] but ignore [..-] */
 			if (c >= *p)
 				matched |= (c <= p[2]);
@@ -95,5 +95,5 @@ static int rangematch(char *p, char c) {
 	if (matched ^ neg)
 		return p - orig + 1; /* skip the right-bracket */
 	else
-		return RANGE_FAIL;
+		return -1;
 }
