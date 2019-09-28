@@ -134,6 +134,6 @@ extern void exec(const List *s, bool parent) {
 		sigchk();
 		nl_on_intr = TRUE;
 		pop_cmdarg(TRUE);
-    }
+	  }
 	}
 }
