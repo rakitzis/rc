@@ -7,12 +7,12 @@ typedef long int CalcValue;
 typedef calctoken CalcToken;
 
 typedef struct CalcLexData {
-    const char* m_Buf;
-    const char* m_Current;
-    CalcToken   m_LastToken;
-    char        m_Indent[256];
-    CalcValue   m_CalcResult;
-    const char* m_CalcCmdName;
+	const char* m_Buf;
+	const char* m_Current;
+	CalcToken   m_LastToken;
+	char        m_Indent[256];
+	CalcValue   m_CalcResult;
+	const char* m_CalcCmdName;
 } CalcLexData;
 
 

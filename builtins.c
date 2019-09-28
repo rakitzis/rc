@@ -82,8 +82,8 @@ extern bool q_builtins_ordered(void)
 
 	for (i = 0, j = 1; j < N; ++i, ++j) {
 		if (strcmp_fast(builtins[i].name, builtins[j].name) >= 0) {
-            fprint(2, "Builtin '%s' at %d is listed before builtin '%s' at %d, but is larger\n",
-                builtins[i].name, i, builtins[j].name, j);
+			fprint(2, "Builtin '%s' at %d is listed before builtin '%s' at %d, but is larger\n",
+				builtins[i].name, i, builtins[j].name, j);
 			return FALSE;
 		}
 	}
@@ -161,14 +161,14 @@ static void b_echo(char **av) {
 
 static void update_cwd_var(void)
 {
-    char b[PATH_MAX+1];
-    List val;
-    const char* ret = getcwd(b, arraysize(b) - 1);
-    if (ret) {
-	val.w = nprint("%s", b);
-	val.n = NULL;
-	varassign("pwd", &val, FALSE);
-    }
+	char b[PATH_MAX+1];
+	List val;
+	const char* ret = getcwd(b, arraysize(b) - 1);
+	if (ret) {
+		val.w = nprint("%s", b);
+		val.n = NULL;
+		varassign("pwd", &val, FALSE);
+	}
 }
 
 
@@ -228,25 +228,25 @@ static void b_cd(char **av) {
 }
 
 static void b_umask(char **av) {
-    int i;
-    if (*++av == NULL) {
-	set(TRUE);
-	i = umask(0);
-	umask(i);
-	fprint(1, "0%o\n", i);
-    } else if (av[1] == NULL) {
-	i = o2u(*av);
-	if ((unsigned int) i > 0777) {
-	    fprint(2, "bad umask\n");
-	    set(FALSE);
+	int i;
+	if (*++av == NULL) {
+		set(TRUE);
+		i = umask(0);
+		umask(i);
+		fprint(1, "0%o\n", i);
+	} else if (av[1] == NULL) {
+		i = o2u(*av);
+		if ((unsigned int) i > 0777) {
+			fprint(2, "bad umask\n");
+			set(FALSE);
+		} else {
+			umask(i);
+			set(TRUE);
+		}
 	} else {
-	    umask(i);
-	    set(TRUE);
+		arg_count("umask");
+		return;
 	}
-    } else {
-	arg_count("umask");
-	return;
-    }
 }
 
 static void b_exit(char **av) {
