@@ -19,18 +19,6 @@ struct cookie {
 	char *buffer;
 };
 
-/* Teach readline how to quote a filename in rc. "text" is the filename to be
- * quoted. "type" is either SINGLE_MATCH, if there is only one completion
- * match, or MULT_MATCH. "qp" is a pointer to any opening quote character the
- * user typed.
- */
-static char *quote(char *text, int type, char *qp) {
-	char *r = mprint("%#S", text);
-	if (type != SINGLE_MATCH)
-		r[strlen(r)-1] = '\0';
-	return r;
-}
-
 /* Join two strings with a "/" between them, into a malloc string */
 static char *dir_join(const char *a, const char *b) {
 	size_t l;
@@ -157,6 +145,14 @@ static char *compl_command(const char *text, int state) {
 	return name;
 }
 
+static char *compl_filename(const char *text, int state) {
+	char *name = rl_filename_completion_function(text, state);
+	struct stat st;
+	if (name != NULL && stat(name, &st) == 0 && S_ISDIR(st.st_mode))
+		rl_completion_append_character = '/';
+	return name;
+}
+
 static rl_compentry_func_t *compl_func(const char *text, int start, int end) {
 	int quote = FALSE;
 	char last = ';', *s, *t;
@@ -174,7 +170,7 @@ static rl_compentry_func_t *compl_func(const char *text, int start, int end) {
 		case '$':
 			return compl_var;
 	}
-	return NULL;
+	return compl_filename;
 }
 
 static rl_compentry_func_t *compentry_func;
@@ -189,19 +185,17 @@ static char **rc_completion(const char *text, int start, int end) {
 		compentry_func = NULL;
 	} else
 		func = compl_func(text, start, end);
-	if (func != NULL) {
-		matches = rl_completion_matches(text, func);
-		if (matches) {
-			if (matches[1])
-				rl_completion_suppress_quote = 1;
-			if (rl_completion_type != '?')
-				matches[0] = maybe_quote(matches[0]);
-			if (rl_completion_type == '*')
-				for (i = 1; matches[i]; i++)
-					matches[i] = maybe_quote(matches[i]);
-		}
-		rl_attempted_completion_over = 1;
+	matches = rl_completion_matches(text, func);
+	if (matches) {
+		if (matches[1])
+			rl_completion_suppress_quote = 1;
+		if (rl_completion_type != '?')
+			matches[0] = maybe_quote(matches[0]);
+		if (rl_completion_type == '*')
+			for (i = 1; matches[i]; i++)
+				matches[i] = maybe_quote(matches[i]);
 	}
+	rl_attempted_completion_over = 1;
 	return matches;
 }
 
@@ -217,7 +211,7 @@ static int rc_complete_command(int count, int key) {
 }
 
 static int rc_complete_filename(int count, int key) {
-	return expl_complete(rl_filename_completion_function, count, key);
+	return expl_complete(compl_filename, count, key);
 }
 
 static int rc_complete_variable(int count, int key) {
@@ -235,8 +229,6 @@ void *edit_begin(int fd) {
 	rl_basic_word_break_characters = " \t\n`@$><=;|&{(";
 	rl_catch_signals = 0;
 	rl_completer_quote_characters = "'";
-	rl_filename_quote_characters = quote_chars;
-	rl_filename_quoting_function = quote;
 	rl_readline_name = "rc";
 
 	rl_add_funmap_entry("rc-complete-command", rc_complete_command);
