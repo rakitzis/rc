@@ -28,15 +28,28 @@ static char *dir_join(const char *a, const char *b) {
 	return mprint("%s%s%s", a, l && a[l-1] != '/' ? "/" : "", b);
 }
 
-char *maybe_quote(char *p) {
+char *quote(char *p, int open) {
 	if (strpbrk(p, quote_chars)) {
 		char *r = mprint("%#S", p);
-		if (rl_completion_suppress_quote && rl_completion_type != '*')
+		if (open)
 			r[strlen(r)-1] = '\0';
 		efree(p);
 		return r;
 	}
 	return p;
+}
+
+static char *unquote(const char *text) {
+	int quoted = 0;
+	char *p, *r;
+	p = r = ealloc(strlen(text) + 1);
+	while ((*p = *text++)) {
+		if (*p == '\'' && (!quoted || *text != '\''))
+			quoted = !quoted;
+		else
+			p++;
+	}
+	return r;
 }
 
 /* Decide if this directory entry is a completion candidate, either executable
@@ -153,17 +166,8 @@ static char *compl_filename(const char *text, int state) {
 	return name;
 }
 
-static rl_compentry_func_t *compl_func(const char *text, int start, int end) {
-	int quote = FALSE;
-	char last = ';', *s, *t;
-
-	for (s = &rl_line_buffer[0], t = &rl_line_buffer[start]; s < t; s++) {
-		if (*s == '\'')
-			quote = !quote;
-		if (!quote && *s != ' ' && *s != '\t')
-			last = *s;
-	}
-	switch (last) {
+static rl_compentry_func_t *compl_func(char prefix) {
+	switch (prefix) {
 		case '`': case '@': case '|': case '&':
 		case '(': case ')': case '{': case ';':
 			return compl_command;
@@ -173,10 +177,40 @@ static rl_compentry_func_t *compl_func(const char *text, int start, int end) {
 	return compl_filename;
 }
 
+static char compl_prefix(int index) {
+	while (index-- > 0) {
+		char c = rl_line_buffer[index];
+		if (c != ' ' && c != '\t')
+			return c;
+	}
+	return ';';
+}
+
+/* Find the start of the word to complete. This function is the only way to
+ * make readline's code fully support rc's quoting rules. It is called in
+ * *_rl_find_completion_word* as the *rl_completion_word_break_hook* and
+ * exploits the fact that readline stores the start of the word in *rl_point*.
+ * We put the correct postion there first and prevent readline from overwriting
+ * it by keeping *rl_completer_quote_characters* empty!
+ */
+static char *compl_start() {
+	int i, quoted = 0, start = 0;
+	for (i = 0; i < rl_point; i++) {
+		char c = rl_line_buffer[i];
+		if (c == '\'')
+			quoted = !quoted;
+		if (!quoted && strchr(rl_basic_word_break_characters, c))
+			start = i;
+	}
+	rl_point = start;
+	return NULL;
+}
+
 static rl_compentry_func_t *compentry_func;
 
 static char **rc_completion(const char *text, int start, int end) {
 	size_t i;
+	char *t = unquote(text);
 	char **matches = NULL;
 	rl_compentry_func_t *func;
 
@@ -184,17 +218,16 @@ static char **rc_completion(const char *text, int start, int end) {
 		func = compentry_func;
 		compentry_func = NULL;
 	} else
-		func = compl_func(text, start, end);
-	matches = rl_completion_matches(text, func);
+		func = compl_func(compl_prefix(start));
+	matches = rl_completion_matches(t, func);
 	if (matches) {
-		if (matches[1])
-			rl_completion_suppress_quote = 1;
 		if (rl_completion_type != '?')
-			matches[0] = maybe_quote(matches[0]);
+			matches[0] = quote(matches[0], matches[1] != NULL);
 		if (rl_completion_type == '*')
 			for (i = 1; matches[i]; i++)
-				matches[i] = maybe_quote(matches[i]);
+				matches[i] = quote(matches[i], 0);
 	}
+	efree(t);
 	rl_attempted_completion_over = 1;
 	return matches;
 }
@@ -222,14 +255,14 @@ void *edit_begin(int fd) {
 	List *hist;
 	struct cookie *c;
 
-	rl_initialize();
-
 	rl_attempted_completion_function = rc_completion;
 	rl_basic_quote_characters = "";
 	rl_basic_word_break_characters = " \t\n`@$><=;|&{(";
 	rl_catch_signals = 0;
-	rl_completer_quote_characters = "'";
+	rl_completion_word_break_hook = compl_start;
 	rl_readline_name = "rc";
+
+	rl_initialize();
 
 	rl_add_funmap_entry("rc-complete-command", rc_complete_command);
 	rl_add_funmap_entry("rc-complete-filename", rc_complete_filename);
