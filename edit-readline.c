@@ -206,10 +206,14 @@ static char *compl_start() {
 	return NULL;
 }
 
+static int matchcmp(const void *a, const void *b) {
+	return strcoll(*(const char **)a, *(const char **)b);
+}
+
 static rl_compentry_func_t *compentry_func;
 
 static char **rc_completion(const char *text, int start, int end) {
-	size_t i;
+	size_t i, n;
 	char *t = unquote(text);
 	char **matches = NULL;
 	rl_compentry_func_t *func;
@@ -221,14 +225,17 @@ static char **rc_completion(const char *text, int start, int end) {
 		func = compl_func(compl_prefix(start));
 	matches = rl_completion_matches(t, func);
 	if (matches) {
+		for (n = 1; matches[n]; n++);
+		qsort(&matches[1], n - 1, sizeof(matches[0]), matchcmp);
 		if (rl_completion_type != '?')
-			matches[0] = quote(matches[0], matches[1] != NULL);
+			matches[0] = quote(matches[0], n > 1);
 		if (rl_completion_type == '*')
-			for (i = 1; matches[i]; i++)
+			for (i = 1; i < n; i++)
 				matches[i] = quote(matches[i], 0);
 	}
 	efree(t);
 	rl_attempted_completion_over = 1;
+	rl_sort_completion_matches = 0;
 	return matches;
 }
 
