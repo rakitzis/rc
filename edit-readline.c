@@ -116,7 +116,13 @@ static char *entry(char *dname, char *name, char *subdirs,
 		efree(full);
 		return maybe_quote(dir_join(subdirs, name));
 	}
+
+	if(stat(full, &st) != 0) {
+		goto null;
+	}
+
 	efree(full);
+
 	if (S_ISDIR(st.st_mode)) {
 		char *dir_ret = ealloc(strlen(name) + 5);
 		char *r;
@@ -128,6 +134,8 @@ static char *entry(char *dname, char *name, char *subdirs,
 		efree(dir_ret);
 		return maybe_quote(r);
 	}
+null:
+	efree(full);
 	return NULL;
 }
 
