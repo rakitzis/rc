@@ -300,10 +300,17 @@ if (~ $COMPILER clang) {
     Offset = true
 }
 if ($Offset) {
-    CompileOpts = (
-        $CompileOpts
-        -Wno-extended-offsetof
-    )
+    if (qMacOS) {
+        CompileOpts = (
+            $CompileOpts
+            -Wno-invalid-offsetof
+        )
+    } else {
+        CompileOpts = (
+            $CompileOpts
+            -Wno-extended-offsetof
+        )
+    }
 }
 
 if (~ $COMPILER clang) {
