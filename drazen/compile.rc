@@ -1,5 +1,7 @@
 #! /usr/bin/env rc
 
+{
+
 Verbose=false
 RunPfx=()
 RunPfx=Run:
@@ -20,6 +22,30 @@ fn qMacOS { s=() {
         return 1
     }
 }}
+
+fn Help {
+cat <<EOF
+Options:
+	-h, --help
+	--force-clang, --clang, --force-gcc, --gcc
+	--noclobber
+	--yydebug
+	--no-yydebug, --noyydebug
+	--debug
+	--check-time
+	--verbose
+	--opt
+	--fortify
+	--sanitize
+	--offset
+	--scan
+	--read, --readline
+	--edit
+	--editline
+	--vrl
+	--noedit
+EOF
+}
 
 ########################################################################################
 objDir = ./obj
@@ -48,6 +74,9 @@ ForceOpt=false
 ########################################################################################
 while (! ~ $#* 0) {
     switch(x$1) {
+	case x-h
+	case x--help
+		Help; exit
     case x-force-clang  x--force-clang x-clang x--clang
         FORCE_CLANG = true
     case x-force-gcc    x--force-gcc   x-gcc   x--gcc
@@ -280,7 +309,7 @@ if ($FORCE_CLANG) {
         COMPILER = $CC
     }
 }
-whatis $COMPILER
+whatis COMPILER
 $COMPILER --version
 
 ########################################################################################
@@ -374,7 +403,6 @@ fn Compile LinkOneObj { file = $1 obj = () {
 
 
 ########################################################################################
-{
 for (s in mksignal mkstatval) {
     Compile $s
     LinkOneObj $s
@@ -512,5 +540,6 @@ LinkOneObj tripping
 
 $COMPILER --version
 exit $STATUS
+
 } >[2=1] | tee comp.log
 
