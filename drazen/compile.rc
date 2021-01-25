@@ -150,6 +150,10 @@ while (! ~ $#* 0) {
     shift
 }
 
+if (qMacOS) {
+}
+
+
 ########################################################################################
 fn UpToDateMultiSrcs { Dst=$1 Srcs=$2 src=$3 {
     if (! $CheckTime) {
@@ -291,15 +295,13 @@ LinkOpts = (
 
 ########################################################################################
 # Clobbering by setjmp/longjmp
-if ($Clobber) {
-    Clobbered = (
-        -Wclobbered
-    )
-}
 if ($FORCE_CLANG) {
     COMPILER = clang
 } else if ($FORCE_GCC) {
     COMPILER = gcc
+	if (qMacOS) {
+		Clobber=false
+	}
 } else if (whatis clang >[2]/dev/null) {
     COMPILER = clang
 } else {
@@ -311,6 +313,12 @@ if ($FORCE_CLANG) {
 }
 whatis COMPILER
 $COMPILER --version
+
+if ($Clobber) {
+    Clobbered = (
+        -Wclobbered
+    )
+}
 
 ########################################################################################
 if ($Sanitize) {
