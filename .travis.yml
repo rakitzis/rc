@@ -1,0 +1,10 @@
+# travis-ci.com build matrix
+
+language: c
+
+os:
+- linux
+- freebsd
+- osx
+
+script: autoreconf -i && automake && ./configure && make && make trip
