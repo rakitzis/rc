@@ -71,7 +71,7 @@ if qMacOS; then
     Edit=edit
     EditLibs="-ledit -ltermcap"
 else
-    Edit=edit-null
+    Edit=null
     EditLibs=""
 fi
 
