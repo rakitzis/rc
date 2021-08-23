@@ -558,3 +558,6 @@ exit $STATUS
 
 } >[2=1] | tee comp.log
 
+
+
+
