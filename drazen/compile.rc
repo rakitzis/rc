@@ -14,13 +14,13 @@ fn Error { echo >[1=2] $* }
 fn Fatal { Error $*; exit 1 }
 
 fn qMacOS { s=() {
-    s=${uname -s}
-    switch ($s) {
-    case Darwin
-        return 0
-    case *
-        return 1
-    }
+	s=${uname -s}
+	switch ($s) {
+	case Darwin
+		return 0
+	case *
+		return 1
+	}
 }}
 
 fn Help {
@@ -61,93 +61,93 @@ Sanitize = false
 Offset = false
 ScanCmd = ()
 if (qMacOS) {
-    Edit = null
-    #Edit = edit
-    #EditLibs = (-ledit -ltermcap)
+	Edit = null
+	#Edit = edit
+	#EditLibs = (-ledit -ltermcap)
 } else {
-    Edit = null
-    EditLibs = ()
+	Edit = null
+	EditLibs = ()
 }
 Debug=()
 ForceOpt=false
 
 ########################################################################################
 while (! ~ $#* 0) {
-    switch(x$1) {
+	switch(x$1) {
 	case x-h
 	case x--help
 		Help; exit
-    case x-force-clang  x--force-clang x-clang x--clang
-        FORCE_CLANG = true
-    case x-force-gcc    x--force-gcc   x-gcc   x--gcc
-        FORCE_GCC = true
+	case x-force-clang  x--force-clang x-clang x--clang
+		FORCE_CLANG = true
+	case x-force-gcc    x--force-gcc   x-gcc   x--gcc
+		FORCE_GCC = true
 
-    case x-noclob* x--noclob*
-        Clobber = false
+	case x-noclob* x--noclob*
+		Clobber = false
 
-    case x-yydebug x--yydebug
-        Yydebug = true
+	case x-yydebug x--yydebug
+		Yydebug = true
 
-    case x-no-yydebug x--no-yydebug x-noyydebug x--noyydebug
-        Yydebug = false
+	case x-no-yydebug x--no-yydebug x-noyydebug x--noyydebug
+		Yydebug = false
 
-    case x-no-debug x--no-debug
-        Debug=()
+	case x-no-debug x--no-debug
+		Debug=()
 
-    case x-debug x--debug
-        Debug = (-g)
+	case x-debug x--debug
+		Debug = (-g)
 
-    case x--check_time x--check-time
-        CheckTime = true
+	case x--check_time x--check-time
+		CheckTime = true
 
-    case x--verbose
-        Verbose=true
+	case x--verbose
+		Verbose=true
 
-    case x--opt
-        if (~ $#* 0 1) {
-            Fatal Option $1 needs value
-        }
-        ForceOpt=true
-        OPT = $2
-        shift
+	case x--opt
+		if (~ $#* 0 1) {
+			Fatal Option $1 needs value
+		}
+		ForceOpt=true
+		OPT = $2
+		shift
 
-    case x--fortify
-        if (~ $#* 0 1) {
-            Fatal Option $1 needs value
-        }
-        Fortify = $2
-        shift
+	case x--fortify
+		if (~ $#* 0 1) {
+			Fatal Option $1 needs value
+		}
+		Fortify = $2
+		shift
 
-    case x--sanitize
-        Sanitize = true
+	case x--sanitize
+		Sanitize = true
 
-    case x--offset
-        Offset = true
+	case x--offset
+		Offset = true
 
-    case x--scan
-        ScanCmd = scan-build
+	case x--scan
+		ScanCmd = scan-build
 
-    case x--edit
-        Edit = edit
-        EditLibs = (-ledit -ltermcap)
-    case x--readline x--read
-        Edit = readline
-    case x--editline
-        Edit = editline
-        EditLibs = (-ledit -ltermcap)
-    case x--vrl
-        Edit = vrl
-        EditLibs = (-ledit -ltermcap)
-    case x--noedit
-        Edit = null
-        EditLibs = ()
+	case x--edit
+		Edit = edit
+		EditLibs = (-ledit -ltermcap)
+	case x--readline x--read
+		Edit = readline
+	case x--editline
+		Edit = editline
+		EditLibs = (-ledit -ltermcap)
+	case x--vrl
+		Edit = vrl
+		EditLibs = (-ledit -ltermcap)
+	case x--noedit
+		Edit = null
+		EditLibs = ()
 
-    case x-*
-        Fatal Bad option $1
-    case *
-        break
-    }
-    shift
+	case x-*
+		Fatal Bad option $1
+	case *
+		break
+	}
+	shift
 }
 
 if (qMacOS) {
@@ -156,35 +156,35 @@ if (qMacOS) {
 
 ########################################################################################
 fn UpToDateMultiSrcs { Dst=$1 Srcs=$2 src=$3 {
-    if (! $CheckTime) {
-        return 1
-    }
-    Dst=$1; shift
-    Srcs=$*
-    if (! test -r $Dst) {
-        return 1
-    }
-    for (src in $Srcs) {
-        if (! test $src -ot $Dst) {
-            return 1
-        }
-    }
-    return 0
+	if (! $CheckTime) {
+		return 1
+	}
+	Dst=$1; shift
+	Srcs=$*
+	if (! test -r $Dst) {
+		return 1
+	}
+	for (src in $Srcs) {
+		if (! test $src -ot $Dst) {
+			return 1
+		}
+	}
+	return 0
 }}
 
 ########################################################################################
 fn UpToDateMultiDsts { Src=$1 Dsts=$2 dst=$3 {
-    if (! $CheckTime) {
-        return 1
-    }
-    Src=$1; shift
-    Dsts=$*
-    for (dst in $Dsts) {
-        if (! test -r $dst -a $Src -ot $dst) {
-            return 1
-        }
-    }
-    return 0
+	if (! $CheckTime) {
+		return 1
+	}
+	Src=$1; shift
+	Dsts=$*
+	for (dst in $Dsts) {
+		if (! test -r $dst -a $Src -ot $dst) {
+			return 1
+		}
+	}
+	return 0
 }}
 
 ########################################################################################
@@ -194,86 +194,86 @@ AddOn = true    ## for builtins: calc, kill
 ########################################################################################
 # Standard options
 if (! ~ $Debug () && ! $ForceOpt) {
-    OPT=0
+	OPT=0
 }
 if (~ $OPT ()) {
-    OptimizationOpts = ()
-    OptimizationOpts = (-O2)
-    OptimizationOpts = (-O3)
+	OptimizationOpts = ()
+	OptimizationOpts = (-O2)
+	OptimizationOpts = (-O3)
 } else {
-    OptimizationOpts = (-O$OPT)
+	OptimizationOpts = (-O$OPT)
 }
 if (~ $OPT 0) {
-    Fortify = ()
+	Fortify = ()
 }
 
 LangOpts = (
-    -m32
-    '-std=c99'
+	-m32
+	'-std=c99'
 )
 
 LangOpts = (
-    #-m32
-    '-std=gnu99'
-    -m64
+	#-m32
+	'-std=gnu99'
+	-m64
 )
 
 CommonOpts = (
-    $LangOpts
-    $OptimizationOpts
+	$LangOpts
+	$OptimizationOpts
 )
 
 ########################################################################################
 # Security options (stack randomization, etc.)
 SecurityCompileOpts = (
-    -fPIE
-    ## -fstack-protector does not work on older systems (e.g., RedHat 4, 5)
-    -fstack-protector
+	-fPIE
+	## -fstack-protector does not work on older systems (e.g., RedHat 4, 5)
+	-fstack-protector
 )
 if (! ~ $#Fortify 0) {
-    SecurityCompileOpts = (
-        $SecurityCompileOpts
-        '-D_FORTIFY_SOURCE='$Fortify
-    )
+	SecurityCompileOpts = (
+		$SecurityCompileOpts
+		'-D_FORTIFY_SOURCE='$Fortify
+	)
 }
 
 if (qMacOS) {
-    SecurityLinkOpts = (
-        -Wl   ## a single option / no spaces
-    )
+	SecurityLinkOpts = (
+		-Wl   ## a single option / no spaces
+	)
 } else {
-    SecurityLinkOpts = (
-        -pie
-        -Wl,-z,now,-z,relro   ## a single option / no spaces
-    )
+	SecurityLinkOpts = (
+		-pie
+		-Wl,-z,now,-z,relro   ## a single option / no spaces
+	)
 }
 
 ########################################################################################
 # Other options
 RegularCompileOpts = (
-    -DHAVE_CONFIG_H
-    -I.
-    $Debug
-    -MD
-    -MP
+	-DHAVE_CONFIG_H
+	-I.
+	$Debug
+	-MD
+	-MP
 
-    -Wall
-    -pedantic
-    # -ansi  ## ansi implies NO_POSIX which in turn implies no sigjmp_buf
-    -Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
-    -Wno-unused-parameter
-    # -Werror  ## makes warnings errors
+	-Wall
+	-pedantic
+	# -ansi  ## ansi implies NO_POSIX which in turn implies no sigjmp_buf
+	-Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
+	-Wno-unused-parameter
+	# -Werror  ## makes warnings errors
 )
 if ($Yydebug) {
-    RegularCompileOpts = (
-        $RegularCompileOpts
-        '-DYYDEBUG=1'  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
-    )
+	RegularCompileOpts = (
+		$RegularCompileOpts
+		'-DYYDEBUG=1'  ## To compile parsers with debug. In addition at run time must define env variable 'YYDEBUG=1'
+	)
 }
 
 RegularLinkOpts = (
-    -Wall
-    $Debug
+	-Wall
+	$Debug
 )
 
 ########################################################################################
@@ -281,136 +281,143 @@ GIT_COMMIT=${git describe}
 ########################################################################################
 # All compile and link options together
 CompileOpts = (
-    $CommonOpts
-    $RegularCompileOpts
-    $SecurityCompileOpts
-    # -DDESCRIPTION^'="'^$GIT_COMMIT^'"'
+	$CommonOpts
+	$RegularCompileOpts
+	$SecurityCompileOpts
+	# -DDESCRIPTION^'="'^$GIT_COMMIT^'"'
 )
 
 LinkOpts = (
-    $CommonOpts
-    $RegularLinkOpts
-    $SecurityLinkOpts
+	$CommonOpts
+	$RegularLinkOpts
+	$SecurityLinkOpts
 )
 
 ########################################################################################
 # Clobbering by setjmp/longjmp
 if ($FORCE_CLANG) {
-    COMPILER = clang
+	COMPILER = clang
 } else if ($FORCE_GCC) {
-    COMPILER = gcc
+	COMPILER = gcc
 	if (qMacOS) {
 		Clobber=false
 	}
 } else if (whatis clang >[2]/dev/null) {
-    COMPILER = clang
+	COMPILER = clang
 } else {
-    if (~ $CC ()) {
-        COMPILER = gcc
-    } else {
-        COMPILER = $CC
-    }
+	if (~ $CC ()) {
+		COMPILER = gcc
+	} else {
+		COMPILER = $CC
+	}
 }
 whatis COMPILER
 $COMPILER --version
 
 if ($Clobber) {
-    Clobbered = (
-        -Wclobbered
-    )
+	Clobbered = (
+		-Wclobbered
+	)
 }
 
 ########################################################################################
 if ($Sanitize) {
-    CompileOpts = (
-        $CompileOpts
-        -fsanitize=undefined
-        #-fsanitize=address ## these two sanitize flags have problem in linking
-        #-fsanitize=integer
-    )
-    LinkOpts = (
-        $LinkOpts
-        -lubsan
-    )
+	CompileOpts = (
+		$CompileOpts
+		-fsanitize=undefined
+		#-fsanitize=address ## these two sanitize flags have problem in linking
+		#-fsanitize=integer
+	)
+	LinkOpts = (
+		$LinkOpts
+		-lubsan
+	)
 }
 if (~ $COMPILER clang) {
-    Offset = true
+	Offset = true
 }
 if ($Offset) {
-    if (qMacOS) {
-        CompileOpts = (
-            $CompileOpts
-            -Wno-invalid-offsetof
-        )
-    } else {
-        CompileOpts = (
-            $CompileOpts
-            -Wno-extended-offsetof
-        )
-    }
+	if (qMacOS) {
+		CompileOpts = (
+			$CompileOpts
+			-Wno-invalid-offsetof
+		)
+	} else {
+		if (~ $COMPILER gcc) {
+			CompileOpts = (
+				$CompileOpts
+				-Wno-extended-offsetof
+			)
+		} else {
+			CompileOpts = (
+				$CompileOpts
+				-Wno-invalid-offsetof
+			)
+		}
+	}
 }
 
 if (~ $COMPILER clang) {
-    CompileOpts = (
-        $CompileOpts
-    )
-    LinkOpts = (
-        $LinkOpts
-    )
+	CompileOpts = (
+		$CompileOpts
+	)
+	LinkOpts = (
+		$LinkOpts
+	)
 } else {
-    CompileOpts = (
-        $CompileOpts
-        $Clobbered
-    )
+	CompileOpts = (
+		$CompileOpts
+		$Clobbered
+	)
 }
 
 STATUS = 0
 ########################################################################################
 # Store object files in a subdir to prevent polution
 if (! ~ $#objDir 0 && ! test -d $objDir) {
-    mkdir -p $objDir
+	mkdir -p $objDir
 }
 ########################################################################################
 ########################################################################################
 fn CompileWithOpts LinkWithOpts { cmd = () securityOpts = () allOpts = () {
-    #--------------------------------------------------------------------
-    if (~ $0 LinkWithOpts) {
-        allOpts = ($LinkOpts)
-    } else {
-        allOpts = ($CompileOpts)
-    }
-    #--------------------------------------------------------------------
-    cmd = ($ScanCmd $COMPILER $allOpts $*)
-    if ($Verbose) {
-        echo $RunPfx $cmd
-    } else {
-        echo CC $*($#*)
-    }
-    $cmd
-    if (! ~ $status 0) {
-        STATUS = $status
-    }
+	#--------------------------------------------------------------------
+	if (~ $0 LinkWithOpts) {
+		allOpts = ($LinkOpts)
+	} else {
+		allOpts = ($CompileOpts)
+	}
+	#--------------------------------------------------------------------
+	cmd = ($ScanCmd $COMPILER $allOpts $*)
+	if ($Verbose) {
+		echo $RunPfx $cmd
+	} else {
+		echo CC $*($#*)
+	}
+	$cmd
+	if (! ~ $status 0) {
+		STATUS = $status
+	}
 }}
 
 ########################################################################################
 fn Compile LinkOneObj { file = $1 obj = () {
-    if (~ $objDir ()) {
-        obj = $file.o
-        exe = $file
-    } else {
-        obj = $objDir/$file.o
-        exe = $objDir/$file
-    }
-    #--------------------------------------------------------------------
-    if (~ $0 Compile) {
-        if (! UpToDateMultiSrcs $obj $file.c rc.h) {
-            CompileWithOpts   -MT $obj -MF .deps/$file.Tpo -c -o $obj $file.c
-        }
-    } else {
-        if (! UpToDateMultiSrcs $exe $obj) {
-            LinkWithOpts      -o $exe $obj
-        }
-    }
+	if (~ $objDir ()) {
+		obj = $file.o
+		exe = $file
+	} else {
+		obj = $objDir/$file.o
+		exe = $objDir/$file
+	}
+	#--------------------------------------------------------------------
+	if (~ $0 Compile) {
+		if (! UpToDateMultiSrcs $obj $file.c rc.h) {
+			CompileWithOpts   -MT $obj -MF .deps/$file.Tpo -c -o $obj $file.c
+		}
+	} else {
+		if (! UpToDateMultiSrcs $exe $obj) {
+			LinkWithOpts      -o $exe $obj
+		}
+	}
 }}
 
 ########################################################################################
@@ -419,120 +426,120 @@ fn Compile LinkOneObj { file = $1 obj = () {
 
 ########################################################################################
 for (s in mksignal mkstatval) {
-    Compile $s
-    LinkOneObj $s
+	Compile $s
+	LinkOneObj $s
 }
 
 ## Signal names for sigmsgs.c, must be done before compiling rc
 if (~ $objDir ()) {
-    mksignalExe = ./mksignal
-    mkstatExe = ./mkstatval
+	mksignalExe = ./mksignal
+	mkstatExe = ./mkstatval
 } else {
-    mksignalExe = $objDir/mksignal
-    mkstatExe = $objDir/mkstatval
+	mksignalExe = $objDir/mksignal
+	mkstatExe = $objDir/mkstatval
 }
 
 if (! UpToDateMultiDsts $mksignalExe sigmsgs.h sigmsgs.c) {
-    echo $mksignalExe : sigmsgs.h sigmsgs.c
-    $mksignalExe
+	echo $mksignalExe : sigmsgs.h sigmsgs.c
+	$mksignalExe
 }
 
 ## Status value defines, must be done before compiling rc
 ## Making mkstatval does not depend on singals created by mksignal
 if (! UpToDateMultiDsts $mkstatExe statval.h) {
-    echo $mkstatExe : statval.h
-    $mkstatExe > statval.h
+	echo $mkstatExe : statval.h
+	$mkstatExe > statval.h
 }
 
 ########################################################################################
 ## CompileWithOpts rc source
 
 if ($AddOn) {
-    addon = (addon)
-    calc = (calc)
+	addon = (addon)
+	calc = (calc)
 } else {
-    addon = ()
-    calc = ()
+	addon = ()
+	calc = ()
 }
 
 sources = (
-    $addon
-    $calc
-    builtins
-    develop
-    except
-    exec
-    fn
-    footobar
-    getopt
-    glob
-    glom
-    hash
-    heredoc
-    input
-    lex
-    list
-    main
-    match
-    nalloc
-    open
-    parse
-    print
-    redir
-    signal
-    status
-    tree
-    utils
-    var
-    wait
-    walk
-    which
-    sigmsgs
-    edit-$Edit
-    system
+	$addon
+	$calc
+	builtins
+	develop
+	except
+	exec
+	fn
+	footobar
+	getopt
+	glob
+	glom
+	hash
+	heredoc
+	input
+	lex
+	list
+	main
+	match
+	nalloc
+	open
+	parse
+	print
+	redir
+	signal
+	status
+	tree
+	utils
+	var
+	wait
+	walk
+	which
+	sigmsgs
+	edit-$Edit
+	system
 )
 
 
 ########################################################################################
 if (~ $objDir ()) {
-    rc_objs = $sources^.o
+	rc_objs = $sources^.o
 } else {
-    rc_objs = $objDir/^$sources^.o
+	rc_objs = $objDir/^$sources^.o
 }
 
 ########################################################################################
 if (whatis byacc >[2] /dev/null) {
-    YaccExe = byacc
-    calc_opts = (-P)
+	YaccExe = byacc
+	calc_opts = (-P)
 } else {
-    calc_opts = ()
-    YaccExe = bison
+	calc_opts = ()
+	YaccExe = bison
 }
 yaccOpts = (-t -v -d)
 
 ########################################################################################
 fn RunYacc { stem = () args = () yFile = () cFile = () hFile = () run = () {
 
-    stem = $1
-    shift
-    args = $*
+	stem = $1
+	shift
+	args = $*
 
-    yFile = $stem.y cFile = $stem.c hFile = $stem.h
-    run = true
+	yFile = $stem.y cFile = $stem.c hFile = $stem.h
+	run = true
 
-    if (UpToDateMultiDsts $yFile $cFile $hFile) {
-        run = false
-    }
+	if (UpToDateMultiDsts $yFile $cFile $hFile) {
+		run = false
+	}
 
-    if ($run) {
-        cmd = ($YaccExe $yaccOpts $args -o $cFile $yFile)
-        if ($Verbose) {
-            echo $RunPfx $cmd
-        } else {
-            echo YACC $yFile
-        }
-        $cmd
-    }
+	if ($run) {
+		cmd = ($YaccExe $yaccOpts $args -o $cFile $yFile)
+		if ($Verbose) {
+			echo $RunPfx $cmd
+		} else {
+			echo YACC $yFile
+		}
+		$cmd
+	}
 }}
 
 ########################################################################################
@@ -541,11 +548,11 @@ RunYacc calc  $calc_opts  -p calc
 
 ########################################################################################
 for (s in $sources) {
-    Compile $s
+	Compile $s
 }
 ## Link rc
 if (! UpToDateMultiSrcs rc $rc_objs) {
-    LinkWithOpts -o rc     $rc_objs  $EditLibs
+	LinkWithOpts -o rc     $rc_objs  $EditLibs
 }
 
 ########################################################################################
