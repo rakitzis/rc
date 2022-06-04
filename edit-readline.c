@@ -114,6 +114,7 @@ static char *entry(char *dname, char *name, char *subdirs,
 	full = dir_join(dname, name);
 	if (rc_access(full, FALSE, &st)) {
 		efree(full);
+		full = NULL;
 		return maybe_quote(dir_join(subdirs, name));
 	}
 
@@ -122,6 +123,7 @@ static char *entry(char *dname, char *name, char *subdirs,
 	}
 
 	efree(full);
+	full = NULL;
 
 	if (S_ISDIR(st.st_mode)) {
 		char *dir_ret = ealloc(strlen(name) + 5);
@@ -136,6 +138,7 @@ static char *entry(char *dname, char *name, char *subdirs,
 	}
 null:
 	efree(full);
+	full = NULL;
 	return NULL;
 }
 
