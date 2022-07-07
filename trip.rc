@@ -1,5 +1,7 @@
 # trip.rc -- take a tour of rc
+# -*-rc-*-
 # Invoke as "path-to-new-rc < trip.rc"
+
 
 rc=$0
 echo tripping $rc $version
@@ -411,8 +413,7 @@ if (!~ `{echo '#echo' | $rc -v |[2] sed 's/#//'} echo)
 if (~ `` '' . ?*)
 	fail null dot
 if (~ `` '' {. -i} ?*)
-	fail null dot -i
-
+ 	fail null dot -i
 cat > $tmpdir/dot.$pid << eof
 echo hi
 eof

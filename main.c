@@ -7,7 +7,7 @@
 #include "input.h"
 
 bool dashdee, dashee, dasheye, dashell, dashen;
-bool dashpee, dashoh, dashess, dashvee, dashex;
+bool dashpee, dashoh, dashess, dashvee, dashewe, dashex;
 bool interactive;
 static bool dashEYE;
 char *dashsee[2];
@@ -25,7 +25,7 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	dollarzero = argv[0];
 	rc_pid = getpid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
-	while ((c = rc_getopt(argc, argv, "c:deiIlnopsvx")) != -1)
+	while ((c = rc_getopt(argc, argv, "c:deiIlnopsuvx")) != -1)
 		switch (c) {
 		case 'c':
 			dashsee[0] = rc_optarg;
@@ -57,6 +57,9 @@ extern int main(int argc, char *argv[], char *envp[]) {
 			break;
 		case 's':
 			dashess = TRUE;
+			break;
+		case 'u':
+			dashewe = TRUE;
 			break;
 		case 'v':
 			dashvee = TRUE;
