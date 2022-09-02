@@ -66,7 +66,7 @@ char* get_message(char *format, char *msg) {
    associated with $status)
 */
 
-extern List *varlookup(char *name) {
+List *varlookupAux(char *name, bool strict) {
 	Variable *look;
 	List *ret, *l;
 	int sub;
@@ -87,7 +87,8 @@ extern List *varlookup(char *name) {
 	}
 	look = lookup_var(name);
 	if (look == NULL) {
-	       if (dashewe) rc_error(get_message("Undefined variable '%s'\n", name));
+	       if (strict && dashewe)
+		 rc_error(get_message("Undefined variable '%s'\n", name));
 	       return NULL; /* not found */
 	}
 	if (look->def != NULL)
@@ -101,6 +102,12 @@ extern List *varlookup(char *name) {
 		return NULL;
 	}
 	return look->def = ret;
+}
+extern List *varlookup(char *name) {
+  return varlookupAux(name, TRUE);
+}
+extern List *varlookupNonStrict(char *name) {
+  return varlookupAux(name, FALSE);
 }
 
 /* lookup a variable in external (string) form, converting if necessary. Used by makeenv() */

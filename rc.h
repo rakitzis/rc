@@ -238,6 +238,7 @@ extern Htab *fp, *vp;
 extern void *lookup(char *, Htab *);
 extern rc_Function *get_fn_place(char *);
 extern List *varlookup(char *);
+extern List *varlookupNonStrict(char *);
 extern Node *fnlookup(char *);
 extern Variable *get_var_place(char *, bool);
 extern bool varassign_string(char *);
