@@ -54,6 +54,7 @@ extern Node *mk(enum nodetype t,...) {
 	default:
 		panic("unexpected node in mk");
 		/* NOTREACHED */
+		/* FALLTHRU */
 	case nDup:
 		n = nalloc(offsetof(Node, u[3]));
 		n->u[0].i = va_arg(ap, int);
@@ -122,6 +123,7 @@ extern Node *treecpy(const Node *s, void *(*alloc)(size_t)) {
 	default:
 		panic("unexpected node in treecpy");
 		/* NOTREACHED */
+		/* FALLTHRU */
 	case nDup:
 		n = (*alloc)(offsetof(Node, u[3]));
 		n->u[0].i = s->u[0].i;
@@ -186,6 +188,7 @@ extern void treefree(Node *s) {
 	default:
 		panic("unexpected node in treefree");
 		/* NOTREACHED */
+		/* FALLTHRU */
 	case nDup:
 		break;
 	case nWord:

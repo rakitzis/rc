@@ -20,6 +20,7 @@ extern void doredirs() {
 		default:
 			panic("unexpected node in doredirs");
 			/* NOTREACHED */
+			/* FALLTHRU */
 		case nRedir: {
 			const List *fname;
 			if (r->r->u[0].i == rHerestring) {
@@ -52,6 +53,7 @@ extern void doredirs() {
 					default:
 						panic("unexpected node in doredirs");
 						/* NOTREACHED */
+						/* FALLTHRU */
 					case rCreate: case rAppend: case rFrom:
 						fd = rc_open(fname->w, r->r->u[0].i);
 						break;

@@ -25,6 +25,7 @@ extern pid_t rc_fork() {
 		uerror("fork");
 		rc_error(NULL);
 		/* NOTREACHED */
+		/* FALLTHRU */
 	case 0:
 		forked = TRUE;
 		sigchk();

@@ -140,6 +140,7 @@ start:
 			case EOF:
 				exit(1);
 				/* NOTREACHED */
+				/* FALLTHRU */
 			case ' ':
 				if (*s == '\t') {
 					int	oldcol = col;

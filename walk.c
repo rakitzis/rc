@@ -291,9 +291,11 @@ top:	sigchk();
 	case nNmpipe:
 		rc_error("named pipes cannot be executed as commands");
 		/* NOTREACHED */
+		/* FALLTHRU */
 	default:
 		panic("unknown node in walk");
 		/* NOTREACHED */
+		/* FALLTHRU */
 	}
 	return istrue();
 }

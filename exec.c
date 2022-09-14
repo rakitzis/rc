@@ -84,6 +84,7 @@ extern void exec(const List *s, bool parent) {
 		uerror("fork");
 		rc_error(NULL);
 		/* NOTREACHED */
+		/* FALLTHRU */
 	case 0:
 		if (!returning)
 			setsigdefaults(FALSE);
@@ -111,6 +112,7 @@ extern void exec(const List *s, bool parent) {
 		uerror(*av);
 		rc_exit(1);
 		/* NOTREACHED */
+		/* FALLTHRU */
 	default: {
 		int stat;
 		redirq = NULL;
