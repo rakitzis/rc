@@ -404,7 +404,7 @@ static void dopipe(const Node *n) {
 /* From http://en.cppreference.com/w/c/program/setjmp
  * According to the C standard setjmp() must appear only in the following 4 constructs:
  *   1. switch (setjmp(args)) {statements}
- *   2. if (setjmp(args) == Const) {statements} with any of 
+ *   2. if (setjmp(args) == Const) {statements} with any of
  *             operators: ==, !=, <, >, <=, >=
  *   3. while (! setjmp(args)) {statements}
  *   4. setjmp(args);

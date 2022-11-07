@@ -24,7 +24,7 @@ Node *parsetree;	/* not using yylval because bison declares it as an auto */
 %nonassoc BANG SUBSHELL
 %left PIPE
 %nonassoc PREDIR /* fictitious */
-%right '$' 
+%right '$'
 %left SUB
 /*
 */

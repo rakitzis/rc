@@ -24,7 +24,7 @@ void b_kill (char **av)
 	if (av[1]  == NULL) {
 		fprint(2, "%s", KILL_USAGE);
 		set(FALSE);
-		return; 
+		return;
 	}
 
 	if ('-' != av[1][0]) {
@@ -58,7 +58,7 @@ void b_kill (char **av)
 	if (! av[p]) { /* must have at least one process id */
 		fprint(2, "%s", KILL_USAGE);
 		set(FALSE);
-		return; 
+		return;
 	}
 
 	ret = TRUE;
@@ -284,7 +284,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 		c = *p++;
 		if (*p == c) {
 			tok = (c == '|' ? CALC_OROR : CALC_ANDAND);
-			p++; 
+			p++;
 		} else {
 			tok = (CalcToken)(c);
 		}
@@ -323,8 +323,8 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 		}
 		break;
 
-	case '0': case '1': case '2': case '3': case '4': 
-	case '5': case '6': case '7': case '8': case '9': 
+	case '0': case '1': case '2': case '3': case '4':
+	case '5': case '6': case '7': case '8': case '9':
 		{
 			CalcValue val = 0;
 			while ('0' <= *p && *p <= '9') {

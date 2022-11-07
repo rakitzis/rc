@@ -45,9 +45,9 @@ extern int printf(const char *, ...);
 %left '|'
 %left '^'
 %left '&'
-%left CALC_EQEQ CALC_NEQ 
+%left CALC_EQEQ CALC_NEQ
 %left '<' '>' CALC_LEQ CALC_GEQ
-%left CALC_LSHIFT CALC_RSHIFT 
+%left CALC_LSHIFT CALC_RSHIFT
 %left '+' '-'
 %left '*' '/' '%'
 %right '!' '~' CALC_UNARY_PLUSMINUS
@@ -93,12 +93,12 @@ expr: expr CALC_OROR expr    { $$ = $1 || $3; }
     | expr '<' expr { $$ = $1 < $3; }
     | expr CALC_LEQ expr { $$ = $1 <= $3; }
     | expr CALC_GEQ expr { $$ = $1 >= $3; }
-    | expr CALC_LSHIFT expr 
+    | expr CALC_LSHIFT expr
         {   const CalcValue v3 = $3;
             $$ = (v3 >= 0) ? ($1 << v3) : ($1 >> (-v3));
         }
     | expr CALC_RSHIFT expr
-        {   const CalcValue v3 = $3; 
+        {   const CalcValue v3 = $3;
             $$ = (v3>=0) ? ($1 >> v3) : ($1 << (-v3));
         }
     | expr '+' expr { $$ = $1 + $3; }

@@ -105,8 +105,8 @@ quitopts:
 		const char* ret = getcwd(b, arraysize(b) - 1);
 		if (ret) {
 			assigndefault("pwd", nprint("%s", b), (void*)0);
-		} 
-	} 
+		}
+	}
 	assigndefault("prompt", "; ", "", (void *)0);
 	assigndefault("tab", "\t", (void *)0);
 	assigndefault("version",
