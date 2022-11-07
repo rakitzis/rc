@@ -27,7 +27,7 @@ static void getblock(size_t n) {
 	for (r = fl, p = NULL; r != NULL; p = r, r = r->n)
 		if (n <= r->size)
 			break;	/* look for a block which fits the request */
-	if (r != NULL) {	/* if one is found, take it off the free list */	
+	if (r != NULL) {	/* if one is found, take it off the free list */
 		if (p != NULL)
 			p->n = r->n;
 		else

@@ -202,7 +202,7 @@ extern char **list2array(const List *s, bool print) {
 extern char *get_name(const char *s) {
 	const char *eq = strchr(s, '=');
 	char *r, *result;
-	
+
 	if (eq == NULL)
 		return NULL;
 	r = result = nnew_arr(char, eq - s + 1);
