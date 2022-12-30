@@ -140,6 +140,27 @@ quitopts:
 		}
 	}
 
+	{
+		char *rcrc;
+		int fd;
+
+		rcrc = concat(varlookup("home"), word("/.rcrc-nonlogin", NULL))->w;
+		fd = rc_open(rcrc, rFrom);
+		if (fd == -1) {
+			if (errno != ENOENT)
+				uerror(rcrc);
+		} else {
+			bool push_interactive;
+
+			pushfd(fd);
+			push_interactive = interactive;
+			interactive = FALSE;
+			doit(TRUE);
+			interactive = push_interactive;
+			close(fd);
+		}
+	}
+
 	if (dashsee[0] != NULL || dashess) {	/* input from  -c or -s? */
 		if (*argv != NULL)
 			starassign(dollarzero, argv, FALSE);
