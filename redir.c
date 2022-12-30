@@ -13,7 +13,7 @@
    the rc source distribution.)
 */
 
-extern void doredirs() {
+extern void doredirs(void) {
 	const Rq *r;
 	for (r = redirq; r != NULL; r = r->n) {
 		switch(r->r->type) {

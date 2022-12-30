@@ -74,7 +74,7 @@ extern void *nalloc(size_t n) {
 
 #define MAXMEM 500000
 
-static void nfree() {
+static void nfree(void) {
 	size_t count;
 	Block *r;
 	if (ul == NULL)
@@ -105,7 +105,7 @@ static void nfree() {
    calling routine to keep the old value of the block around.
 */
 
-extern Block *newblock() {
+extern Block *newblock(void) {
 	Block *old = ul;
 	ul = NULL;
 	return old;

@@ -17,7 +17,7 @@ static int pipelength = 1;
    if and only if every pipe-member has an exit status of zero.
 */
 
-extern int istrue() {
+extern int istrue(void) {
 	int i;
 	for (i = 0; i < pipelength; i++)
 		if (statuses[i] != 0)
@@ -32,7 +32,7 @@ extern int istrue() {
    a pipeline with nonzero exit statuses in it just sets status to 1.
 */
 
-extern int getstatus() {
+extern int getstatus(void) {
 	int s;
 	if (pipelength > 1)
 		return !istrue();
@@ -105,7 +105,7 @@ static void statprint(pid_t pid, int i) {
 
 /* prepare a list to be passed back. Used whenever $status is dereferenced */
 
-extern List *sgetstatus() {
+extern List *sgetstatus(void) {
 	List *r = NULL;
 	int i;
 

@@ -28,7 +28,7 @@ static char * const dead = "";
 
 #define HASHSIZE 64 /* rc was debugged with HASHSIZE == 2; 64 is about right for normal use */
 
-extern void inithash() {
+extern void inithash(void) {
 	Htab *fpp, *vpp;
 	int i;
 	fp = enew_arr(Htab, HASHSIZE);
@@ -284,7 +284,7 @@ static bool fn_exportable(const char *s) {
 	return TRUE;
 }
 
-extern char **makeenv() {
+extern char **makeenv(void) {
 	int ep, i;
 	if (!env_dirty)
 		return env;

@@ -98,7 +98,7 @@ extern bool quotep(const char *s, bool dollar) {
 	return FALSE;
 }
 
-extern int yylex() {
+extern int yylex(void) {
 	static bool dollar = FALSE;
 	bool saw_meta = FALSE;
 	int c;
@@ -357,7 +357,7 @@ static void scanerror(const char *s) {
 	errset = prerror = TRUE;
 }
 
-extern void inityy() {
+extern void inityy(void) {
 	newline = FALSE;
 	w = NW;
 	hq = NULL;

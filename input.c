@@ -42,7 +42,7 @@ extern void ugchar(int c) {
 	istack->ungetbuf[istack->ungetcount++] = c;
 }
 
-extern int gchar() {
+extern int gchar(void) {
 	int c;
 
 	if (istack->ungetcount)
@@ -57,14 +57,14 @@ extern int gchar() {
 
 /* get the next character from a string. */
 
-static int stringgchar() {
+static int stringgchar(void) {
 	return lastchar = (inbuf[chars_out] == '\0' ? EOF : inbuf[chars_out++]);
 }
 
 
 /* write last command out to a file if interactive && $history is set */
 
-static void history() {
+static void history(void) {
 	List *hist;
 	size_t a;
 
@@ -96,7 +96,7 @@ static void history() {
 
 /* read a character from a file descriptor */
 
-static int fdgchar() {
+static int fdgchar(void) {
 	if (chars_out >= chars_in) { /* replenish empty buffer */
 		ssize_t r;
 		do {
@@ -135,7 +135,7 @@ static int fdgchar() {
 
 /* read a character from a line-editing file descriptor */
 
-static int editgchar() {
+static int editgchar(void) {
 	if (chars_out >= chars_in) { /* replenish empty buffer */
 		edit_free(istack->cookie);
 		inbuf = edit_alloc(istack->cookie, &chars_in);
@@ -162,7 +162,7 @@ void termchange(void) {
 
 /* set up the input stack, and put a "dead" input at the bottom, so that yyparse will always read eof */
 
-extern void initinput() {
+extern void initinput(void) {
 	istack = itop = enew_arr(Input, istacksize = 256);
 	istack->ungetcount = 0;
 	ugchar(EOF);
@@ -170,7 +170,7 @@ extern void initinput() {
 
 /* push an input source onto the stack. set up a new input buffer, and set gchar() */
 
-static void pushcommon() {
+static void pushcommon(void) {
 	size_t idiff;
 	istack->index = chars_out;
 	istack->read = chars_in;
@@ -220,7 +220,7 @@ extern void pushstring(char **a, bool save) {
 
 /* remove an input source from the stack. restore associated variables etc. */
 
-extern void popinput() {
+extern void popinput(void) {
 	if (istack->t == iEdit)
 		edit_end(istack->cookie);
 	if (istack->t == iFd || istack->t == iEdit)
@@ -241,7 +241,7 @@ extern void popinput() {
 
 /* flush input characters up to newline. Used by scanerror() */
 
-extern void skiptonl() {
+extern void skiptonl(void) {
 	int c;
 	if (lastchar == '\n' || lastchar == EOF)
 		return;
@@ -341,7 +341,7 @@ extern Node *parseline(char *extdef) {
 
 /* close file descriptors after a fork() */
 
-extern void closefds() {
+extern void closefds(void) {
 	Input *i;
 	for (i = istack; i != itop; --i)	/* close open scripts */
 		if (i->t == iFd && i->fd > 2) {
@@ -352,7 +352,7 @@ extern void closefds() {
 
 /* print (or set) prompt(2) */
 
-extern void nextline() {
+extern void nextline(void) {
 	lineno++;
 	if (interactive) {
 		if (istack->t == iFd)

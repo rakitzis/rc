@@ -25,7 +25,7 @@ static Sigfunc* def_sigterm = SIG_DFL;
    shells ignore SIGTERM, etc.
 */
 
-extern void inithandler() {
+extern void inithandler(void) {
 	int i;
 	null.type = nBody;
 	null.u[0].p = null.u[1].p = NULL;
@@ -239,7 +239,7 @@ extern void fnrm(const char *name) {
 	delete_fn(name);
 }
 
-extern void whatare_all_signals() {
+extern void whatare_all_signals(void) {
 	int i;
 	for (i = 1; i < NUMOFSIGNALS; i++)
 		if (*signals[i].name != '\0') {

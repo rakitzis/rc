@@ -183,7 +183,7 @@ optnl	: /* empty */
 
 %%
 
-void initparse() {
+void initparse(void) {
 	star = treecpy(mk(nVar, mk(nWord,"*", NULL, FALSE)), ealloc);
 	nolist = treecpy(mk(nVar, mk(nWord,"ifs", NULL, FALSE)), ealloc);
 }

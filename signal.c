@@ -46,7 +46,7 @@ static void catcher(int s) {
 #endif
 }
 
-extern void sigchk() {
+extern void sigchk(void) {
 	Sigfunc* h;
 	int s, i;
 
@@ -83,7 +83,7 @@ extern Sigfunc* rc_signal(int s, Sigfunc* h)
 	return old;
 }
 
-extern void initsignal() {
+extern void initsignal(void) {
 	Sigfunc* h;
 	int i;
 

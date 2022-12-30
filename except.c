@@ -103,7 +103,7 @@ extern void rc_raise(const ecodes e) {
 	rc_exit(1); /* top of exception stack */
 }
 
-extern bool outstanding_cmdarg() {
+extern bool outstanding_cmdarg(void) {
 	return estack->e == eFifo || estack->e == eFd;
 }
 
