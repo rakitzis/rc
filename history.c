@@ -134,6 +134,7 @@ start:
 			case '%':
 				c = ' ';
 				/* FALLTHROUGH */
+				/* FALLTHRU */
 			default:
 				*f++ = c;
 				break;

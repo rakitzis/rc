@@ -250,10 +250,12 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 			if (c == EOF)
 				return END;
 		/* FALLTHROUGH */
+		/* FALLTHRU */
 	case '\n':
 		lineno++;
 		newline = TRUE;
 		/* FALLTHROUGH */
+		/* FALLTHRU */
 	case ';':
 	case '^':
 	case ')':

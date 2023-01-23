@@ -92,6 +92,7 @@ extern void setsigdefaults(bool sysvbackground) {
 			case SIGTERM:
 				def_sigterm = SIG_DFL;
 				/* FALLTHROUGH */
+				/* FALLTHRU */
 			sigcommon:
 			default:
 				if (sighandlers[i] != SIG_DFL) {
