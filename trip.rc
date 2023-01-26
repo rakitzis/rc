@@ -240,8 +240,6 @@ for (i in 1 2 3 4 5)
 if (!~ $i 2)
 	fail break out of loop
 
-submatch 'wait foo' 'rc: `foo'' is a bad number' 'bogus argument to wait'
-
 if (~ `{echo -n} ?)
 	fail echo -n
 if (!~ `` '' {echo --} $nl)
@@ -319,13 +317,16 @@ submatch 'cdpath='''' cd frobnatz' 'couldn''t cd to frobnatz' 'cd to frobnatz su
 # wait
 #
 
-submatch 'wait 1 2 3' 'rc: too many arguments to wait' 'wait arg count'
+submatch 'wait foo' 'rc: `foo'' is a bad number' 'bogus argument to wait'
 $rc -c 'wait 1' >[2]/dev/null && fail wait 1
 
-sleep 3&
-expect $apid
-echo $apids
-wait
+sleep 2&
+~ $#apid 1 || fail 'empty $apid'
+~ $apid $"apids || fail '$apid should match $apids'
+wait $apid || fail 'wait 1 arg'
+
+submatch 'true&false&true&true&false& wait $apids; echo $status' '0 1 0 0 1' 'multi wait'
+submatch 'wait a b; echo $status' '1 1' 'multi wait wrong numbers'
 
 if (~ `` '' {wait} ?)
 	fail waiting for nothing
