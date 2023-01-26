@@ -1867,17 +1867,19 @@ to the octal
 .IR mask .
 If no argument is present, the current mask value is printed.
 .TP
-\fBwait \fR[\fIpid\fR]
-Waits for process with the specified
-.IR pid ,
+\fBwait \fR[\fIpid ...\fR]
+Waits for one or more processes with the specified
+.IR pid s,
 which must have been started by
 .IR rc ,
-to exit.
+to exit. The status of each specified process is appended to
+.Cr " $status" .
 If no
 .I pid
 is specified,
 .I rc
-waits for all its child processes to exit.
+waits for all its child processes to exit, and returns the
+status of the last one.
 .TP
 \fBwhatis \fR[\fB\-b\fR] \fR[\fB\-f\fR] \fR[\fB\-p\fR] \fR[\fB\-s\fR] \fR[\fB\-v\fR] [\fB\-\|\-\fR] [\fIname ...\fR]
 Prints a definition of the named objects.
