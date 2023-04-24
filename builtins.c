@@ -75,8 +75,7 @@ builtins[] = {
 #endif
 };
 
-extern bool q_builtins_ordered(void)
-{
+extern bool q_builtins_ordered(void) {
 	const int N = arraysize(builtins);
 	int i, j;
 
@@ -94,7 +93,7 @@ extern builtin_t *isbuiltin(const char *s) {
 	const BuiltinMap *pi = &builtins[0], *pj = &builtins[arraysize(builtins)];
 
 	while (pi < pj) {
-		const BuiltinMap *const pm = pi + (pj - pi)/2;
+		const BuiltinMap *const pm = pi + (pj - pi) / 2;
 		const int c = strcmp_fast(pm->name, s);
 		if (c > 0) {
 			pj = pm;
@@ -159,11 +158,10 @@ static void b_echo(char **av) {
 }
 #endif
 
-static void update_cwd_var(void)
-{
-	char b[PATH_MAX+1];
+static void update_cwd_var(void) {
+	char b[PATH_MAX + 1];
 	List val;
-	const char* ret = getcwd(b, arraysize(b) - 1);
+	const char *ret = getcwd(b, arraysize(b) - 1);
 	if (ret) {
 		val.w = nprint("%s", b);
 		val.n = NULL;
@@ -404,7 +402,7 @@ static void b_wait(char **av) {
 	if (rc_wait4(pid, &status, FALSE) > 0) {
 		setstatus(pid, status);
 		if (WIFEXITED(status))
-		    fprint(2, "%ld: exited (%d)\n", pid, WEXITSTATUS(status));
+			fprint(2, "%ld: exited (%d)\n", pid, WEXITSTATUS(status));
 	} else
 		set(FALSE);
 	sigchk();

@@ -101,10 +101,10 @@ quitopts:
 	assigndefault("pid", nprint("%d", rc_pid), (void *)0);
 	assigndefault("ppid", nprint("%d", rc_ppid), (void *)0);
 	{
-		char b[PATH_MAX+1];
-		const char* ret = getcwd(b, arraysize(b) - 1);
+		char b[PATH_MAX + 1];
+		const char *ret = getcwd(b, arraysize(b) - 1);
 		if (ret) {
-			assigndefault("pwd", nprint("%s", b), (void*)0);
+			assigndefault("pwd", nprint("%s", b), (void *)0);
 		}
 	}
 	assigndefault("prompt", "; ", "", (void *)0);

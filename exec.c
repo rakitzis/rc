@@ -24,7 +24,7 @@ extern void exec(const List *s, bool parent) {
 	av = list2array(s, dashex);
 	saw_builtin = saw_exec = FALSE;
 	do {
-		if (*av == NULL	|| isabsolute(*av))
+		if (*av == NULL || isabsolute(*av))
 			b = NULL;
 		else if (!saw_builtin && fnlookup(*av) != NULL)
 			b = funcall;
