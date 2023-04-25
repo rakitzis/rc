@@ -1,5 +1,5 @@
 dnl Our package name, version, ...
-AC_INIT([rc], [1.7.4])
+AC_INIT([rc],[1.7.4])
 
 dnl ... and git description
 DESCRIPTION=$(git describe || echo '(git description unavailable)')
@@ -30,7 +30,15 @@ AC_CHECK_PROGS(LN, ln cp)
 
 AC_CHECK_HEADERS(sys/resource.h sys/time.h sys/types.h unistd.h)
 AC_HEADER_DIRENT
-AC_HEADER_STDC
+m4_warn([obsolete],
+[The preprocessor macro `STDC_HEADERS' is obsolete.
+  Except in unusual embedded environments, you can safely include all
+  ISO C90 headers unconditionally.])dnl
+# Autoupdate added the next two lines to ensure that your configure
+# script's behavior did not change.  They are probably safe to remove.
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 AC_HEADER_SYS_WAIT
 
 AC_TYPE_GETGROUPS
@@ -209,12 +217,12 @@ AC_ARG_WITH(edit, [  --with-edit=(edit,editline,readline,vrl)  Command line edit
 		AC_CHECK_LIB(readline, readline, [
 			LIBS="$LIBS -lreadline $rc_lib_tgetent"
 		], AC_MSG_ERROR(readline library not found), $rc_lib_tgetent)
-		AC_TRY_LINK([
+		AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 			#include <stdio.h>
 			#include <readline/readline.h>
-		], [
+		]], [[
 			rl_catch_signals = 0;
-		], [], AC_MSG_ERROR(readline >= 4.0 not found))
+		]])],[],[AC_MSG_ERROR(readline >= 4.0 not found)])
 		;;
 	vrl)
 		EDIT=edit-vrl.o
@@ -257,4 +265,5 @@ dnl For some reason CPPFLAGS doesn't get propagated.
 dnl AC_SUBST(CPPFLAGS)
 
 
-AC_OUTPUT(Makefile)
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

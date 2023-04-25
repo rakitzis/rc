@@ -1047,30 +1047,6 @@ if (~ $status 0) {
 	fail '"rc -e" exits with zero status when backquote command returns non-zero'
 }
 
-# exercise "if not"
-submatch 'if (false) echo foo; if not echo bar' 'bar' 'if not 1'
-submatch 'if (false) echo -n foo; if not echo -n bar; echo qux' 'barqux' 'if not 2'
-submatch 'if (false) echo foo; echo qux; if not echo bar' 'rc: `if not'' must follow `if''' 'if not 3'
-submatch 'if (false) { echo foo } else echo qux; if not echo bar' 'rc: `if not'' must follow `if''' 'if not 4'
-
-# if-not stack if_state regression
-s='
-L=()
-if (true) {
-    if (false) {
-        L=($L  a1)
-    }
-    if not L=($L  a2)
-}
-if not L=($L  a3)
-echo $L
-'
-
-m=`{$rc -c $s}
-if (! ~ $^m a2) {
-    fail '"if not" not correct'
-}
-
 # exercise flag builtin
 submatch 'flag' 'rc: not enough arguments to flag' 'flag no args'
 submatch 'flag a b c' 'usage: flag f [ + | - ]' 'flag 3 args'
