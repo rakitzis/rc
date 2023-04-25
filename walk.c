@@ -96,9 +96,10 @@ top:	sigchk();
 			true_cmd = true_cmd->u[0].p;
 		}
 		cond = TRUE;
-		bool cond2 = walk(n->u[0].p, TRUE);
+		if (!walk(n->u[0].p, TRUE))
+			true_cmd = false_cmd; /* run the else clause */
 		cond = oldcond;
-		walk(cond2 ? true_cmd : false_cmd, parent);
+		WALK(true_cmd, parent);
 		break;
 	}
 	case nWhile: {
