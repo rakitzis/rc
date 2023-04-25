@@ -20,6 +20,7 @@ static bool isallpre(const Node *);
 static bool dofork(bool);
 static void dopipe(const Node *);
 static void loop_body(const Node* n);
+
 /* Tail-recursive version of walk() */
 
 #define WALK(x, y) { n = x; parent = y; goto top; }
