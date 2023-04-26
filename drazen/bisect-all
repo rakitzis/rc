@@ -1,0 +1,35 @@
+#! /usr/bin/env rc
+
+if (false) {
+	# https://interrupt.memfault.com/blog/git-bisect
+	# https://quantic.edu/blog/2015/02/03/git-bisect-debugging-with-feature-branches/
+
+	## In the range (START, HEAD] collect only merges on main branch
+	git rev-list START..HEAD --first-parent --merges
+	## In the range (START, HEAD] collect only main branch
+	git rev-list START..HEAD --first-parent
+
+
+
+	git bisect reset
+	git bisect start [--first-parent]
+	git bisect good GOOD
+	git bisect bad HEAD
+	# The following command runs on both merge and non-merge commits in a branch
+	git bisect run /abs/path/to/script
+	git bisect reset
+}
+
+GOOD=v1.7.4
+BAD=rakitzis-master
+
+SCR=$pwd/drazen/bisect-script
+
+git bisect reset
+git bisect start
+git bisect good $GOOD
+git bisect bad $BAD
+
+cmd=(git bisect run bash $SCR)
+$cmd
+git bisect reset
