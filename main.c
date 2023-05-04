@@ -23,7 +23,7 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	char *dollarzero, *null[1];
 	int c;
 	initprint();
-	if (! q_builtins_ordered()) {
+	if (!q_builtins_ordered()) {
 		panic("Builtins data structure not ordered");
 	}
 	dashsee[0] = dashsee[1] = NULL;
@@ -33,7 +33,7 @@ extern int main(int argc, char *argv[], char *envp[]) {
 		gettimeofday(&timeVal, 0);
 		srandom(20021003 ^ timeVal.tv_usec);
 	}
-	rc_pid  = getpid();
+	rc_pid = getpid();
 	rc_ppid = getppid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
 	while ((c = rc_getopt(argc, argv, "c:deiIlnopsvx")) != -1)

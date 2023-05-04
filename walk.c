@@ -19,7 +19,7 @@ static bool haspreredir(const Node *);
 static bool isallpre(const Node *);
 static bool dofork(bool);
 static void dopipe(const Node *);
-static void loop_body(const Node* n);
+static void loop_body(const Node *n);
 
 /* Tail-recursive version of walk() */
 
@@ -107,7 +107,7 @@ top:	sigchk();
 	}
 	case nWhile: {
 		Jbwrap break_jb;
-		Edata  break_data;
+		Edata break_data;
 		Estack break_stack;
 		bool testtrue;
 		const bool oldcond = cond;
@@ -124,7 +124,7 @@ top:	sigchk();
 
 		cond = oldcond;
 		do {
-			Edata  arena_data;
+			Edata arena_data;
 			Estack arena_stack;
 			arena_data.b = newblock();
 			except(eArena, arena_data, &arena_stack);
@@ -140,9 +140,9 @@ top:	sigchk();
 	}
 	case nForin: {
 		const List *volatile l;
-		List * const var = glom(n->u[0].p);
+		List *const var = glom(n->u[0].p);
 		Jbwrap break_jb;
-		Edata  break_data;
+		Edata break_data;
 		Estack break_stack;
 		if (sigsetjmp(break_jb.j, 1))
 			break;
@@ -150,7 +150,7 @@ top:	sigchk();
 		except(eBreak, break_data, &break_stack);
 
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			Edata  arena_data;
+			Edata arena_data;
 			Estack arena_stack;
 			assign(var, word(l->w, NULL), FALSE);
 			arena_data.b = newblock();
@@ -397,12 +397,11 @@ static void dopipe(const Node *n) {
  *             operators: ==, !=, <, >, <=, >=
  *   3. while (! setjmp(args)) {statements}
  *   4. setjmp(args);
-*/
-static void loop_body(const Node* nd)
-{
+ */
+static void loop_body(const Node *nd) {
 	const Node *volatile n = nd;
 	Jbwrap cont_jb;
-	Edata  cont_data;
+	Edata cont_data;
 	Estack cont_stack;
 
 	if (sigsetjmp(cont_jb.j, 1) == 0) {

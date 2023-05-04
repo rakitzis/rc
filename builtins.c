@@ -82,7 +82,7 @@ extern bool q_builtins_ordered(void) {
 	for (i = 0, j = 1; j < N; ++i, ++j) {
 		if (strcmp_fast(builtins[i].name, builtins[j].name) >= 0) {
 			fprint(2, "Builtin '%s' at %d is listed before builtin '%s' at %d, but is larger\n",
-				builtins[i].name, i, builtins[j].name, j);
+			       builtins[i].name, i, builtins[j].name, j);
 			return FALSE;
 		}
 	}
