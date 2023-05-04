@@ -15,13 +15,10 @@ typedef struct CalcLexData {
 	const char *m_CalcCmdName;
 } CalcLexData;
 
-
-
 extern int CalcError(const char *s, const CalcLexData *lexData);
 extern CalcValue CalcPower(CalcValue a, CalcValue b);
 
 typedef CalcToken (*CalcLexerType)(CalcLexData *lexData, YYSTYPE *calclval);
 extern int CalcParser(CalcLexerType lexer, CalcLexData *lexData);
-
 
 #endif
