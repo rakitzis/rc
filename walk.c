@@ -19,7 +19,7 @@ static bool haspreredir(const Node *);
 static bool isallpre(const Node *);
 static bool dofork(bool);
 static void dopipe(const Node *);
-static void loop_body(const Node* n);
+static void loop_body(const Node *n);
 
 /* Tail-recursive version of walk() */
 
@@ -398,7 +398,7 @@ static void dopipe(const Node *n) {
  *   3. while (! setjmp(args)) {statements}
  *   4. setjmp(args);
  */
-static void loop_body(const Node* nd) {
+static void loop_body(const Node *nd) {
 	const Node *volatile n = nd;
 	Jbwrap cont_jb;
 	Edata cont_data;
