@@ -12,16 +12,14 @@
 /******************************************************/
 /******************************************************/
 
-
 #define KILL_USAGE "usage: kill [-signame|-signum] pid+\n"
 
 /******************************************************/
-void b_kill (char **av)
-{
+void b_kill (char **av) {
 	int p, sig;
 	bool ret;
 
-	if (av[1]  == NULL) {
+	if (av[1] == NULL) {
 		fprint(2, "%s", KILL_USAGE);
 		set(FALSE);
 		return;
@@ -31,16 +29,16 @@ void b_kill (char **av)
 		sig = SIGTERM;
 		p = 1;
 	} else {
-		const char* const sigStr = av[1] + 1;
+		const char *const sigStr = av[1] + 1;
 		sig = a2u(sigStr);
 		if (sig < 0) {
 			int s;
-			for (s=0; signals[s].name; ++s) {
+			for (s = 0; signals[s].name; ++s) {
 				if (0 == strcasecmp(sigStr, signals[s].name)) {
 					/* -kill */
 					sig = signals[s].signum;
 					break;
-				} else if (0 == strcasecmp(sigStr, signals[s].name+3)) {
+				} else if (0 == strcasecmp(sigStr, signals[s].name + 3)) {
 					/* -sigkill */
 					sig = signals[s].signum;
 					break;
@@ -55,7 +53,7 @@ void b_kill (char **av)
 		p = 2;
 	}
 
-	if (! av[p]) { /* must have at least one process id */
+	if (!av[p]) { /* must have at least one process id */
 		fprint(2, "%s", KILL_USAGE);
 		set(FALSE);
 		return;
@@ -63,7 +61,7 @@ void b_kill (char **av)
 
 	ret = TRUE;
 	for (/*empty*/; av[p]; ++p) {
-		const char* const procStr = av[p];
+		const char *const procStr = av[p];
 		const pid_t proc = a2u(procStr);
 		if (proc > 0) {
 			const int r = kill(proc, sig);
@@ -79,7 +77,7 @@ void b_kill (char **av)
 	set(ret);
 }
 
-static int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData);
+static int CalcDoParse(const char *s, CalcValue *r, CalcLexData *lexData);
 
 #if 0
 static void set_var (char *varname, long R)
@@ -90,31 +88,28 @@ static void set_var (char *varname, long R)
 #endif
 
 /******************************************************/
-static int check_var_name (const char *p)
-{
+static int check_var_name (const char *p) {
 	if (!isalpha(*p) && (*p) != '_') {
 		return 0;
 	}
-	for ( ; *p; ++p) {
-		if (! (isalnum(*p) || (*p) == '_') ) {
-		return 0;
+	for (; *p; ++p) {
+		if (!(isalnum(*p) || (*p) == '_')) {
+			return 0;
 		}
 	}
 	return 1;
 }
 
-
 /******************************************************/
 enum {
 	VAL_NONZERO  = 0,
-	VAL_ZERO     = 1,
-	BAD_EXP      = 2,
+	VAL_ZERO = 1,
+	BAD_EXP = 2,
 };
 
 /******************************************************/
-static int ret_value(int parse_status, long value)
-{
-	if (0==parse_status) {
+static int ret_value(int parse_status, long value) {
+	if (0 == parse_status) {
 		if (0L == value) {
 			return VAL_ZERO;
 		} else {
@@ -125,11 +120,9 @@ static int ret_value(int parse_status, long value)
 	}
 }
 
-
 /******************************************************/
-void b_calc (char **av)
-{
-	const char* const calcCmdName = av[0];
+void b_calc (char **av) {
+	const char *const calcCmdName = av[0];
 	int rc_status = BAD_EXP;
 
 	if (av[1] == 0) { /* no arg like parse error */
@@ -152,20 +145,20 @@ void b_calc (char **av)
 			CalcLexData lexData;
 			long parse_value = 0;
 			int parse_status;
-			const char* exp;
+			const char *exp;
 
-			if (0 == av[i+1]) {
+			if (0 == av[i + 1]) {
 				exp = av[i];
 			} else {
 				int j;
-				char* p;
+				char *p;
 				int len = 0;
 
-				for (j = i; av[j]; ++j) { /* count total len */
+				for (j = i; av[j]; ++j) {	  /* count total len */
 					len += strlen(av[j]) + 1; /* 1 space between args:(a,b) to 'a b', no to 'ab' */
 				}
 
-				exp = p = nnew_arr(char, len+1);
+				exp = p = nnew_arr(char, len + 1);
 
 				strcpy(p, av[i]); /* guaranteed non-null */
 				p += strlen(av[i++]);
@@ -181,8 +174,8 @@ void b_calc (char **av)
 			lexData.m_CalcCmdName = calcCmdName;
 			parse_status = CalcDoParse(exp, &parse_value, &lexData);
 
-			if (0==parse_status) {
-				const char* const varName = &lexData.m_Indent[0];
+			if (0 == parse_status) {
+				const char *const varName = &lexData.m_Indent[0];
 				if ('\0' != varName[0]) { /* assignment */
 					if (check_var_name(varName)) {
 						List val;
@@ -214,15 +207,10 @@ void b_calc (char **av)
 	return;
 }
 
-
-
-
-
 /******************************************************/
-CalcValue CalcPower(const CalcValue A, const CalcValue B)
-{
+CalcValue CalcPower(const CalcValue A, const CalcValue B) {
 	CalcValue a = A, b = B;
-	CalcValue z = 1;   /* z * a^b = A^B */
+	CalcValue z = 1; /* z * a^b = A^B */
 	while (b > 0) {
 		if (b & 1) { /* odd */
 			/*  z * a^b = (z * a) * (a^(b-1)) */
@@ -237,8 +225,7 @@ CalcValue CalcPower(const CalcValue A, const CalcValue B)
 	return z;
 }
 /******************************************************/
-static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
-{
+static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval) {
 	const char *p;
 	CalcToken tok;
 	int c;
@@ -253,7 +240,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 		p++;
 	}
 	if (isalpha(*p) || '_' == *p) {
-		enum { NUM_CHARS = sizeof(lexData->m_Indent)/sizeof(lexData->m_Indent[0]) - 1 };
+		enum { NUM_CHARS = sizeof(lexData->m_Indent) / sizeof(lexData->m_Indent[0]) - 1 };
 		int i = 0;
 		int c = *p;
 
@@ -271,16 +258,21 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 	}
 	switch (*p) {
 	case '^':
-	case '+': case '-':
-	case '*': case '/': case '%':
+	case '+':
+	case '-':
+	case '*':
+	case '/':
+	case '%':
 	case '~':
 	case '@':
-	case '(': case ')':
-		tok = (CalcToken) (*p);
+	case '(':
+	case ')':
+		tok = (CalcToken)(*p);
 		p++;
 		break;
 
-	case '|': case '&':
+	case '|':
+	case '&':
 		c = *p++;
 		if (*p == c) {
 			tok = (c == '|' ? CALC_OROR : CALC_ANDAND);
@@ -290,7 +282,8 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 		}
 		break;
 
-	case '<': case '>':
+	case '<':
+	case '>':
 		c = *p++;
 		if (*p == '=') {
 			tok = (c == '<' ? CALC_LEQ : CALC_GEQ);
@@ -299,7 +292,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 			tok = (c == '<' ? CALC_LSHIFT : CALC_RSHIFT);
 			p++;
 		} else {
-			tok = (CalcToken) (c);
+			tok = (CalcToken)(c);
 		}
 		break;
 
@@ -309,7 +302,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 			tok = CALC_EQEQ;
 			p++;
 		} else {
-			tok = (CalcToken) (c);
+			tok = (CalcToken)(c);
 		}
 		break;
 
@@ -319,21 +312,19 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 			tok = CALC_NEQ;
 			p++;
 		} else {
-			tok = (CalcToken) (c);
+			tok = (CalcToken)(c);
 		}
 		break;
 
 	case '0': case '1': case '2': case '3': case '4':
-	case '5': case '6': case '7': case '8': case '9':
-		{
-			CalcValue val = 0;
-			while ('0' <= *p && *p <= '9') {
-				val = 10 * val + (*p++ -'0');
-			}
-			calclval->m_Val = val;
-			tok = CALC_NUMBER;
+	case '5': case '6': case '7': case '8': case '9': {
+		CalcValue val = 0;
+		while ('0' <= *p && *p <= '9') {
+			val = 10 * val + (*p++ -'0');
 		}
-		break;
+		calclval->m_Val = val;
+		tok = CALC_NUMBER;
+	} break;
 	case '\0':
 		tok = (CalcToken)(0);
 		break;
@@ -350,8 +341,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval)
 #if YYDEBUG
 extern int calcdebug;
 #endif
-static int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData)
-{
+static int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData) {
 	int status;
 
 	lexData->m_Current = lexData->m_Buf = s;
@@ -360,7 +350,7 @@ static int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData)
 
 #if YYDEBUG
 	{
-		const char * const yys = getenv("CALCDEBUG");
+		const char *const yys = getenv("CALCDEBUG");
 		if (yys != 0) {
 			const int yyn = *yys;
 			if ('0' <= yyn && yyn <= '9') {
@@ -375,15 +365,12 @@ static int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData)
 }
 
 /******************************************************/
-int CalcError(const char *s, const CalcLexData* lexData)
-{
+int CalcError(const char *s, const CalcLexData* lexData) {
 	fprint(2, "%s: %s\n", lexData->m_CalcCmdName, s);
 	return 0;
 }
 /******************************************************/
 /******************************************************/
-
-
 
 #endif
 
