@@ -9,234 +9,239 @@
 #endif
 
 struct signaming {
-    int signo;
-    const char *signame;
-    const char *sigmsg;
+	int signo;
+	const char *signame;
+	const char *sigmsg;
 };
 
 static const struct signaming signamings[] = {
 #ifdef SIGABRT
-    { SIGABRT,	"sigabrt",	"abort"},
+	{ SIGABRT,	"sigabrt",	"abort"},
 #endif
 #ifdef SIGALRM
-    { SIGALRM,	"sigalrm",	"alarm clock"},
+	{ SIGALRM,	"sigalrm",	"alarm clock"},
 #endif
 #ifdef SIGBREAK
-    { SIGBREAK,	"sigbreak",	"break"},
+	{ SIGBREAK,	"sigbreak",	"break"},
 #endif
 #ifdef SIGBUS
-    { SIGBUS,	"sigbus",	"bus error"},
+	{ SIGBUS,	"sigbus",	"bus error"},
 #endif
 #ifdef SIGCANCEL
-    { SIGCANCEL,	"sigcancel",	"thread cancellation"},
+	{ SIGCANCEL,	"sigcancel",	"thread cancellation"},
 #endif
 #ifdef SIGCHLD
-    { SIGCHLD,	"sigchld",	"child stop or exit"},
+	{ SIGCHLD,	"sigchld",	"child stop or exit"},
 #endif
 #ifdef SIGCLD
-    { SIGCLD,	"sigcld",	"child stop or exit"},
+	{ SIGCLD,	"sigcld",	"child stop or exit"},
 #endif
 #ifdef SIGCONT
-    { SIGCONT,	"sigcont",	"continue"},
+	{ SIGCONT,	"sigcont",	"continue"},
 #endif
 #ifdef SIGDIL
-    { SIGDIL,	"sigdil",	"dil signal"},
+	{ SIGDIL,	"sigdil",	"dil signal"},
 #endif
 #ifdef SIGEMT
-    { SIGEMT,	"sigemt",	"emt instruction"},
+	{ SIGEMT,	"sigemt",	"emt instruction"},
 #endif
 #ifdef SIGFPE
-    { SIGFPE,	"sigfpe",	"floating point error"},
+	{ SIGFPE,	"sigfpe",	"floating point error"},
 #endif
 #ifdef SIGFREEZE
-    { SIGFREEZE,	"sigfreeze",	"cpr freeze"},
+	{ SIGFREEZE,	"sigfreeze",	"cpr freeze"},
 #endif
 #ifdef SIGHUP
-    { SIGHUP,	"sighup",	"hangup"},
+	{ SIGHUP,	"sighup",	"hangup"},
 #endif
 #ifdef SIGILL
-    { SIGILL,	"sigill",	"illegal instruction"},
+	{ SIGILL,	"sigill",	"illegal instruction"},
 #endif
 
 /* We don't want a default message for SIGINT. */
 #ifdef SIGINT
-    { SIGINT,	"sigint",	""},
+	{ SIGINT,	"sigint",	""},
 #endif
 
 #ifdef SIGIO
-    { SIGIO,	"sigio",	"socket i/o possible"},
+	{ SIGIO,	"sigio",	"socket i/o possible"},
 #endif
 #ifdef SIGIOT
-    { SIGIOT,	"sigiot",	"iot instruction"},
+	{ SIGIOT,	"sigiot",	"iot instruction"},
 #endif
 #ifdef SIGKILL
-    { SIGKILL,	"sigkill",	"killed"},
+	{ SIGKILL,	"sigkill",	"killed"},
 #endif
 #ifdef SIGLOST
-    { SIGLOST,	"siglost",	"resource lost"},
+	{ SIGLOST,	"siglost",	"resource lost"},
 #endif
 #ifdef SIGLWP
-    { SIGLWP,	"siglwp",	"thread library signal"},
+	{ SIGLWP,	"siglwp",	"thread library signal"},
 #endif
 
 /* By default, SIGPIPEs are silent. */
 #ifdef SIGPIPE
-    { SIGPIPE,	"sigpipe",	""},
+	{ SIGPIPE,	"sigpipe",	""},
 #endif
 
 #ifdef SIGPOLL
-    { SIGPOLL,	"sigpoll",	"pollable event occurred"},
+	{ SIGPOLL,	"sigpoll",	"pollable event occurred"},
 #endif
 #ifdef SIGPROF
-    { SIGPROF,	"sigprof",	"profiling timer alarm"},
+	{ SIGPROF,	"sigprof",	"profiling timer alarm"},
 #endif
 #ifdef SIGPWR
-    { SIGPWR,	"sigpwr",	"power-fail restart"},
+	{ SIGPWR,	"sigpwr",	"power-fail restart"},
 #endif
 #ifdef SIGQUIT
-    { SIGQUIT,	"sigquit",	"quit"},
+	{ SIGQUIT,	"sigquit",	"quit"},
 #endif
 #ifdef SIGSEGV
-    { SIGSEGV,	"sigsegv",	"segmentation violation"},
+	{ SIGSEGV,	"sigsegv",	"segmentation violation"},
 #endif
 #ifdef SIGSTKFLT
-    { SIGSTKFLT,	"sigstkflt",	"stack fault"},
+	{ SIGSTKFLT,	"sigstkflt",	"stack fault"},
 #endif
 #ifdef SIGSTOP
-    { SIGSTOP,	"sigstop",	"stopped by program"},
+	{ SIGSTOP,	"sigstop",	"stopped by program"},
 #endif
 #ifdef SIGSYS
-    { SIGSYS,	"sigsys",	"invalid argument to system call"},
+	{ SIGSYS,	"sigsys",	"invalid argument to system call"},
 #endif
 #ifdef SIGTERM
-    { SIGTERM,	"sigterm",	"terminated"},
+	{ SIGTERM,	"sigterm",	"terminated"},
 #endif
 #ifdef SIGTHAW
-    { SIGTHAW,	"sigthaw",	"cpr thaw"},
+	{ SIGTHAW,	"sigthaw",	"cpr thaw"},
 #endif
 #ifdef SIGTRAP
-    { SIGTRAP,	"sigtrap",	"trace trap"},
+	{ SIGTRAP,	"sigtrap",	"trace trap"},
 #endif
 #ifdef SIGTSTP
-    { SIGTSTP,	"sigtstp",	"stopped"},
+	{ SIGTSTP,	"sigtstp",	"stopped"},
 #endif
 #ifdef SIGTTIN
-    { SIGTTIN,	"sigttin",	"background tty read"},
+	{ SIGTTIN,	"sigttin",	"background tty read"},
 #endif
 #ifdef SIGTTOU
-    { SIGTTOU,	"sigttou",	"background tty write"},
+	{ SIGTTOU,	"sigttou",	"background tty write"},
 #endif
 #ifdef SIGURG
-    { SIGURG,	"sigurg",	"urgent condition on i/o channel"},
+	{ SIGURG,	"sigurg",	"urgent condition on i/o channel"},
 #endif
 #ifdef SIGUSR1
-    { SIGUSR1,	"sigusr1",	"user defined signal 1"},
+	{ SIGUSR1,	"sigusr1",	"user defined signal 1"},
 #endif
 #ifdef SIGUSR2
-    { SIGUSR2,	"sigusr2",	"user defined signal 2"},
+	{ SIGUSR2,	"sigusr2",	"user defined signal 2"},
 #endif
 #ifdef SIGVTALRM
-    { SIGVTALRM,	"sigvtalrm",	"virtual timer alarm"},
+	{ SIGVTALRM,	"sigvtalrm",	"virtual timer alarm"},
 #endif
 #ifdef SIGWAITING
-    { SIGWAITING,	"sigwaiting",	"lwps blocked"},
+	{ SIGWAITING,	"sigwaiting",	"lwps blocked"},
 #endif
 #ifdef SIGWINCH
-    { SIGWINCH,	"sigwinch",	"window size change"},
+	{ SIGWINCH,	"sigwinch",	"window size change"},
 #endif
 #ifdef SIGWINDOW
-    { SIGWINDOW,	"sigwindow",	"window size change"},
+	{ SIGWINDOW,	"sigwindow",	"window size change"},
 #endif
 #ifdef SIGXCPU
-    { SIGXCPU,	"sigxcpu",	"exceeded cpu time limit"},
+	{ SIGXCPU,	"sigxcpu",	"exceeded cpu time limit"},
 #endif
 #ifdef SIGXFSZ
-    { SIGXFSZ,	"sigxfsz",	"exceeded file size limit"},
+	{ SIGXFSZ,	"sigxfsz",	"exceeded file size limit"},
 #endif
 #ifdef SIGSAK
-    { SIGSAK,	"sigsak",	"secure attention key"},
+	{ SIGSAK,	"sigsak",	"secure attention key"},
 #endif
 #ifdef SIGSOUND
-    { SIGSOUND,	"sigsound",	"hft sound sequence completed"},
+	{ SIGSOUND,	"sigsound",	"hft sound sequence completed"},
 #endif
 #ifdef SIGRETRACT
-    { SIGRETRACT,	"sigretract",	"hft monitor mode retracted"},
+	{ SIGRETRACT,	"sigretract",	"hft monitor mode retracted"},
 #endif
 #ifdef SIGKAP
-    { SIGKAP,	"sigkap",	"keep alive poll"},
+	{ SIGKAP,	"sigkap",	"keep alive poll"},
 #endif
 #ifdef SIGGRANT
-    { SIGGRANT,	"siggrant",	"hft monitor mode granted"},
+	{ SIGGRANT,	"siggrant",	"hft monitor mode granted"},
 #endif
 #ifdef SIGALRM1
-    { SIGALRM1,	"sigalrm1",	"m:n condition alarm"},
+	{ SIGALRM1,	"sigalrm1",	"m:n condition alarm"},
 #endif
 #ifdef SIGVIRT
-    { SIGVIRT,	"sigvirt",	"virtual time alarm"},
+	{ SIGVIRT,	"sigvirt",	"virtual time alarm"},
 #endif
 #ifdef SIGPRE
-    { SIGPRE,	"sigpre",	"programming error"},
+	{ SIGPRE,	"sigpre",	"programming error"},
 #endif
 #ifdef SIGMIGRATE
-    { SIGMIGRATE,	"sigmigrate",	"migrate process"},
+	{ SIGMIGRATE,	"sigmigrate",	"migrate process"},
 #endif
 #ifdef SIGDANGER
-    { SIGDANGER,	"sigdanger",	"system crash imminent"},
+	{ SIGDANGER,	"sigdanger",	"system crash imminent"},
 #endif
 #ifdef SIGMSG
-    { SIGMSG,	"sigmsg",	"hft input data pending"},
+	{ SIGMSG,	"sigmsg",	"hft input data pending"},
 #endif
 #ifdef SIGINFO
-    { SIGINFO,	"siginfo",	"information request"},
+	{ SIGINFO,	"siginfo",	"information request"},
 #endif
-    { 0, 0, 0}
+	{ 0, 0, 0}
 };
 
 static void barf(const char *msg) {
-    fprintf(stderr, "mksignals: %s\n", msg);
-    exit(1);
+	fprintf(stderr, "mksignals: %s\n", msg);
+	exit(1);
 }
 
 int main(void) {
-    int maxsig = NUMSIG-1;
-    int s;
-    const struct signaming *snp;
-    FILE *outf;
+	int maxsig = NUMSIG-1;
+	int s;
+	const struct signaming *snp;
+	FILE *outf;
 
-    for (snp = signamings; snp->signo; ++snp)
+	for (snp = signamings; snp->signo; ++snp)
 	if (snp->signo > maxsig)
-	    maxsig = snp->signo;
+		maxsig = snp->signo;
 
-    outf = fopen("sigmsgs.h", "w");
-    if (!outf) barf("could not open sigmsgs.h for writing");
-    fprintf(outf, "typedef struct {\n");
-    fprintf(outf, "\tchar *name;\n");
-    fprintf(outf, "\tconst char *msg;\n");
-    fprintf(outf, "\tint signum;\n");
-    fprintf(outf, "} Sigmsgs;\n");
-    fprintf(outf, "extern const Sigmsgs signals[];\n");
-    fprintf(outf, "#define NUMOFSIGNALS %d\n", maxsig+1);
-    if (fclose(outf) == EOF)  barf("could not fclose sigmsgs.h after writing");
+	outf = fopen("sigmsgs.h", "w");
+	if (!outf) barf("could not open sigmsgs.h for writing");
+	fprintf(outf, "typedef struct {\n");
+	fprintf(outf, "\tchar *name;\n");
+	fprintf(outf, "\tconst char *msg;\n");
+	fprintf(outf, "\tint signum;\n");
+	fprintf(outf, "} Sigmsgs;\n");
+	fprintf(outf, "extern const Sigmsgs signals[];\n");
+	fprintf(outf, "#define NUMOFSIGNALS %d\n", maxsig+1);
+	if (fclose(outf) == EOF)  barf("could not fclose sigmsgs.h after writing");
 
-    outf = fopen("sigmsgs.c", "w");
-    if (!outf) barf("could not open sigmsgs.c for writing");
-    fprintf(outf, "#include \"sigmsgs.h\"\n\n");
-    fprintf(outf, "const Sigmsgs signals[] = {\n");
-    fprintf(outf, "\t{\"\",\t\"\", 0},\n");
+	outf = fopen("sigmsgs.c", "w");
+	if (!outf) barf("could not open sigmsgs.c for writing");
+	fprintf(outf, "#include \"sigmsgs.h\"\n\n");
+	fprintf(outf, "const Sigmsgs signals[] = {\n");
+	fprintf(outf, "\t{\"\",\t\"\", 0},\n");
 
-    /* yes, we could avoid the quadratic searching with an aux array. fap. */
-    for (s = 1; s <= maxsig; ++s) {
+	/* yes, we could avoid the quadratic searching with an aux array. fap. */
+	for (s = 1; s <= maxsig; ++s) {
 	for (snp = signamings; snp->signo && snp->signo != s; ++snp)
-	    /* */;
+		/* */;
 	if (snp->signo)
-	    fprintf(outf, "\t{\"%s\",\t\"%s\", %d},\n",
-		      snp->signame, snp->sigmsg, snp->signo);
+		fprintf(outf, "\t{\"%s\",\t\"%s\", %d},\n",
+				snp->signame, snp->sigmsg, snp->signo);
+#if defined(SIGRTMIN) && defined(SIGRTMAX)
+	else if (s >= SIGRTMIN && s <= SIGRTMAX)
+		fprintf(outf, "\t{\"sigrt%d\",\t\"real-time signal %d\"},\n",
+				s - SIGRTMIN, s - SIGRTMIN);
+#endif
 	else
-	    fprintf(outf, "\t{\"sigunknown%d\",\t\"unknown signal %d\", 0},\n",
-			s, s);
-    }
-    fprintf(outf, "\t{0,\t0,\t-1},\n");
-    fprintf(outf, "};\n");
-    if (fclose(outf) == EOF) barf("could not fclose sigmsgs.c after writing");
-    return 0;
+		fprintf(outf, "\t{\"sig%d\",\t\"unknown signal %d\", 0},\n",
+				s, s);
+	}
+	fprintf(outf, "\t{0,\t0,\t-1},\n");
+	fprintf(outf, "};\n");
+	if (fclose(outf) == EOF) barf("could not fclose sigmsgs.c after writing");
+	return 0;
 }
