@@ -60,7 +60,7 @@ static const struct signaming signamings[] = {
 
 /* We don't want a default message for SIGINT. */
 #ifdef SIGINT
-	{ SIGINT,	"sigint",	""},
+	{ SIGINT,	"sigint",	"interrupt"},
 #endif
 
 #ifdef SIGIO
@@ -81,7 +81,7 @@ static const struct signaming signamings[] = {
 
 /* By default, SIGPIPEs are silent. */
 #ifdef SIGPIPE
-	{ SIGPIPE,	"sigpipe",	""},
+	{ SIGPIPE,	"sigpipe",	"broken pipe"},
 #endif
 
 #ifdef SIGPOLL
