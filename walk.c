@@ -1,6 +1,7 @@
 /* walk.c: walks the parse tree. */
 
 #include "rc.h"
+#include "wait.h"
 
 #include <signal.h>
 #include <setjmp.h>

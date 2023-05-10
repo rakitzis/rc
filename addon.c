@@ -6,7 +6,6 @@
 
 #if RC_ADDON
 
-
 #include "calc_decl.h"
 
 /******************************************************/
@@ -15,7 +14,7 @@
 #define KILL_USAGE "usage: kill [-signame|-signum] pid+\n"
 
 /******************************************************/
-void b_kill (char **av) {
+void b_kill(char **av) {
 	int p, sig;
 	bool ret;
 
@@ -80,7 +79,7 @@ void b_kill (char **av) {
 static int CalcDoParse(const char *s, CalcValue *r, CalcLexData *lexData);
 
 #if 0
-static void set_var (char *varname, long R)
+static void set_var(char *varname, long R)
 {
 	List *val = nnew(List); var->w = nprint("%ld", R);
 	varassign(varname, val, FALSE);
@@ -88,7 +87,7 @@ static void set_var (char *varname, long R)
 #endif
 
 /******************************************************/
-static int check_var_name (const char *p) {
+static int check_var_name(const char *p) {
 	if (!isalpha(*p) && (*p) != '_') {
 		return 0;
 	}
@@ -102,7 +101,7 @@ static int check_var_name (const char *p) {
 
 /******************************************************/
 enum {
-	VAL_NONZERO  = 0,
+	VAL_NONZERO = 0,
 	VAL_ZERO = 1,
 	BAD_EXP = 2,
 };
@@ -121,7 +120,7 @@ static int ret_value(int parse_status, long value) {
 }
 
 /******************************************************/
-void b_calc (char **av) {
+void b_calc(char **av) {
 	const char *const calcCmdName = av[0];
 	int rc_status = BAD_EXP;
 
@@ -224,8 +223,7 @@ CalcValue CalcPower(const CalcValue A, const CalcValue B) {
 	}
 	return z;
 }
-/******************************************************/
-static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval) {
+static CalcToken CalcLexer(CalcLexData *lexData, YYSTYPE *calclval) {
 	const char *p;
 	CalcToken tok;
 	int c;
@@ -320,7 +318,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval) {
 	case '5': case '6': case '7': case '8': case '9': {
 		CalcValue val = 0;
 		while ('0' <= *p && *p <= '9') {
-			val = 10 * val + (*p++ -'0');
+			val = 10 * val + (*p++ - '0');
 		}
 		calclval->m_Val = val;
 		tok = CALC_NUMBER;
@@ -341,7 +339,7 @@ static CalcToken CalcLexer (CalcLexData *lexData, YYSTYPE* calclval) {
 #if YYDEBUG
 extern int calcdebug;
 #endif
-static int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData) {
+static int CalcDoParse(const char *s, CalcValue *r, CalcLexData *lexData) {
 	int status;
 
 	lexData->m_Current = lexData->m_Buf = s;
@@ -365,7 +363,7 @@ static int CalcDoParse(const char *s, CalcValue *r, CalcLexData* lexData) {
 }
 
 /******************************************************/
-int CalcError(const char *s, const CalcLexData* lexData) {
+int CalcError(const char *s, const CalcLexData *lexData) {
 	fprint(2, "%s: %s\n", lexData->m_CalcCmdName, s);
 	return 0;
 }

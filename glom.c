@@ -1,6 +1,7 @@
 /* glom.c: builds an argument list out of words, variables, etc. */
 
 #include "rc.h"
+#include "wait.h"
 
 #include <sys/stat.h>
 #include <signal.h>
