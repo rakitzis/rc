@@ -180,7 +180,6 @@ top:	sigchk();
 		if (n->u[0].p == NULL)
 			rc_error("null variable name");
 		assign(glom(n->u[0].p), glob(glom(n->u[1].p)), FALSE);
-		set(TRUE);
 		break;
 	case nPipe:
 		dopipe(n);
