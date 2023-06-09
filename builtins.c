@@ -59,7 +59,6 @@ builtins[] = {
 	{ b_flag,		"flag" },
 #ifdef RC_ADDON
 	{ b_kill,		"kill" },
-	//{ b_calc,		"let" },
 #endif
 #if HAVE_SETRLIMIT
 	{ b_limit,		"limit" },
