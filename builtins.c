@@ -40,7 +40,7 @@ typedef struct BuiltinMap {
 	const char *name;
 } BuiltinMap;
 
-static BuiltinMap
+static const BuiltinMap
 builtins[] = {
 	{ b_dot,		"." },
 	{ b_break,		"break" },
