@@ -998,8 +998,6 @@ Changes since rc-1.5b2
 
 2018-03-19
 
-  Feature: implement `if not` (github #19).
-
   Feature: default values for $nl and $tab (github #43).
 
 2018-03-20

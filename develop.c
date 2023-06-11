@@ -118,9 +118,6 @@ void dump(Node *n, int indent) {
 	case nIf:
 		dump_2("nIf", n, indent);
 		break;
-	case nIfnot:
-		dump_1("nIfnot", n, indent);
-		break;
 	case nLappend:
 		dump_2("nLappend", n, indent);
 		break;

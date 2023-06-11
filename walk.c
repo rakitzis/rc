@@ -21,9 +21,6 @@ static bool dofork(bool);
 static void dopipe(Node *);
 static void loop_body(Node* n);
 
-enum if_state { if_false, if_true, if_nothing };
-enum if_state if_last = if_nothing;
-
 /* Tail-recursive version of walk() */
 
 #define WALK(x, y) { n = x; parent = y; goto top; }
@@ -95,26 +92,16 @@ top:	sigchk();
 		break;
 	case nIf: {
 		bool oldcond = cond;
-		enum if_state if_this;
 		Node *true_cmd = n->u[1].p, *false_cmd = NULL;
 		if (true_cmd != NULL && true_cmd->type == nElse) {
 			false_cmd = true_cmd->u[1].p;
 			true_cmd = true_cmd->u[0].p;
 		}
 		cond = TRUE;
-		if_this = walk(n->u[0].p, TRUE);
+		if (!walk(n->u[0].p, TRUE))
+			true_cmd = false_cmd; /* run the else clause */
 		cond = oldcond;
-		if (if_last == if_nothing) if_last = if_this;
-		walk(if_this ? true_cmd : false_cmd, parent);
-		break;
-	}
-	case nIfnot: {
-		if (if_last == if_nothing)
-			rc_error("`if not' must follow `if'");
-		if (if_last == if_false)
-			walk(n->u[0].p, TRUE);
-		if_last = if_nothing;
-		break;
+		WALK(true_cmd, parent);
 	}
 	case nWhile: {
 		Jbwrap break_jb;
