@@ -46,6 +46,7 @@ static void edit_catcher(int sig) {
 char *edit_alloc(void *cookie, size_t *count) {
 	struct cookie *c = cookie;
 /*
+	int len = 0;
 	const char *r;
 	HistEvent he;
 	struct cookie *c = cookie;
@@ -53,7 +54,8 @@ char *edit_alloc(void *cookie, size_t *count) {
 	oldint = sys_signal(SIGINT, edit_catcher);
 	oldquit = sys_signal(SIGQUIT, edit_catcher);
 
-	r = el_gets(c->el, count);
+	r = el_gets(c->el, &len);
+	*count = len;
 
 	sys_signal(SIGINT, oldint);
 	sys_signal(SIGQUIT, oldquit);
