@@ -70,19 +70,6 @@ bool rc_access(char *path, bool verbose, struct stat *stp) {
 	return FALSE;
 }
 
-/* replace non-printing characters with question marks in a freshly
- * allocated string */
-static char *protect(char *in) {
-	int l = strlen(in);
-	char *out = ealloc(l + 1);
-	int i;
-
-	for (i = 0; i < l; ++i)
-		out[i] = isprint(in[i]) ? in[i] : '?';
-	out[i] = '\0';
-	return out;
-}
-
 /* return a full pathname by searching $path, and by checking the status of the file */
 
 extern char *which(char *name, bool verbose) {
@@ -133,10 +120,7 @@ extern char *which(char *name, bool verbose) {
 		if (rc_access(test, FALSE, &st))
 			return test;
 	}
-	if (verbose) {
-		char *n = protect(name);
-		fprint(2, RC "cannot find `%s'\n", n);
-		efree(n);
-	}
+	if (verbose)
+		fprint(2, RC "cannot find `%s'\n", name);
 	return NULL;
 }
