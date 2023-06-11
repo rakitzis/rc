@@ -2,8 +2,6 @@
 
 #include "rc.h"
 
-#include "develop.h"
-
 /* make a new node, pass it back to yyparse. Used to generate the parsetree. */
 
 extern Node *mk(enum nodetype t,...) {
@@ -63,11 +61,6 @@ extern Node *mk(enum nodetype t,...) {
 		break;
 	}
 	n->type = t;
-
-	if (0 && RC_DEVELOP) {
-		tree_dump(n);
-		fprint(2, "---\n");
-	}
 	va_end(ap);
 	return n;
 }

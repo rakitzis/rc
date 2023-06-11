@@ -3,7 +3,6 @@
 #include "rc.h"
 
 static int rangematch(const char *, char);
-
 /* match() matches a single pattern against a single string. */
 
 extern bool match(const char *p, const char *m, const char *s) {

@@ -1,6 +1,0 @@
-#! /usr/bin/sed 1d
-ChangeLog
-NEWS
-README
-configure.ac
-rc.1

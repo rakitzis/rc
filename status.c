@@ -83,21 +83,25 @@ extern void setstatus(pid_t pid, int i) {
 	statprint(pid, i);
 }
 
-/* print a message if termination was with a signal, and if the child dumped core. exit on error if -e is set */
+/*
+   Print a message if called from the wait builitin in an interactive
+   shell or termination was with a signal and it is not sigint and
+   sigpipe or the child dumped core. Exit on error if -e is set.
+*/
 
 static void statprint(pid_t pid, int i) {
 	if (WIFSIGNALED(i)) {
-		const int t = WTERMSIG(i);
+		const int t = WIFSIGNALED(i) ? WTERMSIG(i) : 0;
+		const char *core = ((t > 0) && myWIFDUMPED(i) ? "--core dumped" : "");
 		const char *msg = ((t > 0) && (t < NUMOFSIGNALS) ? signals[WTERMSIG(i)].msg : "");
 		if (pid != -1)
 			fprint(2, "%ld: ", (long)pid);
-		if (myWIFDUMPED(i)) {
-			if (*msg == '\0')
-				fprint(2, "core dumped\n");
-			else
-				fprint(2, "%s--core dumped\n", msg);
-		} else if (*msg != '\0')
-			fprint(2, "%s\n", msg);
+		if (t == 0)
+			fprint(2, "done (%d)\n", WEXITSTATUS(i));
+		else if (msg)
+			fprint(2, "%s%s\n", msg, core);
+		else
+			fprint(2, "unknown signal %d%s\n", t, core);
 	}
 	if (i != 0 && dashee && !cond)
 		rc_exit(getstatus());

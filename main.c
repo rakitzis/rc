@@ -5,8 +5,11 @@
 
 #include <errno.h>
 #include <sys/time.h>
+#include <locale.h>
 
 #include "input.h"
+
+extern char **environ;
 
 bool dashdee, dashee, dasheye, dashell, dashen;
 bool dashpee, dashoh, dashess, dashvee, dashex;
@@ -139,6 +142,8 @@ quitopts:
 			close(fd);
 		}
 	}
+	environ = makeenv();
+	setlocale(LC_CTYPE, "");
 
 	{
 		char *rcrc;

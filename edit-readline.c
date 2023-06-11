@@ -19,82 +19,38 @@ struct cookie {
 	char *buffer;
 };
 
-/* Teach readline how to quote a filename in rc. "text" is the filename to be
- * quoted. "type" is either SINGLE_MATCH, if there is only one completion
- * match, or MULT_MATCH. "qp" is a pointer to any opening quote character the
- * user typed.
- */
-static char *quote(char *text, int type, char *qp) {
-	char *p, *r;
-
-	/* worst case: string is entirely quote characters each of which will
-	 * be doubled, plus the initial and final quotes and \0 */
-	p = r = ealloc(strlen(text) * 2 + 3);
-	/* supply opening quote unless already there */
-	if (*qp != '\'')
-		*p++ = '\'';
-	while (*text) {
-		if (*text == '\'')
-			*p++ = '\''; /* double existing quote */
-		*p++ = *text++;
-	}
-	if (type == SINGLE_MATCH)
-		*p++ = '\'';
-	*p = '\0';
-	return r;
-}
-
-/* "unquote" is called with "text", the text of the word to be dequoted, and
- * "quote_char", which is the quoting character that delimits the filename.
- */
-char *unquote(char *text, int quote_char) {
-	char *p, *r;
-
-	p = r = ealloc(strlen(text) + 1);
-	while (*text) {
-		*p++ = *text++;
-		if (quote_char && *(text - 1) == '\'' && *text == '\'')
-			++text;
-	}
-	*p = '\0';
-	return r;
-}
-
 /* Join two strings with a "/" between them, into a malloc string */
-static char *dir_join(char *a, char *b) {
-	char *p;
-	if (!a) return strdup(b);
-	if (!b) return strdup(a);
-	p = ealloc(strlen(a) + strlen(b) + 2);
-	strcpy(p, a);
-	if (p[strlen(p) - 1] != '/')
-		strcat(p, "/");
-	strcat(p, b);
-	return p;
+static char *dir_join(const char *a, const char *b) {
+	size_t l;
+	if (!a) a = "";
+	if (!b) b = "";
+	l = strlen(a);
+	return mprint("%s%s%s", a, l && a[l-1] != '/' ? "/" : "", b);
 }
 
-char *maybe_quote(char *p) {
-	const char *q;
-	for (q = quote_chars; *q; ++q) {
-		if (strchr(p, *q)) {
-			char *r = quote(p, SINGLE_MATCH, "");
-			efree(p);
-			return r;
-		}
+char *quote(char *p, int open) {
+	if (strpbrk(p, quote_chars)) {
+		char *r = mprint("%#S", p);
+		if (open)
+			r[strlen(r)-1] = '\0';
+		efree(p);
+		return r;
 	}
 	return p;
 }
 
-/* Suppose there is a subdirectory in one of the directories on $path,
- * "/bin/sub/", and the user has typed "suTAB". We want to offer "sub/" as a
- * completion, but we need to offer two things so it is not taken as the sole
- * completion. We use "bodge" to hold "sub/" while we return "sub/..." the
- * first time. Next time, we will notice that "bodge" is set, and return that
- * instead. (It would be better to persuade readline just to append the "/" as
- * it does for filename completion, but it's not clear to me if this is
- * possible.)
- */
-static char *bodge;
+static char *unquote(const char *text) {
+	int quoted = 0;
+	char *p, *r;
+	p = r = ealloc(strlen(text) + 1);
+	while ((*p = *text++)) {
+		if (*p == '\'' && (!quoted || *text != '\''))
+			quoted = !quoted;
+		else
+			p++;
+	}
+	return r;
+}
 
 /* Decide if this directory entry is a completion candidate, either executable
  * or a directory. "dname" is the absolute path of the directory, "name" is the
@@ -121,7 +77,6 @@ static char *entry(char *dname, char *name, char *subdirs,
 	if(stat(full, &st) != 0) {
 		goto null;
 	}
-
 	efree(full);
 	full = NULL;
 
@@ -149,34 +104,29 @@ void split_last_slash(const char *text, char **pre, char **post) {
 	if (last_slash) {
 		size_t l = last_slash + 1 - text;
 		*pre = ealloc(l + 1);
-		strncpy(*pre, text, l);
+		memcpy(*pre, text, l);
 		(*pre)[l] = '\0';
-		*post = strdup(last_slash + 1);
+		*post = last_slash + 1;
 	} else {
 		*pre = NULL;
-		*post = strdup(text);
+		*post = (char *)text;
 	}
 }
 
 static char *compl_extcmd(const char *text, int state) {
 	static char *dname, *prefix, *subdirs;
 	static DIR *d;
-	static List *path;
+	static List nil, *path;
 	static size_t len;
 
 	if (!state) {
-		char *utext = unquote((char *)text, *text);
-		split_last_slash(utext, &subdirs, &prefix);
-		efree(utext);
+		split_last_slash(text, &subdirs, &prefix);
 		d = NULL;
-		path = varlookup("path");
+		if (subdirs && isabsolute(subdirs))
+			path = &nil;
+		else
+			path = varlookup("path");
 		len = strlen(prefix);
-		bodge = NULL;
-	}
-	if (bodge) {
-		char *r = bodge;
-		bodge = NULL;
-		return r;
 	}
 	while (d || path) {
 		if (!d) {
@@ -198,7 +148,6 @@ static char *compl_extcmd(const char *text, int state) {
 		}
 	}
 	efree(subdirs);
-	efree(prefix);
 	return NULL;
 }
 
@@ -229,41 +178,85 @@ static char *compl_command(const char *text, int state) {
 	return name;
 }
 
-static rl_compentry_func_t *compl_func(const char *text, int start, int end) {
-	int quote = FALSE;
-	char last = ';', *s, *t;
+static char *compl_filename(const char *text, int state) {
+	char *name = rl_filename_completion_function(text, state);
+	struct stat st;
+	if (name != NULL && stat(name, &st) == 0 && S_ISDIR(st.st_mode))
+		rl_completion_append_character = '/';
+	return name;
+}
 
-	for (s = &rl_line_buffer[0], t = &rl_line_buffer[start]; s < t; s++) {
-		if (!quote && *s != ' ' && *s != '\t')
-			last = *s;
-		if (*s == '\'')
-			quote = !quote;
-	}
-	switch (last) {
+static rl_compentry_func_t *compl_func(char prefix) {
+	switch (prefix) {
 		case '`': case '@': case '|': case '&':
 		case '(': case ')': case '{': case ';':
 			return compl_command;
 		case '$':
 			return compl_var;
 	}
+	return compl_filename;
+}
+
+static char compl_prefix(int index) {
+	while (index-- > 0) {
+		char c = rl_line_buffer[index];
+		if (c != ' ' && c != '\t')
+			return c;
+	}
+	return ';';
+}
+
+/* Find the start of the word to complete. This function is the only way to
+ * make readline's code fully support rc's quoting rules. It is called in
+ * *_rl_find_completion_word* as the *rl_completion_word_break_hook* and
+ * exploits the fact that readline stores the start of the word in *rl_point*.
+ * We put the correct postion there first and prevent readline from overwriting
+ * it by keeping *rl_completer_quote_characters* empty!
+ */
+static char *compl_start() {
+	int i, quoted = 0, start = 0;
+	for (i = 0; i < rl_point; i++) {
+		char c = rl_line_buffer[i];
+		if (c == '\'')
+			quoted = !quoted;
+		if (!quoted && strchr(rl_basic_word_break_characters, c))
+			start = i;
+	}
+	rl_point = start;
 	return NULL;
+}
+
+static int matchcmp(const void *a, const void *b) {
+	return strcoll(*(const char **)a, *(const char **)b);
 }
 
 static rl_compentry_func_t *compentry_func;
 
 static char **rc_completion(const char *text, int start, int end) {
+	size_t i, n;
+	char *t = unquote(text);
+	char **matches = NULL;
 	rl_compentry_func_t *func;
 
 	if (compentry_func != NULL) {
 		func = compentry_func;
 		compentry_func = NULL;
-		rl_attempted_completion_over = 1;
 	} else
-		func = compl_func(text, start, end);
-	if (func != NULL)
-		return rl_completion_matches(text, func);
-	else
-		return NULL;
+		func = compl_func(compl_prefix(start));
+	matches = rl_completion_matches(t, func);
+	if (matches) {
+		for (n = 1; matches[n]; n++);
+		qsort(&matches[1], n - 1, sizeof(matches[0]), matchcmp);
+		if (rl_completion_type != '?')
+			matches[0] = quote(matches[0], n > 1);
+		if (rl_completion_type == '*')
+			for (i = 1; i < n; i++)
+				matches[i] = quote(matches[i], 0);
+	}
+	efree(t);
+	rl_attempted_completion_over = 1;
+	rl_sort_completion_matches = 0;
+	return matches;
 }
 
 static int expl_complete(rl_compentry_func_t *func, int count, int key) {
@@ -278,7 +271,7 @@ static int rc_complete_command(int count, int key) {
 }
 
 static int rc_complete_filename(int count, int key) {
-	return expl_complete(rl_filename_completion_function, count, key);
+	return expl_complete(compl_filename, count, key);
 }
 
 static int rc_complete_variable(int count, int key) {
@@ -289,17 +282,14 @@ void *edit_begin(int fd) {
 	List *hist;
 	struct cookie *c;
 
-	rl_initialize();
-
 	rl_attempted_completion_function = rc_completion;
 	rl_basic_quote_characters = "";
 	rl_basic_word_break_characters = " \t\n`@$><=;|&{(";
 	rl_catch_signals = 0;
-	rl_completer_quote_characters = "'";
-	rl_filename_dequoting_function = unquote;
-	rl_filename_quote_characters = quote_chars;
-	rl_filename_quoting_function = quote;
+	rl_completion_word_break_hook = compl_start;
 	rl_readline_name = "rc";
+
+	rl_initialize();
 
 	rl_add_funmap_entry("rc-complete-command", rc_complete_command);
 	rl_add_funmap_entry("rc-complete-filename", rc_complete_filename);
@@ -344,8 +334,19 @@ char *edit_alloc(void *cookie, size_t *count) {
 
 	if (c->buffer) {
 		*count = strlen(c->buffer);
-		if (*count)
+		if (*count) {
+			history_set_pos(history_length);
+			while (history_search_prefix(c->buffer, -1) == 0) {
+				HIST_ENTRY *e = current_history();
+				if (e != NULL && e->line[*count] == '\0') {
+					if ((e = remove_history(where_history())))
+						free_history_entry(e);
+				}
+				if (!previous_history())
+					break;
+			}
 			add_history(c->buffer);
+		}
 		c->buffer[*count] = '\n';
 		++*count; /* include the \n */
 	}
