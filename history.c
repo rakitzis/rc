@@ -20,8 +20,6 @@
 
 #include <stdio.h>
 
-static const char id[] = "$Release: @(#)" PACKAGE " " VERSION " " DESCRIPTION " $";
-
 #define CHUNKSIZE 65536
 
 static struct {
