@@ -1,30 +1,25 @@
 # line editing library: null, edit, editline, readline, vrl
 EDIT = null
 
-
 srcdir = .
 VPATH = $(srcdir)
 
-VERSION := 1.7.4
+VERSION = 1.7.4
 
-PREFIX ?= /usr/local
-MANPREFIX ?= $(PREFIX)/share/man
+PREFIX = /usr/local
+MANPREFIX = $(PREFIX)/share/man
 
-CFLAGS += -Wall
-CPPFLAGS += -I. -I"$(srcdir)" -I$(PREFIX)/include
-LDFLAGS += -L$(PREFIX)/lib
+_CFLAGS = -Wall $(CFLAGS)
+_CPPFLAGS = -I. -I$(srcdir) -I$(PREFIX)/include $(CPPFLAGS)
+_LDFLAGS = -L$(PREFIX)/lib $(LDFLAGS)
 
-BINS := history mksignal mkstatval tripping
-HEADERS := edit.h getgroups.h input.h jbwrap.h proto.h rc.h rlimit.h stat.h \
+BINS = history mksignal mkstatval tripping
+HEADERS = edit.h getgroups.h input.h jbwrap.h proto.h rc.h rlimit.h stat.h \
 	wait.h
-OBJS := builtins.o edit-$(EDIT).o except.o exec.o fn.o footobar.o getopt.o \
+OBJS = builtins.o edit-$(EDIT).o except.o exec.o fn.o footobar.o getopt.o \
 	glob.o glom.o hash.o heredoc.o input.o lex.o list.o main.o match.o \
 	nalloc.o open.o parse.o print.o redir.o sigmsgs.o signal.o status.o \
 	system.o tree.o utils.o var.o wait.o walk.o which.o
-
-ifneq ($(EDIT),null)
-	LDLIBS += -l$(EDIT)
-endif
 
 all: rc
 
@@ -35,9 +30,10 @@ $(V).SILENT:
 
 rc: $(OBJS)
 	@echo "LINK $@"
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(OBJS) $(LDLIBS)
+	[ "$(EDIT)" = "null" ] && ledit="" || ledit="-l$(EDIT)"; \
+	$(CC) $(_LDFLAGS) $(_CFLAGS) -o $@ $(OBJS) $$ledit $(LDLIBS)
 
-$(OBJS): GNUmakefile $(HEADERS) config.h
+$(OBJS): Makefile $(HEADERS) config.h
 builtins.o: addon.c
 exec.o: execve.c
 input.o: develop.c
@@ -45,7 +41,7 @@ system.o: system-bsd.c
 
 .c.o:
 	@echo "CC $@"
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+	$(CC) $(_CPPFLAGS) $(_CFLAGS) -c -o $@ $<
 
 config.h:
 	@echo "GEN $@"
@@ -71,11 +67,11 @@ statval.h: mkstatval
 	@echo "GEN $@"
 	./mkstatval >$@
 
-$(BINS): GNUmakefile rc.h proto.h config.h
+$(BINS): Makefile rc.h proto.h config.h
 
 main.o: version.h
 
-version.h: GNUmakefile .git/index
+version.h: Makefile .git/index
 	@echo "GEN $@"
 	v="$$(cd $(srcdir); git describe 2>/dev/null)"; \
 	echo "#define VERSION \"$${v:-$(VERSION)}\"" >$@
@@ -84,7 +80,7 @@ version.h: GNUmakefile .git/index
 
 .c:
 	@echo "CC $@"
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $<
+	$(CC) $(_CPPFLAGS) $(_CFLAGS) -o $@ $<
 
 check: trip
 
