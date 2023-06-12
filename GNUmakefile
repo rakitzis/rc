@@ -10,9 +10,6 @@ RC_DEVELOP = 0
 # if your kernel supports `#!' magic numbers
 HASH_BANG = 1
 
-# if system calls automatically restart after interruption by signal
-HAVE_RESTARTABLE_SYSCALLS = 0
-
 
 srcdir = .
 VPATH = $(srcdir)
@@ -24,8 +21,7 @@ MANPREFIX ?= $(PREFIX)/share/man
 
 CFLAGS += -Wall
 CPPFLAGS += -I. -I"$(srcdir)" -I$(PREFIX)/include -DRC_ADDON=$(RC_ADDON) \
-	-DRC_DEVELOP=$(RC_DEVELOP)  -DHASH_BANG=$(HASH_BANG) \
-	-DHAVE_RESTARTABLE_SYSCALLS=$(HAVE_RESTARTABLE_SYSCALLS)
+	-DRC_DEVELOP=$(RC_DEVELOP)  -DHASH_BANG=$(HASH_BANG)
 LDFLAGS += -L$(PREFIX)/lib
 
 BINS := history mksignal mkstatval tripping
@@ -34,7 +30,7 @@ HEADERS := addon.h develop.h edit.h getgroups.h input.h jbwrap.h proto.h rc.h \
 OBJS := builtins.o edit-$(EDIT).o except.o exec.o fn.o footobar.o getopt.o \
 	glob.o glom.o hash.o heredoc.o input.o lex.o list.o main.o match.o \
 	nalloc.o open.o parse.o print.o redir.o sigmsgs.o signal.o status.o \
-	tree.o utils.o var.o wait.o walk.o which.o
+	system.o tree.o utils.o var.o wait.o walk.o which.o
 
 ifneq ($(EDIT),null)
 	LDLIBS += -l$(EDIT)
@@ -52,12 +48,6 @@ ifeq ($(HASH_BANG),0)
 	OBJS += execve.o
 endif
 
-ifeq ($(HAVE_RESTARTABLE_SYSCALLS),0)
-	OBJS += system.o
-else
-	OBJS += system-bsd.o
-endif
-
 all: rc
 
 .PHONY: all check clean distclean install trip
@@ -70,6 +60,7 @@ rc: $(OBJS)
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(OBJS) $(LDLIBS)
 
 $(OBJS): GNUmakefile $(HDRS) config.h
+system.o: system-bsd.c
 
 .c.o:
 	@echo "CC $@"

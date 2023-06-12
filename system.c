@@ -1,5 +1,11 @@
 #include "rc.h"
 
+#if HAVE_RESTARTABLE_SYSCALLS
+
+#include "system-bsd.c"
+
+#else
+
 extern void writeall(int fd, char *buf, size_t remain) {
 	int i;
 
@@ -8,3 +14,5 @@ extern void writeall(int fd, char *buf, size_t remain) {
 			break; /* abort silently on errors in write() */
 	sigchk();
 }
+
+#endif
