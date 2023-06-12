@@ -5,10 +5,6 @@
    spots before av[][] so that execve does not have to call malloc.
 */
 
-#include "rc.h"
-
-#include <errno.h>
-
 #define giveupif(x) { if (x) goto fail; }
 
 extern int rc_execve(char *path, char **av, char **ev) {

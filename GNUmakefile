@@ -1,9 +1,6 @@
 # line editing library: null, edit, editline, readline, vrl
 EDIT = null
 
-# if your kernel supports `#!' magic numbers
-HASH_BANG = 1
-
 
 srcdir = .
 VPATH = $(srcdir)
@@ -14,7 +11,7 @@ PREFIX ?= /usr/local
 MANPREFIX ?= $(PREFIX)/share/man
 
 CFLAGS += -Wall
-CPPFLAGS += -I. -I"$(srcdir)" -I$(PREFIX)/include -DHASH_BANG=$(HASH_BANG)
+CPPFLAGS += -I. -I"$(srcdir)" -I$(PREFIX)/include
 LDFLAGS += -L$(PREFIX)/lib
 
 BINS := history mksignal mkstatval tripping
@@ -27,10 +24,6 @@ OBJS := builtins.o edit-$(EDIT).o except.o exec.o fn.o footobar.o getopt.o \
 
 ifneq ($(EDIT),null)
 	LDLIBS += -l$(EDIT)
-endif
-
-ifeq ($(HASH_BANG),0)
-	OBJS += execve.o
 endif
 
 all: rc
@@ -46,6 +39,7 @@ rc: $(OBJS)
 
 $(OBJS): GNUmakefile $(HDRS) config.h
 builtins.o: addon.c
+exec.o: execve.c
 input.o: develop.c
 system.o: system-bsd.c
 

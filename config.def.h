@@ -37,6 +37,9 @@
 /* Define if syscalls automatically restart after interruption by signal */
 #define HAVE_RESTARTABLE_SYSCALLS 0
 
+/* Define if your system can execute script files starting with '#!' */
+#define HASH_BANG 1
+
 /* Define if you want rc to encode strange characters in the environment. */
 #define PROTECT_ENV 1
 

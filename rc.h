@@ -202,7 +202,7 @@ extern void exec(List *, bool);
 #define rc_execve execve
 #else
 /* execve.c */
-extern int my_execve(char *, char **, char **);
+extern int rc_execve(char *, char **, char **);
 #endif
 
 /* footobar.c */
