@@ -356,9 +356,8 @@ extern int getstatus(void);
 extern void set(bool);
 extern void setstatus(pid_t, int);
 extern void setpipestatuslength(int);
-extern void setpipestatus(int, int);
+extern void setpipestatus(int, pid_t, int);
 extern List *sgetstatus(void);
-extern void setwaitstatus(char **, char *);
 extern void ssetstatus(char **);
 extern char *strstatus(int s);
 
@@ -398,6 +397,7 @@ extern pid_t rc_fork(void);
 extern pid_t rc_wait4(pid_t, int *, bool);
 extern List *sgetapids(void);
 extern void waitforall(void);
+extern void waitfor(char **);
 extern bool forked;
 
 /* walk.c */

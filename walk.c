@@ -377,7 +377,7 @@ static void dopipe(Node *n) {
 	setpipestatuslength(i);
 	for (j = 0; j < i; j++) {
 		rc_wait4(pids[j], &sp, TRUE);
-		setpipestatus(j, sp);
+		setpipestatus(j, -1, sp);
 		intr |= WIFSIGNALED(sp);
 	}
 	if (interactive && intr)

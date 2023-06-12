@@ -338,7 +338,8 @@ static void b_wait(char **av) {
 	if (*++av == NULL)
 		waitforall();
 	else
-		setwaitstatus(av, "wait");
+		waitfor(av);
+        sigchk();
 }
 
 /*

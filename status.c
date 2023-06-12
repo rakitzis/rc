@@ -48,45 +48,6 @@ extern void set(bool code) {
 	setstatus(-1, code ? STATUS0 : STATUS1);
 }
 
-/* wait on multiple processes and store their exit status */
-
-extern void setwaitstatus(char **av, char *cmd) {
-	int i, j, count;
-	pid_t pid;
-
-	for (count = 0; av[count] != NULL; count++)
-		;
-	
-	/* ensure we have enough space to store all the results */
-	if (count >= sizeof(statuses)) {
-		fprint(2, RC "too many arguments to %s\n", cmd);
-		set(FALSE);
-		return;
-	}
-
-	/* we need to fill statuses backwards */
-	for (i = 0; i < count; i++) {
-		j = count - i - 1;
-		if ((pid = a2u(av[i])) < 0) {
-			fprint(2, RC "`%s' is a bad number\n", av[i]);
-			statuses[j] = 0x100;
-			continue;
-		}
-		if (rc_wait4(pid, statuses+j, FALSE) > 0) {
-			statprint(pid, statuses[j]);
-		} else {
-			statuses[j] = 0x100;
-			if (errno == EINTR) {
-				set(FALSE);
-				return;
-			}
-		}
-		sigchk();
-	}
-
-	pipelength = count;
-}
-
 /* set a simple status, as opposed to a pipeline */
 
 extern void setstatus(pid_t pid, int stat) {
@@ -103,9 +64,9 @@ extern void setpipestatuslength(int n) {
 
 /* set a status of a pipeline */
 
-extern void setpipestatus(int i, int stat) {
+extern void setpipestatus(int i, pid_t pid, int stat) {
 	statuses[i] = stat;
-	statprint(-1, stat);
+	statprint(pid, stat);
 }
 
 /* 

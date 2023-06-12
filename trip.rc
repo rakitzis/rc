@@ -326,7 +326,7 @@ sleep 2&
 wait $apid || fail 'wait 1 arg'
 
 submatch 'true&false&true&true&false& wait $apids; echo $status' '0 1 0 0 1' 'multi wait'
-submatch 'wait a b; echo $status' '1 1' 'multi wait wrong numbers'
+submatch 'true&false& wait $apids 0' 'rc: `0'' is not a child' 'multi wait invalid pid'
 
 if (~ `` '' {wait} ?)
 	fail waiting for nothing
