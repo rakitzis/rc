@@ -1,3 +1,6 @@
+/* Define if you want to include extra builtins in addon.c */
+#define RC_ADDON 0
+
 /* Define if you want rc to hand off exec errors to (e.g.) /bin/sh. */
 #define DEFAULTINTERP "/bin/sh"
 

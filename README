@@ -41,17 +41,15 @@ The following non-standard make macros control the building of rc:
 	EDIT
 		Use a line-editing library, supported are: edit, editline,
 		readline, vrl
-	RC_ADDON
-		Set to '1' to include extra builtins from addon.c
 	RC_DEVELOP
 		Set to '1' to include parse-tree dumper
 	HASH_BANG
 		Set to '0' if your system does not support '#!' executables
 
-Example: To make rc use the readline library and include the extra builtins
-from addon.c, you have to build it with the following command:
+Example: To make rc use the readline library, you have to build it with the
+following command:
 
-	$ make EDIT=readline RC_ADDON=1
+	$ make EDIT=readline
 
 Additional build-time specific settings of rc can be found in the file
 config.h. Please check and change them, so that they fit your needs. If the

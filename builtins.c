@@ -14,11 +14,14 @@
 #include <setjmp.h>
 #include <errno.h>
 
-#include "addon.h"
 #include "input.h"
 #include "jbwrap.h"
 #include "rlimit.h"
 #include "sigmsgs.h"
+
+#if RC_ADDON
+#include "addon.c"
+#endif
 
 static void b_break(char **), b_cd(char **), b_continue(char **), b_eval(char **), b_flag(char **),
 	b_exit(char **), b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
