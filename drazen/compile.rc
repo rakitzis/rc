@@ -51,7 +51,7 @@ EOF
 objDir = ./obj
 FORCE_CLANG = false
 FORCE_GCC = false
-# DESCRIPTION = $(git describe || echo '(git description unavailable)')
+DESCRIPTION = ${git describe || echo '(git description unavailable)'}
 
 Clobber = true
 Yydebug = true
@@ -277,14 +277,14 @@ RegularLinkOpts = (
 )
 
 ########################################################################################
-GIT_COMMIT=${git describe}
+GIT_COMMIT=${git describe --always}
 ########################################################################################
 # All compile and link options together
 CompileOpts = (
 	$CommonOpts
 	$RegularCompileOpts
 	$SecurityCompileOpts
-	# -DDESCRIPTION^'="'^$GIT_COMMIT^'"'
+	-DDESCRIPTION^'="'^$GIT_COMMIT^'"'
 )
 
 LinkOpts = (
