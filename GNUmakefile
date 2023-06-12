@@ -37,7 +37,7 @@ rc: $(OBJS)
 	@echo "LINK $@"
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(OBJS) $(LDLIBS)
 
-$(OBJS): GNUmakefile $(HDRS) config.h
+$(OBJS): GNUmakefile $(HEADERS) config.h
 builtins.o: addon.c
 exec.o: execve.c
 input.o: develop.c
