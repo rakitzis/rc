@@ -1,3 +1,5 @@
+#ifndef RC_H
+#define RC_H
 /*#define const   const*/
 #undef NDEBUG
 #include <stddef.h>
@@ -224,7 +226,7 @@ extern void exec(const List *, bool);
 #define rc_execve execve
 #else
 /* execve.c */
-extern int my_execve(char *, char **, char **);
+extern int rc_execve(char *, char **, char **);
 #endif
 
 /* footobar.c */
@@ -440,4 +442,5 @@ extern bool cond;
 /* which.c */
 extern bool rc_access(const char *, bool, struct stat *);
 extern char *which(char *, bool);
+#endif /* RC_H */
 

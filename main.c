@@ -8,6 +8,7 @@
 #include <locale.h>
 
 #include "input.h"
+//#include "version.h"
 
 extern char **environ;
 
@@ -112,10 +113,7 @@ quitopts:
 	}
 	assigndefault("prompt", "; ", "", (void *)0);
 	assigndefault("tab", "\t", (void *)0);
-	assigndefault("version",
-		VERSION,
-		"$Release: @(#)" PACKAGE " " VERSION " " DESCRIPTION " $",
-		(void *)0 );
+	assigndefault("version", VERSION, (void *)0);
 	initenv(envp);
 	initinput();
 	null[0] = NULL;

@@ -27,37 +27,24 @@ rc is built and installed using the following commands:
 	$ make
 	# make install
 
-These steps require GNU make to be installed. Please also note, that the second
-command requires root privileges. By default, rc is installed using the prefix
-"/usr/local", so the full path of the executable will be "/usr/local/bin/rc".
+Please note, that the second command requires root privileges. By
+default, rc is installed using the prefix "/usr/local", so the full path
+of the executable will be "/usr/local/bin/rc".
 
-You can install rc into a directory of your choice by changing the second
-command to:
+You can install rc into a directory of your choice by changing the
+second command to:
 
 	# make PREFIX="/your/dir" install
 
-The following non-standard make macros control the building of rc:
+The EDIT make macro controls which line-editing library to use: null,
+edit, editline, readline, vrl. For example, to make rc use the readline
+library, you have to build it with the following command:
 
-	EDIT
-		Use a line-editing library, supported are: edit, editline,
-		readline, vrl
-	RC_ADDON
-		Set to '1' to include extra builtins from addon.c
-	RC_DEVELOP
-		Set to '1' to include parse-tree dumper
-	HASH_BANG
-		Set to '0' if your system does not support '#!' executables
-	HAVE_RESTARTABLE_SYSCALLS
-		Set to '1' if your system automatically restarts syscalls after
-		interruption by a signal
+	$ make EDIT=readline
 
-Example: To make rc use the readline library and include the extra builtins from addon.c, you have to build it with the following command:
-
-	$ make EDIT=readline RC_ADDON=1
-
-Additional build-time specific settings of rc can be found in the file
-config.h. Please check and change them, so that they fit your needs. If the
-file config.h does not already exist, then you have to create it with the
-following command:
+All other build-time specific settings of rc can be found in the file
+config.h. Please check and change them, so that they fit your needs. If
+the file config.h does not already exist, then you have to create it
+with the following command:
 
 	$ make config.h

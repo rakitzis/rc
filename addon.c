@@ -1,7 +1,28 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include <ctype.h>
 #include "sigmsgs.h"
+
 #include "rc.h"
+#include "addon.h"
+/*
+   This file is NOT BUILT by default.  It provides an example of how
+   to add new builtins to rc.
+
+   To define a new builtin, it must appear in the macro ADDONS, which
+   is a comma-separated list of pairs of function pointers (the
+   implementation of the new builtin) and string literals (the name of
+   the new builtin).
+
+   Any new builtin functions must have prototypes of the same form:
+
+	void b_NAME(char **av);
+
+   The first argument, av[0], is the name of the builtin.  The last
+   argument is followed by a NULL pointer.
+
+   Builtins report their exit status using set(TRUE) or set(FALSE).
+
+*/
 
 
 #if RC_ADDON
@@ -84,6 +105,7 @@ static void set_var(char *varname, long R)
 	List *val = nnew(List); var->w = nprint("%ld", R);
 	varassign(varname, val, FALSE);
 }
+<<<<<<< HEAD
 #endif
 
 /******************************************************/
@@ -371,4 +393,3 @@ int CalcError(const char *s, const CalcLexData *lexData) {
 /******************************************************/
 
 #endif
-

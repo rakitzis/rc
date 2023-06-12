@@ -4,10 +4,13 @@
 
 #include <errno.h>
 
-#include "develop.h"
 #include "edit.h"
 #include "input.h"
 #include "jbwrap.h"
+
+#if RC_DEVELOP
+#include "develop.c"
+#endif
 
 /* How many characters can we unget? */
 enum { UNGETSIZE = 2 };
@@ -304,14 +307,16 @@ extern Node *doit(bool clobberexecitIn) {
 				edit_prompt(istack->cookie, prompt);
 		}
 		inityy();
-		if (yyparse(/*yylex*/) == 1 && execit) {
+		if (yyparse(/*yylex*/) == 1 && (execit || dashen)) {
 			setN(2); /* syntax error */
 			rc_raise(eError);
 		}
 		eof = (lastchar == EOF); /* "lastchar" can be clobbered during a walk() */
 		if (parsetree != NULL) {
+#if RC_DEVELOP
 			if (RC_DEVELOP)
 				tree_dump(parsetree);
+#endif
 			if (execit)
 				walk(parsetree, TRUE);
 			else if (dashex && dashen)

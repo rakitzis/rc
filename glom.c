@@ -9,6 +9,8 @@
 #include <termios.h>
 #include <unistd.h>
 
+#include "wait.h"
+
 static List *backq(const Node *, const Node *);
 static List *bqinput(List *, int);
 static List *count(const List *);

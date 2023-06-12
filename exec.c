@@ -9,6 +9,11 @@
 
 #include "wait.h"
 
+#if HASH_BANG
+#else
+#include "execve.c"
+#endif
+
 /*
    Takes an argument list and does the appropriate thing (calls a
    builtin, calls a function, etc.)
@@ -99,7 +104,7 @@ extern void exec(const List *s, bool parent) {
 				return;
 			rc_exit(getstatus());
 		}
-		rc_execve(path, (char * const *) av, (char * const *) ev);
+		rc_execve(path, av, ev);
 
 #ifdef DEFAULTINTERP
 		if (errno == ENOEXEC) {

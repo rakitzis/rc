@@ -19,11 +19,12 @@ missing
 parse.[ch]
 sigmsgs.[ch]
 statval.h
-rc
+version.h
 history
 mksignal
 mkstatval
 calc.h
 calc.c
 stamp-h1
+rc
 tripping

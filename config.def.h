@@ -1,3 +1,9 @@
+/* Define if you want to include extra builtins in addon.c */
+#define RC_ADDON 0
+
+/* Define if you want to include parse tree dumper */
+#define RC_DEVELOP 0
+
 /* Define if you want rc to hand off exec errors to (e.g.) /bin/sh. */
 #define DEFAULTINTERP "/bin/sh"
 
@@ -27,6 +33,12 @@
 
 /* Define if you have strerror(). */
 #define HAVE_STRERROR 1
+
+/* Define if syscalls automatically restart after interruption by signal */
+#define HAVE_RESTARTABLE_SYSCALLS 0
+
+/* Define if your system can execute script files starting with '#!' */
+#define HASH_BANG 1
 
 /* Define if you want rc to encode strange characters in the environment. */
 #define PROTECT_ENV 1
