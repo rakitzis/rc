@@ -1,9 +1,6 @@
 # line editing library: null, edit, editline, readline, vrl
 EDIT = null
 
-# include parse tree dumper
-RC_DEVELOP = 0
-
 # if your kernel supports `#!' magic numbers
 HASH_BANG = 1
 
@@ -17,13 +14,12 @@ PREFIX ?= /usr/local
 MANPREFIX ?= $(PREFIX)/share/man
 
 CFLAGS += -Wall
-CPPFLAGS += -I. -I"$(srcdir)" -I$(PREFIX)/include \
-	-DRC_DEVELOP=$(RC_DEVELOP)  -DHASH_BANG=$(HASH_BANG)
+CPPFLAGS += -I. -I"$(srcdir)" -I$(PREFIX)/include -DHASH_BANG=$(HASH_BANG)
 LDFLAGS += -L$(PREFIX)/lib
 
 BINS := history mksignal mkstatval tripping
-HEADERS := develop.h edit.h getgroups.h input.h jbwrap.h proto.h rc.h \
-	rlimit.h stat.h wait.h
+HEADERS := edit.h getgroups.h input.h jbwrap.h proto.h rc.h rlimit.h stat.h \
+	wait.h
 OBJS := builtins.o edit-$(EDIT).o except.o exec.o fn.o footobar.o getopt.o \
 	glob.o glom.o hash.o heredoc.o input.o lex.o list.o main.o match.o \
 	nalloc.o open.o parse.o print.o redir.o sigmsgs.o signal.o status.o \
@@ -31,10 +27,6 @@ OBJS := builtins.o edit-$(EDIT).o except.o exec.o fn.o footobar.o getopt.o \
 
 ifneq ($(EDIT),null)
 	LDLIBS += -l$(EDIT)
-endif
-
-ifneq ($(RC_DEVELOP),0)
-	OBJS += develop.o
 endif
 
 ifeq ($(HASH_BANG),0)
@@ -54,6 +46,7 @@ rc: $(OBJS)
 
 $(OBJS): GNUmakefile $(HDRS) config.h
 builtins.o: addon.c
+input.o: develop.c
 system.o: system-bsd.c
 
 .c.o:

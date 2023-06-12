@@ -4,10 +4,13 @@
 
 #include <errno.h>
 
-#include "develop.h"
 #include "edit.h"
 #include "input.h"
 #include "jbwrap.h"
+
+#if RC_DEVELOP
+#include "develop.c"
+#endif
 
 /* How many characters can we unget? */
 enum { UNGETSIZE = 2 };
@@ -307,8 +310,10 @@ extern Node *doit(bool clobberexecit) {
 			rc_raise(eError);
 		eof = (lastchar == EOF); /* "lastchar" can be clobbered during a walk() */
 		if (parsetree != NULL) {
+#if RC_DEVELOP
 			if (RC_DEVELOP)
 				tree_dump(parsetree);
+#endif
 			if (execit)
 				walk(parsetree, TRUE);
 			else if (dashex && dashen)

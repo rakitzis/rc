@@ -1,7 +1,3 @@
-#include "rc.h"
-
-#include "develop.h"
-
 void dump(Node *, int);
 
 /* dump a Node * as a tree */

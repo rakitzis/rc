@@ -41,8 +41,6 @@ The following non-standard make macros control the building of rc:
 	EDIT
 		Use a line-editing library, supported are: edit, editline,
 		readline, vrl
-	RC_DEVELOP
-		Set to '1' to include parse-tree dumper
 	HASH_BANG
 		Set to '0' if your system does not support '#!' executables
 
