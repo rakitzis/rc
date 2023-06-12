@@ -41,7 +41,7 @@ OBJS := builtins.o edit-$(EDIT).o except.o exec.o fn.o footobar.o getopt.o \
 	tree.o utils.o var.o wait.o walk.o which.o
 
 ifneq ($(EDIT),null)
-	LDFLAGS += -l$(EDIT)
+	LDLIBS += -l$(EDIT)
 endif
 
 ifneq ($(RC_ADDON),0)
