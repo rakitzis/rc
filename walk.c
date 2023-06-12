@@ -328,8 +328,7 @@ static bool dofork(bool parent) {
 }
 
 static void dopipe(Node *n) {
-	int i, j, sp, pid, fd_prev, fd_out, p[2];
-	int pids[MAX_PIPELINE], stats[MAX_PIPELINE];
+	int i, j, sp, pid, fd_prev, fd_out, pids[MAX_PIPELINE], p[2];
 	bool intr;
 	Node *r;
 	struct termios t;
@@ -375,14 +374,14 @@ static void dopipe(Node *n) {
 	/* collect statuses */
 
 	intr = FALSE;
+	setpipestatuslength(i);
 	for (j = 0; j < i; j++) {
 		rc_wait4(pids[j], &sp, TRUE);
-		stats[j] = sp;
+		setpipestatus(j, sp);
 		intr |= WIFSIGNALED(sp);
 	}
 	if (interactive && intr)
 		tcsetattr(0, TCSANOW, &t);
-	setpipestatus(stats, i);
 	sigchk();
 }
 

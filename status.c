@@ -46,22 +46,25 @@ extern void set(bool code) {
 	setstatus(-1, code ? STATUS0 : STATUS1);
 }
 
-/* take a pipeline and store the exit statuses. Check to see whether any of the children dumped core */
-
-extern void setpipestatus(int stats[], int num) {
-	int i;
-	for (i = 0; i < (pipelength = num); i++) {
-		statuses[i] = stats[i];
-		statprint(-1, stats[i]);
-	}
-}
-
 /* set a simple status, as opposed to a pipeline */
 
-extern void setstatus(pid_t pid, int i) {
+extern void setstatus(pid_t pid, int stat) {
 	pipelength = 1;
-	statuses[0] = i;
-	statprint(pid, i);
+	statuses[0] = stat;
+	statprint(pid, stat);
+}
+
+/* set number of statuses for pipeline */
+
+extern void setpipestatuslength(int n) {
+	pipelength = n;
+}
+
+/* set a status of a pipeline */
+
+extern void setpipestatus(int i, int stat) {
+	statuses[i] = stat;
+	statprint(-1, stat);
 }
 
 /* 
