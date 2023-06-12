@@ -215,7 +215,7 @@ LangOpts = (
 LangOpts = (
 	#-m32
 	'-std=gnu99'
-	-m64
+	#-m64
 )
 
 CommonOpts = (
@@ -254,8 +254,8 @@ RegularCompileOpts = (
 	-DHAVE_CONFIG_H
 	-I.
 	$Debug
-	-MD
-	-MP
+	#-MD
+	#-MP
 
 	-Wall
 	-pedantic
@@ -419,7 +419,8 @@ fn Compile LinkOneObj { file = $1 obj = () {
 	#--------------------------------------------------------------------
 	if (~ $0 Compile) {
 		if (! UpToDateMultiSrcs $obj $file.c rc.h) {
-			CompileWithOpts   -MT $obj -MF .deps/$file.Tpo -c -o $obj $file.c
+			#CompileWithOpts   -MT $obj -MF .deps/$file.Tpo -c -o $obj $file.c
+			CompileWithOpts                                -c -o $obj $file.c
 		}
 	} else {
 		if (! UpToDateMultiSrcs $exe $obj) {
