@@ -48,7 +48,8 @@ The following non-standard make macros control the building of rc:
 	HASH_BANG
 		Set to '0' if your system does not support '#!' executables
 
-Example: To make rc use the readline library and include the extra builtins from addon.c, you have to build it with the following command:
+Example: To make rc use the readline library and include the extra builtins
+from addon.c, you have to build it with the following command:
 
 	$ make EDIT=readline RC_ADDON=1
 
