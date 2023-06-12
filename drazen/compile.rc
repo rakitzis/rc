@@ -278,12 +278,20 @@ RegularLinkOpts = (
 
 ########################################################################################
 GIT_COMMIT=${git describe --always}
+HASH_BANG=1
+PACKAGE=rc
+VERSION=1.7.4
+RC_ADDON=1
 ########################################################################################
 # All compile and link options together
 CompileOpts = (
 	$CommonOpts
 	$RegularCompileOpts
 	$SecurityCompileOpts
+    -DRC_ADDON=$RC_ADDON
+    -DHASH_BANG=$HASH_BANG
+    -DPACKAGE='"'$PACKAGE'"'
+    -DVERSION='"'$VERSION'"'
 	-DDESCRIPTION^'="'^$GIT_COMMIT^'"'
 )
 
@@ -463,8 +471,8 @@ if ($AddOn) {
 }
 
 sources = (
-	$addon
 	$calc
+	$addon
 	builtins
 	develop
 	except
