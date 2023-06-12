@@ -17,18 +17,14 @@ HAVE_RESTARTABLE_SYSCALLS = 0
 srcdir = .
 VPATH = $(srcdir)
 
-PACKAGE := rc
 VERSION := 1.7.4
-DESCRIPTION := $(shell cd "$(srcdir)"; git describe --always)
 
 PREFIX ?= /usr/local
 MANPREFIX ?= $(PREFIX)/share/man
 
 CFLAGS += -Wall
-CPPFLAGS += -I. -I"$(srcdir)" -I$(PREFIX)/include \
-	-DPACKAGE=\"$(PACKAGE)\" -DVERSION=\"$(VERSION)\" \
-	-DDESCRIPTION=\"$(DESCRIPTION)\" -DRC_ADDON=$(RC_ADDON) \
-	-DRC_DEVELOP=$(RC_DEVELOP) -DHASH_BANG=$(HASH_BANG) \
+CPPFLAGS += -I. -I"$(srcdir)" -I$(PREFIX)/include -DRC_ADDON=$(RC_ADDON) \
+	-DRC_DEVELOP=$(RC_DEVELOP)  -DHASH_BANG=$(HASH_BANG) \
 	-DHAVE_RESTARTABLE_SYSCALLS=$(HAVE_RESTARTABLE_SYSCALLS)
 LDFLAGS += -L$(PREFIX)/lib
 
@@ -105,6 +101,15 @@ statval.h: mkstatval
 
 $(BINS): GNUmakefile rc.h proto.h config.h
 
+main.o: version.h
+
+version.h: GNUmakefile .git/index
+	@echo "GEN $@"
+	v="$$(cd $(srcdir); git describe 2>/dev/null)"; \
+	echo "#define VERSION \"$${v:-$(VERSION)}\"" >$@
+
+.git/index:
+
 .c:
 	@echo "CC $@"
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $<
@@ -118,7 +123,7 @@ clean:
 	rm -f *.o $(BINS) rc
 
 distclean: clean
-	rm -f config.h parse.[ch] sigmsgs.[ch] statval.h
+	rm -f config.h parse.[ch] sigmsgs.[ch] statval.h version.h
 
 install: all
 	@echo "INSTALL bin/rc"

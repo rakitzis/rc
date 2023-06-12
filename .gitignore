@@ -1,10 +1,11 @@
-*.o
 config.h
 parse.[ch]
 sigmsgs.[ch]
 statval.h
-rc
+version.h
+*.o
 history
 mksignal
 mkstatval
+rc
 tripping
