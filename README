@@ -36,20 +36,14 @@ command to:
 
 	# make PREFIX="/your/dir" install
 
-The following non-standard make macros control the building of rc:
-
-	EDIT
-		Use a line-editing library, supported are: edit, editline,
-		readline, vrl
-
-Example: To make rc use the readline library, you have to build it with the
-following command:
+The EDIT make macro controls which line-editing library to use: null, edit,
+editline, readline, vrl. For example, to make rc use the readline library, you
+have to build it with the following command:
 
 	$ make EDIT=readline
 
-Additional build-time specific settings of rc can be found in the file
-config.h. Please check and change them, so that they fit your needs. If the
-file config.h does not already exist, then you have to create it with the
-following command:
+All other build-time specific settings of rc can be found in the file config.h.
+Please check and change them, so that they fit your needs. If the file config.h
+does not already exist, then you have to create it with the following command:
 
 	$ make config.h
