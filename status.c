@@ -9,7 +9,7 @@
 
 static void statprint(pid_t, int);
 
-static int statuses[512];
+static int statuses[MAX_PIPELINE];
 static int pipelength = 1;
 
 /*

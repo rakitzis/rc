@@ -150,6 +150,7 @@ enum {
 
 /* macros */
 #define EOF (-1)
+#define MAX_PIPELINE 512
 #ifndef NULL
 #define NULL 0
 #endif

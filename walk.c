@@ -328,7 +328,8 @@ static bool dofork(bool parent) {
 }
 
 static void dopipe(Node *n) {
-	int i, j, sp, pid, fd_prev, fd_out, pids[512], stats[512], p[2];
+	int i, j, sp, pid, fd_prev, fd_out, p[2];
+	int pids[MAX_PIPELINE], stats[MAX_PIPELINE];
 	bool intr;
 	Node *r;
 	struct termios t;
@@ -337,7 +338,7 @@ static void dopipe(Node *n) {
 		tcgetattr(0, &t);
 	fd_prev = fd_out = 1;
 	for (r = n, i = 0; r != NULL && r->type == nPipe; r = r->u[2].p, i++) {
-		if (i > 500) /* the only hard-wired limit in rc? */
+		if (i + 1 >= MAX_PIPELINE)
 			rc_error("pipe too long");
 		if (pipe(p) < 0) {
 			uerror("pipe");
