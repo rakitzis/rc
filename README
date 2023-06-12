@@ -27,9 +27,9 @@ rc is built and installed using the following commands:
 	$ make
 	# make install
 
-These steps require GNU make to be installed. Please also note, that the second
-command requires root privileges. By default, rc is installed using the prefix
-"/usr/local", so the full path of the executable will be "/usr/local/bin/rc".
+Please also note, that the second command requires root privileges. By default,
+rc is installed using the prefix "/usr/local", so the full path of the
+executable will be "/usr/local/bin/rc".
 
 You can install rc into a directory of your choice by changing the second
 command to:
