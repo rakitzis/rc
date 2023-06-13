@@ -8,7 +8,6 @@
 #include <locale.h>
 
 #include "input.h"
-//#include "version.h"
 
 extern char **environ;
 
