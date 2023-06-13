@@ -103,7 +103,7 @@ extern void rc_raise(const ecodes e) {
 	rc_exit(1); /* top of exception stack */
 }
 
-extern void clearflow() {
+extern void clearflow(void) {
 	Estack **e = &estack;
 	while (*e != NULL)
 		switch ((*e)->e) {
