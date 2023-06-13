@@ -193,6 +193,7 @@ extern void pop_cmdarg(bool);
 extern void rc_raise(ecodes);
 extern void except(ecodes, Edata, Estack *);
 extern void unexcept(ecodes);
+extern void clearflow(void);
 extern void rc_error(char *);
 extern void sigint(int);
 
