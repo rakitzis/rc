@@ -29,6 +29,7 @@ extern pid_t rc_fork() {
 	case 0:
 		forked = TRUE;
 		sigchk();
+		clearflow();
 		p = plist; q = 0;
 		while (p) {
 			if (q) efree(q);
