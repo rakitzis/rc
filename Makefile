@@ -91,7 +91,7 @@ clean:
 	rm -f *.o $(BINS) rc
 
 distclean: clean
-	rm -f config.h parse.[ch] sigmsgs.[ch] statval.h version.h
+	rm -f config.h sigmsgs.[ch] statval.h version.h
 
 install: all
 	@echo "INSTALL bin/rc"

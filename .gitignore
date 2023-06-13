@@ -1,5 +1,4 @@
 config.h
-parse.[ch]
 sigmsgs.[ch]
 statval.h
 version.h
