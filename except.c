@@ -103,6 +103,18 @@ extern void rc_raise(const ecodes e) {
 	rc_exit(1); /* top of exception stack */
 }
 
+extern void clearflow() {
+	Estack **e = &estack;
+	while (*e != NULL)
+		switch ((*e)->e) {
+		case eBreak: case eContinue: case eReturn:
+			*e = (*e)->prev;
+			break;
+		default:
+			e = &(*e)->prev;
+		}
+}
+
 extern bool outstanding_cmdarg(void) {
 	return estack->e == eFifo || estack->e == eFd;
 }
