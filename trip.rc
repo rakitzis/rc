@@ -18,7 +18,7 @@ fn submatch {
 	if (!~ $#* 3)
 		fail incorrect invocation of submatch
 	got = `` $nl { prompt=$nl $rc -ic $1>[2=1] }
-	if (!~ $got $2) {
+	if (!~ $^got $2) {
 		echo got $got expected $2
 		fail $3
 	}
@@ -233,6 +233,8 @@ if (!~ $i 3)
 submatch return 'rc: return outside of function' 'return outside of function'
 submatch 'break 1' 'rc: too many arguments to break' 'break arg count'
 submatch break 'rc: break outside of loop' 'break outside of loop'
+submatch 'fn f{@{return;echo xxx}};f;echo yyy' 'rc: return outside of function yyy' 'return outside of function'
+submatch 'for(i in 1 2){echo $i;break >/dev/null}' '1 rc: break outside of loop 2 rc: break outside of loop' 'break outside of loop'
 
 for (i in 1 2 3 4 5)
 	if (~ $i 2)
@@ -325,8 +327,8 @@ sleep 2&
 ~ $apid $"apids || fail '$apid should match $apids'
 wait $apid || fail 'wait 1 arg'
 
-submatch 'true&false&true&true&false& wait $apids; echo $status' '0 1 0 0 1' 'multi wait'
-submatch 'true&false& wait $apids 0' 'rc: `0'' is not a child' 'multi wait invalid pid'
+submatch 'exec >[2]/dev/null;true&false&true&true&false& wait $apids; echo $status' '0 1 0 0 1' 'multi wait'
+submatch 'wait 0' 'rc: `0'' is not a child' 'multi wait invalid pid'
 
 if (~ `` '' {wait} ?)
 	fail waiting for nothing
