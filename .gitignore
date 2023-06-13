@@ -16,7 +16,6 @@ install-sh
 Makefile
 Makefile.in
 missing
-parse.[ch]
 sigmsgs.[ch]
 statval.h
 version.h

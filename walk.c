@@ -332,7 +332,7 @@ static bool dofork(bool parent) {
 }
 
 static void dopipe(const Node *n) {
-	int i, j, pid, fd_prev, fd_out, pids[512], stats[arraysize(pids)];
+	int i, j, sp, pid, fd_prev, fd_out, pids[MAX_PIPELINE], p[2];
 	bool intr;
 	const Node *r;
 	struct termios t;
@@ -341,8 +341,7 @@ static void dopipe(const Node *n) {
 		tcgetattr(0, &t);
 	fd_prev = fd_out = 1;
 	for (r = n, i = 0; r != NULL && r->type == nPipe; r = r->u[2].p, i++) {
-		int p[2];
-		if (i > 500) /* the only hard-wired limit in rc? */
+		if (i + 1 >= MAX_PIPELINE)
 			rc_error("pipe too long");
 		if (pipe(p) < 0) {
 			uerror("pipe");
@@ -379,15 +378,14 @@ static void dopipe(const Node *n) {
 	/* collect statuses */
 
 	intr = FALSE;
+	setpipestatuslength(i);
 	for (j = 0; j < i; j++) {
-		int sp;
 		rc_wait4(pids[j], &sp, TRUE);
-		stats[j] = sp;
+		setpipestatus(j, -1, sp);
 		intr |= WIFSIGNALED(sp);
 	}
 	if (interactive && intr)
 		tcsetattr(0, TCSANOW, &t);
-	setpipestatus(stats, i);
 	sigchk();
 }
 

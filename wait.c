@@ -12,6 +12,7 @@ static struct Pid {
 	pid_t pid;
 	int stat;
 	bool alive;
+	bool waiting;
 	Pid *n;
 } *plist = NULL;
 
@@ -42,59 +43,68 @@ extern pid_t rc_fork(void) {
 		new = enew(Pid);
 		new->pid = pid;
 		new->alive = TRUE;
+		new->waiting = FALSE;
 		new->n = plist;
 		plist = new;
 		return pid;
 	}
 }
 
-extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
-	Pid **p, *r;
+static int markwaiting(pid_t pid, bool clear) {
+	Pid *p;
+	int n = 0;
+	for (p = plist; p != NULL; p = p->n)
+		if (pid == -1 || p->pid == pid) {
+			p->waiting = TRUE;
+			n++;
+		} else if (clear)
+			p->waiting = FALSE;
+	return n;
+}
 
-	/* Find the child on the list. */
-	for (p = &plist; *p; p = &(*p)->n)
-		if ((*p)->pid == pid || (pid == -1 && !(*p)->alive))
-			break;
-
-	/* Uh-oh, not there. */
-	if (pid != -1 && *p == NULL) {
-		errno = ECHILD; /* no children */
-		uerror("wait");
-		*stat = 0x100; /* exit(1) */
-		return -1;
-	}
-
-	/* If it's still alive, wait() for it. */
-	while (*p == NULL || (*p)->alive) {
-		int ret;
-		Pid **q;
-
-		ret = rc_wait(stat);
-
-		if (ret < 0) {
+static pid_t dowait(int *stat, bool nointr) {
+	Pid **p, *q;
+	pid_t pid;
+	for (;;) {
+		for (p = &plist; *p != NULL; p = &(*p)->n) {
+			q = *p;
+			if (q->waiting && !q->alive) {
+				pid = q->pid;
+				*stat = q->stat;
+				*p = q->n; /* remove element from list */
+				efree(q);
+				return pid;
+			}
+		}
+		pid = rc_wait(stat);
+		if (pid < 0) {
 			if (errno == ECHILD)
 				panic("lost child");
 			if (nointr)
 				continue;
 			else
-				return ret;
+				return pid;
 		}
-
-		for (q = &plist; *q; q = &(*q)->n)
-			if ((*q)->pid == ret) {
-				if (pid == -1)
-					p = q;
-				(*q)->alive = FALSE;
-				(*q)->stat = *stat;
+		for (q = plist; q != NULL; q = q->n)
+			if (q->pid == pid) {
+				q->alive = FALSE;
+				q->stat = *stat;
 				break;
 			}
 	}
-	r = *p;
-	pid = r->pid;
-	*stat = r->stat;
-	*p = r->n; /* remove element from list */
-	efree(r);
-	return pid;
+	/* never reached */
+	return -1;
+}
+
+extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
+	if (markwaiting(pid, TRUE) == 0) {
+		/* Uh-oh, not there. */
+		errno = ECHILD; /* no children */
+		uerror("wait");
+		*stat = 0x100; /* exit(1) */
+		return -1;
+	}
+	return dowait(stat, nointr);
 }
 
 extern List *sgetapids(void) {
@@ -115,9 +125,9 @@ extern List *sgetapids(void) {
 
 extern void waitforall(void) {
 	int stat;
-
+	markwaiting(-1, TRUE);
 	while (plist != NULL) {
-		pid_t pid = rc_wait4(-1, &stat, FALSE);
+		pid_t pid = dowait(&stat, FALSE);
 		if (pid > 0) {
 			setstatus(pid, stat);
 			if (WIFEXITED(stat))
@@ -130,3 +140,41 @@ extern void waitforall(void) {
 		sigchk();
 	}
 }
+
+extern void waitfor(char **av) {
+	int alive, count, i, stat;
+	pid_t pid;
+	for (i = 0; av[i] != NULL; i++)
+		if ((pid = a2u(av[i])) < 0) {
+			fprint(2, RC "`%s' is a bad number\n", av[i]);
+			set(FALSE);
+			return;
+		} else if (markwaiting(pid, i == 0) == 0) {
+			fprint(2, RC "`%s' is not a child\n", av[i]);
+			set(FALSE);
+			return;
+		}
+	alive = count = i;
+	if (count >= MAX_PIPELINE) {
+		fprint(2, RC "too many arguments to wait\n");
+		set(FALSE);
+		return;
+	}
+	setpipestatuslength(count);
+	while (alive > 0) {
+		pid = dowait(&stat, FALSE);
+		if (pid > 0) {
+			alive--;
+			for (i = 0; av[i] != NULL; i++)
+				if (a2u(av[i]) == pid) {
+					setpipestatus(count - i - 1, pid, stat);
+					break;
+				}
+		} else if (errno == EINTR) {
+			set(FALSE);
+			return;
+		}
+		sigchk();
+	}
+}
+

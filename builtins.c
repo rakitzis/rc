@@ -388,29 +388,13 @@ static void b_shift(char **av) {
 extern void b_builtin(char **ignore) {
 }
 
-/* wait for a given process, or all outstanding processes */
+/* wait for one or more processes, or all outstanding processes */
 
 static void b_wait(char **av) {
-	int status;
-	pid_t pid;
-	if (av[1] == NULL) {
+	if (*++av == NULL)
 		waitforall();
-		return;
-	}
-	if (av[2] != NULL) {
-		arg_count("wait");
-		return;
-	}
-	if ((pid = a2u(av[1])) < 0) {
-		badnum(av[1]);
-		return;
-	}
-	if (rc_wait4(pid, &status, FALSE) > 0) {
-		setstatus(pid, status);
-		if (WIFEXITED(status))
-			fprint(2, "%ld: exited (%d)\n", pid, WEXITSTATUS(status));
-	} else
-		set(FALSE);
+	else
+		waitfor(av);
 	sigchk();
 }
 

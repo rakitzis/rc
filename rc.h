@@ -168,6 +168,7 @@ enum {
 
 /* macros */
 #define EOF (-1)
+#define MAX_PIPELINE 512
 #ifndef NULL
 #define NULL 0
 #endif
@@ -392,8 +393,9 @@ extern int getstatus(void);
 extern void set(bool);
 extern void setN(int code);
 extern void setstatus(pid_t, int);
+extern void setpipestatuslength(int);
+extern void setpipestatus(int, pid_t, int);
 extern List *sgetstatus(void);
-extern void setpipestatus(const int [], int);
 extern void ssetstatus(char* const*);
 extern char *strstatus(int s);
 
@@ -433,6 +435,7 @@ extern pid_t rc_fork(void);
 extern pid_t rc_wait4(pid_t, int *, bool);
 extern List *sgetapids(void);
 extern void waitforall(void);
+extern void waitfor(char **);
 extern bool forked;
 
 /* walk.c */

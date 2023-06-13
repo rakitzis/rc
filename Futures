@@ -8,5 +8,3 @@ Faster; smaller; cheaper.
 Dynamically load readline and friends.
 
 Make --disable-def-interp the default.
-
-Allow builtin wait more than one argument.
