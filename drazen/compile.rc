@@ -262,7 +262,11 @@ RegularCompileOpts = (
 	# -ansi  ## ansi implies NO_POSIX which in turn implies no sigjmp_buf
 	-Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
 	-Wno-unused-parameter
+	-Wno-implicit-fallthrough
+
+	-Wmissing-prototypes
 	-Wno-strict-prototypes
+
 	# -Werror  ## makes warnings errors
 )
 if ($Yydebug) {
@@ -308,11 +312,8 @@ if ($FORCE_CLANG) {
 	COMPILER = clang
 } else if ($FORCE_GCC) {
 	COMPILER = gcc
-	if (qMacOS) {
-		Clobber=false
-	}
-} else if (whatis clang >[2]/dev/null) {
-	COMPILER = clang
+} else if (whatis gcc >[2]/dev/null) {
+	COMPILER = gcc
 } else {
 	if (~ $CC ()) {
 		COMPILER = gcc
@@ -320,6 +321,10 @@ if ($FORCE_CLANG) {
 		COMPILER = $CC
 	}
 }
+if (~ $COMPILER gcc && qMacOS) {
+	Clobber=false
+}
+
 whatis COMPILER
 $COMPILER --version
 
@@ -476,7 +481,6 @@ sources = (
 	$calc
 	$addon
 	builtins
-	develop
 	except
 	exec
 	fn

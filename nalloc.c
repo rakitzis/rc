@@ -27,14 +27,14 @@ static void getblock(size_t n) {
 	for (r = fl, p = NULL; r != NULL; p = r, r = r->n)
 		if (n <= r->size)
 			break;	/* look for a block which fits the request */
-	if (r != NULL) {	/* if one is found, take it off the free list */
+	if (r != NULL) {	/* if one is found, take it off the free list */	
 		if (p != NULL)
 			p->n = r->n;
 		else
 			fl = r->n;
 	} else {		/* else allocate a new block */
 		r = enew(Block);
-		r->mem = enew_arr(char, r->size = alignto(n, BLOCKSIZE));
+		r->mem = ealloc(r->size = alignto(n, BLOCKSIZE));
 	}
 	r->used = 0;
 	r->n = ul;
@@ -74,7 +74,7 @@ extern void *nalloc(size_t n) {
 
 #define MAXMEM 500000
 
-static void nfree() {
+extern void nfree() {
 	size_t count;
 	Block *r;
 	if (ul == NULL)
@@ -146,4 +146,3 @@ extern void efree(void *p) {
 	if (p != NULL)
 		free(p);
 }
-

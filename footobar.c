@@ -184,8 +184,7 @@ extern char **list2array(List *s, bool print) {
 	   Allocate 3 extra spots (2 for the fake execve & 1 for defaulting to
 	   sh) and hide these from exec().
 	*/
-	argv = av = nnew_arr(char*, (listnel(s) + 4)) + 3;
-
+	argv = av = (char **) nalloc((listnel(s) + 4) * sizeof *av) + 3;
 	while (s != NULL) {
 		*av++ = s->w;
 		s = s->n;
@@ -200,11 +199,11 @@ extern char *get_name(char *s) {
 	char *eq = strchr(s, '=');
 	char *r, *result;
 	int c;
-
+	
 	if (eq == NULL)
 		return NULL;
-	r = result = nnew_arr(char, eq - s + 1);
-	while (1) {
+	r = result = nalloc(eq - s + 1);
+	while (1)
 		switch (c = *s++) {
 		case '=':
 			*r++ = '\0';
@@ -227,7 +226,6 @@ extern char *get_name(char *s) {
 			*r++ = c;
 			break;
 		}
-	}
 }
 
 /* interpret a variable from environment.  ^A separates list elements;
@@ -259,7 +257,7 @@ extern List *parse_var(char *extdef) {
 		else
 			first = new;
 		last = new;
-		new->w = enew_arr(char, len + 1);
+		new->w = ealloc(len + 1);
 		new->m = NULL;
 		new->n = NULL;
 		to = new->w;

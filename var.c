@@ -15,8 +15,6 @@ static char *const aliases[] = {
 /* assign a variable in List form to a name, stacking if appropriate */
 
 extern void varassign(char *name, List *def, bool stack) {
-	Variable *new;
-	List *newdef;
 	if (streq(name, "random")) {
 		int val;
 		if (def->n) {
@@ -31,7 +29,8 @@ extern void varassign(char *name, List *def, bool stack) {
 		srandom(val);
 		return;
 	}
-	newdef = listcpy(def, ealloc); /* important to do the listcpy first; get_var_place() frees old values */
+	Variable *new;
+	List *newdef = listcpy(def, ealloc); /* important to do the listcpy first; get_var_place() frees old values */
 	new = get_var_place(name, stack);
 	new->def = newdef;
 	new->extdef = NULL;
@@ -59,7 +58,7 @@ extern bool varassign_string(char *extdef) {
 	}
 	new = get_var_place(name, FALSE);
 	new->def = NULL;
-	new->extdef = enew_arr(char, strlen(extdef) + 1);
+	new->extdef = ealloc(strlen(extdef) + 1);
 	strcpy(new->extdef, extdef);
 	if (i != -1)
 		alias(name, varlookup(name), FALSE);

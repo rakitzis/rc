@@ -9,7 +9,7 @@ VERSION = 1.7.4
 PREFIX = /usr/local
 MANPREFIX = $(PREFIX)/share/man
 
-_CFLAGS = -Wall -pedantic -Wextra -W $(CFLAGS)
+_CFLAGS = -Wall $(CFLAGS)
 _CPPFLAGS = -I. -I$(srcdir) -I$(PREFIX)/include $(CPPFLAGS)
 _LDFLAGS = -L$(PREFIX)/lib $(LDFLAGS)
 
@@ -40,8 +40,7 @@ input.o: develop.c
 system.o: system-bsd.c
 
 .c.o:
-	@echo $(CC) $(_CPPFLAGS) $(_CFLAGS) -c -o $@ $<
-	#@echo "CC $@"
+	@echo "CC $@"
 	$(CC) $(_CPPFLAGS) $(_CFLAGS) -c -o $@ $<
 
 config.h:

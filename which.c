@@ -94,9 +94,9 @@ extern char *which(char *name, bool verbose) {
 #else
 		ngroups = NGROUPS;
 #endif
-		if (ngroups) {
+		if (ngroups) {	
 			int ignore;
-			gidset = enew_arr(GETGROUPS_T, ngroups);
+			gidset = ealloc(ngroups * sizeof(GETGROUPS_T));
 			ignore = getgroups(ngroups, gidset);
 			(void) ignore;
 		}
@@ -109,7 +109,7 @@ extern char *which(char *name, bool verbose) {
 		size_t need = strlen(path->w) + len + 2; /* one for null terminator, one for the '/' */
 		if (testlen < need) {
 			efree(test);
-			test = enew_arr(char, testlen = need);
+			test = ealloc(testlen = need);
 		}
 		if (*path->w == '\0') {
 			strcpy(test, name);

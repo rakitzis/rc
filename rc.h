@@ -91,7 +91,7 @@ struct List {
 
 struct Node {
 	nodetype type;
-	union NodeUnion {
+	union {
 		char *s;
 		int i;
 		Node *p;
@@ -174,13 +174,10 @@ enum {
 #define o2u(x) n2u(x, 8)
 #define arraysize(a) ((int)(sizeof(a)/sizeof((a)[0])))
 #define memzero(s, n) memset(s, 0, n)
-#define enew(T) ((T *) ealloc(sizeof(T)))
-#define enew_arr(T,n) ((T *) ealloc((n)*sizeof(T)))
-#define erenew_arr(T,oldp,n) ((T *) erealloc((oldp),(n)*sizeof(T)))
-#define ecpy(s) (strcpy(enew_arr(char, (strlen(s) + 1)), s))
-#define nnew(T) ((T *) nalloc(sizeof(T)))
-#define nnew_arr(T,n) ((T *) nalloc((n)*sizeof(T)))
-#define ncpy(s) (strcpy(nnew_arr(char, (strlen(s) + 1)), s))
+#define enew(x) ((x *) ealloc(sizeof(x)))
+#define ecpy(x) strcpy((char *) ealloc(strlen(x) + 1), x)
+#define nnew(x) ((x *) nalloc(sizeof(x)))
+#define ncpy(x) (strcpy((char *) nalloc(strlen(x) + 1), x))
 #ifndef offsetof
 #define offsetof(t, m) ((size_t) (((char *) &((t *) 0)->m) - (char *)0))
 #endif
@@ -254,6 +251,7 @@ extern List *append(List *, List*);
 extern List *flatten(List *);
 extern List *glom(Node *);
 extern List *concat(List *, List *);
+extern List *varsub(List *, List *);
 extern List *word(char *, char *);
 
 /* fn.c */
@@ -289,9 +287,6 @@ extern void whatare_all_vars(bool, bool);
 extern void whatare_all_signals(void);
 extern rc_Function *lookup_fn(char* s);
 extern Variable * lookup_var(char* s);
-/*
-extern void *lookup(const char *, Htab *);
-*/
 extern char *compl_name(const char *, int, char**, size_t, ssize_t);
 extern char *compl_fn(const char *, int);
 extern char *compl_var(const char *, int);
@@ -306,6 +301,7 @@ extern bool quotep(char *, bool);
 extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);
+extern void scanerror(char *);
 extern const char nw[], dnw[];
 
 /* list.c */
@@ -323,6 +319,7 @@ extern void *erealloc(void *, size_t);
 extern void efree(void *);
 extern Block *newblock(void);
 extern void *nalloc(size_t);
+extern void nfree(void);
 extern void restoreblock(Block *);
 
 /* open.c */
@@ -338,8 +335,9 @@ extern bool makesamepgrp(int);
  * extern bool (*fmtinstall(int, bool (*)(Format *, int)))(Format *, int);
 */
 extern Conv fmtinstall(int, Conv);
-
+extern int printfmt(Format *, const char *);
 extern int fmtprint(Format *, const char *,...);
+extern void fmtappend(Format *, const char *, size_t);
 extern void fmtcat(Format *, const char *);
 extern int fprint(int fd, const char *fmt,...);
 extern char *mprint(const char *fmt,...);
@@ -380,6 +378,7 @@ extern void doredirs(void);
 
 /* signal.c */
 extern void initsignal(void);
+extern void catcher(int);
 extern void sigchk(void);
 extern Sigfunc* rc_signal(int, Sigfunc*);
 extern Sigfunc* sys_signal(int, Sigfunc*);
@@ -395,7 +394,7 @@ extern void setstatus(pid_t, int);
 extern void setpipestatuslength(int);
 extern void setpipestatus(int, pid_t, int);
 extern List *sgetstatus(void);
-extern void ssetstatus(char**);
+extern void ssetstatus(char **);
 extern char *strstatus(int s);
 
 

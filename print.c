@@ -7,9 +7,6 @@
 
 #define	MAXCONV 256
 
-static void fmtappend(Format *format, const char *s, size_t len);
-static int printfmt(Format *format, const char *fmt);
-
 /*
  * conversion functions
  *	true return -> flag changes only, not a conversion
@@ -231,7 +228,7 @@ extern Conv fmtinstall(int c, Conv f) {
  * functions for inserting strings in the format buffer
  */
 
-static void fmtappend(Format *format, const char *s, size_t len) {
+extern void fmtappend(Format *format, const char *s, size_t len) {
 	while (format->buf + len > format->bufend) {
 		size_t split = format->bufend - format->buf;
 		memcpy(format->buf, s, split);
@@ -252,7 +249,7 @@ extern void fmtcat(Format *format, const char *s) {
  * printfmt -- the driver routine
  */
 
-static int printfmt(Format *format, const char *fmt) {
+extern int printfmt(Format *format, const char *fmt) {
 	unsigned const char *s = (unsigned const char *) fmt;
 
 	if (fmttab[0] == NULL)
@@ -334,9 +331,9 @@ static void memprint_grow(Format *format, size_t more) {
 		? len * 2
 		: ((len + more) + PRINT_ALLOCSIZE) &~ (PRINT_ALLOCSIZE - 1);
 	if (format->u.n)
-		buf = erenew_arr(char, format->bufbegin, len);
+		buf = erealloc(format->bufbegin, len);
 	else {
-		buf = nnew_arr(char, len);
+		buf = nalloc(len);
 		memcpy(buf, format->bufbegin, used);
 	}
 	format->buf = buf + used;
@@ -363,7 +360,7 @@ extern char *mprint(const char *fmt,...) {
 	format.u.n = 1;
 	va_start(ap, fmt);
 	va_copy(format.args, ap);
-	result = memprint(&format, fmt, enew_arr(char, PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
+	result = memprint(&format, fmt, ealloc(PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
 	va_end(format.args);
 	return result;
 }
@@ -376,7 +373,7 @@ extern char *nprint(const char *fmt,...) {
 	format.u.n = 0;
 	va_start(ap, fmt);
 	va_copy(format.args, ap);
-	result = memprint(&format, fmt, nnew_arr(char, PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
+	result = memprint(&format, fmt, nalloc(PRINT_ALLOCSIZE), PRINT_ALLOCSIZE);
 	va_end(format.args);
 	return result;
 }

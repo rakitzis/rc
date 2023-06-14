@@ -10,10 +10,10 @@ extern bool match(char *p, char *m, char *s) {
 	struct { char *p, *m, *s; } next;
 	if (m == NULL)
 		return streq(p, s);
-	next.p = next.m = next.s = NULL;
+	next.s = NULL;
 	while (*p || *s) {
 		if (*p) {
-			if (!*m || *p == '~') {
+			if (!*m) {
 				/* ordinary character */
 				if (*s == *p) {
 					p++, m++, s++;

@@ -178,8 +178,7 @@ void b_calc(char **av) {
 					len += strlen(av[j]) + 1; /* 1 space between args:(a,b) to 'a b', no to 'ab' */
 				}
 
-				exp = p = nnew_arr(char, len + 1);
-
+				exp = p = nalloc(len + 1);
 				strcpy(p, av[i]); /* guaranteed non-null */
 				p += strlen(av[i++]);
 
