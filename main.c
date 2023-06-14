@@ -19,7 +19,7 @@ char *dashsee[2];
 pid_t rc_pid, rc_ppid;
 
 
-static void assigndefault(const char *,...);
+static void assigndefault(char *,...);
 static void checkfd(int, enum redirtype);
 
 extern int main(int argc, char *argv[], char *envp[]) {
@@ -182,7 +182,7 @@ quitopts:
 	return 0; /* Never really reached. */
 }
 
-static void assigndefault(const char *name,...) {
+static void assigndefault(char *name,...) {
 	va_list ap;
 	List *l;
 	char *v;
@@ -199,7 +199,7 @@ static void assigndefault(const char *name,...) {
 /* open an fd on /dev/null if it is inherited closed */
 
 static void checkfd(int fd, enum redirtype r) {
-	const int new = rc_open("/dev/null", r);
+	int new = rc_open("/dev/null", r);
 	if (new != fd && new != -1)
 		close(new);
 }

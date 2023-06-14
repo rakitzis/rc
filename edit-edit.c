@@ -6,7 +6,7 @@
 
 #include "edit.h"
 
-const bool editing = 1;
+bool editing = 1;
 
 struct cookie {
 	EditLine *el;

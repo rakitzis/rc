@@ -27,7 +27,7 @@ static bool Fconv(Format *f, int ignore) {
 
 static bool Dconv(Format *f, int ignore) {
 	const char *name = "?";
-	const int n = va_arg(f->args, int);
+	int n = va_arg(f->args, int);
 	switch (n) {
 	case rCreate:		name = ">";	break;
 	case rAppend:		name = ">>";	break;
@@ -48,7 +48,8 @@ static int defaultfd(int op) {
 /* convert a function in Node * form into something rc can parse (and humans can read?) */
 
 static bool Tconv(Format *f, int ignore) {
-	const Node *n = va_arg(f->args, const Node *);
+	bool dollar = f->flags & FMT_altform;
+	Node *n = va_arg(f->args, Node *);
 
 	if (n == NULL) {
 		fmtprint(f, "()");
@@ -73,12 +74,10 @@ static bool Tconv(Format *f, int ignore) {
 	case nWhile:	fmtprint(f, "while(%T)%T", n->u[0].p, n->u[1].p);	break;
 	case nForin:	fmtprint(f, "for(%T in %T)%T", n->u[0].p, n->u[1].p, n->u[2].p); break;
 	case nVarsub:	fmtprint(f, "$%T(%T)", n->u[0].p, n->u[1].p);		break;
-	case nWord: {
-		const bool dollar = f->flags & FMT_altform;
+	case nWord:
 		fmtprint(f, n->u[2].i && quotep(n->u[0].s, dollar) ?
 				"%#S" : "%S", n->u[0].s);
 		break;
-	}
 	case nLappend: {
 		static bool inlist;
 		if (!inlist) {
@@ -91,7 +90,7 @@ static bool Tconv(Format *f, int ignore) {
 		break;
 	}
 	case nCount: case nFlat: case nVar: {
-		const char *lp = "", *rp = "";
+		char *lp = "", *rp = "";
 		Node *n0 = n->u[0].p;
 
 		if (n0->type != nWord)
@@ -112,7 +111,7 @@ static bool Tconv(Format *f, int ignore) {
 			fmtprint(f, "%D[%d=]", n->u[0].i, n->u[1].i);
 		break;
 	case nBackq: {
-		const Node *n0 = n->u[0].p, *n00;
+		Node *n0 = n->u[0].p, *n00;
 		if (n0 != NULL && n0->type == nVar
 		    && (n00 = n0->u[0].p) != NULL && n00->type == nWord && streq(n00->u[0].s, "ifs"))
 			fmtprint(f, "`");
@@ -123,7 +122,7 @@ static bool Tconv(Format *f, int ignore) {
 	}
 	case nCbody:
 	case nBody: {
-		const Node *n0 = n->u[0].p;
+		Node *n0 = n->u[0].p;
 		if (n0 != NULL)
 			fmtprint(f, "%T", n->u[0].p);
 		if (n->u[1].p != NULL) {
@@ -145,7 +144,7 @@ static bool Tconv(Format *f, int ignore) {
 			fmtprint(f, " %T", n->u[1].p);
 		break;
 	case nPipe: {
-		const int ofd = n->u[0].i, ifd = n->u[1].i;
+		int ofd = n->u[0].i, ifd = n->u[1].i;
 		fmtprint(f, "%T|", n->u[2].p);
 		if (ifd != 0)
 			fmtprint(f, "[%d=%d]", ofd, ifd);
@@ -155,7 +154,7 @@ static bool Tconv(Format *f, int ignore) {
 		break;
 	}
 	case nRedir: {
-		const int op = n->u[0].i;
+		int op = n->u[0].i;
 		fmtprint(f, "%D", op);
 		if (n->u[1].i != defaultfd(op))
 			fmtprint(f, "[%d]", n->u[1].i);
@@ -163,21 +162,20 @@ static bool Tconv(Format *f, int ignore) {
 		break;
 	}
 	case nNmpipe: {
-		const int op = n->u[0].i;
+		int op = n->u[0].i;
 		fmtprint(f, "%D", op);
 		if (n->u[1].i != defaultfd(op))
 			fmtprint(f, "[%d]", n->u[1].i);
 		fmtprint(f, "{%T}", n->u[2].p);
 		break;
 	}
-
 	}
 	return FALSE;
 }
 
 /* convert a List to an array, for execve() */
 
-extern char **list2array(const List *s, bool print) {
+extern char **list2array(List *s, bool print) {
 	char **argv, **av;
 
 	if (print)
@@ -198,15 +196,15 @@ extern char **list2array(const List *s, bool print) {
 
 /* figure out the name of a variable given an environment string. */
 
-extern char *get_name(const char *s) {
-	const char *eq = strchr(s, '=');
+extern char *get_name(char *s) {
+	char *eq = strchr(s, '=');
 	char *r, *result;
+	int c;
 
 	if (eq == NULL)
 		return NULL;
 	r = result = nnew_arr(char, eq - s + 1);
 	while (1) {
-		int c;
 		switch (c = *s++) {
 		case '=':
 			*r++ = '\0';
@@ -237,19 +235,15 @@ extern char *get_name(const char *s) {
    ^B escapes a literal ^A or ^B.  For minimal surprise, ^B followed
    by anything other than ^A or ^B is preserved. */
 
-extern List *parse_var(const char *extdef) {
-	const char *begin;
-	List *first, *last;
+extern List *parse_var(char *extdef) {
+	char *begin, *end, *from, *to;
+	int len;
+	List *first, *last, *new;
 
 	first = last = NULL;
 	begin = strchr(extdef, '=');
 	assert(begin); /* guaranteed by initenv() */
 	while (*begin) {
-		List *new;
-		int len;
-		const char *end, *from;
-		char *to;
-
 		++begin;
 		end = begin;
 		len = 0;
@@ -289,8 +283,8 @@ extern List *parse_var(const char *extdef) {
 
 #define PREFIX "fn x"
 #define PRELEN conststrlen(PREFIX)
-extern Node *parse_fn(const char *extdef) {
-	const Node *def;
+extern Node *parse_fn(char *extdef) {
+	Node *def;
 	char *s, old[PRELEN];
 	if ((s = strchr(extdef, '=')) == NULL)
 		return NULL;
@@ -302,7 +296,7 @@ extern Node *parse_fn(const char *extdef) {
 }
 
 static bool Aconv(Format *f, int ignore) {
-	const char **a = va_arg(f->args, const char **);
+	char **a = va_arg(f->args, char **);
 	if (*a != NULL) {
 		fmtcat(f, *a);
 		while (*++a != NULL)
@@ -314,12 +308,12 @@ static bool Aconv(Format *f, int ignore) {
 /* %L -- print a list */
 static bool Lconv(Format *f, int ignore) {
 	bool plain;
-	const char *sep;
-	const List *l, *n;
+	char *sep;
+	List *l, *n;
 
 	plain = f->flags & FMT_leftside;
 	l = va_arg(f->args, List *);
-	sep = va_arg(f->args, const char *);
+	sep = va_arg(f->args, char *);
 	if (l == NULL && (f->flags & FMT_leftside) == 0)
 		fmtprint(f, "()");
 	else {
@@ -334,12 +328,11 @@ static bool Lconv(Format *f, int ignore) {
 
 /* %W -- print a list for exporting */
 static bool Wconv(Format *f, int ignore) {
-	const List *l, *n;
+	List *l, *n;
 
 	l = va_arg(f->args, List *);
 	for (; l != NULL; l = n) {
-		char c;
-		const char *s;
+		char c, *s;
 
 		for (s = l->w; (c = *s) != '\0'; ++s) {
 			if (c == ENV_SEP || c == ENV_ESC)
@@ -356,9 +349,9 @@ static bool Wconv(Format *f, int ignore) {
 
 static bool Sconv(Format *f, int ignore) {
 	int c;
-	const unsigned char *s = va_arg(f->args, const unsigned char *), *t = s;
-	const bool quoted    = (f->flags & FMT_altform)  != 0;	/* '#' */
-	const bool metaquote = (f->flags & FMT_leftside) != 0;	/* '-' */
+	unsigned char *s = va_arg(f->args, unsigned char *), *t = s;
+	bool quoted    = (f->flags & FMT_altform)  != 0;	/* '#' */
+	bool metaquote = (f->flags & FMT_leftside) != 0;	/* '-' */
 	if (*s == '\0') {
 		fmtprint(f, "''");
 		return FALSE;

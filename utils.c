@@ -6,7 +6,7 @@
 
 /* print error with line number on noninteractive shells (i.e., scripts) */
 
-extern void pr_error(const char *s, int offset) {
+extern void pr_error(char *s, int offset) {
 	if (s != NULL) {
 		if (interactive)
 			fprint(2, RC "%s\n", s);
@@ -17,7 +17,7 @@ extern void pr_error(const char *s, int offset) {
 
 /* our perror */
 
-extern void uerror(const char *s) {
+extern void uerror(char *s) {
 	const char *err;
 
 	err = strerror(errno);
@@ -33,7 +33,7 @@ extern void uerror(const char *s) {
 
 #define PANICMSG "rc panic: "
 
-extern void panic(const char *s) {
+extern void panic(char *s) {
 	int ignore; /* All bets are off: cannot check write */
 	ignore = write(2, PANICMSG, conststrlen(PANICMSG));
 	ignore = write(2, s, strlen(s));
@@ -44,10 +44,10 @@ extern void panic(const char *s) {
 
 /* ascii -> unsigned conversion routines. -1 indicates conversion error. */
 
-extern int n2u(const char *s, unsigned int base) {
+extern int n2u(char *s, unsigned int base) {
 	unsigned int i;
 	for (i = 0; *s != '\0'; s++) {
-		const unsigned int j = (unsigned int) *s - '0';
+		unsigned int j = (unsigned int) *s - '0';
 		if (j >= base) /* small hack with unsigned ints -- one compare for range test */
 			return -1;
 		i = i * base + j;
@@ -63,7 +63,7 @@ extern int starstrcmp(const void *s1, const void *s2) {
 
 /* tests to see if pathname begins with "/", "./", or "../" */
 
-extern bool isabsolute(const char *path) {
+extern bool isabsolute(char *path) {
 	return path[0] == '/' || (path[0] == '.' && (path[1] == '/' || (path[1] == '.' && path[2] == '/')));
 }
 
@@ -72,7 +72,7 @@ extern bool isabsolute(const char *path) {
 
 extern int mvfd(int i, int j) {
 	if (i != j) {
-		const int s = dup2(i, j);
+		int s = dup2(i, j);
 		close(i);
 		return s;
 	}

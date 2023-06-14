@@ -262,6 +262,7 @@ RegularCompileOpts = (
 	# -ansi  ## ansi implies NO_POSIX which in turn implies no sigjmp_buf
 	-Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
 	-Wno-unused-parameter
+	-Wno-strict-prototypes
 	# -Werror  ## makes warnings errors
 )
 if ($Yydebug) {

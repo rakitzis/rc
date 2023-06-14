@@ -44,10 +44,10 @@ static void b_echo(char **);
 
 typedef struct BuiltinMap {
 	builtin_t *p;
-	const char *name;
+	char *name;
 } BuiltinMap;
 
-static const BuiltinMap
+static BuiltinMap
 builtins[] = {
 	{ b_dot,		"." },
 	{ b_break,		"break" },
@@ -95,7 +95,7 @@ extern bool q_builtins_ordered(void) {
 	return TRUE;
 }
 
-extern builtin_t *isbuiltin(const char *s) {
+extern builtin_t *isbuiltin(char *s) {
 	const BuiltinMap *pi = &builtins[0], *pj = &builtins[arraysize(builtins)];
 
 	while (pi < pj) {
@@ -118,8 +118,8 @@ extern builtin_t *isbuiltin(const char *s) {
 
 extern void funcall(char **av) {
 	Jbwrap j;
-	Edata jreturn, star;
 	Estack e1, e2;
+	Edata jreturn, star;
 	if (sigsetjmp(j.j, 1))
 		return;
 	starassign(*av, av+1, TRUE);
@@ -133,12 +133,12 @@ extern void funcall(char **av) {
 	unexcept(eReturn);
 }
 
-static void arg_count(const char *name) {
+static void arg_count(char *name) {
 	fprint(2, RC "too many arguments to %s\n", name);
 	set(FALSE);
 }
 
-static void badnum(const char *num) {
+static void badnum(char *num) {
 	fprint(2, RC "`%s' is a bad number\n", num);
 	set(FALSE);
 }
@@ -152,7 +152,7 @@ extern void b_exec(char **ignore) {
 /* echo -n omits a newline. echo -- -n echos '-n' */
 
 static void b_echo(char **av) {
-	const char *format = "%A\n";
+	char *format = "%A\n";
 	if (*++av != NULL) {
 		if (streq(*av, "-n"))
 			format = "%A", av++;
@@ -406,7 +406,7 @@ static void b_wait(char **av) {
 #define not(b)	((b)^TRUE)
 #define show(b)	(not(eff|vee|pee|bee|ess)|(b))
 
-static bool issig(const char *s) {
+static bool issig(char *s) {
 	int i;
 	for (i = 0; i < NUMOFSIGNALS; i++)
 		if (streq(s, signals[i].name))
@@ -481,7 +481,7 @@ static void b_whatis(char **av) {
 /* push a string to be eval'ed onto the input stack. evaluate it */
 
 static void b_eval(char **av) {
-	const bool i = interactive;
+	bool i = interactive;
 	if (av[1] == NULL)
 		return;
 	interactive = FALSE;
@@ -497,8 +497,7 @@ static void b_eval(char **av) {
 
 extern void b_dot(char **av) {
 	int fd;
-	const bool old_i = interactive;
-	bool i = FALSE;
+	bool old_i = interactive, i = FALSE;
 	Estack e;
 	Edata star;
 	av++;

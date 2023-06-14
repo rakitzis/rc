@@ -11,10 +11,10 @@
 
 #include "wait.h"
 
-static List *backq(const Node *, const Node *);
+static List *backq(Node *, Node *);
 static List *bqinput(List *, int);
-static List *count(const List *);
-static List *mkcmdarg(const Node *);
+static List *count(List *);
+static List *mkcmdarg(Node *);
 
 Rq *redirq = NULL;
 
@@ -60,9 +60,9 @@ extern List *concat(List *s1, List *s2) {
 	if ((n1 = listnel(s1)) != (n2 = listnel(s2)) && n1 != 1 && n2 != 1)
 		rc_error("bad concatenation");
 	for (r = top = nnew(List); 1; r = r->n = nnew(List)) {
-		const size_t x = strlen(s1->w);
-		const size_t y = strlen(s2->w);
-		const size_t z = x + y + 1;
+		size_t x = strlen(s1->w);
+		size_t y = strlen(s2->w);
+		size_t z = x + y + 1;
 		r->w = nnew_arr(char, z);
 		strcpy(r->w, s1->w);
 		strcat(r->w, s2->w);
@@ -91,15 +91,15 @@ extern List *concat(List *s1, List *s2) {
 	return top;
 }
 
-static List *varsub(const List *var, const List *subs) {
+static List *varsub(List *var, List *subs) {
 	List *r, *top;
-	const int n = listnel(var);
+	int n = listnel(var);
 	for (top = r = NULL; subs != NULL; subs = subs->n) {
 		int i = a2u(subs->w);
 		if (i < 1)
 			rc_error("bad subscript");
 		if (i <= n) {
-			const List *sub = var;
+			List *sub = var;
 			while (--i)
 				sub = sub->n; /* loop until sub == var(i) */
 			if (top == NULL)
@@ -117,6 +117,7 @@ static List *varsub(const List *var, const List *subs) {
 
 extern List *flatten(List *s) {
 	List *r;
+	size_t step;
 	char *f;
 	if (s == NULL || s->n == NULL)
 		return s;
@@ -127,7 +128,6 @@ extern List *flatten(List *s) {
 	strcpy(f, s->w);
 	f += strlen(s->w);
 	do {
-		size_t step;
 		*f++ = ' ';
 		s = s->n;
 		step = strlen(s->w);
@@ -138,7 +138,7 @@ extern List *flatten(List *s) {
 	return r;
 }
 
-static List *count(const List *l) {
+static List *count(List *l) {
 	List *s = nnew(List);
 	s->w = nprint("%d", listnel(l));
 	s->n = NULL;
@@ -146,7 +146,7 @@ static List *count(const List *l) {
 	return s;
 }
 
-extern void assign(const List *s1, List *s2, bool stack) {
+extern void assign(List *s1, List *s2, bool stack) {
 	static const char* const read_only[] = {
 		"apid", "apids", "bqstatus", "pid", "ppid","pwd", "status",
 	};
@@ -189,15 +189,14 @@ extern void assign(const List *s1, List *s2, bool stack) {
 #define BUFSIZE	((size_t) 1000)
 
 static List *bqinput(List *ifs, int fd) {
-	char *end;
+	char *end, *bufend, *s;
 	List *r, *top, *prev;
 	size_t remain, bufsize;
 	char isifs[256];
-	int state; /* a simple FSA is used to read in data */
+	int n, state; /* a simple FSA is used to read in data */
 
 	memzero(isifs, sizeof isifs);
 	for (isifs['\0'] = TRUE; ifs != NULL; ifs = ifs->n) {
-		const char *s;
 		for (s = ifs->w; *s != '\0'; s++)
 			isifs[*(unsigned char *)s] = TRUE;
 	}
@@ -209,8 +208,6 @@ static List *bqinput(List *ifs, int fd) {
 	prev = NULL;
 
 	while (1) {
-		char *bufend;
-		int n;
 		if (remain == 0) { /* is the string bigger than the buffer? */
 			size_t m = end - r->w;
 			char *buf;
@@ -263,7 +260,7 @@ static List *bqinput(List *ifs, int fd) {
 	return top;
 }
 
-static List *backq(const Node *ifs, const Node *n) {
+static List *backq(Node *ifs, Node *n) {
 	int p[2], sp;
 	pid_t pid;
 	List *bq;
@@ -295,7 +292,7 @@ static List *backq(const Node *ifs, const Node *n) {
 	return bq;
 }
 
-extern void qredir(const Node *n) {
+extern void qredir(Node *n) {
 	Rq *next;
 	if (redirq == NULL) {
 		next = redirq = nnew(Rq);
@@ -310,7 +307,7 @@ extern void qredir(const Node *n) {
 }
 
 #if HAVE_DEV_FD || HAVE_PROC_SELF_FD
-static List *mkcmdarg(const Node *n) {
+static List *mkcmdarg(Node *n) {
 	char *name;
 	List *ret = nnew(List);
 	Estack *e = nnew(Estack);
@@ -389,22 +386,23 @@ static List *mkcmdarg(Node *n) {
 
 #else
 
-static List *mkcmdarg(const Node *n) {
+static List *mkcmdarg(Node *n) {
 	rc_error("command arguments are not supported");
 	return NULL;
 }
 
 #endif
 
-extern List *glom(const Node *n) {
-	List *v, *head;
+extern List *glom(Node *n) {
+	List *v, *head, *tail;
+	Node *words;
 	if (n == NULL)
 		return NULL;
 	switch (n->type) {
 	case nArgs:
-	case nLappend: {
-		const Node *words = n->u[0].p;
-		List *tail = NULL;
+	case nLappend:
+		words = n->u[0].p;
+		tail = NULL;
 		while (words != NULL && (words->type == nArgs || words->type == nLappend)) {
 			if (words->u[1].p != NULL && words->u[1].p->type != nWord)
 				break;
@@ -417,7 +415,6 @@ extern List *glom(const Node *n) {
 		}
 		v = append(glom(words), tail); /* force left to right evaluation */
 		return append(v, glom(n->u[1].p));
-	}
 	case nBackq:
 		return backq(n->u[0].p, n->u[1].p);
 	case nConcat:

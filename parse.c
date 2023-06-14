@@ -37,7 +37,7 @@ typedef union YYSTYPE {
 	struct Pipe pipe;
 	struct Dup dup;
 	struct Word word;
-	const char *keyword;
+	char *keyword;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
 #line 44 "parse.c"
@@ -668,7 +668,7 @@ typedef struct {
 static YYSTACKDATA yystack;
 #line 182 "parse.y"
 
-void initparse(void) {
+void initparse() {
 	star = treecpy(mk(nVar, mk(nWord,"*", NULL, FALSE)), ealloc);
 	nolist = treecpy(mk(nVar, mk(nWord,"ifs", NULL, FALSE)), ealloc);
 }

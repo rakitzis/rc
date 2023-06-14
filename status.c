@@ -17,7 +17,7 @@ static int pipelength = 1;
    if and only if every pipe-member has an exit status of zero.
 */
 
-extern int istrue(void) {
+extern int istrue() {
 	int i;
 	for (i = 0; i < pipelength; i++)
 		if (statuses[i] != 0)
@@ -32,7 +32,7 @@ extern int istrue(void) {
    a pipeline with nonzero exit statuses in it just sets status to 1.
 */
 
-extern int getstatus(void) {
+extern int getstatus() {
 	int s;
 	if (pipelength > 1)
 		return !istrue();
@@ -93,8 +93,8 @@ extern void setpipestatus(int i, pid_t pid, int stat) {
 */
 
 static void statprint(pid_t pid, int i) {
+	const int t = WIFSIGNALED(i) ? WTERMSIG(i) : 0;
 	if (WIFSIGNALED(i)) {
-		const int t = WIFSIGNALED(i) ? WTERMSIG(i) : 0;
 		const char *core = ((t > 0) && myWIFDUMPED(i) ? "--core dumped" : "");
 		const char *msg = ((t > 0) && (t < NUMOFSIGNALS) ? signals[WTERMSIG(i)].msg : "");
 		if (pid != -1)
@@ -112,7 +112,7 @@ static void statprint(pid_t pid, int i) {
 
 /* prepare a list to be passed back. Used whenever $status is dereferenced */
 
-extern List *sgetstatus(void) {
+extern List *sgetstatus() {
 	List *r = NULL;
 	int i;
 
@@ -131,7 +131,7 @@ extern List *sgetstatus(void) {
 
 extern char *strstatus(int s) {
 	if (WIFSIGNALED(s)) {
-		const int t = WTERMSIG(s);
+		int t = WTERMSIG(s);
 		const char *core = myWIFDUMPED(s) ? "+core" : "";
 		if ((t > 0) && (t < NUMOFSIGNALS) && *signals[t].name != '\0')
 			return nprint("%s%s", signals[t].name, core);
@@ -141,14 +141,14 @@ extern char *strstatus(int s) {
 		return nprint("%d", WEXITSTATUS(s));
 }
 
-extern void ssetstatus(char * const*av) {
-	int i, l;
+extern void ssetstatus(char **av) {
+	int i, j, k, l;
+	bool found;
 	for (l = 0; av[l] != NULL; l++)
 		; /* count up array length */
 	--l;
 	for (i = 0; av[i] != NULL; i++) {
-		int k, j = a2u(av[i]);
-		bool found;
+        j = a2u(av[i]);
 		if (j >= 0) {
 			statuses[l - i] = j << 8;
 			continue;
@@ -161,7 +161,7 @@ extern void ssetstatus(char * const*av) {
 				break;
 			}
 			else {
-				const size_t len = strlen(signals[k].name);
+				size_t len = strlen(signals[k].name);
 				if (strncmp_fast(signals[k].name, av[i], len) == 0 && streq(av[i] + len, "+core")) {
 					statuses[l - i] = k + 0x80;
 					found = TRUE;

@@ -40,7 +40,7 @@ typedef union YYSTYPE {
 	struct Pipe pipe;
 	struct Dup dup;
 	struct Word word;
-	const char *keyword;
+	char *keyword;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
 extern YYSTYPE yylval;

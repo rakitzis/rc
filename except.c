@@ -17,7 +17,7 @@ static Estack *estack;
 
 /* add an exception to the input stack. */
 
-extern void except(const ecodes e, Edata data, Estack *ex) {
+extern void except(ecodes e, Edata data, Estack *ex) {
 	ex->prev = estack;
 	estack = ex;
 	estack->e = e;
@@ -28,7 +28,7 @@ extern void except(const ecodes e, Edata data, Estack *ex) {
 
 /* remove an exception, restore last interactive value */
 
-extern void unexcept(const ecodes e) {
+extern void unexcept(ecodes e) {
 	assert(e == estack->e);
 	switch (estack->e) {
 	default:
@@ -62,7 +62,7 @@ extern void unexcept(const ecodes e) {
    call (for $*) or a local assignment).
 */
 
-extern void rc_raise(const ecodes e) {
+extern void rc_raise(ecodes e) {
 	if (e == eError && rc_pid != getpid())
 		exit(1); /* child processes exit on an error/signal */
 	for (; estack != NULL; estack = estack->prev)
@@ -103,7 +103,7 @@ extern void rc_raise(const ecodes e) {
 	rc_exit(1); /* top of exception stack */
 }
 
-extern void clearflow(void) {
+extern void clearflow() {
 	Estack **e = &estack;
 	while (*e != NULL)
 		switch ((*e)->e) {
@@ -115,7 +115,7 @@ extern void clearflow(void) {
 		}
 }
 
-extern bool outstanding_cmdarg(void) {
+extern bool outstanding_cmdarg() {
 	return estack->e == eFifo || estack->e == eFd;
 }
 
@@ -137,7 +137,7 @@ extern void pop_cmdarg(bool remove) {
 
 /* exception handlers */
 
-extern void rc_error(const char *s) {
+extern void rc_error(char *s) {
 	pr_error(s, -1);
 	set(FALSE);
 	redirq = NULL;

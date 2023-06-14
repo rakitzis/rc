@@ -48,7 +48,7 @@ void b_kill(char **av) {
 		sig = SIGTERM;
 		p = 1;
 	} else {
-		const char *const sigStr = av[1] + 1;
+		char *sigStr = av[1] + 1;
 		sig = a2u(sigStr);
 		if (sig < 0) {
 			int s;
@@ -80,8 +80,8 @@ void b_kill(char **av) {
 
 	ret = TRUE;
 	for (/*empty*/; av[p]; ++p) {
-		const char *const procStr = av[p];
-		const pid_t proc = a2u(procStr);
+		char *procStr = av[p];
+		pid_t proc = a2u(procStr);
 		if (proc > 0) {
 			const int r = kill(proc, sig);
 			if (r < 0) {
@@ -195,7 +195,7 @@ void b_calc(char **av) {
 			parse_status = CalcDoParse(exp, &parse_value, &lexData);
 
 			if (0 == parse_status) {
-				const char *const varName = &lexData.m_Indent[0];
+				char *varName = &lexData.m_Indent[0];
 				if ('\0' != varName[0]) { /* assignment */
 					if (check_var_name(varName)) {
 						List val;

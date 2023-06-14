@@ -1,24 +1,22 @@
 #include "rc.h"
 
-// #include "develop.h"
-
-void dump(const Node *, int);
+void dump(Node *, int);
 
 /* dump a Node * as a tree */
 
-static void dump_1(const char *p, const Node *n, int indent) {
+static void dump_1(char *p, Node *n, int indent) {
 	fprint(2, "%s:\n", p);
 	dump(n->u[0].p, indent + 1);
 }
 
-static void dump_2(const char *p, const Node *n, int indent) {
+static void dump_2(char *p, Node *n, int indent) {
 	fprint(2, "%s:\n", p);
 	dump(n->u[0].p, indent + 1);
 	if (n->u[1].p != NULL)
 		dump(n->u[1].p, indent + 1);
 }
 
-static void dump_3(const char *p, const Node *n, int indent) {
+static void dump_3(char *p, Node *n, int indent) {
 	fprint(2, "%s:\n", p);
 	dump(n->u[0].p, indent + 1);
 	if (n->u[1].p != NULL)
@@ -27,18 +25,18 @@ static void dump_3(const char *p, const Node *n, int indent) {
 		dump(n->u[2].p, indent + 1);
 }
 
-static void dump_s(const char *p, const Node *n, int indent) {
+static void dump_s(char *p, Node *n, int indent) {
 	fprint(2, "%s: %S\n", p, n->u[0].s);
 }
 
-static void dump_pipe(const char *p, const Node *n, int indent) {
+static void dump_pipe(char *p, Node *n, int indent) {
 	int ifd = n->u[0].i, ofd = n->u[1].i;
 	fprint(2, "%s %d %d:\n", p, ifd, ofd);
 	dump(n->u[2].p, indent + 1);
 	dump(n->u[3].p, indent + 1);
 }
 
-static const char *redir(int op) {
+static char *redir(int op) {
 	switch (op) {
 	case rCreate: return ">";
 	case rAppend: return ">>";
@@ -48,16 +46,16 @@ static const char *redir(int op) {
 	default: return "?";
 	}
 }
-static void dump_dup(const char *p, const Node *n, int indent) {
+static void dump_dup(char *p, Node *n, int indent) {
 	fprint(2, "%s %s %d %d:\n", p, redir(n->u[0].i), n->u[1].i, n->u[2].i);
 }
 
-static void dump_redir(const char *p, const Node *n, int indent) {
+static void dump_redir(char *p, Node *n, int indent) {
 	fprint(2, "%s %s %d:\n", p, redir(n->u[0].i), n->u[1].i);
 	dump(n->u[2].p, indent + 1);
 }
 
-void dump(const Node *n, int indent) {
+void dump(Node *n, int indent) {
 	int i;
 
 	if (n == NULL)
@@ -172,7 +170,7 @@ void dump(const Node *n, int indent) {
 	}
 }
 
-void tree_dump(const Node *f) {
+void tree_dump(Node *f) {
 	dump(f, 0);
 }
 #if 0

@@ -34,7 +34,7 @@ Node *parsetree;	/* not using yylval because bison declares it as an auto */
 	struct Pipe pipe;
 	struct Dup dup;
 	struct Word word;
-	const char *keyword;
+	char *keyword;
 }
 
 %type <redir> REDIR SREDIR
@@ -180,7 +180,7 @@ optnl	: /* empty */
 
 %%
 
-void initparse(void) {
+void initparse() {
 	star = treecpy(mk(nVar, mk(nWord,"*", NULL, FALSE)), ealloc);
 	nolist = treecpy(mk(nVar, mk(nWord,"ifs", NULL, FALSE)), ealloc);
 }

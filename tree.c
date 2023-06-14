@@ -67,7 +67,7 @@ extern Node *mk(enum nodetype t,...) {
 
 /* copy a tree to malloc space. Used when storing the definition of a function */
 
-extern Node *treecpy(const Node *s, void *(*alloc)(size_t)) {
+extern Node *treecpy(Node *s, void *(*alloc)(size_t)) {
 	Node *n;
 	if (s == NULL)
 		return NULL;

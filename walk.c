@@ -17,11 +17,11 @@
 */
 bool cond = FALSE;
 
-static bool haspreredir(const Node *);
-static bool isallpre(const Node *);
+static bool haspreredir(Node *);
+static bool isallpre(Node *);
 static bool dofork(bool);
-static void dopipe(const Node *);
-static void loop_body(const Node *n);
+static void dopipe(Node *);
+static void loop_body(Node *n);
 
 /* Tail-recursive version of walk() */
 
@@ -29,8 +29,8 @@ static void loop_body(const Node *n);
 
 /* walk the parse-tree. "obvious". */
 
-extern bool walk(const Node *nd, bool parent) {
-	const Node *volatile n = nd;
+extern bool walk(Node *nd, bool parent) {
+	Node *volatile n = nd;
 top:	sigchk();
 	if (n == NULL) {
 		if (!parent)
@@ -71,7 +71,7 @@ top:	sigchk();
 		break;
 	}
 	case nAndalso: {
-		const bool oldcond = cond;
+		bool oldcond = cond;
 		cond = TRUE;
 		if (walk(n->u[0].p, TRUE)) {
 			cond = oldcond;
@@ -81,7 +81,7 @@ top:	sigchk();
 		break;
 	}
 	case nOrelse: {
-		const bool oldcond = cond;
+		bool oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) {
 			cond = oldcond;
@@ -94,7 +94,7 @@ top:	sigchk();
 		set(!walk(n->u[0].p, TRUE));
 		break;
 	case nIf: {
-		const bool oldcond = cond;
+		bool oldcond = cond;
 		Node *true_cmd = n->u[1].p, *false_cmd = NULL;
 		if (true_cmd != NULL && true_cmd->type == nElse) {
 			false_cmd = true_cmd->u[1].p;
@@ -141,8 +141,8 @@ top:	sigchk();
 		break;
 	}
 	case nForin: {
-		const List *volatile l;
-		List *const var = glom(n->u[0].p);
+		List *volatile l;
+		List *var = glom(n->u[0].p);
 		Jbwrap break_jb;
 		Edata break_data;
 		Estack break_stack;
@@ -179,7 +179,7 @@ top:	sigchk();
 		dopipe(n);
 		break;
 	case nNewfn: {
-		const List * l = glom(n->u[0].p);
+		List * l = glom(n->u[0].p);
 		if (l == NULL)
 			rc_error("null function name");
 		while (l != NULL) {
@@ -192,7 +192,7 @@ top:	sigchk();
 		break;
 	}
 	case nRmfn: {
-		const List *l = glom(n->u[0].p);
+		List *l = glom(n->u[0].p);
 		while (l != NULL) {
 			if (dashex)
 				fprint(2, "fn %S\n", l->w);
@@ -206,14 +206,14 @@ top:	sigchk();
 		redirq = NULL;
 		break; /* Null command */
 	case nMatch: {
-		const List *a = glob(glom(n->u[0].p)), *b = glom(n->u[1].p);
+		List *a = glob(glom(n->u[0].p)), *b = glom(n->u[1].p);
 		if (dashex)
 			fprint(2, (a != NULL && a->n != NULL) ? "~ (%L) %L\n" : "~ %L %L\n", a, " ", b, " ");
 		set(lmatch(a, b));
 		break;
 	}
 	case nSwitch: {
-		const List *v = glom(n->u[0].p);
+		List *v = glom(n->u[0].p);
 		while (1) {
 			do {
 				n = n->u[1].p;
@@ -229,6 +229,7 @@ top:	sigchk();
 		break;
 	}
 	case nPre: {
+		List *v;
 		if (n->u[0].p->type == nRedir || n->u[0].p->type == nDup) {
 			if (redirq == NULL && !dofork(parent)) /* subshell on first preredir */
 				break;
@@ -246,7 +247,7 @@ top:	sigchk();
 			} else {
 				Estack e;
 				Edata var;
-				const List *v = glom(n->u[0].p->u[0].p);
+				v = glom(n->u[0].p->u[0].p);
 				assign(v, glob(glom(n->u[0].p->u[1].p)), TRUE);
 				var.name = v->w;
 				except(eVarstack, var, &e);
@@ -292,7 +293,7 @@ top:	sigchk();
 
 /* checks to see whether there are any pre-redirections left in the tree */
 
-static bool haspreredir(const Node *n) {
+static bool haspreredir(Node *n) {
 	while (n != NULL && n->type == nPre) {
 		if (n->u[0].p->type == nDup || n->u[0].p->type == nRedir)
 			return TRUE;
@@ -303,7 +304,7 @@ static bool haspreredir(const Node *n) {
 
 /* checks to see whether a subtree is all pre-command directives, i.e., assignments and redirs only */
 
-static bool isallpre(const Node *n) {
+static bool isallpre(Node *n) {
 	while (n != NULL && n->type == nPre)
 		n = n->u[1].p;
 	return n == NULL || n->type == nRedir || n->type == nAssign || n->type == nDup;
@@ -331,10 +332,10 @@ static bool dofork(bool parent) {
 	return FALSE;
 }
 
-static void dopipe(const Node *n) {
+static void dopipe(Node *n) {
 	int i, j, sp, pid, fd_prev, fd_out, pids[MAX_PIPELINE], p[2];
 	bool intr;
-	const Node *r;
+	Node *r;
 	struct termios t;
 
 	if (interactive)
@@ -397,8 +398,8 @@ static void dopipe(const Node *n) {
  *   3. while (! setjmp(args)) {statements}
  *   4. setjmp(args);
  */
-static void loop_body(const Node *nd) {
-	const Node *volatile n = nd;
+static void loop_body(Node *nd) {
+	Node *volatile n = nd;
 	Jbwrap cont_jb;
 	Edata cont_data;
 	Estack cont_stack;

@@ -16,7 +16,7 @@ static struct Pid {
 	Pid *n;
 } *plist = NULL;
 
-extern pid_t rc_fork(void) {
+extern pid_t rc_fork() {
 	Pid *new;
 	struct Pid *p, *q;
 	pid_t pid = fork();
@@ -108,7 +108,7 @@ extern pid_t rc_wait4(pid_t pid, int *stat, bool nointr) {
 	return dowait(stat, nointr);
 }
 
-extern List *sgetapids(void) {
+extern List *sgetapids() {
 	List *r;
 	Pid *p;
 	for (r = NULL, p = plist; p != NULL; p = p->n) {
@@ -124,7 +124,7 @@ extern List *sgetapids(void) {
 	return r;
 }
 
-extern void waitforall(void) {
+extern void waitforall() {
 	int stat;
 	markwaiting(-1, TRUE);
 	while (plist != NULL) {

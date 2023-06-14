@@ -47,7 +47,7 @@ static int ingidset(gid_t g) {
    Returns a bool instead of this -1 nonsense.
 */
 
-bool rc_access(const char *path, bool verbose, struct stat *stp) {
+bool rc_access(char *path, bool verbose, struct stat *stp) {
 	int mask;
 	if (stat(path, stp) != 0) {
 		if (verbose) /* verbose flag only set for absolute pathname */
@@ -106,7 +106,7 @@ extern char *which(char *name, bool verbose) {
 		return rc_access(name, verbose, &st) ? name : NULL;
 	len = strlen(name);
 	for (path = varlookup("path"); path != NULL; path = path->n) {
-		const size_t need = strlen(path->w) + len + 2; /* one for null terminator, one for the '/' */
+		size_t need = strlen(path->w) + len + 2; /* one for null terminator, one for the '/' */
 		if (testlen < need) {
 			efree(test);
 			test = enew_arr(char, testlen = need);

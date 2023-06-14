@@ -74,7 +74,7 @@ typedef void Sigfunc(int); /* See Advanced Programming in Unix Env - Stevens, se
 union Edata {
 	Jbwrap *jb;
 	Block *b;
-	const char *name;
+	char *name;
 	int fd;
 };
 
@@ -114,12 +114,12 @@ struct Redir {
 };
 
 struct Word {
-	const char *w, *m;
+	char *w, *m;
 	bool q;
 };
 
 struct Rq {
-	const Node *r;
+	Node *r;
 	struct Rq *n;
 };
 
@@ -135,7 +135,7 @@ struct Variable {
 };
 
 struct Htab {
-	const char *name;
+	char *name;
 	union {
 		rc_Function *f;
 		Variable *v;
@@ -147,8 +147,7 @@ struct Format {
 	va_list args;
 	long flags, f1, f2;
 	/* for the buffer maintenance routines */
-	char *buf, *bufbegin;
-	const char *bufend;
+	char *buf, *bufbegin, *bufend;
 	int flushed;
 	void (*grow)(Format *, size_t);
 	union { int n; void *p; } u;
@@ -204,7 +203,7 @@ extern pid_t rc_pid, rc_ppid;
 extern int lineno;
 
 /* builtins.c */
-extern builtin_t *isbuiltin(const char *);
+extern builtin_t *isbuiltin(char *);
 extern void b_exec(char **), funcall(char **), b_dot(char **), b_builtin(char **);
 extern bool q_builtins_ordered(void);
 extern int find_str(const char * const s, const char* const arr[], int sz);
@@ -218,11 +217,11 @@ extern void rc_raise(ecodes);
 extern void except(ecodes, Edata, Estack *);
 extern void unexcept(ecodes);
 extern void clearflow(void);
-extern void rc_error(const char *);
+extern void rc_error(char *);
 extern void sigint(int);
 
 /* exec.c */
-extern void exec(const List *, bool);
+extern void exec(List *, bool);
 
 #if HASH_BANG
 #define rc_execve execve
@@ -232,79 +231,79 @@ extern int rc_execve(char *, char **, char **);
 #endif
 
 /* footobar.c */
-extern char **list2array(const List *, bool);
-extern char *get_name(const char *);
-extern List *parse_var(const char *);
-extern Node *parse_fn(const char *);
+extern char **list2array(List *, bool);
+extern char *get_name(char *);
+extern List *parse_var(char *);
+extern Node *parse_fn(char *);
 extern void initprint(void);
 extern void rc_exit(int); /* here for odd reasons; user-defined signal handlers are kept in fn.c */
 
 /* getopt.c */
-extern int rc_getopt(int, char * const *, const char *);
+extern int rc_getopt(int, char **, char *);
 
 extern int rc_optind, rc_opterr, rc_optopt;
 extern char *rc_optarg;
 
 /* glob.c */
-extern bool lmatch(const List *, const List *);
+extern bool lmatch(List *, List *);
 extern List *glob(List *);
 
 /* glom.c */
-extern void assign(const List *, List *, bool);
-extern void qredir(const Node *);
+extern void assign(List *, List *, bool);
+extern void qredir(Node *);
 extern List *append(List *, List*);
 extern List *flatten(List *);
-extern List *glom(const Node *);
+extern List *glom(Node *);
 extern List *concat(List *, List *);
 extern List *word(char *, char *);
 
 /* fn.c */
-extern Node *fnlookup(const char *);
-extern char *fnlookup_string(const char *);
-extern void fnassign(const char *, const Node *);
-extern void fnassign_string(const char *);
-extern void fnrm(const char *);
-extern void prettyprint_fn(int, const char *, const Node *);
+extern Node *fnlookup(char *);
+extern char *fnlookup_string(char *);
+extern void fnassign(char *, Node *);
+extern void fnassign_string(char *);
+extern void fnrm(char *);
+extern void prettyprint_fn(int, char *, Node *);
 
 /* var.c */
 extern void starassign(char *, char **, bool);
-extern List *varlookup(const char *);
-extern bool varassign_string(const char *);
-extern char *varlookup_string(const char *);
-extern void varassign(const char *, const List *, bool);
-extern void varrm(const char *, bool);
-extern void prettyprint_var(int, const char *, const List *);
+extern List *varlookup(char *);
+extern bool varassign_string(char *);
+extern char *varlookup_string(char *);
+extern void varassign(char *, List *, bool);
+extern void varrm(char *, bool);
+extern void prettyprint_var(int, char *, List *);
 
 /* hash.c */
-extern rc_Function *get_fn_place(const char *);
-extern Variable *get_var_place(const char *, bool);
+extern rc_Function *get_fn_place(char *);
+extern Variable *get_var_place(char *, bool);
 extern char **makeenv(void);
-extern void alias(const char *, List *, bool);
-extern void delete_fn(const char *);
-extern void delete_var(const char *, bool);
+extern void alias(char *, List *, bool);
+extern void delete_fn(char *);
+extern void delete_var(char *, bool);
 extern void initenv(char **);
 extern void inithash(void);
-extern void set_exportable(const char *, bool);
+extern void set_exportable(char *, bool);
 extern void setsigdefaults(bool);
 extern void inithandler(void);
 extern void whatare_all_vars(bool, bool);
 extern void whatare_all_signals(void);
-extern rc_Function *lookup_fn(const char* s);
-extern Variable * lookup_var(const char* s);
+extern rc_Function *lookup_fn(char* s);
+extern Variable * lookup_var(char* s);
 /*
 extern void *lookup(const char *, Htab *);
 */
-extern char *compl_name(const char *, int, const char* const *, size_t, ssize_t);
+extern char *compl_name(const char *, int, char**, size_t, ssize_t);
 extern char *compl_fn(const char *, int);
 extern char *compl_var(const char *, int);
 
 /* heredoc.c */
 extern int heredoc(int);
-extern int qdoc(const Node *, Node *);
+extern int qdoc(Node *, Node *);
 extern Hq *hq;
 
 /* lex.c */
-extern bool quotep(const char *, bool);
+extern bool quotep(char *, bool);
 extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);
@@ -312,12 +311,12 @@ extern const char nw[], dnw[];
 
 /* list.c */
 extern void listfree(List *);
-extern List *listcpy(const List *, void *(*)(size_t));
-extern size_t listlen(const List *);
-extern int listnel(const List *);
+extern List *listcpy(List *, void *(*)(size_t));
+extern size_t listlen(List *);
+extern int listnel(List *);
 
 /* match.c */
-extern bool match(const char *, const char *, const char *);
+extern bool match(char *, char *, char *);
 
 /* alloc.c */
 extern void *ealloc(size_t);
@@ -397,12 +396,12 @@ extern void setstatus(pid_t, int);
 extern void setpipestatuslength(int);
 extern void setpipestatus(int, pid_t, int);
 extern List *sgetstatus(void);
-extern void ssetstatus(char* const*);
+extern void ssetstatus(char**);
 extern char *strstatus(int s);
 
 
 /* system.c or system-bsd.c */
-extern void writeall(int, const char *, size_t);
+extern void writeall(int, char *, size_t);
 
 #if HAVE_RESTARTABLE_SYSCALLS
 extern int rc_read(int, char *, size_t);
@@ -419,17 +418,17 @@ extern volatile sig_atomic_t slow;
 
 /* tree.c */
 extern Node *mk(enum nodetype, ...);
-extern Node *treecpy(const Node *, void *(*)(size_t));
+extern Node *treecpy(Node *, void *(*)(size_t));
 extern void treefree(Node *);
 
 /* utils.c */
-extern bool isabsolute(const char *);
-extern int n2u(const char *, unsigned int);
+extern bool isabsolute(char *);
+extern int n2u(char *, unsigned int);
 extern int mvfd(int, int);
 extern int starstrcmp(const void *, const void *);
-extern void pr_error(const char *, int);
-extern void panic(const char *);
-extern void uerror(const char *);
+extern void pr_error(char *, int);
+extern void panic(char *);
+extern void uerror(char *);
 
 /* wait.c */
 extern pid_t rc_fork(void);
@@ -440,11 +439,11 @@ extern void waitfor(char **);
 extern bool forked;
 
 /* walk.c */
-extern bool walk(const Node *, bool);
+extern bool walk(Node *, bool);
 extern bool cond;
 
 /* which.c */
-extern bool rc_access(const char *, bool, struct stat *);
+extern bool rc_access(char *, bool, struct stat *);
 extern char *which(char *, bool);
 #endif /* RC_H */
 

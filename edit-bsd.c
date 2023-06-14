@@ -6,7 +6,7 @@
 
 #include "edit.h"
 
-const bool editing = 1;
+bool editing = 1;
 
 struct cookie {
 	EditLine *el;
@@ -39,21 +39,23 @@ void *edit_begin(int fd) {
 static Sigfunc *oldint, *oldquit;
 
 static void edit_catcher(int sig) {
+	sys_signal(SIGINT, oldint);
+	sys_signal(SIGQUIT, oldquit);
 	write(2, "\n", 1);
 	rc_raise(eError);
 }
 
 char *edit_alloc(void *cookie, size_t *count) {
+	int len = 0;
 	const char *r;
 	HistEvent he;
-	int intCount;
 	struct cookie *c = cookie;
 
 	oldint = sys_signal(SIGINT, edit_catcher);
 	oldquit = sys_signal(SIGQUIT, edit_catcher);
 
-	r = el_gets(c->el, &intCount);
-	*count = intCount;
+	r = el_gets(c->el, &len);
+	*count = len;
 
 	sys_signal(SIGINT, oldint);
 	sys_signal(SIGQUIT, oldquit);

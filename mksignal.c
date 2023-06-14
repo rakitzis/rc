@@ -14,7 +14,7 @@ struct signaming {
 	const char *sigmsg;
 };
 
-static const struct signaming signamings[] = {
+static struct signaming signamings[] = {
 #ifdef SIGABRT
 	{ SIGABRT,	"sigabrt",	"abort"},
 #endif
@@ -194,7 +194,7 @@ static void barf(const char *msg) {
 int main(void) {
 	int maxsig = NUMSIG-1;
 	int s;
-	const struct signaming *snp;
+	struct signaming *snp;
 	FILE *outf;
 
 	for (snp = signamings; snp->signo; ++snp)
@@ -204,18 +204,17 @@ int main(void) {
 	outf = fopen("sigmsgs.h", "w");
 	if (!outf) barf("could not open sigmsgs.h for writing");
 	fprintf(outf, "typedef struct {\n");
-	fprintf(outf, "\tchar *name;\n");
-	fprintf(outf, "\tconst char *msg;\n");
+	fprintf(outf, "\tchar *name, *msg;\n");
 	fprintf(outf, "\tint signum;\n");
 	fprintf(outf, "} Sigmsgs;\n");
-	fprintf(outf, "extern const Sigmsgs signals[];\n");
+	fprintf(outf, "extern Sigmsgs signals[];\n");
 	fprintf(outf, "#define NUMOFSIGNALS %d\n", maxsig+1);
 	if (fclose(outf) == EOF)  barf("could not fclose sigmsgs.h after writing");
 
 	outf = fopen("sigmsgs.c", "w");
 	if (!outf) barf("could not open sigmsgs.c for writing");
 	fprintf(outf, "#include \"sigmsgs.h\"\n\n");
-	fprintf(outf, "const Sigmsgs signals[] = {\n");
+	fprintf(outf, "Sigmsgs signals[] = {\n");
 	fprintf(outf, "\t{\"\",\t\"\", 0},\n");
 
 	/* yes, we could avoid the quadratic searching with an aux array. fap. */

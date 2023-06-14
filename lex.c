@@ -32,7 +32,7 @@ typedef enum wordstates {
 } wordstates;
 
 static void getpair(int);
-static void scanerror(const char *s);
+static void scanerror(char *s);
 
 int lineno;
 
@@ -87,7 +87,7 @@ enum filedescriptors {
 };
 
 /* does this string require quoting? */
-extern bool quotep(const char *s, bool dollar) {
+extern bool quotep(char *s, bool dollar) {
 	unsigned char c;
 	const char *meta;
 
@@ -98,7 +98,7 @@ extern bool quotep(const char *s, bool dollar) {
 	return FALSE;
 }
 
-extern int yylex(void) {
+extern int yylex() {
 	static bool dollar = FALSE;
 	bool saw_meta = FALSE;
 	int c;
@@ -168,8 +168,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		w = RW;
 		y->word.w = ncpy(buf);
 		if (saw_meta) {
-			const char *r;
-			char *s;
+			char *r, *s;
 			y->word.m = s = nnew_arr(char, strlen(buf) + 1);
 			for (r = buf; *r != '\0'; r++, s++)
 				*s = (*r == '?' || *r == '[' || *r == '*');
@@ -333,7 +332,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 }
 
 extern void yyerror(const char *s) {
-	const char *tok;
+	char *tok;
 	if (prerror) { /* don't print "syntax error" if there's a more informative scanerror */
 		prerror = FALSE;
 		return;
@@ -352,13 +351,13 @@ extern void yyerror(const char *s) {
 		fprint(2, "rc: %s\n", s);
 }
 
-static void scanerror(const char *s) {
+static void scanerror(char *s) {
 	skiptonl(); /* flush up to newline */
 	yyerror(s);
 	errset = prerror = TRUE;
 }
 
-extern void inityy(void) {
+extern void inityy() {
 	newline = FALSE;
 	w = NW;
 	hq = NULL;

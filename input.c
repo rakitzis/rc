@@ -45,7 +45,7 @@ extern void ugchar(int c) {
 	istack->ungetbuf[istack->ungetcount++] = c;
 }
 
-extern int gchar(void) {
+extern int gchar() {
 	int c;
 
 	if (istack->ungetcount)
@@ -60,14 +60,14 @@ extern int gchar(void) {
 
 /* get the next character from a string. */
 
-static int stringgchar(void) {
+static int stringgchar() {
 	return lastchar = (inbuf[chars_out] == '\0' ? EOF : inbuf[chars_out++]);
 }
 
 
 /* write last command out to a file if interactive && $history is set */
 
-static void history(void) {
+static void history() {
 	List *hist;
 	size_t a;
 
@@ -83,8 +83,8 @@ static void history(void) {
 
 		/* line matches [ \t]*[^#\n] so it's ok to write out */
 		if (c != ' ' && c != '\t') {
-			const char *name = hist->w;
-			const int fd = rc_open(name, rAppend);
+			char *name = hist->w;
+			int fd = rc_open(name, rAppend);
 			if (fd < 0)
 				uerror(name);
 			else {
@@ -99,7 +99,7 @@ static void history(void) {
 
 /* read a character from a file descriptor */
 
-static int fdgchar(void) {
+static int fdgchar() {
 	if (chars_out >= chars_in) { /* replenish empty buffer */
 		ssize_t r;
 		do {
@@ -138,7 +138,7 @@ static int fdgchar(void) {
 
 /* read a character from a line-editing file descriptor */
 
-static int editgchar(void) {
+static int editgchar() {
 	if (chars_out >= chars_in) { /* replenish empty buffer */
 		edit_free(istack->cookie);
 		inbuf = edit_alloc(istack->cookie, &chars_in);
@@ -165,7 +165,7 @@ void termchange(void) {
 
 /* set up the input stack, and put a "dead" input at the bottom, so that yyparse will always read eof */
 
-extern void initinput(void) {
+extern void initinput() {
 	istack = itop = enew_arr(Input, istacksize = 256);
 	istack->ungetcount = 0;
 	ugchar(EOF);
@@ -173,7 +173,7 @@ extern void initinput(void) {
 
 /* push an input source onto the stack. set up a new input buffer, and set gchar() */
 
-static void pushcommon(void) {
+static void pushcommon() {
 	size_t idiff;
 	istack->index = chars_out;
 	istack->read = chars_in;
@@ -223,7 +223,7 @@ extern void pushstring(char **a, bool save) {
 
 /* remove an input source from the stack. restore associated variables etc. */
 
-extern void popinput(void) {
+extern void popinput() {
 	if (istack->t == iEdit)
 		edit_end(istack->cookie);
 	if (istack->t == iFd || istack->t == iEdit)
@@ -244,7 +244,7 @@ extern void popinput(void) {
 
 /* flush input characters up to newline. Used by scanerror() */
 
-extern void skiptonl(void) {
+extern void skiptonl() {
 	int c;
 	if (lastchar == '\n' || lastchar == EOF)
 		return;
@@ -262,8 +262,8 @@ extern Node *doit(bool clobberexecitIn) {
 	bool eof;
 	bool execit;
 	Jbwrap j;
-	Edata jerror;
 	Estack e1;
+	Edata jerror;
 
 	if (dashen)
 		clobberexecit = FALSE;
@@ -307,7 +307,7 @@ extern Node *doit(bool clobberexecitIn) {
 				edit_prompt(istack->cookie, prompt);
 		}
 		inityy();
-		if (yyparse(/*yylex*/) == 1 && (execit || dashen)) {
+		if (yyparse() == 1 && (execit || dashen)) {
 			setN(2); /* syntax error */
 			rc_raise(eError);
 		}
@@ -332,7 +332,7 @@ extern Node *doit(bool clobberexecitIn) {
 /* parse a function imported from the environment */
 
 extern Node *parseline(char *extdef) {
-	const bool i = interactive;
+	bool i = interactive;
 	char *in[2];
 	Node *fun;
 	in[0] = extdef;
@@ -346,7 +346,7 @@ extern Node *parseline(char *extdef) {
 
 /* close file descriptors after a fork() */
 
-extern void closefds(void) {
+extern void closefds() {
 	Input *i;
 	for (i = istack; i != itop; --i)	/* close open scripts */
 		if (i->t == iFd && i->fd > 2) {
@@ -357,7 +357,7 @@ extern void closefds(void) {
 
 /* print (or set) prompt(2) */
 
-extern void nextline(void) {
+extern void nextline() {
 	lineno++;
 	if (interactive) {
 		if (istack->t == iFd)

@@ -6,7 +6,7 @@
 
 struct Hq {
 	Node *doc;
-	const char *name;
+	char *name;
 	Hq *n;
 	bool quoted;
 } *hq;
@@ -24,8 +24,10 @@ static bool dead = FALSE;
  * never get out of its readheredoc() when the heredoc string contains a newline
  */
 
-static char *readheredoc(const char *eof) {
+static char *readheredoc(char *eof) {
+	int c;
 	char *t, *buf, *bufend;
+	unsigned char *s;
 	size_t bufsize;
 	t = buf = nnew_arr(char, bufsize = 512);
 	bufend = &buf[bufsize];
@@ -40,8 +42,6 @@ static char *readheredoc(const char *eof) {
 		bufend = &buf[bufsize]; \
 	}
 	for (;;) {
-		unsigned char *s;
-		int c;
 		nextline();
 		for (s = (unsigned char *) eof; (c = gchar()) == *s; s++)
 			;
@@ -140,7 +140,7 @@ extern int heredoc(int end) {
 
 /* queue pending heredocs into a queue. called from yyparse */
 
-extern int qdoc(const Node *name, Node *n) {
+extern int qdoc(Node *name, Node *n) {
 	Hq *new, **prev;
 	if (name->type != nWord) {
 		yyerror("eof-marker not a single literal word");

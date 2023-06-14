@@ -6,7 +6,7 @@
 
 #include "edit.h"
 
-const bool editing = 0;
+bool editing = 0;
 
 void *edit_begin(int fd) {
 	assert(0); /* should never be called */
