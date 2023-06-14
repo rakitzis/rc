@@ -18,7 +18,7 @@ extern void pr_error(char *s, int offset) {
 /* our perror */
 
 extern void uerror(char *s) {
-	const char *err;
+	char *err;
 
 	err = strerror(errno);
 	if (!err) err = "unknown error";

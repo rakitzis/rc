@@ -126,10 +126,10 @@ top:	sigchk();
 
 		cond = oldcond;
 		do {
-			Edata arena_data;
-			Estack arena_stack;
-			arena_data.b = newblock();
-			except(eArena, arena_data, &arena_stack);
+			Edata iter_data;
+			Estack iter_stack;
+			iter_data.b = newblock();
+			except(eArena, iter_data, &iter_stack);
 			loop_body(n->u[1].p);
 			cond = TRUE;
 			testtrue = walk(n->u[0].p, TRUE);
@@ -152,11 +152,11 @@ top:	sigchk();
 		except(eBreak, break_data, &break_stack);
 
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			Edata arena_data;
-			Estack arena_stack;
+			Edata iter_data;
+			Estack iter_stack;
 			assign(var, word(l->w, NULL), FALSE);
-			arena_data.b = newblock();
-			except(eArena, arena_data, &arena_stack);
+			iter_data.b = newblock();
+			except(eArena, iter_data, &iter_stack);
 			loop_body(n->u[2].p);
 			unexcept(eArena);
 		}
@@ -282,11 +282,9 @@ top:	sigchk();
 	case nNmpipe:
 		rc_error("named pipes cannot be executed as commands");
 		/* NOTREACHED */
-		/* FALLTHRU */
 	default:
 		panic("unknown node in walk");
 		/* NOTREACHED */
-		/* FALLTHRU */
 	}
 	return istrue();
 }
@@ -411,4 +409,3 @@ static void loop_body(Node *nd) {
 		unexcept(eContinue);
 	}
 }
-

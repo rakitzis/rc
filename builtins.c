@@ -179,6 +179,9 @@ static void update_cwd_var(void) {
 /* cd. traverse $cdpath if the directory given is not an absolute pathname */
 
 static void b_cd(char **av) {
+	List *s, nil;
+	char *path = NULL;
+	size_t t, pathlen = 0;
 	if (*++av == NULL) {
 		List *s2 = varlookup("home");
 		*av = (s2 == NULL) ? "/" : s2->w;
@@ -195,10 +198,7 @@ static void b_cd(char **av) {
 			set(TRUE);
 		}
 	} else {
-		char *path = NULL;
-		size_t pathlen = 0;
-		List nil;
-		List *s = varlookup("cdpath");
+		s = varlookup("cdpath");
 		if (s == NULL) {
 			s = &nil;
 			nil.w = "";
@@ -206,7 +206,7 @@ static void b_cd(char **av) {
 		}
 		do {
 			if (s != &nil && *s->w != '\0') {
-				const size_t t = strlen(*av) + strlen(s->w) + 2;
+				t = strlen(*av) + strlen(s->w) + 2;
 				if (t > pathlen)
 					path = nnew_arr(char, pathlen = t);
 				strcpy(path, s->w);
@@ -416,8 +416,11 @@ static bool issig(char *s) {
 
 static void b_whatis(char **av) {
 	bool ess, eff, vee, pee, bee;
-	bool found;
+	bool f, found;
 	int i, ac, c;
+	List *s;
+	Node *n;
+	char *e;
 	for (rc_optind = ac = 0; av[ac] != NULL; ac++)
 		; /* count the arguments for getopt */
 	ess = eff = vee = pee = bee = FALSE;
@@ -448,10 +451,7 @@ static void b_whatis(char **av) {
 	}
 	found = TRUE;
 	for (i = 0; av[i] != NULL; i++) {
-		const char *e;
-		List *s;
-		Node *n;
-		bool f = FALSE;
+		f = FALSE;
 		errno = ENOENT;
 		if (show(vee) && (s = varlookup(av[i])) != NULL) {
 			f = TRUE;
@@ -608,6 +608,7 @@ static void printlimit(const struct Limit *limit, bool hard) {
 
 static bool parselimit(const struct Limit *resource, rlim_t *limit, char *s) {
 	char *t;
+	int len = strlen(s);
 	const struct Suffix *suf = resource->suffix;
 
 	*limit = 1;
@@ -623,7 +624,6 @@ static bool parselimit(const struct Limit *resource, rlim_t *limit, char *s) {
 		*limit = 60 * min + sec;
 	} else {
 		int n;
-		const int len = strlen(s);
 		for (; suf != NULL; suf = suf->next)
 			if (streq(suf->name, s + len - strlen(suf->name))) {
 				s[len - strlen(suf->name)] = '\0';

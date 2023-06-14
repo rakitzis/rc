@@ -10,8 +10,8 @@
 #include "jbwrap.h"
 
 
-Sigfunc* sys_signal(int signum, Sigfunc* handler)
 #if HAVE_SIGACTION
+Sigfunc* sys_signal(int signum, Sigfunc* handler)
 {
 	struct sigaction new, old;
 
@@ -23,6 +23,7 @@ Sigfunc* sys_signal(int signum, Sigfunc* handler)
 	return SIG_DFL;
 }
 #else
+Sigfunc* sys_signal(int signum, Sigfunc* handler)
 {
 	return signal(signum, handler);
 }
@@ -46,7 +47,7 @@ static void catcher(int s) {
 #endif
 }
 
-extern void sigchk(void) {
+extern void sigchk() {
 	Sigfunc* h;
 	int s, i;
 

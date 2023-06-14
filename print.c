@@ -215,8 +215,7 @@ static void inittab(void) {
 		fmttab[i] = digitconv;
 }
 
-extern Conv fmtinstall(int c, Conv f)
-{
+extern Conv fmtinstall(int c, Conv f) {
 	Conv oldf;
 	if (fmttab[0] == NULL)
 		inittab();

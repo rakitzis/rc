@@ -222,7 +222,6 @@ extern char *get_name(char *s) {
 				}
 			}
 			/* FALLTHROUGH */
-			/* FALLTHRU */
 #endif
 		default:
 			*r++ = c;

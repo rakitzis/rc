@@ -13,7 +13,7 @@
    the rc source distribution.)
 */
 
-extern void doredirs(void) {
+extern void doredirs() {
 	List *fname;
 	int fd, p[2];
 	Rq *r;
@@ -22,7 +22,6 @@ extern void doredirs(void) {
 		default:
 			panic("unexpected node in doredirs");
 			/* NOTREACHED */
-			/* FALLTHRU */
 		case nRedir:
 			if (r->r->u[0].i == rHerestring) {
 				fname = flatten(glom(r->r->u[2].p)); /* fname is really a string */
