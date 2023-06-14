@@ -100,6 +100,9 @@ while (! ~ $#* 0) {
 	case x--check_time x--check-time
 		CheckTime = true
 
+	case x--no-check-time
+		CheckTime = false
+
 	case x--verbose
 		Verbose=true
 
@@ -155,7 +158,7 @@ if (qMacOS) {
 
 
 ########################################################################################
-fn UpToDateMultiSrcs { Dst=$1 Srcs=$2 src=$3 {
+fn UpToDateMultiSrcs { Dst=0 Srcs=0 src=0 {
 	if (! $CheckTime) {
 		return 1
 	}
@@ -262,7 +265,11 @@ RegularCompileOpts = (
 	# -ansi  ## ansi implies NO_POSIX which in turn implies no sigjmp_buf
 	-Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
 	-Wno-unused-parameter
+	-Wno-implicit-fallthrough
+
+	-Wmissing-prototypes
 	-Wno-strict-prototypes
+
 	# -Werror  ## makes warnings errors
 )
 if ($Yydebug) {
@@ -308,11 +315,8 @@ if ($FORCE_CLANG) {
 	COMPILER = clang
 } else if ($FORCE_GCC) {
 	COMPILER = gcc
-	if (qMacOS) {
-		Clobber=false
-	}
-} else if (whatis clang >[2]/dev/null) {
-	COMPILER = clang
+} else if (whatis gcc >[2]/dev/null) {
+	COMPILER = gcc
 } else {
 	if (~ $CC ()) {
 		COMPILER = gcc
@@ -320,6 +324,10 @@ if ($FORCE_CLANG) {
 		COMPILER = $CC
 	}
 }
+if (~ $COMPILER gcc && qMacOS) {
+	Clobber=false
+}
+
 whatis COMPILER
 $COMPILER --version
 
@@ -384,7 +392,9 @@ STATUS = 0
 ########################################################################################
 # Store object files in a subdir to prevent polution
 if (! ~ $#objDir 0 && ! test -d $objDir) {
-	mkdir -p $objDir
+	if (! mkdir -p $objDir) {
+		Fatal Failed to make object dir: $objDir
+	}
 }
 ########################################################################################
 ########################################################################################
@@ -409,6 +419,26 @@ fn CompileWithOpts LinkWithOpts { cmd = () securityOpts = () allOpts = () {
 }}
 
 ########################################################################################
+headers = (
+	edit
+	getgroups
+	input
+	jbwrap
+	proto
+	rc
+	rlimit
+	stat
+	wait
+)^.h
+if ($AddOn) {
+	headers = (
+		$headers
+		calc.h
+		calc_decl.h
+	)
+}
+
+########################################################################################
 fn Compile LinkOneObj { file = $1 obj = () {
 	if (~ $objDir ()) {
 		obj = $file.o
@@ -419,7 +449,7 @@ fn Compile LinkOneObj { file = $1 obj = () {
 	}
 	#--------------------------------------------------------------------
 	if (~ $0 Compile) {
-		if (! UpToDateMultiSrcs $obj $file.c rc.h) {
+		if (! UpToDateMultiSrcs $obj $file.c $headers) {
 			#CompileWithOpts   -MT $obj -MF .deps/$file.Tpo -c -o $obj $file.c
 			CompileWithOpts                                -c -o $obj $file.c
 		}
@@ -432,6 +462,7 @@ fn Compile LinkOneObj { file = $1 obj = () {
 
 ########################################################################################
 ########################################################################################
+echo Compile options: $CompileOpts
 
 
 ########################################################################################
@@ -476,7 +507,6 @@ sources = (
 	$calc
 	$addon
 	builtins
-	develop
 	except
 	exec
 	fn

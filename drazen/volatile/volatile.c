@@ -6,6 +6,7 @@
 The two differently compiled executables behave differently:
 
 With variable count volatile, the loop finishes after 9 iterations.
+Finishing is the correct behavior.
   $ gcc -O3 -W -DVOLATILE=1 -o v volatile.c
   $ ./v
 
@@ -14,7 +15,7 @@ With variable count non-volatile, the program does not finish.
   $ ./v
 
 With optimizations -O1, -O2, and -O3 the same behavior as above can be
-observerd. With -O0 program finishes with and without volatile.
+observed. With -O0 program finishes with and without volatile.
 *******************************************************************/
 
 /******************************************************************/

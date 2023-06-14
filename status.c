@@ -93,16 +93,15 @@ extern void setpipestatus(int i, pid_t pid, int stat) {
 */
 
 static void statprint(pid_t pid, int i) {
-	const int t = WIFSIGNALED(i) ? WTERMSIG(i) : 0;
-	if (WIFSIGNALED(i)) {
-		const char *core = ((t > 0) && myWIFDUMPED(i) ? "--core dumped" : "");
-		const char *msg = ((t > 0) && (t < NUMOFSIGNALS) ? signals[WTERMSIG(i)].msg : "");
+	int t = WIFSIGNALED(i) ? WTERMSIG(i) : 0;
+	const char *core = ((t > 0) && myWIFDUMPED(i) ? "--core dumped" : "");
+	if ((interactive && pid != -1) || (t > 0 && (*core || (t != SIGINT && t != SIGPIPE)))) {
 		if (pid != -1)
 			fprint(2, "%ld: ", (long)pid);
 		if (t == 0)
 			fprint(2, "done (%d)\n", WEXITSTATUS(i));
-		else if (msg)
-			fprint(2, "%s%s\n", msg, core);
+		else if ((t > 0) && (t < NUMOFSIGNALS) && *signals[t].msg != '\0')
+			fprint(2, "%s%s\n", signals[t].msg, core);
 		else
 			fprint(2, "unknown signal %d%s\n", t, core);
 	}
@@ -144,6 +143,7 @@ extern char *strstatus(int s) {
 extern void ssetstatus(char **av) {
 	int i, j, k, l;
 	bool found;
+	bool have_err = FALSE;
 	for (l = 0; av[l] != NULL; l++)
 		; /* count up array length */
 	--l;
@@ -151,6 +151,9 @@ extern void ssetstatus(char **av) {
         j = a2u(av[i]);
 		if (j >= 0) {
 			statuses[l - i] = j << 8;
+			if (j > 0) {
+				have_err = TRUE;
+			}
 			continue;
 		}
 		found = FALSE;
@@ -174,6 +177,10 @@ extern void ssetstatus(char **av) {
 			set(FALSE);
 			return;
 		}
+		have_err = TRUE;
 	}
 	pipelength = i;
+	if (have_err && dashee && !cond) {
+		rc_exit(getstatus());
+	}
 }

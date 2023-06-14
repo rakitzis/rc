@@ -24,15 +24,15 @@ static char **env;
 static int bozosize;
 static int envsize;
 static bool env_dirty = TRUE;
-static char * dead = "";
+static char *dead = "";
 
 #define HASHSIZE 64 /* rc was debugged with HASHSIZE == 2; 64 is about right for normal use */
 
 extern void inithash() {
 	Htab *fpp, *vpp;
 	int i;
-	fp = enew_arr(Htab, HASHSIZE);
-	vp = enew_arr(Htab, HASHSIZE);
+	fp = ealloc(sizeof(Htab) * HASHSIZE);
+	vp = ealloc(sizeof(Htab) * HASHSIZE);
 	fused = vused = 0;
 	fsize = vsize = HASHSIZE;
 	for (vpp = vp, fpp = fp, i = 0; i < HASHSIZE; i++, vpp++, fpp++)
@@ -75,7 +75,7 @@ static bool rehash(Htab *ht) {
 		size = vsize;
 	}
 	newsize = 2 * size;
-	newhtab = enew_arr(Htab, newsize);
+	newhtab = ealloc(newsize * sizeof(Htab));
 	for (i = 0; i < newsize; i++)
 		newhtab[i].name = NULL;
 	for (i = newused = 0; i < size; i++)
@@ -224,7 +224,7 @@ extern void initenv(char **envp) {
 	n++; /* one for the null terminator */
 	if (n < HASHSIZE)
 		n = HASHSIZE;
-	env = enew_arr(char *, (envsize = 2 * n));
+	env = ealloc((envsize = 2 * n) * sizeof (char *));
 
 	for (; *envp != NULL; envp++)
 		if (strncmp_fast(*envp, "fn_", conststrlen("fn_")) == 0) {
@@ -292,7 +292,7 @@ extern char **makeenv() {
 	ep = bozosize;
 	if (vsize + fsize + 1 + bozosize > envsize) {
 		envsize = 2 * (bozosize + vsize + fsize + 1);
-		env = erenew_arr(char*, env, envsize);
+		env = erealloc(env, envsize * sizeof(char *));
 	}
 	for (i = 0; i < vsize; i++) {
 		if (vp[i].name == NULL || vp[i].name == dead || !var_exportable(vp[i].name))
@@ -324,7 +324,7 @@ extern void whatare_all_vars(bool showfn, bool showvar) {
 				prettyprint_fn(1, fp[i].name, fnlookup(fp[i].name));
 }
 
-extern char *compl_name(const char *text, int state, char * *p, size_t count, ssize_t inc) {
+extern char *compl_name(const char *text, int state, char **p, size_t count, ssize_t inc) {
 	static char **n;
 	static size_t i, len;
 	char *name;

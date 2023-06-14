@@ -41,45 +41,43 @@ static void b_limit(char **);
 static void b_echo(char **);
 #endif
 
-
-typedef struct BuiltinMap {
+static struct BuiltinMap {
 	builtin_t *p;
 	char *name;
-} BuiltinMap;
-
-static BuiltinMap
-builtins[] = {
+} builtins[] = {
 	{ b_dot,		"." },
-	{ b_break,		"break" },
+	{ b_break,	"break" },
 	{ b_builtin,	"builtin" },
 #ifdef RC_ADDON
 	{ b_calc,		"calc" },
 #endif
-	{ b_cd,			"cd" },
+	{ b_cd,		"cd" },
 	{ b_continue,	"continue" },
 #if RC_ECHO
-	{ b_echo,		"echo" },
+	{ b_echo,	"echo" },
 #endif
-	{ b_eval,		"eval" },
-	{ b_exec,		"exec" },
-	{ b_exit,		"exit" },
-	{ b_flag,		"flag" },
+	{ b_eval,	"eval" },
+	{ b_exec,	"exec" },
+	{ b_exit,	"exit" },
+	{ b_flag,	"flag" },
 #ifdef RC_ADDON
 	{ b_kill,		"kill" },
 #endif
 #if HAVE_SETRLIMIT
-	{ b_limit,		"limit" },
+	{ b_limit,	"limit" },
 #endif
 	{ b_newpgrp,	"newpgrp" },
-	{ b_return,		"return" },
-	{ b_shift,		"shift" },
-	{ b_umask,		"umask" },
-	{ b_wait,		"wait" },
-	{ b_whatis,		"whatis" },
+	{ b_return,	"return" },
+	{ b_shift,	"shift" },
+	{ b_umask,	"umask" },
+	{ b_wait,	"wait" },
+	{ b_whatis,	"whatis" },
 #ifdef ADDONS
 	ADDONS
 #endif
 };
+
+typedef struct BuiltinMap BuiltinMap;
 
 extern bool q_builtins_ordered(void) {
 	const int N = arraysize(builtins);
@@ -134,13 +132,13 @@ extern void funcall(char **av) {
 }
 
 static void arg_count(char *name) {
-	fprint(2, RC "too many arguments to %s\n", name);
-	set(FALSE);
+    fprint(2, RC "too many arguments to %s\n", name);
+    set(FALSE);
 }
 
 static void badnum(char *num) {
-	fprint(2, RC "`%s' is a bad number\n", num);
-	set(FALSE);
+    fprint(2, RC "`%s' is a bad number\n", num);
+    set(FALSE);
 }
 
 /* a dummy command. (exec() performs "exec" simply by not forking) */
@@ -152,15 +150,15 @@ extern void b_exec(char **ignore) {
 /* echo -n omits a newline. echo -- -n echos '-n' */
 
 static void b_echo(char **av) {
-	char *format = "%A\n";
-	if (*++av != NULL) {
-		if (streq(*av, "-n"))
-			format = "%A", av++;
-		else if (streq(*av, "--"))
-			av++;
-	}
-	fprint(1, format, av);
-	set(TRUE);
+    char *format = "%A\n";
+    if (*++av != NULL) {
+	if (streq(*av, "-n"))
+	    format = "%A", av++;
+	else if (streq(*av, "--"))
+	    av++;
+    }
+    fprint(1, format, av);
+    set(TRUE);
 }
 #endif
 
@@ -183,8 +181,8 @@ static void b_cd(char **av) {
 	char *path = NULL;
 	size_t t, pathlen = 0;
 	if (*++av == NULL) {
-		List *s2 = varlookup("home");
-		*av = (s2 == NULL) ? "/" : s2->w;
+		s = varlookup("home");
+		*av = (s == NULL) ? "/" : s->w;
 	} else if (av[1] != NULL) {
 		arg_count("cd");
 		return;
@@ -207,8 +205,8 @@ static void b_cd(char **av) {
 		do {
 			if (s != &nil && *s->w != '\0') {
 				t = strlen(*av) + strlen(s->w) + 2;
-				if (t > pathlen)
-					path = nnew_arr(char, pathlen = t);
+				if (t > pathlen || path == NULL)
+					path = nalloc(pathlen = t);
 				strcpy(path, s->w);
 				if (!streq(s->w, "/")) /* "//" is special to POSIX */
 					strcat(path, "/");
@@ -232,25 +230,25 @@ static void b_cd(char **av) {
 }
 
 static void b_umask(char **av) {
-	int i;
-	if (*++av == NULL) {
-		set(TRUE);
-		i = umask(0);
-		umask(i);
-		fprint(1, "0%o\n", i);
-	} else if (av[1] == NULL) {
-		i = o2u(*av);
-		if ((unsigned int) i > 0777) {
-			fprint(2, "bad umask\n");
-			set(FALSE);
-		} else {
-			umask(i);
-			set(TRUE);
-		}
+    int i;
+    if (*++av == NULL) {
+	set(TRUE);
+	i = umask(0);
+	umask(i);
+	fprint(1, "0%o\n", i);
+    } else if (av[1] == NULL) {
+	i = o2u(*av);
+	if ((unsigned int) i > 0777) {
+	    fprint(2, "bad umask\n");
+	    set(FALSE);
 	} else {
-		arg_count("umask");
-		return;
+	    umask(i);
+	    set(TRUE);
 	}
+    } else {
+	arg_count("umask");
+	return;
+    }
 }
 
 static void b_exit(char **av) {
@@ -395,7 +393,7 @@ static void b_wait(char **av) {
 		waitforall();
 	else
 		waitfor(av);
-	sigchk();
+        sigchk();
 }
 
 /*

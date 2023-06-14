@@ -157,7 +157,7 @@ static List *lglob(List *s, char *p, char *m, size_t slashcount) {
 	} slash;
 	if (slashcount+1 > slash.size) {
 		slash.size = 2*(slashcount+1);
-		slash.l.w = erenew_arr(char, slash.l.w, slash.size);
+		slash.l.w = erealloc(slash.l.w, slash.size);
 	}
 	slash.l.w[slashcount] = '\0';
 	while (slashcount > 0)
@@ -197,10 +197,10 @@ static List *doglob(char *w, char *m) {
 	List *matched;
 	if ((psize = strlen(w) + 1) > dsize || dir == NULL) {
 		efree(dir); efree(pattern); efree(metadir); efree(metapattern);
-		dir = enew_arr(char, psize);
-		pattern = enew_arr(char, psize);
-		metadir = enew_arr(char, psize);
-		metapattern = enew_arr(char, psize);
+		dir = ealloc(psize);
+		pattern = ealloc(psize);
+		metadir = ealloc(psize);
+		metapattern = ealloc(psize);
 		dsize = psize;
 	}
 	d = dir;

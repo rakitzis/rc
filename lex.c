@@ -32,7 +32,6 @@ typedef enum wordstates {
 } wordstates;
 
 static void getpair(int);
-static void scanerror(char *s);
 
 int lineno;
 
@@ -131,7 +130,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 			if (c == '?' || c == '[' || c == '*')
 				saw_meta = TRUE;
 			if (i >= bufsize)
-				buf = realbuf = erenew_arr(char, buf, bufsize *= 2);
+				buf = realbuf = erealloc(buf, bufsize *= 2);
 		} while ((c = gchar()) != EOF && !meta[(unsigned char) c]);
 		while (c == '\\') {
 			if ((c = gchar()) == '\n') {
@@ -142,7 +141,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 	bs:			if (meta != dnw) { /* all words but varnames may have a bslash */
 					buf[i++] = '\\';
 					if (i >= bufsize)
-						buf = realbuf = erenew_arr(char, buf, bufsize *= 2);
+						buf = realbuf = erealloc(buf, bufsize *= 2);
 					if (!meta[(unsigned char) c])
 						goto read;
 				} else {
@@ -169,8 +168,9 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 		y->word.w = ncpy(buf);
 		if (saw_meta) {
 			char *r, *s;
-			y->word.m = s = nnew_arr(char, strlen(buf) + 1);
-			for (r = buf; *r != '\0'; r++, s++)
+
+			y->word.m = nalloc(strlen(buf) + 1);
+			for (r = buf, s = y->word.m; *r != '\0'; r++, s++)
 				*s = (*r == '?' || *r == '[' || *r == '*');
 		} else {
 			y->word.m = NULL;
@@ -219,7 +219,7 @@ top:	while ((c = gchar()) == ' ' || c == '\t')
 				return HUH;
 			}
 			if (i >= bufsize)
-				buf = realbuf = erenew_arr(char, buf, bufsize *= 2);
+				buf = realbuf = erealloc(buf, bufsize *= 2);
 		}
 		ugchar(c);
 		buf[i] = '\0';
@@ -348,7 +348,7 @@ extern void yyerror(const char *s) {
 		fprint(2, "rc: %s\n", s);
 }
 
-static void scanerror(char *s) {
+extern void scanerror(char *s) {
 	skiptonl(); /* flush up to newline */
 	yyerror(s);
 	errset = prerror = TRUE;
@@ -362,9 +362,9 @@ extern void inityy() {
 	if (bufsize > BUFMAX && realbuf != NULL) {
 		efree(realbuf);
 		bufsize = BUFSIZE;
-		realbuf = enew_arr(char, bufsize);
+		realbuf = ealloc(bufsize);
 	} else if (realbuf == NULL)
-		realbuf = enew_arr(char, bufsize);
+		realbuf = ealloc(bufsize);
 }
 
 /*

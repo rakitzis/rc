@@ -68,32 +68,12 @@ static char *entry(char *dname, char *name, char *subdirs,
 	if (streq(name, ".") || streq(name, ".."))
 		return NULL;
 	full = dir_join(dname, name);
-	if (rc_access(full, FALSE, &st)) {
-		efree(full);
-		full = NULL;
-		return maybe_quote(dir_join(subdirs, name));
-	}
-
-	if(stat(full, &st) != 0) {
-		goto null;
-	}
+	int exe = rc_access(full, FALSE, &st);
 	efree(full);
-	full = NULL;
-
-	if (S_ISDIR(st.st_mode)) {
-		char *dir_ret = ealloc(strlen(name) + 5);
-		char *r;
-		strcpy(dir_ret, name);
-		strcat(dir_ret, "/");
-		bodge = maybe_quote(dir_join(subdirs, dir_ret));
-		strcat(dir_ret, "...");
-		r = dir_join(subdirs, dir_ret);
-		efree(dir_ret);
-		return maybe_quote(r);
-	}
-null:
-	efree(full);
-	full = NULL;
+	if (S_ISDIR(st.st_mode))
+		rl_completion_append_character = '/';
+	if (exe || S_ISDIR(st.st_mode))
+		return dir_join(subdirs, name);
 	return NULL;
 }
 
@@ -309,7 +289,7 @@ void *edit_begin(int fd) {
 	return c;
 }
 
-static Sigfunc *oldint, *oldquit;
+static void (*oldint)(int), (*oldquit)(int);
 
 static void edit_catcher(int sig) {
 	sys_signal(SIGINT, oldint);

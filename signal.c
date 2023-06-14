@@ -4,15 +4,12 @@
 
 #include <signal.h>
 #include <setjmp.h>
-#include <errno.h>
 
 #include "sigmsgs.h"
 #include "jbwrap.h"
 
-
 #if HAVE_SIGACTION
-Sigfunc* sys_signal(int signum, Sigfunc* handler)
-{
+void (*sys_signal(int signum, void (*handler)(int)))(int) {
 	struct sigaction new, old;
 
 	new.sa_handler = handler;
@@ -23,17 +20,16 @@ Sigfunc* sys_signal(int signum, Sigfunc* handler)
 	return SIG_DFL;
 }
 #else
-Sigfunc* sys_signal(int signum, Sigfunc* handler)
-{
+void (*sys_signal(int signum, void (*handler)(int)))(int) {
 	return signal(signum, handler);
 }
 #endif
 
-Sigfunc* sighandlers[NUMOFSIGNALS];
+void (*sighandlers[NUMOFSIGNALS])(int);
 
 static volatile sig_atomic_t sigcount, caught[NUMOFSIGNALS];
 
-static void catcher(int s) {
+extern void catcher(int s) {
 	if (caught[s] == 0) {
 		sigcount++;
 		caught[s] = 1;
@@ -48,7 +44,7 @@ static void catcher(int s) {
 }
 
 extern void sigchk() {
-	Sigfunc* h;
+	void (*h)(int);
 	int s, i;
 
 	if (sigcount == 0)
@@ -71,9 +67,8 @@ extern void sigchk() {
 	(*h)(s);
 }
 
-extern Sigfunc* rc_signal(int s, Sigfunc* h)
-{
-	Sigfunc* old;
+extern void (*rc_signal(int s, void (*h)(int)))(int) {
+	void (*old)(int);
 	sigchk();
 	old = sighandlers[s];
 	sighandlers[s] = h;
@@ -84,8 +79,8 @@ extern Sigfunc* rc_signal(int s, Sigfunc* h)
 	return old;
 }
 
-extern void initsignal(void) {
-	Sigfunc* h;
+extern void initsignal() {
+	void (*h)(int);
 	int i;
 
 	/* Ensure that SIGCHLD is not SIG_IGN.  Solaris's rshd does this.  :-( */
