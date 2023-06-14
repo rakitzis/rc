@@ -1,6 +1,5 @@
 #ifndef RC_H
 #define RC_H
-/*#define const   const*/
 #undef NDEBUG
 #include <stddef.h>
 #include "config.h"

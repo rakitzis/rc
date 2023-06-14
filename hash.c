@@ -173,7 +173,7 @@ extern void delete_fn(char *s) {
 	env_dirty = TRUE;
 	free_fn(fp[h].u.f);
 	efree(fp[h].u.f);
-	efree((char*)fp[h].name);
+	efree(fp[h].name);
 	if (fp[(h+1)&(fsize-1)].name == NULL) {
 		--fused;
 		fp[h].name = NULL;
@@ -202,7 +202,7 @@ extern void delete_var(char *s, bool stack) {
 	} else { /* needs to be removed from the hash table */
 		efree(v);
 		vp[h].u.v = NULL; /* vp[hp].u.v == v */
-		efree((char*)vp[h].name);
+		efree(vp[h].name);
 		if (vp[(h+1)&(vsize-1)].name == NULL) {
 			--vused;
 			vp[h].name = NULL;
