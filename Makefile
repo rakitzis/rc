@@ -94,10 +94,14 @@ distclean: clean
 	rm -f config.h sigmsgs.[ch] statval.h version.h
 
 install: all
-	@echo "INSTALL bin/rc"
+	@echo "INSTALL bin/"
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp rc $(DESTDIR)$(PREFIX)/bin/
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/rc
+	if [ -f history ]; then \
+		cp history $(DESTDIR)$(PREFIX)/bin/ && \
+		chmod 755 $(DESTDIR)$(PREFIX)/bin/history; \
+	fi
 	@echo "INSTALL rc.1"
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
 	cp rc.1 $(DESTDIR)$(MANPREFIX)/man1/
