@@ -67,7 +67,7 @@ typedef enum redirtype {
 
 
 typedef bool (*Conv)(Format *, int);
-typedef void Sigfunc(int); /* See Advanced Programming in Unix Env - Stevens, section 10.3 */
+/* typedef void Sigfunc(int); */ /* See Advanced Programming in Unix Env - Stevens, section 10.3 */
 
 
 union Edata {
@@ -329,12 +329,11 @@ extern bool makesamepgrp(int);
 
 /* print.c */
 /*
- * The following prototype should be:
- *      extern Conv fmtinstall(int, Conv);
- * but this freaks out SGI's compiler under IRIX3.3.2
- * extern bool (*fmtinstall(int, bool (*)(Format *, int)))(Format *, int);
-*/
+   The following prototype should be:
 extern Conv fmtinstall(int, Conv);
+   but this freaks out SGI's compiler under IRIX3.3.2
+*/
+extern bool (*fmtinstall(int, bool (*)(Format *, int)))(Format *, int);
 extern int printfmt(Format *, const char *);
 extern int fmtprint(Format *, const char *,...);
 extern void fmtappend(Format *, const char *, size_t);
@@ -380,9 +379,9 @@ extern void doredirs(void);
 extern void initsignal(void);
 extern void catcher(int);
 extern void sigchk(void);
-extern Sigfunc* rc_signal(int, Sigfunc*);
-extern Sigfunc* sys_signal(int, Sigfunc*);
-extern Sigfunc* sighandlers[];
+extern void (*rc_signal(int, void (*)(int)))(int);
+extern void (*sys_signal(int, void (*)(int)))(int);
+extern void (*sighandlers[])(int);
 
 
 /* status.c */

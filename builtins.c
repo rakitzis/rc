@@ -181,8 +181,8 @@ static void b_cd(char **av) {
 	char *path = NULL;
 	size_t t, pathlen = 0;
 	if (*++av == NULL) {
-		List *s2 = varlookup("home");
-		*av = (s2 == NULL) ? "/" : s2->w;
+		s = varlookup("home");
+		*av = (s == NULL) ? "/" : s->w;
 	} else if (av[1] != NULL) {
 		arg_count("cd");
 		return;
