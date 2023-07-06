@@ -95,10 +95,8 @@ extern char *which(char *name, bool verbose) {
 		ngroups = NGROUPS;
 #endif
 		if (ngroups) {	
-			int ignore;
 			gidset = ealloc(ngroups * sizeof(GETGROUPS_T));
-			ignore = getgroups(ngroups, gidset);
-			(void) ignore;
+			getgroups(ngroups, gidset);
 		}
 #endif
 	}
