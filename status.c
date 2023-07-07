@@ -144,6 +144,7 @@ extern char *strstatus(int s) {
 extern void ssetstatus(char **av) {
 	int i, j, k, l;
 	bool found;
+	bool have_err = FALSE;
 	for (l = 0; av[l] != NULL; l++)
 		; /* count up array length */
 	--l;
@@ -151,6 +152,9 @@ extern void ssetstatus(char **av) {
         j = a2u(av[i]);
 		if (j >= 0) {
 			statuses[l - i] = j << 8;
+			if (j > 0) {
+				have_err = TRUE;
+			}
 			continue;
 		}
 		found = FALSE;
@@ -174,6 +178,10 @@ extern void ssetstatus(char **av) {
 			set(FALSE);
 			return;
 		}
+		have_err = TRUE;
 	}
 	pipelength = i;
+	if (have_err && dashee && !cond) {
+		rc_exit(getstatus());
+	}
 }
