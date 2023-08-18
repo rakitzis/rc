@@ -100,6 +100,9 @@ while (! ~ $#* 0) {
 	case x--check_time x--check-time
 		CheckTime = true
 
+	case x--no-check-time
+		CheckTime = false
+
 	case x--verbose
 		Verbose=true
 
@@ -155,7 +158,7 @@ if (qMacOS) {
 
 
 ########################################################################################
-fn UpToDateMultiSrcs { Dst=$1 Srcs=$2 src=$3 {
+fn UpToDateMultiSrcs { Dst=0 Srcs=0 src=0 {
 	if (! $CheckTime) {
 		return 1
 	}
@@ -262,6 +265,7 @@ RegularCompileOpts = (
 	# -ansi  ## ansi implies NO_POSIX which in turn implies no sigjmp_buf
 	-Wextra -W  ## these options create 'unused param' and 'longjmp clobber variable' warnings
 	-Wno-unused-parameter
+	-Wno-unused-result
 	-Wno-implicit-fallthrough
 
 	-Wmissing-prototypes
@@ -416,6 +420,26 @@ fn CompileWithOpts LinkWithOpts { cmd = () securityOpts = () allOpts = () {
 }}
 
 ########################################################################################
+headers = (
+	edit
+	getgroups
+	input
+	jbwrap
+	proto
+	rc
+	rlimit
+	stat
+	wait
+)^.h
+if ($AddOn) {
+	headers = (
+		$headers
+		calc.h
+		calc_decl.h
+	)
+}
+
+########################################################################################
 fn Compile LinkOneObj { file = $1 obj = () {
 	if (~ $objDir ()) {
 		obj = $file.o
@@ -426,7 +450,7 @@ fn Compile LinkOneObj { file = $1 obj = () {
 	}
 	#--------------------------------------------------------------------
 	if (~ $0 Compile) {
-		if (! UpToDateMultiSrcs $obj $file.c rc.h) {
+		if (! UpToDateMultiSrcs $obj $file.c $headers) {
 			#CompileWithOpts   -MT $obj -MF .deps/$file.Tpo -c -o $obj $file.c
 			CompileWithOpts                                -c -o $obj $file.c
 		}

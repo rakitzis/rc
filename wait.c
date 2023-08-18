@@ -128,11 +128,9 @@ extern void waitforall() {
 	markwaiting(-1, TRUE);
 	while (plist != NULL) {
 		pid_t pid = dowait(&stat, FALSE);
-		if (pid > 0) {
+		if (pid > 0)
 			setstatus(pid, stat);
-			if (WIFEXITED(stat))
-			    fprint(2, "%ld: exited (%d)\n", pid, WEXITSTATUS(stat));
-		} else {
+		else {
 			set(FALSE);
 			if (errno == EINTR)
 				return;

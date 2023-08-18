@@ -254,37 +254,33 @@ extern List *concat(List *, List *);
 extern List *varsub(List *, List *);
 extern List *word(char *, char *);
 
-/* fn.c */
+/* hash.c */
+extern rc_Function *get_fn_place(char *);
+extern List *varlookup(char *);
 extern Node *fnlookup(char *);
+extern Variable *get_var_place(char *, bool);
+extern bool varassign_string(char *);
+extern char **makeenv(void);
 extern char *fnlookup_string(char *);
+extern char *varlookup_string(char *);
+extern void alias(char *, List *, bool);
+extern void starassign(char *, char **, bool);
+extern void delete_fn(char *);
+extern void delete_var(char *, bool);
 extern void fnassign(char *, Node *);
 extern void fnassign_string(char *);
 extern void fnrm(char *);
-extern void prettyprint_fn(int, char *, Node *);
-
-/* var.c */
-extern void starassign(char *, char **, bool);
-extern List *varlookup(char *);
-extern bool varassign_string(char *);
-extern char *varlookup_string(char *);
-extern void varassign(char *, List *, bool);
-extern void varrm(char *, bool);
-extern void prettyprint_var(int, char *, List *);
-
-/* hash.c */
-extern rc_Function *get_fn_place(char *);
-extern Variable *get_var_place(char *, bool);
-extern char **makeenv(void);
-extern void alias(char *, List *, bool);
-extern void delete_fn(char *);
-extern void delete_var(char *, bool);
 extern void initenv(char **);
 extern void inithash(void);
 extern void set_exportable(char *, bool);
 extern void setsigdefaults(bool);
 extern void inithandler(void);
+extern void varassign(char *, List *, bool);
+extern void varrm(char *, bool);
 extern void whatare_all_vars(bool, bool);
 extern void whatare_all_signals(void);
+extern void prettyprint_var(int, char *, List *);
+extern void prettyprint_fn(int, char *, Node *);
 extern rc_Function *lookup_fn(char* s);
 extern Variable * lookup_var(char* s);
 extern char *compl_name(const char *, int, char**, size_t, ssize_t);
@@ -354,17 +350,7 @@ extern char *nprint(const char *fmt,...);
 
 /* parse.c (parse.y) */
 extern Node *parsetree;
-
-#if 1
 extern int yyparse(void);
-#else
-typedef int (*lexer_ptr)(void); /* or typedef int (*lexer_ptr)(YYSTYPE*); */
-#define YYPARSE_PARAM_TYPE   lexer_ptr
-#define YYPARSE_PARAM        yylex
-/* #define YYPARSE_PARAM_ARG YYPARSE_PARAM_TYPE YYPARSE_PARAM */
-extern int yyparse(YYPARSE_PARAM_TYPE YYPARSE_PARAM);
-#endif
-
 extern void initparse(void);
 
 /* readline */
