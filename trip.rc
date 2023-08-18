@@ -1058,3 +1058,20 @@ submatch 'flag x x' 'usage: flag f [ + | - ]' 'flag wrong second arg'
 submatch 'flag c && echo yes' yes 'flag c'
 submatch 'flag x +; flag x -' 'flag x -' 'setting x flag'
 
+#############################################################################
+if (! true) {
+	fail '"true" exits with non-zero status'
+}
+
+if (true 2) {
+	fail '"true 2" exits with zero status'
+}
+
+if (false) {
+	fail '"false" exits with zero status'
+}
+
+if (false 2) {
+	fail '"false 3" exits with zero status'
+}
+

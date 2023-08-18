@@ -29,9 +29,9 @@
  */
 #endif
 
-static void b_break(char **), b_cd(char **), b_continue(char **), b_eval(char **), b_flag(char **),
-	b_exit(char **), b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
-	b_wait(char **), b_whatis(char **);
+static void b_break(char **), b_cd(char **), b_continue(char **), b_eval(char **), b_false(char **),
+    b_flag(char **), b_exit(char **), b_newpgrp(char **), b_return(char **), b_shift(char **),
+    b_true(char **), b_umask(char **), b_wait(char **), b_whatis(char **);
 
 #if HAVE_SETRLIMIT
 static void b_limit(char **);
@@ -59,6 +59,7 @@ static struct BuiltinMap {
 	{ b_eval,	"eval" },
 	{ b_exec,	"exec" },
 	{ b_exit,	"exit" },
+    { b_false,  "false" },
 	{ b_flag,	"flag" },
 #ifdef RC_ADDON
 	{ b_kill,		"kill" },
@@ -69,6 +70,7 @@ static struct BuiltinMap {
 	{ b_newpgrp,	"newpgrp" },
 	{ b_return,	"return" },
 	{ b_shift,	"shift" },
+	{ b_true,	"true" },
 	{ b_umask,	"umask" },
 	{ b_wait,	"wait" },
 	{ b_whatis,	"whatis" },
@@ -679,6 +681,22 @@ static void b_limit(char **av) {
 	}
 }
 #endif
+
+static void b_true(char **av) {
+	if (av[1] != NULL) {
+		arg_count("true");
+		return;
+	}
+	set(TRUE);
+}
+
+static void b_false(char **av) {
+	if (av[1] != NULL) {
+		arg_count("false");
+		return;
+	}
+	set(FALSE);
+}
 
 extern char *compl_builtin(const char *text, int state) {
 	return compl_name(text, state, &builtins[0].name, arraysize(builtins), &builtins[1].name - &builtins[0].name);
