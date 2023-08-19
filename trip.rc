@@ -1075,3 +1075,13 @@ if (false 2) {
 	fail '"false 3" exits with zero status'
 }
 
+x=${whatis true}
+if (! ~ $x(1) builtin || ! ~ $x(2) true) {
+	fail '"true" is not builtin'
+}
+
+x=${whatis false}
+if (! ~ $x(1) builtin || ! ~ $x(2) false) {
+	fail '"false" is not builtin'
+}
+
