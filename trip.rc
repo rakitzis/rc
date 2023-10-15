@@ -1064,15 +1064,15 @@ if (! true) {
 }
 
 if (true 2) {
-	fail '"true 2" exits with zero status'
+	fail 'builtin "true 2" exits with zero status'
 }
 
 if (false) {
-	fail '"false" exits with zero status'
+	fail 'builtin "false" exits with zero status'
 }
 
-if (false 2) {
-	fail '"false 3" exits with zero status'
+if (false 3) {
+	fail 'builtin "false 3" exits with zero status'
 }
 
 x=${whatis true}
