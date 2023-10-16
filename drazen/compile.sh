@@ -28,7 +28,8 @@ PACKAGE=rc
 VERSION=1.7.4
 RC_ADDON=1
 ##########################################################################
-CC_CommonFlags="-std=gnu99 -m64 -O3 -Wall -g"
+#CC_CommonFlags="-std=gnu99 -m64 -O3 -Wall -g"
+CC_CommonFlags="-std=gnu99 -O3 -Wall -g"
 CC_CompileFlags="-DHAVE_CONFIG_H -I.  -MD -MP -pedantic -Wextra -W -Wno-unused-parameter -DYYDEBUG=1 -fPIE -fstack-protector -D_FORTIFY_SOURCE=2 -Wno-extended-offsetof"
 CC_CompileFlags="-DHAVE_CONFIG_H -I.  -MD -MP -pedantic -Wextra -W -Wno-unused-parameter -DYYDEBUG=1 -fPIE -fstack-protector -D_FORTIFY_SOURCE=2 
 -DRC_ADDON=$RC_ADDON -DPACKAGE=$PACKAGE -DVERSION=\"$VERSION\" -DDESCRIPTION=\"$GIT_COMMIT\""
