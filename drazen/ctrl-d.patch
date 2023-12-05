@@ -1,17 +1,19 @@
---- input.c	1998/07/08 16:57:24	1.12
-+++ input.c	1998/07/09 16:14:34
-@@ -131,8 +131,13 @@
- 			}
- 			break;
+diff --git a/input.c b/input.c
+index 4b1cb6e..b29fb7d 100644
+--- a/input.c
++++ b/input.c
+@@ -125,8 +125,13 @@ static int fdgchar() {
+ 			rc_raise(eError);
  		}
+ 		chars_in = (size_t) r;
 -		if (chars_in == 0)
 +		if (chars_in == 0) {
 +			if (interactive && istack->fd == 0 && isatty(0)) {
 +				fprint(2, "type `exit' to leave the shell\n");
-+				return last = '\n';
++				return lastchar = '\n';
 +			}
- 			return last = EOF;
+ 			return lastchar = EOF;
 +		}
- 		chars_out = 2;
+ 		chars_out = 0;
  		if (dashvee)
- 			writeall(2, inbuf + 2, chars_in);
+ 			writeall(2, inbuf, chars_in);

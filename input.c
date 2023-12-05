@@ -125,8 +125,13 @@ static int fdgchar() {
 			rc_raise(eError);
 		}
 		chars_in = (size_t) r;
-		if (chars_in == 0)
+		if (chars_in == 0) {
+			if (interactive && istack->fd == 0 && isatty(0)) {
+				fprint(2, "type `exit' to leave the shell\n");
+				return lastchar = '\n';
+			}
 			return lastchar = EOF;
+		}
 		chars_out = 0;
 		if (dashvee)
 			writeall(2, inbuf, chars_in);
