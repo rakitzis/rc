@@ -11,7 +11,7 @@ c0faccd37f707ddf183f55e7d61cb4b72536a479
 To build from scratch
 
 $ sh bootstrap
-$ ./configure --with-addon           # let is added-on builtin
+$ ./configure --with-addon           # calc is added-on builtin
 $ make
 
 
@@ -24,7 +24,7 @@ to
     CFLAGS = -Wall -g -O2       -fPIE  -fstack-protector
 
 Change link flags from
-    LDFLAGS = 
+    LDFLAGS =
 to
     LDFLAGS = -pie -Wl,-z,now,-z,relro
 
@@ -36,17 +36,17 @@ to
 ################################################################
 TODO: erase later
 
-Change let assignment from
-    let var '2 + 3'
+Change calc assignment from
+    calc var '2 + 3'
 to
-    let 'var = 2 + 3'
+    calc 'var = 2 + 3'
 
 ----------------------------------------------------------------
-In let.h
+In calc_decl.h
 
-struct LetLex {
+struct CalcLexData {
     ....
-    char m_VarName[256];
+	char m_Indent[256];
 };
 
 
@@ -56,27 +56,26 @@ Only one var allowed in expression, lexer asserts m_VarName[0]==0
 before filling the name.
 
 ----------------------------------------------------------------
-In let.y
+In calc.y
 
 %nonassoc '='
 %left LET_OROR
 
 top: assignment
-        {   assert(lex->m_VarName[0] != '\0');
-            return $1;
-        }
-    | expr
-        {   lex->m_VarName[0] = '\0';
-            return $1;
-        }
-    ;            
+		{   assert(lex->m_VarName[0] != '\0');
+			lexData->m_CalcResult = $1;
+		}
+	| expr
+		{   assert(lex->m_VarName[0] == '\0');
+			lexData->m_CalcResult = $1;
+		}
+	;
 assignment:
-    VAR '=' expr
-        {
-            assert(lex->m_VarName[0] != '\0');
-            return $3;
-        }
-    ;
+	CALC_VAR '=' expr
+		{   assert(lex->m_VarName[0] != '\0');
+			$$ = $3;
+		}
+	;
 
 ----------------------------------------------------------------
 In addon.c
