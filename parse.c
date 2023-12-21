@@ -5,7 +5,7 @@
 #define YYBYACC 1
 #define YYMAJOR 2
 #define YYMINOR 0
-#define YYPATCH 20230201
+#define YYPATCH 20230521
 
 #define YYEMPTY        (-1)
 #define yyclearin      (yychar = YYEMPTY)

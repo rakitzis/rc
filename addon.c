@@ -104,7 +104,6 @@ static void set_var(char *varname, long R)
 	List *val = nnew(List); var->w = nprint("%ld", R);
 	varassign(varname, val, FALSE);
 }
-<<<<<<< HEAD
 #endif
 
 /******************************************************/
@@ -243,6 +242,8 @@ CalcValue CalcPower(const CalcValue A, const CalcValue B) {
 	}
 	return z;
 }
+
+/******************************************************/
 static CalcToken CalcLexer(CalcLexData *lexData, YYSTYPE *calclval) {
 	const char *p;
 	CalcToken tok;
