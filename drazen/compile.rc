@@ -601,6 +601,9 @@ if (! UpToDateMultiSrcs rc $rc_objs) {
 Compile tripping
 LinkOneObj tripping
 
+Compile history
+LinkOneObj history
+
 $COMPILER --version
 exit $STATUS
 
