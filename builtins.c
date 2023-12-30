@@ -319,7 +319,7 @@ static void b_flag(char **av) {
 	}
 	return;
 flag_immutable:
-	fprint(2, RC "flag immutable\n");
+	fprint(2, RC "flag '%c' immutable\n", f);
 	set(FALSE);
 	return;
 flag_usage:
