@@ -314,12 +314,12 @@ static void b_flag(char **av) {
 			set(TRUE);
 		}
 	} else {
-		fprint(2, RC "unknown flag");
+		fprint(2, RC "unknown flag '%c'\n", f);
 		set(FALSE);
 	}
 	return;
 flag_immutable:
-	fprint(2, RC "flag immutable\n");
+	fprint(2, RC "flag '%c' immutable\n", f);
 	set(FALSE);
 	return;
 flag_usage:
