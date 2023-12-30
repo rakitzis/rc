@@ -314,7 +314,7 @@ static void b_flag(char **av) {
 			set(TRUE);
 		}
 	} else {
-		fprint(2, RC "unknown flag");
+		fprint(2, RC "unknown flag '%c'\n", f);
 		set(FALSE);
 	}
 	return;
