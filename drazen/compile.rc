@@ -378,6 +378,7 @@ if ($Offset) {
 if (~ $COMPILER clang) {
 	CompileOpts = (
 		$CompileOpts
+		$Clobbered
 	)
 	LinkOpts = (
 		$LinkOpts
@@ -463,7 +464,7 @@ fn Compile LinkOneObj { file = $1 obj = () {
 
 ########################################################################################
 ########################################################################################
-echo Compile options: $CompileOpts
+echo Compiler: $COMPILER, Compile options: $CompileOpts
 
 
 ########################################################################################
