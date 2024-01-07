@@ -1,3 +1,5 @@
+#ifndef EDIT_H_INCLUDE
+#define EDIT_H_INCLUDE
 extern bool editing;
 
 extern void *edit_begin(int fd);
@@ -10,3 +12,4 @@ extern void edit_prompt(void *, char *);
 extern void edit_end(void *);
 
 extern void edit_reset(void *);
+#endif
