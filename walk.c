@@ -9,7 +9,6 @@
 #include <unistd.h>
 
 #include "jbwrap.h"
-#include "wait.h"
 
 /*
    global which indicates whether rc is executing a test;

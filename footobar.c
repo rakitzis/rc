@@ -220,8 +220,8 @@ extern char *get_name(char *s) {
 					break;
 				}
 			}
-			/* FALLTHROUGH */
 #endif
+			/* FALLTHROUGH */
 		default:
 			*r++ = c;
 			break;
