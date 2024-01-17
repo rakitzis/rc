@@ -293,7 +293,9 @@ static void b_flag(char **av) {
 		case 'l':
 			  if (mode != 2) goto flag_immutable;
 			  flagp = &dashell; break;
-		case 'n': flagp = &dashen; break;
+		case 'n':
+			  if (mode != 2) goto flag_immutable;
+			  flagp = &dashen; break;
 		case 'o':
 			  if (mode != 2) goto flag_immutable;
 			  flagp = &dashoh; break;
