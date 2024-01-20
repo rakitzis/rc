@@ -1085,3 +1085,22 @@ if (! ~ $x(1) builtin || ! ~ $x(2) false) {
 	fail '"false" is not builtin'
 }
 
+#############################################################################
+for (x in A
+          B
+          C) {
+	if (~ $x B) {
+		break
+	}
+}
+if (! ~ $x B) {
+	fail 'break in for loop with nlwords'
+}
+
+x = (A B C)
+y = ${ echo $x(2
+               3
+               1) }
+if (! ~ $y(1)^$y(2)^$y(3) BCA) {
+	fail '$var(nlwords)'
+}
