@@ -1770,10 +1770,6 @@ If no argument is given, the current value of
 .Cr $status
 is used.
 .TP
-\fBkill \fR[-\fIsigname\fR|-\fIsignum\fR] \fIprocess\fR ...
-Kills \fIprocesses\fR by sending the signal specified by \fIsigname\fR or \fIsignum\fR.
-If neither signal name nor signal number is specified, uses signal SIGTERM.
-.TP
 \fBfalse
 Returns non-zero exit status (``false'' in Unix).
 .TP
@@ -1806,6 +1802,10 @@ flag, which may have been set by
 .Cr -i
 on the command line, or if standard input was a terminal; there is no
 .Cr "flag I" .
+.TP
+\fBkill \fR[-\fIsigname\fR|-\fIsignum\fR] \fIprocess\fR ...
+Kills \fIprocesses\fR by sending the signal specified by \fIsigname\fR or \fIsignum\fR.
+If neither signal name nor signal number is specified, uses signal SIGTERM.
 .TP
 \fBlimit \fR[\fB\-h\fR] [\fIresource \fR[\fIvalue\fR]]
 Similar to the
