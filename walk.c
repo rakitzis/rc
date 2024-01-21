@@ -261,6 +261,7 @@ top:	sigchk();
 		} else if (dofork(parent)) {
 			setsigdefaults(FALSE);
 			walk(n->u[1].p, TRUE); /* Do redirections */
+			doredirs();
 			redirq = NULL;   /* Reset redirection queue */
 			walk(n->u[0].p, FALSE); /* Do commands */
 			rc_exit(getstatus());
@@ -268,12 +269,10 @@ top:	sigchk();
 		}
 		break;
 	case nEpilog:
-		qredir(n->u[0].p);
-		if (n->u[1].p != NULL) {
-			WALK(n->u[1].p, parent); /* Do more redirections. */
-		} else {
-			doredirs();	/* Okay, we hit the bottom. */
+		if (n->u[0].p != NULL) {
+			WALK(n->u[0].p, parent); /* Do more redirections. */
 		}
+		qredir(n->u[1].p);
 		break;
 	case nNmpipe:
 		rc_error("named pipes cannot be executed as commands");
