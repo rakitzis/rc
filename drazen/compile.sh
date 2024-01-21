@@ -1,3 +1,6 @@
+#! /bin/sh
+
+{
 ## On Linux
 ## ./configure --with-addon
 ## On Mac
@@ -138,4 +141,4 @@ file=tripping
 Compile $file
 LinkOne $file
 ##########################################################################
-
+} 2>&1 | tee compile-sh.log

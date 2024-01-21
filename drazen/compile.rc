@@ -608,7 +608,7 @@ LinkOneObj history
 $COMPILER --version
 exit $STATUS
 
-} >[2=1] | tee comp.log
+} >[2=1] | tee compile.log
 
 
 
