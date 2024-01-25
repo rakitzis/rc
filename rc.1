@@ -2118,7 +2118,7 @@ paren: '(' body ')'
 
 assign: first optcaret '=' optcaret word
 
-epilog: /* empty */ | redir epilog
+epilog: /* empty */ | epilog redir
 
 redir : DUP | REDIR word | SREDIR word
 

@@ -1,15 +1,17 @@
-For my scripts the most useful additions have been 'let' and 'continue'
+For my scripts the most useful additions have been 'calc' and 'continue'
 ${com} made scripts nicer.
 
 ---------------------------------------------------------------------
-let builtin
-    let 'EXP'
-    let 'v=EXP'
-    let v 'EXP'
+calc builtin
+    calc 'EXP'
+    calc 'v=EXP'
+    calc 1 + 2
+    calc '4 / 2'
     
     Borrowed from ksh and bash.
 
 ---------------------------------------------------------------------
+# continue was merged to rakitzis
 continue builtin
     while (cmd1) {
         if (cmd2) {
@@ -21,7 +23,7 @@ continue builtin
     Builtin 'break' was present - add 'continue' for completeness
 
 ---------------------------------------------------------------------
-kill builtin
+builtins: kill, true, false
     Borrowed from ksh and bash.
 
 ---------------------------------------------------------------------
