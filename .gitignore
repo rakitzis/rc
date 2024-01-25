@@ -11,7 +11,5 @@ version.h
 history
 mksignal
 mkstatval
-calc.h
-calc.c
 rc
 tripping
