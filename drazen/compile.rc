@@ -422,14 +422,17 @@ fn CompileWithOpts LinkWithOpts { cmd = () securityOpts = () allOpts = () {
 
 ########################################################################################
 headers = (
+	config
 	edit
 	getgroups
 	input
 	jbwrap
+	parse
 	proto
 	rc
 	rlimit
 	stat
+	version
 	wait
 )^.h
 if ($AddOn) {
