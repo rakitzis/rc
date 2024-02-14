@@ -582,6 +582,7 @@ fn RunYacc { stem = () args = () yFile = () cFile = () hFile = () run = () {
 			echo $RunPfx $cmd
 		} else {
 			echo YACC $yFile
+			echo $cmd
 		}
 		$cmd
 	}
