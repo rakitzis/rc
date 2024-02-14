@@ -817,6 +817,7 @@ YYPARSE_DECL()
 
     /* variables for the parser stack */
     YYSTACKDATA yystack;
+    (void)(yynerrs);
 #if YYBTYACC
 
     /* Current parser state */
@@ -1407,105 +1408,105 @@ case 1:
 	{	assert('\0' == lexData->m_Indent[0]);
 			lexData->m_CalcResult = yystack.l_mark[0].m_Val;
 		}
-#line 1411 "calc.c"
+#line 1412 "calc.c"
 break;
 case 2:
 #line 73 "calc.y"
 	{	assert('\0' != lexData->m_Indent[0]);
 			lexData->m_CalcResult = yystack.l_mark[0].m_Val;
 		}
-#line 1418 "calc.c"
+#line 1419 "calc.c"
 break;
 case 3:
 #line 80 "calc.y"
 	{	assert('\0' != lexData->m_Indent[0]);
 			yyval.m_Val = yystack.l_mark[0].m_Val;
 		}
-#line 1425 "calc.c"
+#line 1426 "calc.c"
 break;
 case 4:
 #line 85 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val || yystack.l_mark[0].m_Val; }
-#line 1430 "calc.c"
+#line 1431 "calc.c"
 break;
 case 5:
 #line 86 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val && yystack.l_mark[0].m_Val; }
-#line 1435 "calc.c"
+#line 1436 "calc.c"
 break;
 case 6:
 #line 87 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val | yystack.l_mark[0].m_Val; }
-#line 1440 "calc.c"
+#line 1441 "calc.c"
 break;
 case 7:
 #line 88 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val ^ yystack.l_mark[0].m_Val; }
-#line 1445 "calc.c"
+#line 1446 "calc.c"
 break;
 case 8:
 #line 89 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val & yystack.l_mark[0].m_Val; }
-#line 1450 "calc.c"
+#line 1451 "calc.c"
 break;
 case 9:
 #line 90 "calc.y"
 	{ yyval.m_Val = (yystack.l_mark[-2].m_Val == yystack.l_mark[0].m_Val); }
-#line 1455 "calc.c"
+#line 1456 "calc.c"
 break;
 case 10:
 #line 91 "calc.y"
 	{ yyval.m_Val = (yystack.l_mark[-2].m_Val != yystack.l_mark[0].m_Val); }
-#line 1460 "calc.c"
+#line 1461 "calc.c"
 break;
 case 11:
 #line 92 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val > yystack.l_mark[0].m_Val; }
-#line 1465 "calc.c"
+#line 1466 "calc.c"
 break;
 case 12:
 #line 93 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val < yystack.l_mark[0].m_Val; }
-#line 1470 "calc.c"
+#line 1471 "calc.c"
 break;
 case 13:
 #line 94 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val <= yystack.l_mark[0].m_Val; }
-#line 1475 "calc.c"
+#line 1476 "calc.c"
 break;
 case 14:
 #line 95 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val >= yystack.l_mark[0].m_Val; }
-#line 1480 "calc.c"
+#line 1481 "calc.c"
 break;
 case 15:
 #line 97 "calc.y"
 	{	const CalcValue v3 = yystack.l_mark[0].m_Val;
 			yyval.m_Val = (v3 >= 0) ? (yystack.l_mark[-2].m_Val << v3) : (yystack.l_mark[-2].m_Val >> (-v3));
 		}
-#line 1487 "calc.c"
+#line 1488 "calc.c"
 break;
 case 16:
 #line 101 "calc.y"
 	{	const CalcValue v3 = yystack.l_mark[0].m_Val;
 			yyval.m_Val = (v3>=0) ? (yystack.l_mark[-2].m_Val >> v3) : (yystack.l_mark[-2].m_Val << (-v3));
 		}
-#line 1494 "calc.c"
+#line 1495 "calc.c"
 break;
 case 17:
 #line 104 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val + yystack.l_mark[0].m_Val; }
-#line 1499 "calc.c"
+#line 1500 "calc.c"
 break;
 case 18:
 #line 105 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val - yystack.l_mark[0].m_Val; }
-#line 1504 "calc.c"
+#line 1505 "calc.c"
 break;
 case 19:
 #line 106 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-2].m_Val * yystack.l_mark[0].m_Val; }
-#line 1509 "calc.c"
+#line 1510 "calc.c"
 break;
 case 20:
 #line 108 "calc.y"
@@ -1516,7 +1517,7 @@ case 20:
 			}
 			yyval.m_Val = yystack.l_mark[-2].m_Val / (v3);
 		}
-#line 1520 "calc.c"
+#line 1521 "calc.c"
 break;
 case 21:
 #line 116 "calc.y"
@@ -1527,27 +1528,27 @@ case 21:
 			}
 			yyval.m_Val = yystack.l_mark[-2].m_Val % (v3);
 		}
-#line 1531 "calc.c"
+#line 1532 "calc.c"
 break;
 case 22:
 #line 123 "calc.y"
 	{ yyval.m_Val = !yystack.l_mark[0].m_Val; }
-#line 1536 "calc.c"
+#line 1537 "calc.c"
 break;
 case 23:
 #line 124 "calc.y"
 	{ yyval.m_Val = ~yystack.l_mark[0].m_Val; }
-#line 1541 "calc.c"
+#line 1542 "calc.c"
 break;
 case 24:
 #line 125 "calc.y"
 	{ yyval.m_Val = -yystack.l_mark[0].m_Val; }
-#line 1546 "calc.c"
+#line 1547 "calc.c"
 break;
 case 25:
 #line 126 "calc.y"
 	{ yyval.m_Val = +yystack.l_mark[0].m_Val; }
-#line 1551 "calc.c"
+#line 1552 "calc.c"
 break;
 case 26:
 #line 128 "calc.y"
@@ -1558,19 +1559,19 @@ case 26:
 			}
 			yyval.m_Val = CalcPower(yystack.l_mark[-2].m_Val, v3);
 		}
-#line 1562 "calc.c"
+#line 1563 "calc.c"
 break;
 case 27:
 #line 135 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[-1].m_Val; }
-#line 1567 "calc.c"
+#line 1568 "calc.c"
 break;
 case 28:
 #line 136 "calc.y"
 	{ yyval.m_Val = yystack.l_mark[0].m_Val; }
-#line 1572 "calc.c"
+#line 1573 "calc.c"
 break;
-#line 1574 "calc.c"
+#line 1575 "calc.c"
     default:
         break;
     }
