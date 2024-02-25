@@ -14,6 +14,8 @@ fn Error { echo >[1=2] $* }
 fn Fatal { Error $*; exit 1 }
 
 fn qMacOS { s=() {
+	# Use `{} rather than ${} because then this script can be used with rc built from
+	# rakitzis/main branch (Byron's repo).
 	s=`{uname -s}
 	switch ($s) {
 	case Darwin
