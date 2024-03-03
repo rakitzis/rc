@@ -45,35 +45,35 @@ static struct BuiltinMap {
 	builtin_t *p;
 	char *name;
 } builtins[] = {
-	{ b_dot,		"." },
-	{ b_break,	"break" },
-	{ b_builtin,	"builtin" },
+	{ b_dot,        "." },
+	{ b_break,      "break" },
+	{ b_builtin,    "builtin" },
 #ifdef RC_ADDON
-	{ b_calc,		"calc" },
+	{ b_calc,       "calc" },
 #endif
-	{ b_cd,		"cd" },
-	{ b_continue,	"continue" },
+	{ b_cd,         "cd" },
+	{ b_continue,   "continue" },
 #if RC_ECHO
-	{ b_echo,	"echo" },
+	{ b_echo,       "echo" },
 #endif
-	{ b_eval,	"eval" },
-	{ b_exec,	"exec" },
-	{ b_exit,	"exit" },
-	{ b_false,  "false" },
-	{ b_flag,	"flag" },
+	{ b_eval,       "eval" },
+	{ b_exec,       "exec" },
+	{ b_exit,       "exit" },
+	{ b_false,      "false" },
+	{ b_flag,       "flag" },
 #ifdef RC_ADDON
-	{ b_kill,		"kill" },
+	{ b_kill,       "kill" },
 #endif
 #if HAVE_SETRLIMIT
-	{ b_limit,	"limit" },
+	{ b_limit,      "limit" },
 #endif
-	{ b_newpgrp,	"newpgrp" },
-	{ b_return,	"return" },
-	{ b_shift,	"shift" },
-	{ b_true,	"true" },
-	{ b_umask,	"umask" },
-	{ b_wait,	"wait" },
-	{ b_whatis,	"whatis" },
+	{ b_newpgrp,    "newpgrp" },
+	{ b_return,     "return" },
+	{ b_shift,      "shift" },
+	{ b_true,       "true" },
+	{ b_umask,      "umask" },
+	{ b_wait,       "wait" },
+	{ b_whatis,     "whatis" },
 #ifdef ADDONS
 	ADDONS
 #endif

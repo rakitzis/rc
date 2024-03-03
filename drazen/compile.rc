@@ -14,7 +14,9 @@ fn Error { echo >[1=2] $* }
 fn Fatal { Error $*; exit 1 }
 
 fn qMacOS { s=() {
-	s=${uname -s}
+	# Use `{} rather than ${} because then this script can be used with rc built from
+	# rakitzis/main branch (Byron's repo).
+	s=`{uname -s}
 	switch ($s) {
 	case Darwin
 		return 0
@@ -51,7 +53,7 @@ EOF
 objDir = ./obj
 FORCE_CLANG = false
 FORCE_GCC = false
-DESCRIPTION = ${git describe || echo '(git description unavailable)'}
+DESCRIPTION = `{git describe || echo '(git description unavailable)'}
 
 Clobber = true
 Yydebug = true
@@ -287,7 +289,7 @@ RegularLinkOpts = (
 )
 
 ########################################################################################
-GIT_COMMIT=${git describe --always}
+GIT_COMMIT=`{git describe --always}
 HASH_BANG=1
 PACKAGE=rc
 VERSION=1.7.4
@@ -583,6 +585,7 @@ fn RunYacc { stem = () args = () yFile = () cFile = () hFile = () run = () {
 			echo $RunPfx $cmd
 		} else {
 			echo YACC $yFile
+			echo $cmd
 		}
 		$cmd
 	}
