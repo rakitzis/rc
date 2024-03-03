@@ -1,5 +1,5 @@
 ########################################################################
-Improve calc to use all args as expression.
+DONE. Improve calc to use all args as expression.
 
 The expression
     calc x=3+4                   (1)
@@ -18,4 +18,3 @@ and
     calc 'x' '3+4'               (5)
 
 ########################################################################
-DONE
