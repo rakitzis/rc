@@ -104,7 +104,6 @@ static void set_var(char *varname, long R)
 	List *val = nnew(List); var->w = nprint("%ld", R);
 	varassign(varname, val, FALSE);
 }
-<<<<<<< HEAD
 #endif
 
 /******************************************************/
@@ -178,8 +177,7 @@ void b_calc(char **av) {
 					len += strlen(av[j]) + 1; /* 1 space between args:(a,b) to 'a b', no to 'ab' */
 				}
 
-				exp = p = nnew_arr(char, len + 1);
-
+				exp = p = nalloc(len + 1);
 				strcpy(p, av[i]); /* guaranteed non-null */
 				p += strlen(av[i++]);
 
@@ -244,6 +242,8 @@ CalcValue CalcPower(const CalcValue A, const CalcValue B) {
 	}
 	return z;
 }
+
+/******************************************************/
 static CalcToken CalcLexer(CalcLexData *lexData, YYSTYPE *calclval) {
 	const char *p;
 	CalcToken tok;

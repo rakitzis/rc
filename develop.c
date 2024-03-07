@@ -1,5 +1,3 @@
-#include "rc.h"
-
 void dump(Node *, int);
 
 /* dump a Node * as a tree */

@@ -125,8 +125,13 @@ static int fdgchar() {
 			rc_raise(eError);
 		}
 		chars_in = (size_t) r;
-		if (chars_in == 0)
+		if (chars_in == 0) {
+			if (interactive && istack->fd == 0 && isatty(0)) {
+				fprint(2, "type `exit' to leave the shell\n");
+				return lastchar = '\n';
+			}
 			return lastchar = EOF;
+		}
 		chars_out = 0;
 		if (dashvee)
 			writeall(2, inbuf, chars_in);
@@ -166,7 +171,7 @@ void termchange(void) {
 /* set up the input stack, and put a "dead" input at the bottom, so that yyparse will always read eof */
 
 extern void initinput() {
-	istack = itop = enew_arr(Input, istacksize = 256);
+	istack = itop = ealloc(istacksize = 256 * sizeof (Input));
 	istack->ungetcount = 0;
 	ugchar(EOF);
 }
@@ -183,8 +188,8 @@ static void pushcommon() {
 	istack->last = lastchar;
 	istack++;
 	idiff = istack - itop;
-	if (idiff >= istacksize) {
-		itop   = erenew_arr(Input, itop, (istacksize *= 2));
+	if (idiff >= istacksize / sizeof (Input)) {
+		itop = erealloc(itop, istacksize *= 2);
 		istack = itop + idiff;
 	}
 	chars_out = 0;
@@ -204,7 +209,7 @@ extern void pushfd(int fd) {
 	} else {
 		istack->t = iFd;
 		istack->gchar = fdgchar;
-		inbuf = enew_arr(char, BUFSIZE);
+		inbuf = ealloc(BUFSIZE);
 	}
 }
 

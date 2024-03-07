@@ -67,7 +67,7 @@ typedef enum redirtype {
 
 
 typedef bool (*Conv)(Format *, int);
-typedef void Sigfunc(int); /* See Advanced Programming in Unix Env - Stevens, section 10.3 */
+/* typedef void Sigfunc(int); */ /* See Advanced Programming in Unix Env - Stevens, section 10.3 */
 
 
 union Edata {
@@ -91,7 +91,7 @@ struct List {
 
 struct Node {
 	nodetype type;
-	union NodeUnion {
+	union {
 		char *s;
 		int i;
 		Node *p;
@@ -174,13 +174,10 @@ enum {
 #define o2u(x) n2u(x, 8)
 #define arraysize(a) ((int)(sizeof(a)/sizeof((a)[0])))
 #define memzero(s, n) memset(s, 0, n)
-#define enew(T) ((T *) ealloc(sizeof(T)))
-#define enew_arr(T,n) ((T *) ealloc((n)*sizeof(T)))
-#define erenew_arr(T,oldp,n) ((T *) erealloc((oldp),(n)*sizeof(T)))
-#define ecpy(s) (strcpy(enew_arr(char, (strlen(s) + 1)), s))
-#define nnew(T) ((T *) nalloc(sizeof(T)))
-#define nnew_arr(T,n) ((T *) nalloc((n)*sizeof(T)))
-#define ncpy(s) (strcpy(nnew_arr(char, (strlen(s) + 1)), s))
+#define enew(x) ((x *) ealloc(sizeof(x)))
+#define ecpy(x) strcpy((char *) ealloc(strlen(x) + 1), x)
+#define nnew(x) ((x *) nalloc(sizeof(x)))
+#define ncpy(x) (strcpy((char *) nalloc(strlen(x) + 1), x))
 #ifndef offsetof
 #define offsetof(t, m) ((size_t) (((char *) &((t *) 0)->m) - (char *)0))
 #endif
@@ -254,44 +251,38 @@ extern List *append(List *, List*);
 extern List *flatten(List *);
 extern List *glom(Node *);
 extern List *concat(List *, List *);
+extern List *varsub(List *, List *);
 extern List *word(char *, char *);
-
-/* fn.c */
-extern Node *fnlookup(char *);
-extern char *fnlookup_string(char *);
-extern void fnassign(char *, Node *);
-extern void fnassign_string(char *);
-extern void fnrm(char *);
-extern void prettyprint_fn(int, char *, Node *);
-
-/* var.c */
-extern void starassign(char *, char **, bool);
-extern List *varlookup(char *);
-extern bool varassign_string(char *);
-extern char *varlookup_string(char *);
-extern void varassign(char *, List *, bool);
-extern void varrm(char *, bool);
-extern void prettyprint_var(int, char *, List *);
 
 /* hash.c */
 extern rc_Function *get_fn_place(char *);
+extern List *varlookup(char *);
+extern Node *fnlookup(char *);
 extern Variable *get_var_place(char *, bool);
+extern bool varassign_string(char *);
 extern char **makeenv(void);
+extern char *fnlookup_string(char *);
+extern char *varlookup_string(char *);
 extern void alias(char *, List *, bool);
+extern void starassign(char *, char **, bool);
 extern void delete_fn(char *);
 extern void delete_var(char *, bool);
+extern void fnassign(char *, Node *);
+extern void fnassign_string(char *);
+extern void fnrm(char *);
 extern void initenv(char **);
 extern void inithash(void);
 extern void set_exportable(char *, bool);
 extern void setsigdefaults(bool);
 extern void inithandler(void);
+extern void varassign(char *, List *, bool);
+extern void varrm(char *, bool);
 extern void whatare_all_vars(bool, bool);
 extern void whatare_all_signals(void);
+extern void prettyprint_var(int, char *, List *);
+extern void prettyprint_fn(int, char *, Node *);
 extern rc_Function *lookup_fn(char* s);
 extern Variable * lookup_var(char* s);
-/*
-extern void *lookup(const char *, Htab *);
-*/
 extern char *compl_name(const char *, int, char**, size_t, ssize_t);
 extern char *compl_fn(const char *, int);
 extern char *compl_var(const char *, int);
@@ -306,6 +297,7 @@ extern bool quotep(char *, bool);
 extern int yylex(void);
 extern void inityy(void);
 extern void yyerror(const char *);
+extern void scanerror(char *);
 extern const char nw[], dnw[];
 
 /* list.c */
@@ -323,6 +315,7 @@ extern void *erealloc(void *, size_t);
 extern void efree(void *);
 extern Block *newblock(void);
 extern void *nalloc(size_t);
+extern void nfree(void);
 extern void restoreblock(Block *);
 
 /* open.c */
@@ -332,14 +325,14 @@ extern bool makesamepgrp(int);
 
 /* print.c */
 /*
- * The following prototype should be:
- *      extern Conv fmtinstall(int, Conv);
- * but this freaks out SGI's compiler under IRIX3.3.2
- * extern bool (*fmtinstall(int, bool (*)(Format *, int)))(Format *, int);
-*/
+   The following prototype should be:
 extern Conv fmtinstall(int, Conv);
-
+   but this freaks out SGI's compiler under IRIX3.3.2
+*/
+extern bool (*fmtinstall(int, bool (*)(Format *, int)))(Format *, int);
+extern int printfmt(Format *, const char *);
 extern int fmtprint(Format *, const char *,...);
+extern void fmtappend(Format *, const char *, size_t);
 extern void fmtcat(Format *, const char *);
 extern int fprint(int fd, const char *fmt,...);
 extern char *mprint(const char *fmt,...);
@@ -357,17 +350,7 @@ extern char *nprint(const char *fmt,...);
 
 /* parse.c (parse.y) */
 extern Node *parsetree;
-
-#if 1
 extern int yyparse(void);
-#else
-typedef int (*lexer_ptr)(void); /* or typedef int (*lexer_ptr)(YYSTYPE*); */
-#define YYPARSE_PARAM_TYPE   lexer_ptr
-#define YYPARSE_PARAM        yylex
-/* #define YYPARSE_PARAM_ARG YYPARSE_PARAM_TYPE YYPARSE_PARAM */
-extern int yyparse(YYPARSE_PARAM_TYPE YYPARSE_PARAM);
-#endif
-
 extern void initparse(void);
 
 /* readline */
@@ -380,10 +363,11 @@ extern void doredirs(void);
 
 /* signal.c */
 extern void initsignal(void);
+extern void catcher(int);
 extern void sigchk(void);
-extern Sigfunc* rc_signal(int, Sigfunc*);
-extern Sigfunc* sys_signal(int, Sigfunc*);
-extern Sigfunc* sighandlers[];
+extern void (*rc_signal(int, void (*)(int)))(int);
+extern void (*sys_signal(int, void (*)(int)))(int);
+extern void (*sighandlers[])(int);
 
 
 /* status.c */
@@ -395,7 +379,7 @@ extern void setstatus(pid_t, int);
 extern void setpipestatuslength(int);
 extern void setpipestatus(int, pid_t, int);
 extern List *sgetstatus(void);
-extern void ssetstatus(char**);
+extern void ssetstatus(char **);
 extern char *strstatus(int s);
 
 

@@ -79,7 +79,7 @@ paren	: '(' body ')'		{ $$ = $2; }
 assign	: first optcaret '=' optcaret word	{ $$ = mk(nAssign,$1,$5); }
 
 epilog	:			{ $$ = NULL; }
-	| redir epilog		{ $$ = mk(nEpilog,$1,$2); }
+	| epilog redir		{ $$ = mk(nEpilog,$1,$2); }
 
 /* a redirection is a dup (e.g., >[1=2]) or a file redirection. (e.g., > /dev/null) */
 redir	: DUP			{ $$ = mk(nDup,$1.type,$1.left,$1.right); }
@@ -106,7 +106,7 @@ cmd	: /* empty */	%prec WHILE		{ $$ = NULL; }
 	| simple
 	| brace epilog				{ $$ = mk(nBrace,$1,$2); }
 	| IF paren optnl iftail			{ $$ = mk(nIf,$2,$4); }
-	| FOR '(' word IN words ')' optnl cmd	{ $$ = mk(nForin,$3,$5,$8); }
+	| FOR '(' word IN nlwords ')' optnl cmd	{ $$ = mk(nForin,$3,$5,$8); }
 	| FOR '(' word ')' optnl cmd		{ $$ = mk(nForin,$3,star,$6); }
 	| WHILE paren optnl cmd			{ $$ = mk(nWhile,$2,$4); }
 	| SWITCH '(' word ')' optnl '{' cbody '}' { $$ = mk(nSwitch,$3,$7); }
@@ -143,7 +143,7 @@ word	: sword
 	| word '^' sword		{ $$ = mk(nConcat,$1,$3); }
 
 comword	: '$' sword			{ $$ = mk(nVar,$2); }
-	| '$' sword SUB words ')'	{ $$ = mk(nVarsub,$2,$4); }
+	| '$' sword SUB nlwords ')'	{ $$ = mk(nVarsub,$2,$4); }
 	| COUNT sword			{ $$ = mk(nCount,$2); }
 	| FLAT sword			{ $$ = mk(nFlat, $2); }
 	| '`' sword			{ $$ = mk(nBackq,nolist,$2); }

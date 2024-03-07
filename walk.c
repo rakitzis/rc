@@ -9,7 +9,6 @@
 #include <unistd.h>
 
 #include "jbwrap.h"
-#include "wait.h"
 
 /*
    global which indicates whether rc is executing a test;
@@ -21,7 +20,7 @@ static bool haspreredir(Node *);
 static bool isallpre(Node *);
 static bool dofork(bool);
 static void dopipe(Node *);
-static void loop_body(Node *n);
+static void loop_body(Node* n);
 
 /* Tail-recursive version of walk() */
 
@@ -109,7 +108,7 @@ top:	sigchk();
 	}
 	case nWhile: {
 		Jbwrap break_jb;
-		Edata break_data;
+		Edata  break_data;
 		Estack break_stack;
 		bool testtrue;
 		const bool oldcond = cond;
@@ -126,7 +125,7 @@ top:	sigchk();
 
 		cond = oldcond;
 		do {
-			Edata iter_data;
+			Edata  iter_data;
 			Estack iter_stack;
 			iter_data.b = newblock();
 			except(eArena, iter_data, &iter_stack);
@@ -144,7 +143,7 @@ top:	sigchk();
 		List *volatile l;
 		List *var = glom(n->u[0].p);
 		Jbwrap break_jb;
-		Edata break_data;
+		Edata  break_data;
 		Estack break_stack;
 		if (sigsetjmp(break_jb.j, 1))
 			break;
@@ -152,7 +151,7 @@ top:	sigchk();
 		except(eBreak, break_data, &break_stack);
 
 		for (l = listcpy(glob(glom(n->u[1].p)), nalloc); l != NULL; l = l->n) {
-			Edata iter_data;
+			Edata  iter_data;
 			Estack iter_stack;
 			assign(var, word(l->w, NULL), FALSE);
 			iter_data.b = newblock();
@@ -179,7 +178,7 @@ top:	sigchk();
 		dopipe(n);
 		break;
 	case nNewfn: {
-		List * l = glom(n->u[0].p);
+		List *l = glom(n->u[0].p);
 		if (l == NULL)
 			rc_error("null function name");
 		while (l != NULL) {
@@ -265,6 +264,7 @@ top:	sigchk();
 		} else if (dofork(parent)) {
 			setsigdefaults(FALSE);
 			walk(n->u[1].p, TRUE); /* Do redirections */
+			doredirs();
 			redirq = NULL;   /* Reset redirection queue */
 			walk(n->u[0].p, FALSE); /* Do commands */
 			rc_exit(getstatus());
@@ -272,12 +272,10 @@ top:	sigchk();
 		}
 		break;
 	case nEpilog:
-		qredir(n->u[0].p);
-		if (n->u[1].p != NULL) {
-			WALK(n->u[1].p, parent); /* Do more redirections. */
-		} else {
-			doredirs();	/* Okay, we hit the bottom. */
+		if (n->u[0].p != NULL) {
+			WALK(n->u[0].p, parent); /* Do more redirections. */
 		}
+		qredir(n->u[1].p);
 		break;
 	case nNmpipe:
 		rc_error("named pipes cannot be executed as commands");
@@ -395,11 +393,11 @@ static void dopipe(Node *n) {
  *             operators: ==, !=, <, >, <=, >=
  *   3. while (! setjmp(args)) {statements}
  *   4. setjmp(args);
- */
+*/
 static void loop_body(Node *nd) {
 	Node *volatile n = nd;
 	Jbwrap cont_jb;
-	Edata cont_data;
+	Edata  cont_data;
 	Estack cont_stack;
 
 	if (sigsetjmp(cont_jb.j, 1) == 0) {

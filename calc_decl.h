@@ -1,5 +1,5 @@
-#ifndef CALC_H_INCLUDE
-#define CALC_H_INCLUDE
+#ifndef CALC_DECL_H_INCLUDE
+#define CALC_DECL_H_INCLUDE
 
 typedef long int CalcValue;
 #include "calc.h"

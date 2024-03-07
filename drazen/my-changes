@@ -1,15 +1,20 @@
-For my scripts the most useful additions have been 'let' and 'continue'
-${com} made scripts nicer.
+For my scripts the most useful additions have been:
+    calc 
+    continue
+    $pwd
+${cmd} as an alias for `{cmd} made scripts nicer.
 
 ---------------------------------------------------------------------
-let builtin
-    let 'EXP'
-    let 'v=EXP'
-    let v 'EXP'
+calc builtin
+    calc 'EXP'
+    calc 'v=EXP'
+    calc 1 + 2
+    calc '4 / 2'
     
     Borrowed from ksh and bash.
 
 ---------------------------------------------------------------------
+# 'continue' was merged to rakitzis
 continue builtin
     while (cmd1) {
         if (cmd2) {
@@ -21,13 +26,15 @@ continue builtin
     Builtin 'break' was present - add 'continue' for completeness
 
 ---------------------------------------------------------------------
-kill builtin
+new builtins: calc, continue, kill, true, false
+    Calc and continue are described above.
     Borrowed from ksh and bash.
 
 ---------------------------------------------------------------------
 ${cmd}
     Equivalent to `{cmd}
-    Suggested on rc github repository.
+    Suggested on rc github repository. Byron's repo does not have it
+    as of March 2024.
 
 ---------------------------------------------------------------------
 $pwd
@@ -51,4 +58,5 @@ $random
 const* char
     Replace 'char*' with 'const char*' in many places.
     Safety.
+    Reverted this to be closer to Byron's rc.
 

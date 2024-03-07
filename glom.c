@@ -9,8 +9,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include "wait.h"
-
 static List *backq(Node *, Node *);
 static List *bqinput(List *, int);
 static List *count(List *);
@@ -63,13 +61,13 @@ extern List *concat(List *s1, List *s2) {
 		size_t x = strlen(s1->w);
 		size_t y = strlen(s2->w);
 		size_t z = x + y + 1;
-		r->w = nnew_arr(char, z);
+		r->w = nalloc(z);
 		strcpy(r->w, s1->w);
 		strcat(r->w, s2->w);
 		if (s1->m == NULL && s2->m == NULL) {
 			r->m = NULL;
 		} else {
-			r->m = nnew_arr(char, z);
+			r->m = nalloc(z);
 			if (s1->m == NULL)
 				memzero(r->m, x);
 			else
@@ -91,7 +89,7 @@ extern List *concat(List *s1, List *s2) {
 	return top;
 }
 
-static List *varsub(List *var, List *subs) {
+extern List *varsub(List *var, List *subs) {
 	List *r, *top;
 	int n = listnel(var);
 	for (top = r = NULL; subs != NULL; subs = subs->n) {
@@ -122,7 +120,7 @@ extern List *flatten(List *s) {
 	if (s == NULL || s->n == NULL)
 		return s;
 	r = nnew(List);
-	f = r->w = nnew_arr(char, listlen(s) + 1);
+	f = r->w = nalloc(listlen(s) + 1);
 	r->m = NULL; /* flattened lists come from variables, so no meta */
 	r->n = NULL;
 	strcpy(f, s->w);
@@ -154,30 +152,28 @@ extern void assign(List *s1, List *s2, bool stack) {
 	List *val = s2;
 	if (s1 == NULL)
 		rc_error("null variable name");
-	else if (s1->n != NULL)
+	if (s1->n != NULL)
 		rc_error("multi-word variable name");
-	else if (*s1->w == '\0')
+	if (*s1->w == '\0')
 		rc_error("zero-length variable name");
-	else if (a2u(s1->w) != -1)
+	if (a2u(s1->w) != -1)
 		rc_error("numeric variable name");
-	else if (strchr(s1->w, '=') != NULL)
+	if (strchr(s1->w, '=') != NULL)
 		rc_error("'=' in variable name");
-	else {
-		if (find_str(s1->w, read_only, arraysize(read_only)) >= 0) {
-			return;
-		}
-		if (*s1->w == '*' && s1->w[1] == '\0')
-			val = append(varlookup("0"), s2); /* preserve $0 when * is assigned explicitly */
-		if (s2 != NULL || stack) {
-			if (dashex)
-				prettyprint_var(2, s1->w, val);
-			varassign(s1->w, val, stack);
-			alias(s1->w, varlookup(s1->w), stack);
-		} else {
-			if (dashex)
-				prettyprint_var(2, s1->w, NULL);
-			varrm(s1->w, stack);
-		}
+	if (find_str(s1->w, read_only, arraysize(read_only)) >= 0) {
+		return;
+	}
+	if (*s1->w == '*' && s1->w[1] == '\0')
+		val = append(varlookup("0"), s2); /* preserve $0 when * is assigned explicitly */
+	if (s2 != NULL || stack) {
+		if (dashex)
+			prettyprint_var(2, s1->w, val);
+		varassign(s1->w, val, stack);
+		alias(s1->w, varlookup(s1->w), stack);
+	} else {
+		if (dashex)
+			prettyprint_var(2, s1->w, NULL);
+		varrm(s1->w, stack);
 	}
 }
 
@@ -196,13 +192,12 @@ static List *bqinput(List *ifs, int fd) {
 	int n, state; /* a simple FSA is used to read in data */
 
 	memzero(isifs, sizeof isifs);
-	for (isifs['\0'] = TRUE; ifs != NULL; ifs = ifs->n) {
+	for (isifs['\0'] = TRUE; ifs != NULL; ifs = ifs->n)
 		for (s = ifs->w; *s != '\0'; s++)
 			isifs[*(unsigned char *)s] = TRUE;
-	}
 	remain = bufsize = BUFSIZE;
 	top = r = nnew(List);
-	r->w = end = nnew_arr(char, bufsize + 1);
+	r->w = end = nalloc(bufsize + 1);
 	r->m = NULL;
 	state = 0;
 	prev = NULL;
@@ -213,7 +208,7 @@ static List *bqinput(List *ifs, int fd) {
 			char *buf;
 			while (bufsize < m + BUFSIZE)
 				bufsize *= 2;
-			buf = nnew_arr(char, bufsize + 1);
+			buf = nalloc(bufsize + 1);
 			memcpy(buf, r->w, m);
 			r->w = buf;
 			end = &buf[m];
@@ -436,27 +431,25 @@ extern List *glom(Node *n) {
 		*/
 		if ((v = glom(n->u[0].p)) == NULL)
 			rc_error("null variable name");
-		else if (v->n != NULL)
+		if (v->n != NULL)
 			rc_error("multi-word variable name");
-		else if (*v->w == '\0')
+		if (*v->w == '\0')
 			rc_error("zero-length variable name");
-		else {
-			v = (*v->w == '*' && v->w[1] == '\0') ? varlookup(v->w)->n : varlookup(v->w);
-			switch (n->type) {
-			default:
-				panic("unexpected node in glom");
-				exit(1);
-				/* NOTREACHED */
-			case nCount:
-				return count(v);
-			case nFlat:
-				return flatten(v);
-			case nVar:
-				return v;
-			case nVarsub:
-				return varsub(v, glom(n->u[1].p));
-			}
+		v = (*v->w == '*' && v->w[1] == '\0') ? varlookup(v->w)->n : varlookup(v->w);
+		switch (n->type) {
+		default:
+			panic("unexpected node in glom");
+			exit(1);
+			/* NOTREACHED */
+		case nCount:
+			return count(v);
+		case nFlat:
+			return flatten(v);
+		case nVar:
+			return v;
+		case nVarsub:
+			return varsub(v, glom(n->u[1].p));
 		}
-		return NULL;
 	}
+	return NULL;
 }

@@ -159,7 +159,7 @@
 .\" the recursion.
 .\"-------
 .if !"\\$4"" .Xf \\$2 \\$1 "\\$3\\f\\$1\\$4\\*(Xi" "\\$5" "\\$6" "\\$7" "\\$8" "\\$9"
-.if "\\$4"" \\$3\fR\s10
+.if "\\$4"" \\$3\fR\s(10
 ..
 .TH RC 1 "2015-05-13"
 .SH NAME
@@ -1770,9 +1770,8 @@ If no argument is given, the current value of
 .Cr $status
 is used.
 .TP
-\fBkill \fR[-\fIsigname\fR|-\fIsignum\fR] \fIprocess\fR ...
-Kills \fIprocesses\fR by sending the signal specified by \fIsigname\fR or \fIsignum\fR.
-If neither signal name nor signal number is specified, uses signal SIGTERM.
+\fBfalse
+Returns non-zero exit status (``false'' in Unix).
 .TP
 \fBflag\fR \fIf\fR [ \fB+\fR | \fB\-\fR ]
 Test, set (\fB+\fR), or reset (\fB\-\fR) command-line flag
@@ -1803,6 +1802,10 @@ flag, which may have been set by
 .Cr -i
 on the command line, or if standard input was a terminal; there is no
 .Cr "flag I" .
+.TP
+\fBkill \fR[-\fIsigname\fR|-\fIsignum\fR] \fIprocess\fR ...
+Kills \fIprocesses\fR by sending the signal specified by \fIsigname\fR or \fIsignum\fR.
+If neither signal name nor signal number is specified, uses signal SIGTERM.
 .TP
 \fBlimit \fR[\fB\-h\fR] [\fIresource \fR[\fIvalue\fR]]
 Similar to the
@@ -1884,6 +1887,9 @@ elements down by
 .IR n .
 .I n
 defaults to 1.
+.TP
+\fBtrue
+Returns zero exit status (``true'' in Unix).
 .TP
 \fBumask \fR[\fImask\fR]
 Sets the current umask (see
@@ -2077,14 +2083,15 @@ grammar, edited to remove semantic actions.
 .Ds
 .ft \*(Cf
 %term ANDAND BACKBACK BANG CASE COUNT DUP ELSE END FLAT FN FOR IF IN
-%term OROR PIPE REDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
+%token OROR PIPE REDIR SREDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
 
 %left     '^' '='
-%left     WHILE ')' ELSE
+%right    ELSE TWIDDLE
+%left     WHILE ')'
 %left     ANDAND OROR '\en'
 %nonassoc BANG SUBSHELL
 %left     PIPE
-%nonassoc REDIR_PREC
+%nonassoc PREDIR /* fictitious */
 %right    '$'
 %left     SUB
 
@@ -2111,16 +2118,17 @@ paren: '(' body ')'
 
 assign: first optcaret '=' optcaret word
 
-epilog: /* empty */ | redir epilog
+epilog: /* empty */ | epilog redir
 
-redir: DUP | REDIR word
+redir : DUP | REDIR word | SREDIR word
 
 case: CASE words ';' | CASE words '\en'
 
 cbody: cmd | case cbody | cmdsan cbody
 
-iftail: cmd	%prec ELSE
-	| brace ELSE optnl cmd
+iftail	: cmd else
+
+else	: /* empty */	%prec ELSE | ELSE optnl cmd
 
 cmd	: /* empty */	%prec WHILE
 	| simple
@@ -2134,16 +2142,16 @@ cmd	: /* empty */	%prec WHILE
 	| cmd ANDAND optnl cmd
 	| cmd OROR optnl cmd
 	| cmd PIPE optnl cmd
-	| redir cmd	%prec BANG
+	| redir cmd	%prec PREDIR
 	| assign cmd	%prec BANG
 	| BANG optcaret cmd
 	| SUBSHELL optcaret cmd
 	| FN words brace
-	| FN words
+	| FN words	%prec ELSE
 
 optcaret: /* empty */ %prec '^' | '^'
 
-simple: first | first args
+simple: first %prec ELSE | first args %prec ELSE
 
 args: arg | args arg
 
@@ -2163,7 +2171,7 @@ comword: '$' sword
 	| '`' brace
 	| '$' brace
 	| BACKBACK word	brace | BACKBACK word sword
-	| '(' words ')'
+	| '(' nlwords ')'
 	| REDIR brace
 	| WORD
 
@@ -2171,6 +2179,8 @@ keyword: FOR | IN | WHILE | IF | SWITCH
 	| FN | ELSE | CASE | TWIDDLE | BANG | SUBSHELL | '='
 
 words: /* empty */ | words word
+
+nlwords : /* empty */ | nlwords '\n' | nlwords word
 
 optnl: /* empty */ | optnl '\en'
 .ft R
