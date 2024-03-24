@@ -29,7 +29,7 @@ extern void writeall(int fd, char *buf, size_t remain) {
 	sigchk();
 }
 
-extern int rc_read(int fd, char *buf, size_t n) {
+extern int rc_read(int fd, const char *buf, size_t n) {
 	ssize_t r;
 
 	if (sigsetjmp(slowbuf.j, 1) == 0) {

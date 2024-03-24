@@ -95,7 +95,7 @@ extern bool q_builtins_ordered(void) {
 	return TRUE;
 }
 
-extern builtin_t *isbuiltin(char *s) {
+extern builtin_t *isbuiltin(const char *s) {
 	const BuiltinMap *pi = &builtins[0], *pj = &builtins[arraysize(builtins)];
 
 	while (pi < pj) {
@@ -422,7 +422,7 @@ static void b_whatis(char **av) {
 	int i, ac, c;
 	List *s;
 	Node *n;
-	char *e;
+	const char *e;
 	for (rc_optind = ac = 0; av[ac] != NULL; ac++)
 		; /* count the arguments for getopt */
 	ess = eff = vee = pee = bee = FALSE;

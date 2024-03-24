@@ -80,17 +80,17 @@ void b_kill(char **av) {
 
 	ret = TRUE;
 	for (/*empty*/; av[p]; ++p) {
-		char *procStr = av[p];
-		pid_t proc = a2u(procStr);
-		if (proc > 0) {
-			const int r = kill(proc, sig);
-			if (r < 0) {
+		const char *const pidStr = av[p];
+		const pid_t pid = a2u(pidStr);
+		if (pid > 0) {
+			const int r = kill(pid, sig);
+			if (r != 0) {
 				ret = FALSE;
-				fprint(2, "failed to kill process %d with signal, return value %d\n", proc, sig, r);
+				fprint(2, "failed to kill process %d with signal %d, return value %d\n", pid, sig, r);
 			}
 		} else {
 			ret = FALSE;
-			fprint(2, "bad process id: %s\n", procStr);
+			fprint(2, "bad process id: %s\n", pidStr);
 		}
 	}
 	set(ret);
@@ -193,7 +193,7 @@ void b_calc(char **av) {
 			parse_status = CalcDoParse(exp, &parse_value, &lexData);
 
 			if (0 == parse_status) {
-				char *varName = &lexData.m_Indent[0];
+				const char *const varName = &lexData.m_Indent[0];
 				if ('\0' != varName[0]) { /* assignment */
 					if (check_var_name(varName)) {
 						List val;

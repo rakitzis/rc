@@ -70,7 +70,7 @@ top:	sigchk();
 		break;
 	}
 	case nAndalso: {
-		bool oldcond = cond;
+		const bool oldcond = cond;
 		cond = TRUE;
 		if (walk(n->u[0].p, TRUE)) {
 			cond = oldcond;
@@ -80,7 +80,7 @@ top:	sigchk();
 		break;
 	}
 	case nOrelse: {
-		bool oldcond = cond;
+		const bool oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) {
 			cond = oldcond;
@@ -93,7 +93,7 @@ top:	sigchk();
 		set(!walk(n->u[0].p, TRUE));
 		break;
 	case nIf: {
-		bool oldcond = cond;
+		const bool oldcond = cond;
 		Node *true_cmd = n->u[1].p, *false_cmd = NULL;
 		if (true_cmd != NULL && true_cmd->type == nElse) {
 			false_cmd = true_cmd->u[1].p;

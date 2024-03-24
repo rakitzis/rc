@@ -141,7 +141,7 @@ static void dud_handler(int ignore) {
    a signal, and set the signal vectors appropriately.
 */
 
-extern void fnassign(char *name, Node *def) {
+extern void fnassign(const char *name, Node *def) {
 	Node *newdef = treecpy(def == NULL ? &null : def, ealloc); /* important to do the treecopy first */
 	rc_Function *new = get_fn_place(name);
 	int i;
@@ -166,7 +166,7 @@ extern void fnassign(char *name, Node *def) {
 
 /* Assign a function from the environment. Store just the external representation */
 
-extern void fnassign_string(char *extdef) {
+extern void fnassign_string(const char *extdef) {
 	char *name = get_name(extdef+3); /* +3 to skip over "fn_" */
 	rc_Function *new;
 	if (name == NULL)
@@ -178,7 +178,7 @@ extern void fnassign_string(char *extdef) {
 
 /* Return a function in Node form, evaluating an entry from the environment if necessary */
 
-extern Node *fnlookup(char *name) {
+extern Node *fnlookup(const char *name) {
 	rc_Function *look = lookup_fn(name);
 	Node *ret;
 	if (look == NULL)
@@ -199,7 +199,7 @@ extern Node *fnlookup(char *name) {
 
 /* Return a function in string form (used by makeenv) */
 
-extern char *fnlookup_string(char *name) {
+extern char *fnlookup_string(const char *name) {
 	rc_Function *look = lookup_fn(name);
 
 	if (look == NULL)
@@ -214,7 +214,7 @@ extern char *fnlookup_string(char *name) {
    handler, restore the signal handler to its default value.
 */
 
-extern void fnrm(char *name) {
+extern void fnrm(const char *name) {
 	int i;
 	for (i = 1; i < NUMOFSIGNALS; i++)
 		if (streq(signals[i].name, name)) {
