@@ -195,7 +195,7 @@ extern char **list2array(List *s, bool print) {
 
 /* figure out the name of a variable given an environment string. */
 
-extern char *get_name(char *s) {
+extern char *get_name(const char *s) {
 	char *eq = strchr(s, '=');
 	char *r, *result;
 	int c;
@@ -232,7 +232,7 @@ extern char *get_name(char *s) {
    ^B escapes a literal ^A or ^B.  For minimal surprise, ^B followed
    by anything other than ^A or ^B is preserved. */
 
-extern List *parse_var(char *extdef) {
+extern List *parse_var(const char *extdef) {
 	char *begin, *end, *from, *to;
 	int len;
 	List *first, *last, *new;
@@ -280,7 +280,7 @@ extern List *parse_var(char *extdef) {
 
 #define PREFIX "fn x"
 #define PRELEN conststrlen(PREFIX)
-extern Node *parse_fn(char *extdef) {
+extern Node *parse_fn(const char *extdef) {
 	Node *def;
 	char *s, old[PRELEN];
 	if ((s = strchr(extdef, '=')) == NULL)
