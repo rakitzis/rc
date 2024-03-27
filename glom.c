@@ -1,14 +1,13 @@
 /* glom.c: builds an argument list out of words, variables, etc. */
 
 #include "rc.h"
+#include "wait.h"
 
 #include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
-
-#include "wait.h"
 
 static List *backq(Node *, Node *);
 static List *bqinput(List *, int);
@@ -146,6 +145,10 @@ static List *count(List *l) {
 }
 
 extern void assign(List *s1, List *s2, bool stack) {
+	static const char* const read_only[] = {
+		"apid", "apids", "bqstatus", "pid", "ppid","pwd", "status",
+	};
+
 	List *val = s2;
 	if (s1 == NULL)
 		rc_error("null variable name");
@@ -157,6 +160,9 @@ extern void assign(List *s1, List *s2, bool stack) {
 		rc_error("numeric variable name");
 	if (strchr(s1->w, '=') != NULL)
 		rc_error("'=' in variable name");
+	if (find_str(s1->w, read_only, arraysize(read_only)) >= 0) {
+		return;
+	}
 	if (*s1->w == '*' && s1->w[1] == '\0')
 		val = append(varlookup("0"), s2); /* preserve $0 when * is assigned explicitly */
 	if (s2 != NULL || stack) {
@@ -445,4 +451,5 @@ extern List *glom(Node *n) {
 			return varsub(v, glom(n->u[1].p));
 		}
 	}
+	return NULL;
 }

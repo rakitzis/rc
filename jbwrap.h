@@ -1,3 +1,5 @@
+#ifndef JBWRAP_H_INCLUDE
+#define JBWRAP_H_INCLUDE
 #include <setjmp.h>
 
 /* If we have POSIX sigjmp_buf and friends, use them.  If we don't, just
@@ -21,3 +23,4 @@ worth it. */
 struct Jbwrap {
 	sigjmp_buf j;
 };
+#endif

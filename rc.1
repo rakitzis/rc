@@ -1191,6 +1191,11 @@ substitution:
 returns a list formed from the standard output of the command in braces.
 .Cr $ifs
 is used to split the output into list elements.
+Alternative syntax for backquote substitution is:
+.Ds
+.Cr "${ command }"
+.De
+.PP
 By default,
 .Cr $ifs
 has the value space-tab-newline.
@@ -1474,6 +1479,12 @@ If this function is defined, then it gets executed every time
 is about to print
 .Cr "$prompt(1)" .
 .TP
+.Cr random " (no-export)"
+Returns a new random value each time it is referenced via 
+.I $random 
+(using a random number generator).
+To restart the random number generator, assign a positive integer value to the variable random.
+.TP
 .Cr status " (no-export read-only)"
 The exit status of the last command.
 If the command exited with a numeric value, that number is the status.
@@ -1679,6 +1690,16 @@ is a non-terminating recursion, which will cause
 .Cr rc
 to exhaust its stack space and (eventually) terminate if it is executed.
 .TP
+\fBcalc \fR[-p] [\fIvarname\fR=]\fIexpression\fR
+Evaluates signed integer arithmetic \fIexpression\fR.
+Sets status to 0 if the value of the expression is non-zero,
+to 1 if the value is zero, and to 2 if the expression is malformed.
+If \fIvarname=\fR is present, assigns the value of the expression
+to the variable \fIvarname\fR.
+If [-p] is present, the value of the expression is displayed on stdout.
+The expression is \fInot\fR limited to one argument; all arguments other than
+the optional [-p] are concatenated together to form the expression.
+.TP
 \fBcd \fR[\fIdirectory\fR]
 Changes the current directory to
 .IR directory .
@@ -1749,6 +1770,9 @@ If no argument is given, the current value of
 .Cr $status
 is used.
 .TP
+\fBfalse
+Returns non-zero exit status (``false'' in Unix).
+.TP
 \fBflag\fR \fIf\fR [ \fB+\fR | \fB\-\fR ]
 Test, set (\fB+\fR), or reset (\fB\-\fR) command-line flag
 .IR f .
@@ -1778,6 +1802,10 @@ flag, which may have been set by
 .Cr -i
 on the command line, or if standard input was a terminal; there is no
 .Cr "flag I" .
+.TP
+\fBkill \fR[-\fIsigname\fR|-\fIsignum\fR] \fIprocess\fR ...
+Kills \fIprocesses\fR by sending the signal specified by \fIsigname\fR or \fIsignum\fR.
+If neither signal name nor signal number is specified, uses signal SIGTERM.
 .TP
 \fBlimit \fR[\fB\-h\fR] [\fIresource \fR[\fIvalue\fR]]
 Similar to the
@@ -1859,6 +1887,9 @@ elements down by
 .IR n .
 .I n
 defaults to 1.
+.TP
+\fBtrue
+Returns zero exit status (``true'' in Unix).
 .TP
 \fBumask \fR[\fImask\fR]
 Sets the current umask (see
@@ -2052,15 +2083,17 @@ grammar, edited to remove semantic actions.
 .Ds
 .ft \*(Cf
 %term ANDAND BACKBACK BANG CASE COUNT DUP ELSE END FLAT FN FOR IF IN
-%term OROR PIPE REDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
+%token OROR PIPE REDIR SREDIR SUB SUBSHELL SWITCH TWIDDLE WHILE WORD HUH
 
-%left '^' '='
-%left WHILE ')' ELSE
-%left ANDAND OROR '\en'
-%left BANG SUBSHELL
-%left PIPE
-%right '$'
-%left SUB
+%left     '^' '='
+%right    ELSE TWIDDLE
+%left     WHILE ')'
+%left     ANDAND OROR '\en'
+%nonassoc BANG SUBSHELL
+%left     PIPE
+%nonassoc PREDIR /* fictitious */
+%right    '$'
+%left     SUB
 
 %start rc
 
@@ -2085,16 +2118,17 @@ paren: '(' body ')'
 
 assign: first optcaret '=' optcaret word
 
-epilog: /* empty */ | redir epilog
+epilog: /* empty */ | epilog redir
 
-redir: DUP | REDIR word
+redir : DUP | REDIR word | SREDIR word
 
 case: CASE words ';' | CASE words '\en'
 
 cbody: cmd | case cbody | cmdsan cbody
 
-iftail: cmd	%prec ELSE
-	| brace ELSE optnl cmd
+iftail	: cmd else
+
+else	: /* empty */	%prec ELSE | ELSE optnl cmd
 
 cmd	: /* empty */	%prec WHILE
 	| simple
@@ -2108,16 +2142,16 @@ cmd	: /* empty */	%prec WHILE
 	| cmd ANDAND optnl cmd
 	| cmd OROR optnl cmd
 	| cmd PIPE optnl cmd
-	| redir cmd	%prec BANG
+	| redir cmd	%prec PREDIR
 	| assign cmd	%prec BANG
 	| BANG optcaret cmd
 	| SUBSHELL optcaret cmd
 	| FN words brace
-	| FN words
+	| FN words	%prec ELSE
 
 optcaret: /* empty */ %prec '^' | '^'
 
-simple: first | first args
+simple: first %prec ELSE | first args %prec ELSE
 
 args: arg | args arg
 
@@ -2135,8 +2169,9 @@ comword: '$' sword
 	| FLAT sword
 	| '`' sword
 	| '`' brace
+	| '$' brace
 	| BACKBACK word	brace | BACKBACK word sword
-	| '(' words ')'
+	| '(' nlwords ')'
 	| REDIR brace
 	| WORD
 
@@ -2144,6 +2179,8 @@ keyword: FOR | IN | WHILE | IF | SWITCH
 	| FN | ELSE | CASE | TWIDDLE | BANG | SUBSHELL | '='
 
 words: /* empty */ | words word
+
+nlwords : /* empty */ | nlwords '\n' | nlwords word
 
 optnl: /* empty */ | optnl '\en'
 .ft R
@@ -2249,6 +2286,11 @@ Backquotes are slightly different in Tenth Edition
 a backquote must always be followed by a left-brace.
 This restriction is not present for single-word commands in this
 .IR rc .
+Furthermore, Tenth Edition
+.IR rc
+does not support 
+.B "${cmd}"
+syntax.
 .PP
 For
 .Cr .

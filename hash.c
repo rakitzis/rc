@@ -13,12 +13,12 @@
 
 static bool var_exportable(char *);
 static bool fn_exportable(char *);
-static int hash(char *, int);
-static int find(char *, Htab *, int);
+static int hash(const char *, int);
+static int find(const char *, Htab *, int);
 static void free_fn(rc_Function *);
 
-Htab *fp;
-Htab *vp;
+static Htab *fp;
+static Htab *vp;
 static int fused, fsize, vused, vsize;
 static char **env;
 static int bozosize;
@@ -39,21 +39,22 @@ extern void inithash() {
 		vpp->name = fpp->name = NULL;
 }
 
-#define ADV()   {if ((c = *s++) == '\0') break;}
+#define ADV()   {if ((c = (*s++) & 0xff) == '\0') break;}
 
 /* hash function courtesy of paul haahr */
 
-static int hash(char *s, int size) {
-	int c, n = 0;
+static int hash(const char *s, int size) {
+	unsigned int c;
+	int n = 0;
 	while (1) {
 		ADV();
-		n += (c << 17) ^ (c << 11) ^ (c << 5) ^ (c >> 1);
+		n += (c << 17u) ^ (c << 11u) ^ (c << 5u) ^ (c >> 1u);
 		ADV();
-		n ^= (c << 14) + (c << 7) + (c << 4) + c;
+		n ^= (c << 14u) + (c << 7u) + (c << 4u) + c;
 		ADV();
-		n ^= (~c << 11) | ((c << 3) ^ (c >> 1));
+		n ^= (~c << 11u) | ((c << 3u) ^ (c >> 1u));
 		ADV();
-		n -= (c << 16) | (c << 9) | (c << 2) | (c & 3);
+		n -= (c << 16u) | (c << 9u) | (c << 2u) | (c & 3u);
 	}
 	if (n < 0)
 		n = ~n;
@@ -86,7 +87,7 @@ static bool rehash(Htab *ht) {
 				j &= (newsize - 1);
 			}
 			newhtab[j].name = ht[i].name;
-			newhtab[j].p = ht[i].p;
+			newhtab[j].u = ht[i].u;
 		}
 	if (ht == fp) {
 		fused = newused;
@@ -104,7 +105,7 @@ static bool rehash(Htab *ht) {
 #define varfind(s) find(s, vp, vsize)
 #define fnfind(s) find(s, fp, fsize)
 
-static int find(char *s, Htab *ht, int size) {
+static int find(const char *s, Htab *ht, int size) {
 	int h = hash(s, size);
 	while (ht[h].name != NULL && !streq(ht[h].name, s)) {
 		h++;
@@ -113,12 +114,17 @@ static int find(char *s, Htab *ht, int size) {
 	return h;
 }
 
-extern void *lookup(char *s, Htab *ht) {
-	int h = find(s, ht, ht == fp ? fsize : vsize);
-	return (ht[h].name == NULL) ? NULL : ht[h].p;
+extern rc_Function *lookup_fn(const char *s) {
+	int h = find(s, fp, fsize);
+	return (fp[h].name == NULL) ? NULL : fp[h].u.f;
 }
 
-extern rc_Function *get_fn_place(char *s) {
+extern Variable *lookup_var(const char *s) {
+	int h = find(s, vp, vsize);
+	return (vp[h].name == NULL) ? NULL : vp[h].u.v;
+}
+
+extern rc_Function *get_fn_place(const char *s) {
 	int h = fnfind(s);
 	env_dirty = TRUE;
 	if (fp[h].name == NULL) {
@@ -126,13 +132,13 @@ extern rc_Function *get_fn_place(char *s) {
 			h = fnfind(s);
 		fused++;
 		fp[h].name = ecpy(s);
-		fp[h].p = enew(rc_Function);
+		fp[h].u.f = enew(rc_Function);
 	} else
-		free_fn(fp[h].p);
-	return fp[h].p;
+		free_fn(fp[h].u.f);
+	return fp[h].u.f;
 }
 
-extern Variable *get_var_place(char *s, bool stack) {
+extern Variable *get_var_place(const char *s, bool stack) {
 	Variable *new;
 	int h = varfind(s);
 
@@ -143,16 +149,16 @@ extern Variable *get_var_place(char *s, bool stack) {
 			h = varfind(s);
 		vused++;
 		vp[h].name = ecpy(s);
-		vp[h].p = enew(Variable);
-		((Variable *)vp[h].p)->n = NULL;
-		return vp[h].p;
+		vp[h].u.v = enew(Variable);
+		vp[h].u.v->n = NULL;
+		return vp[h].u.v;
 	} else {
 		if (stack) {	/* increase the stack by 1 */
 			new = enew(Variable);
-			new->n = vp[h].p;
-			return vp[h].p = new;
+			new->n = vp[h].u.v;
+			return vp[h].u.v = new;
 		} else {	/* trample the top of the stack */
-			new = vp[h].p;
+			new = vp[h].u.v;
 			efree(new->extdef);
 			listfree(new->def);
 			return new;
@@ -160,13 +166,13 @@ extern Variable *get_var_place(char *s, bool stack) {
 	}
 }
 
-extern void delete_fn(char *s) {
+extern void delete_fn(const char *s) {
 	int h = fnfind(s);
 	if (fp[h].name == NULL)
 		return; /* not found */
 	env_dirty = TRUE;
-	free_fn(fp[h].p);
-	efree(fp[h].p);
+	free_fn(fp[h].u.f);
+	efree(fp[h].u.f);
 	efree(fp[h].name);
 	if (fp[(h+1)&(fsize-1)].name == NULL) {
 		--fused;
@@ -176,18 +182,18 @@ extern void delete_fn(char *s) {
 	}
 }
 
-extern void delete_var(char *s, bool stack) {
+extern void delete_var(const char *s, bool stack) {
 	int h = varfind(s);
 	Variable *v;
 	if (vp[h].name == NULL)
 		return; /* not found */
 	env_dirty = TRUE;
-	v = vp[h].p;
+	v = vp[h].u.v;
 	efree(v->extdef);
 	listfree(v->def);
 	if (v->n != NULL) { /* This is the top of a stack */
 		if (stack) { /* pop */
-			vp[h].p = v->n;
+			vp[h].u.v = v->n;
 			efree(v);
 		} else { /* else just empty */
 			v->extdef = NULL;
@@ -195,7 +201,7 @@ extern void delete_var(char *s, bool stack) {
 		}
 	} else { /* needs to be removed from the hash table */
 		efree(v);
-		vp[h].p = NULL;
+		vp[h].u.v = NULL; /* vp[hp].u.v == v */
 		efree(vp[h].name);
 		if (vp[(h+1)&(vsize-1)].name == NULL) {
 			--vused;
@@ -219,8 +225,9 @@ extern void initenv(char **envp) {
 	if (n < HASHSIZE)
 		n = HASHSIZE;
 	env = ealloc((envsize = 2 * n) * sizeof (char *));
+
 	for (; *envp != NULL; envp++)
-		if (strncmp(*envp, "fn_", conststrlen("fn_")) == 0) {
+		if (strncmp_fast(*envp, "fn_", conststrlen("fn_")) == 0) {
 			if (!dashpee)
 				fnassign_string(*envp);
 		} else {
@@ -231,7 +238,7 @@ extern void initenv(char **envp) {
 
 static char *neverexport[] = {
 	"apid", "apids", "bqstatus", "cdpath", "home",
-	"ifs", "path", "pid", "status", "*"
+	"ifs", "path", "pid", "ppid", "pwd", "random", "status", "*"
 };
 
 /* for a few variables that have default values, we export them only
@@ -246,7 +253,7 @@ static struct nameflag maybeexport[] = {
 	{ "version", FALSE }
 };
 
-void set_exportable(char *s, bool b) {
+void set_exportable(const char *s, bool b) {
 	int i;
 	for (i = 0; i < arraysize(maybeexport); ++i)
 		if (maybeexport[i].flag != b && streq(s, maybeexport[i].name))
@@ -266,7 +273,7 @@ static bool var_exportable(char *s) {
 
 static bool fn_exportable(char *s) {
 	int i;
-	if (strncmp(s, "sig", conststrlen("sig")) == 0) { /* small speed hack */
+	if (strncmp_fast(s, "sig", conststrlen("sig")) == 0) { /* small speed hack */
 		for (i = 0; i < NUMOFSIGNALS; i++)
 			if (streq(s, signals[i].name))
 				return FALSE;

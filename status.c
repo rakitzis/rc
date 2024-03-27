@@ -42,6 +42,25 @@ extern int getstatus() {
 	return WEXITSTATUS(s);
 }
 
+extern void setN(int code) {
+	int scode = 0;
+	switch (code) {
+	case 0:
+		scode = STATUS0;
+		break;
+	case 1:
+		scode = STATUS1;
+		break;
+	case 2:
+		scode = STATUS2;
+		break;
+	default:
+		scode = STATUS1;
+		break;
+	}
+	setstatus(-1, scode);
+}
+
 extern void set(bool code) {
 	setstatus(-1, code ? STATUS0 : STATUS1);
 }
@@ -67,8 +86,8 @@ extern void setpipestatus(int i, pid_t pid, int stat) {
 	statprint(pid, stat);
 }
 
-/* 
-   Print a message if called from the wait builitin in an interactive 
+/*
+   Print a message if called from the wait builitin in an interactive
    shell or termination was with a signal and it is not sigint and
    sigpipe or the child dumped core. Exit on error if -e is set.
 */
@@ -124,13 +143,17 @@ extern char *strstatus(int s) {
 extern void ssetstatus(char **av) {
 	int i, j, k, l;
 	bool found;
+	bool have_err = FALSE;
 	for (l = 0; av[l] != NULL; l++)
 		; /* count up array length */
 	--l;
 	for (i = 0; av[i] != NULL; i++) {
-		j = a2u(av[i]);
+        j = a2u(av[i]);
 		if (j >= 0) {
 			statuses[l - i] = j << 8;
+			if (j > 0) {
+				have_err = TRUE;
+			}
 			continue;
 		}
 		found = FALSE;
@@ -142,7 +165,7 @@ extern void ssetstatus(char **av) {
 			}
 			else {
 				size_t len = strlen(signals[k].name);
-				if (strncmp(signals[k].name, av[i], len) == 0 && streq(av[i] + len, "+core")) {
+				if (strncmp_fast(signals[k].name, av[i], len) == 0 && streq(av[i] + len, "+core")) {
 					statuses[l - i] = k + 0x80;
 					found = TRUE;
 					break;
@@ -154,6 +177,10 @@ extern void ssetstatus(char **av) {
 			set(FALSE);
 			return;
 		}
+		have_err = TRUE;
 	}
 	pipelength = i;
+	if (have_err && dashee && !cond) {
+		rc_exit(getstatus());
+	}
 }

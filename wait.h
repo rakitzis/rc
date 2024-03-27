@@ -1,3 +1,5 @@
+#ifndef WAIT_H_INCLUDE
+#define WAIT_H_INCLUDE
 #if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
@@ -21,3 +23,4 @@
 
 
 
+#endif

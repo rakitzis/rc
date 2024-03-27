@@ -1,0 +1,81 @@
+input.c
+    Jbwrap j;
+    Estack e1;
+    Edata jerror;
+
+    sigsetjmp(j.j, 1);
+    jerror.jb = &j;
+    except(eError, jerror, &e1);
+
+walk.c
+    case nWhile:
+        Jbwrap break_jb;
+        Edata  break_data;
+        Estack break_stack;
+
+        if (sigsetjmp(j.j, 1))
+            break;
+        jbreak.jb = &j;
+        except(eBreak, jbreak, &e1);
+
+                    Jbwrap cont_jb;
+                    Edata  cont_data;
+                    Estack cont_stack;
+                    if (sigsetjmp(cont_jb.j, 1) == 0) {
+                        cont_data.jb = &cont_jb;
+                        except(eContinue, cont_data, &cont_stack);
+                        ...
+                    }
+
+    case nForin:
+        if (sigsetjmp(j.j, 1))
+            break;
+        jbreak.jb = &j;
+        except(eBreak, jbreak, &e1);
+
+                    Jbwrap cont_jb;
+                    Edata  cont_data;
+                    Estack cont_stack;
+                    if (sigsetjmp(cont_jb.j, 1) == 0) {
+                        cont_data.jb = &cont_jb;
+                        except(eContinue, cont_data, &cont_stack);
+                    }
+
+builtins.c
+    Jbwrap j;
+    Estack e1, e2;
+    Edata jreturn;
+
+    if (sigsetjmp(j.j, 1))
+        return;
+    starassign(*av, av+1, TRUE);
+    jreturn.jb = &j;
+    star.name = "*";
+    except(eReturn, jreturn, &e1);
+
+/****************************************************************************/
+The only required dependence is that
+    jbreak.jb = &j
+must be precede
+    except(enum ecodes e, union Edata data, struct Estack* ex);
+because data is copied to head Estack var estack which copies data.jb.
+For the construct 
+    if (sigsetjmp()) {
+        cont_data.jb = &cont_jb;
+        except(eContinue, cont_data, &cont_stack);
+    }
+sigsetjmp() is first, so we choose everywhere the same order 
+    sigsetjmp();
+    Edata.jb = &Jbwrap;
+    except(e, Edata, &Estack);
+
+/****************************************************************************/
+In input.c there is another requirement:
+    except(eError, jerror, &e1);
+must be called before
+    setjmp(j.j, 1);
+
+The reason is that after parsing error longjmp() comes back to this setjmp(j.j,1)
+and since the second time except() is not called (because it is after setjmp),
+unexcept(eError) will encounter an empty stack.
+

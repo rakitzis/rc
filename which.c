@@ -47,7 +47,7 @@ static int ingidset(gid_t g) {
    Returns a bool instead of this -1 nonsense.
 */
 
-bool rc_access(char *path, bool verbose, struct stat *stp) {
+bool rc_access(const char *path, bool verbose, struct stat *stp) {
 	int mask;
 	if (stat(path, stp) != 0) {
 		if (verbose) /* verbose flag only set for absolute pathname */

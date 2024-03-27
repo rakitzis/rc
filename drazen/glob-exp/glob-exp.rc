@@ -1,0 +1,109 @@
+#! /usr/bin/env rc
+
+Script=$0
+fn Error { echo >[1=2] $* }
+fn Fatal { Error $*; exit 1 }
+fn Usage { Fatal Usage: $Script '[--if|--switch|--file|--all|--echo]' '<POSITIVE_NUMBER>' }
+
+DO_IF     = false
+DO_SWITCH = false
+DO_FILE   = false
+ECHO_CMD  = false
+###########################################################################
+while (! ~ $#* 0) {
+    switch (x$1) {
+    case x-if x--if;
+        DO_IF = true
+    case x-switch x--switch x-case x--case;
+        DO_SWITCH = true
+    case x-file x--file x-ls x--ls;
+        DO_FILE = true
+    case x-all x--all
+        DO_IF = true
+        DO_SWITCH = true
+        DO_FILE = true
+    case x-echo x--echo;
+        ECHO_CMD = true
+    case *;
+        break
+    }
+    shift
+}
+
+###########################################################################
+~ $#* 1        || Usage
+calc N=$1      || Usage
+calc $N '<=' 0 && Usage
+
+###########################################################################
+str=''
+i=0
+while (calc $i '<' 100) {
+    str=$str^a
+    calc i=$i+1
+}
+
+###########################################################################
+pat=''
+
+i=0
+while (calc $i '<' $N) {
+    pat=$pat^'a*'
+    calc i=$i+1
+}
+pat=$pat^'b'
+###########################################################################
+
+Shell=rc
+echo 'shell='$Shell', N='$N; echo
+
+fn EvalCmd { cmd=$* a=false{
+    if ($ECHO_CMD) {
+        cmd=$^cmd
+        #whatis cmd
+        echo -n 'Result: '
+    }
+    eval $cmd
+}}
+
+###########################################################################
+###########################################################################
+nl='
+'
+q=''''
+patWithStr='pattern'$nl'    '$pat$nl'with string'$nl'    '$str
+Matches='matches '$patWithStr
+NotMatches='does not match '$patWithStr
+
+#--------------------------------------------------------------------------
+if ($DO_IF) {
+    cmd = ('if (~ ' $str $pat ') { true } else { false }' )
+    if (EvalCmd $cmd) {
+        echo 'rc: '$q'~'$q $Matches 
+    } else {
+        echo 'rc: '$q'~'$q $NotMatches 
+    }
+}
+
+#--------------------------------------------------------------------------
+if ($DO_SWITCH) {
+    echo
+    cmd = ('switch (' $str ') { case ' $pat '; true; case *; false }')
+    if (EvalCmd $cmd) {
+        echo 'rc: ''switch'' '  $Matches 
+    } else {
+        echo 'rc: ''switch'' '  $NotMatches 
+    }
+}
+
+#--------------------------------------------------------------------------
+if ($DO_FILE) {
+    echo
+    test -f $str || touch $str
+    cmd='ls '^$pat
+
+    EvalCmd $cmd
+
+    rm -f $str
+}
+

@@ -88,9 +88,9 @@ extern List *glob(List *s) {
 static List *dmatch(char *d, char *p, char *m) {
 	bool matched;
 	List *top, *r;
-	static DIR *dirp;
-	static struct dirent *dp;
-	static struct stat s;
+	DIR *dirp;
+	struct dirent *dp;
+	struct stat s;
 	int i;
 
 	/*

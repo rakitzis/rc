@@ -6,8 +6,8 @@
 int main(void) {
 	int cstatus, pstatus;
 	pid_t pid;
-	
-	for (cstatus = 0; cstatus < 2; ++cstatus) {
+
+	for (cstatus = 0; cstatus < 3; ++cstatus) {
 		switch (pid = fork()) {
 		case -1:
 			perror("fork");

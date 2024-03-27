@@ -6,7 +6,7 @@
 
 #else
 
-extern void writeall(int fd, char *buf, size_t remain) {
+extern void writeall(int fd, const char *buf, size_t remain) {
 	int i;
 
 	for (i = 0; remain > 0; buf += i, remain -= i)

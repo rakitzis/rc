@@ -3,13 +3,10 @@
 #include "rc.h"
 
 #include <errno.h>
-#include <setjmp.h>
-
-#include "jbwrap.h"
 
 /* print error with line number on noninteractive shells (i.e., scripts) */
 
-extern void pr_error(char *s, int offset) {
+extern void pr_error(const char *s, int offset) {
 	if (s != NULL) {
 		if (interactive)
 			fprint(2, RC "%s\n", s);
@@ -20,7 +17,7 @@ extern void pr_error(char *s, int offset) {
 
 /* our perror */
 
-extern void uerror(char *s) {
+extern void uerror(const char *s) {
 	char *err;
 
 	err = strerror(errno);
@@ -36,7 +33,7 @@ extern void uerror(char *s) {
 
 #define PANICMSG "rc panic: "
 
-extern void panic(char *s) {
+extern void panic(const char *s) {
 	write(2, PANICMSG, conststrlen(PANICMSG));
 	write(2, s, strlen(s));
 	write(2, "!\n", 2);
@@ -45,7 +42,7 @@ extern void panic(char *s) {
 
 /* ascii -> unsigned conversion routines. -1 indicates conversion error. */
 
-extern int n2u(char *s, unsigned int base) {
+extern int n2u(const char *s, unsigned int base) {
 	unsigned int i;
 	for (i = 0; *s != '\0'; s++) {
 		unsigned int j = (unsigned int) *s - '0';
@@ -59,12 +56,12 @@ extern int n2u(char *s, unsigned int base) {
 /* The last word in portable ANSI: a strcmp wrapper for qsort */
 
 extern int starstrcmp(const void *s1, const void *s2) {
-	return strcmp(*(char * const *)s1, *(char * const *)s2);
+	return strcmp_fast(*(char * const *)s1, *(char * const *)s2);
 }
 
 /* tests to see if pathname begins with "/", "./", or "../" */
 
-extern bool isabsolute(char *path) {
+extern bool isabsolute(const char *path) {
 	return path[0] == '/' || (path[0] == '.' && (path[1] == '/' || (path[1] == '.' && path[2] == '/')));
 }
 
@@ -79,3 +76,23 @@ extern int mvfd(int i, int j) {
 	}
 	return 0;
 }
+
+int find_str(const char *const s, const char *const arr[], int sz)
+{
+	const char *const *pi = &arr[0], *const *pj = &arr[sz];
+
+	while (pi < pj) {
+		const char *const *const pm = pi + (pj - pi) / 2;
+		const int c = strcmp_fast(*pm, s);
+		if (c > 0) {
+			pj = pm;
+		} else if (c < 0) {
+			pi = pm + 1;
+		} else {
+			return pm - arr;
+		}
+	}
+
+	return -1;
+}
+

@@ -1,3 +1,5 @@
+#ifndef INPUT_H_INCLUDE
+#define INPUT_H_INCLUDE
 /* initialize the input stack */
 extern void initinput(void);
 
@@ -33,3 +35,4 @@ extern void closefds(void);
 
 /* the last character read */
 extern int lastchar;
+#endif

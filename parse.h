@@ -1,31 +1,36 @@
 #ifndef _yy_defines_h_
 #define _yy_defines_h_
 
-#define ANDAND 257
-#define BACKBACK 258
-#define BANG 259
-#define CASE 260
-#define COUNT 261
-#define DUP 262
-#define ELSE 263
-#define END 264
-#define FLAT 265
-#define FN 266
-#define FOR 267
-#define IF 268
-#define IN 269
-#define OROR 270
-#define PIPE 271
-#define REDIR 272
-#define SREDIR 273
-#define SUB 274
-#define SUBSHELL 275
-#define SWITCH 276
-#define TWIDDLE 277
-#define WHILE 278
-#define WORD 279
-#define HUH 280
-#define PREDIR 281
+#ifndef YYTOKEN_IS_DECLARED
+#define YYTOKEN_IS_DECLARED 1
+typedef enum yytoken {
+    ANDAND = 257,
+    BACKBACK = 258,
+    BANG = 259,
+    CASE = 260,
+    COUNT = 261,
+    DUP = 262,
+    ELSE = 263,
+    END = 264,
+    FLAT = 265,
+    FN = 266,
+    FOR = 267,
+    IF = 268,
+    IN = 269,
+    OROR = 270,
+    PIPE = 271,
+    REDIR = 272,
+    SREDIR = 273,
+    SUB = 274,
+    SUBSHELL = 275,
+    SWITCH = 276,
+    TWIDDLE = 277,
+    WHILE = 278,
+    WORD = 279,
+    HUH = 280,
+    PREDIR = 281
+} yytoken;
+#endif /* !YYTOKEN_IS_DECLARED */
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

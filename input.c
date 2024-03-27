@@ -125,8 +125,13 @@ static int fdgchar() {
 			rc_raise(eError);
 		}
 		chars_in = (size_t) r;
-		if (chars_in == 0)
+		if (chars_in == 0) {
+			if (interactive && istack->fd == 0 && isatty(0)) {
+				fprint(2, "type `exit' to leave the shell\n");
+				return lastchar = '\n';
+			}
 			return lastchar = EOF;
+		}
 		chars_out = 0;
 		if (dashvee)
 			writeall(2, inbuf, chars_in);
@@ -257,7 +262,8 @@ extern void skiptonl() {
 
 /* the wrapper loop in rc: prompt for commands until EOF, calling yyparse and walk() */
 
-extern Node *doit(bool clobberexecit) {
+extern Node *doit(bool clobberexecitIn) {
+	volatile bool clobberexecit = clobberexecitIn;
 	bool eof;
 	bool execit;
 	Jbwrap j;
@@ -267,9 +273,9 @@ extern Node *doit(bool clobberexecit) {
 	if (dashen)
 		clobberexecit = FALSE;
 	execit = clobberexecit;
-	sigsetjmp(j.j, 1);
-	jerror.jb = &j;
-	except(eError, jerror, &e1);
+	sigsetjmp(j.j, 1);           /* This sigsetjmp(j.j, 1) must occur before except(eError, jerror, &e1) below. */
+	jerror.jb = &j;              /* The reason: after syntax error longjmp comes here and needs another         */
+	except(eError, jerror, &e1); /* except(eError) to match unexcept(eError) after the for(eof) loop            */
 	for (eof = FALSE; !eof;) {
 		Edata block;
 		Estack e2;
@@ -306,8 +312,10 @@ extern Node *doit(bool clobberexecit) {
 				edit_prompt(istack->cookie, prompt);
 		}
 		inityy();
-		if (yyparse() == 1 && (execit || dashen))
+		if (yyparse() == 1 && (execit || dashen)) {
+			setN(2); /* syntax error */
 			rc_raise(eError);
+		}
 		eof = (lastchar == EOF); /* "lastchar" can be clobbered during a walk() */
 		if (parsetree != NULL) {
 #if RC_DEVELOP

@@ -22,7 +22,7 @@ extern void listfree(List *p) {
 
 /* Copy list into malloc space (for storing a variable) */
 
-extern List *listcpy(List *s, void *(*alloc)(size_t)) {
+extern List *listcpy(const List *s, void *(*alloc)(size_t)) {
 	List *top, *r;
 	for (top = r = NULL; s != NULL; s = s->n) {
 		if (top == NULL)
@@ -40,7 +40,7 @@ extern List *listcpy(List *s, void *(*alloc)(size_t)) {
 
 /* Length of list */
 
-extern size_t listlen(List *s) {
+extern size_t listlen(const List *s) {
 	size_t size;
 	for (size = 0; s != NULL; s = s->n)
 		size += strlen(s->w) + 1;
@@ -49,7 +49,7 @@ extern size_t listlen(List *s) {
 
 /* Number of elements in list */
 
-extern int listnel(List *s) {
+extern int listnel(const List *s) {
 	int nel;
 	for (nel = 0; s != NULL; s = s->n)
 		nel++;

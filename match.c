@@ -2,12 +2,12 @@
 
 #include "rc.h"
 
-static int rangematch(char *, char);
+static int rangematch(const char *, char);
 
 /* match() matches a single pattern against a single string. */
 
-extern bool match(char *p, char *m, char *s) {
-	struct { char *p, *m, *s; } next;
+extern bool match(const char *p, const char *m, const char *s) {
+	struct { const char *p, *m, *s; } next;
 	if (m == NULL)
 		return streq(p, s);
 	next.s = NULL;
@@ -71,8 +71,8 @@ extern bool match(char *p, char *m, char *s) {
    failure.
 */
 
-static int rangematch(char *p, char c) {
-	char *orig = p;
+static int rangematch(const char *p, char c) {
+	const char *orig = p;
 	bool neg = (*p == '~');
 	bool matched = FALSE;
 	if (neg)

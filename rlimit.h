@@ -1,3 +1,5 @@
+#ifndef RLIMIT_H_INCLUDE
+#define RLIMIT_H_INCLUDE
 /* What a mess.  This file attempts to straighten everything out. */
 
 #if HAVE_SETRLIMIT
@@ -51,3 +53,4 @@ struct Limit {
 	const struct Suffix *suffix;
 };
 #endif /* HAVE_SETRLIMIT */
+#endif

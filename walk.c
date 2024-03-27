@@ -1,6 +1,7 @@
 /* walk.c: walks the parse tree. */
 
 #include "rc.h"
+#include "wait.h"
 
 #include <signal.h>
 #include <setjmp.h>
@@ -8,7 +9,6 @@
 #include <unistd.h>
 
 #include "jbwrap.h"
-#include "wait.h"
 
 /*
    global which indicates whether rc is executing a test;
@@ -28,7 +28,8 @@ static void loop_body(Node* n);
 
 /* walk the parse-tree. "obvious". */
 
-extern bool walk(Node *n, bool parent) {
+extern bool walk(Node *nd, bool parent) {
+	Node *volatile n = nd;
 top:	sigchk();
 	if (n == NULL) {
 		if (!parent)
@@ -69,7 +70,7 @@ top:	sigchk();
 		break;
 	}
 	case nAndalso: {
-		bool oldcond = cond;
+		const bool oldcond = cond;
 		cond = TRUE;
 		if (walk(n->u[0].p, TRUE)) {
 			cond = oldcond;
@@ -79,7 +80,7 @@ top:	sigchk();
 		break;
 	}
 	case nOrelse: {
-		bool oldcond = cond;
+		const bool oldcond = cond;
 		cond = TRUE;
 		if (!walk(n->u[0].p, TRUE)) {
 			cond = oldcond;
@@ -92,7 +93,7 @@ top:	sigchk();
 		set(!walk(n->u[0].p, TRUE));
 		break;
 	case nIf: {
-		bool oldcond = cond;
+		const bool oldcond = cond;
 		Node *true_cmd = n->u[1].p, *false_cmd = NULL;
 		if (true_cmd != NULL && true_cmd->type == nElse) {
 			false_cmd = true_cmd->u[1].p;
@@ -103,6 +104,7 @@ top:	sigchk();
 			true_cmd = false_cmd; /* run the else clause */
 		cond = oldcond;
 		WALK(true_cmd, parent);
+		break;
 	}
 	case nWhile: {
 		Jbwrap break_jb;
@@ -138,7 +140,8 @@ top:	sigchk();
 		break;
 	}
 	case nForin: {
-		List *l, *var = glom(n->u[0].p);
+		List *volatile l;
+		List *var = glom(n->u[0].p);
 		Jbwrap break_jb;
 		Edata  break_data;
 		Estack break_stack;
@@ -261,6 +264,7 @@ top:	sigchk();
 		} else if (dofork(parent)) {
 			setsigdefaults(FALSE);
 			walk(n->u[1].p, TRUE); /* Do redirections */
+			doredirs();
 			redirq = NULL;   /* Reset redirection queue */
 			walk(n->u[0].p, FALSE); /* Do commands */
 			rc_exit(getstatus());
@@ -268,12 +272,10 @@ top:	sigchk();
 		}
 		break;
 	case nEpilog:
-		qredir(n->u[0].p);
-		if (n->u[1].p != NULL) {
-			WALK(n->u[1].p, parent); /* Do more redirections. */
-		} else {
-			doredirs();	/* Okay, we hit the bottom. */
+		if (n->u[0].p != NULL) {
+			WALK(n->u[0].p, parent); /* Do more redirections. */
 		}
+		qredir(n->u[1].p);
 		break;
 	case nNmpipe:
 		rc_error("named pipes cannot be executed as commands");
@@ -392,8 +394,7 @@ static void dopipe(Node *n) {
  *   3. while (! setjmp(args)) {statements}
  *   4. setjmp(args);
 */
-static void loop_body(Node* nd)
-{
+static void loop_body(Node *nd) {
 	Node *volatile n = nd;
 	Jbwrap cont_jb;
 	Edata  cont_data;

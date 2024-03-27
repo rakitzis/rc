@@ -1,0 +1,5 @@
+UseTab: Always
+IndentWidth: 8
+TabWidth: 8
+ColumnLimit: 120
+ReflowComments:  false

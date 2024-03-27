@@ -1,3 +1,5 @@
+#ifndef PROTO_H
+#define PROTO_H
 /*
   The idea of this file is to include prototypes for all external
   functions that rc uses, either by including the appropriate header
@@ -98,3 +100,4 @@ extern char *sys_errlist[];
 #ifdef host_mips
 extern int errno;
 #endif
+#endif /* PROTO_H */

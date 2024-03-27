@@ -1,0 +1,39 @@
+From http://en.cppreference.com/w/c/language/operator_precedence
+
+===================================================================
+    Operator    Assoc   Description
+-------------------------------------------------------------------
+2   +   -       R->L    Unary plus and minus
+    !   ~       R->L    Logical NOT and bitwise NOT
+-------------------------------------------------------------------
+3   *   /   %   L->R    Multiplication, division, and remainder
+-------------------------------------------------------------------
+4   +   -       L->R    Addition and subtraction
+-------------------------------------------------------------------
+5   <<   >>     L->R    Bitwise left shift and right shift
+-------------------------------------------------------------------
+6   <   <=      L->R    For relational operators < and <= respectively
+    >   >=      L->R    For relational operators > and >= respectively
+-------------------------------------------------------------------
+7   ==   !=     L->R    For relational operators = and <> respectively
+-------------------------------------------------------------------
+8   &           L->R    Bitwise AND
+-------------------------------------------------------------------
+91  ^           L->R    Bitwise XOR (exclusive or)
+-------------------------------------------------------------------
+10  |           L->R    Bitwise OR (inclusive or)
+-------------------------------------------------------------------
+11  &&          L->R    Logical AND
+-------------------------------------------------------------------
+12  ||          L->R    Logical OR
+-------------------------------------------------------------------
+13  ?:          R->L    Ternary conditional
+-------------------------------------------------------------------
+14  =           R->L    Simple assignment
+    +=  -=      R->L    Assignment by sum and difference
+    *=  /=  %=  R->L    Assignment by product, quotient, and remainder
+    <<=  >>=    R->L    Assignment by bitwise left shift and right shift
+    &=  ^=  |=  R->L    Assignment by bitwise AND, XOR, and OR
+===================================================================
+
+

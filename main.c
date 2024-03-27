@@ -1,12 +1,13 @@
 /* main.c: handles initialization of rc and command line options */
+#include <limits.h>
 
 #include "rc.h"
 
 #include <errno.h>
+#include <sys/time.h>
 #include <locale.h>
 
 #include "input.h"
-#include "version.h"
 
 extern char **environ;
 
@@ -15,7 +16,7 @@ bool dashpee, dashoh, dashess, dashvee, dashex;
 bool interactive;
 static bool dashEYE;
 char *dashsee[2];
-pid_t rc_pid;
+pid_t rc_pid, rc_ppid;
 
 
 static void assigndefault(char *,...);
@@ -25,9 +26,18 @@ extern int main(int argc, char *argv[], char *envp[]) {
 	char *dollarzero, *null[1];
 	int c;
 	initprint();
+	if (!q_builtins_ordered()) {
+		panic("Builtins data structure not ordered");
+	}
 	dashsee[0] = dashsee[1] = NULL;
 	dollarzero = argv[0];
+	{
+		struct timeval timeVal;
+		gettimeofday(&timeVal, 0);
+		srandom(20021003 ^ timeVal.tv_usec);
+	}
 	rc_pid = getpid();
+	rc_ppid = getppid();
 	dashell = (*argv[0] == '-'); /* Unix tradition */
 	while ((c = rc_getopt(argc, argv, "c:deiIlnopsvx")) != -1)
 		switch (c) {
@@ -92,6 +102,14 @@ quitopts:
 	assigndefault("path", DEFAULTPATH, (void *)0);
 #endif
 	assigndefault("pid", nprint("%d", rc_pid), (void *)0);
+	assigndefault("ppid", nprint("%d", rc_ppid), (void *)0);
+	{
+		char b[PATH_MAX + 1];
+		const char *ret = getcwd(b, arraysize(b) - 1);
+		if (ret) {
+			assigndefault("pwd", nprint("%s", b), (void *)0);
+		}
+	}
 	assigndefault("prompt", "; ", "", (void *)0);
 	assigndefault("tab", "\t", (void *)0);
 	assigndefault("version", VERSION, (void *)0);
@@ -123,6 +141,27 @@ quitopts:
 	}
 	environ = makeenv();
 	setlocale(LC_CTYPE, "");
+
+	{
+		char *rcrc;
+		int fd;
+
+		rcrc = concat(varlookup("home"), word("/.rcrc-nonlogin", NULL))->w;
+		fd = rc_open(rcrc, rFrom);
+		if (fd == -1) {
+			if (errno != ENOENT)
+				uerror(rcrc);
+		} else {
+			bool push_interactive;
+
+			pushfd(fd);
+			push_interactive = interactive;
+			interactive = FALSE;
+			doit(TRUE);
+			interactive = push_interactive;
+			close(fd);
+		}
+	}
 
 	if (dashsee[0] != NULL || dashess) {	/* input from  -c or -s? */
 		if (*argv != NULL)

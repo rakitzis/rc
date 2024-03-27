@@ -19,8 +19,10 @@ static const int mode_masks[] = {
 };
 
 extern int rc_open(const char *name, redirtype m) {
-	if ((unsigned) m >= arraysize(mode_masks))
+	if ((unsigned) m >= arraysize(mode_masks)) {
 		panic("bad mode passed to rc_open");
+		return -1;
+	}
 	return open(name, mode_masks[m], 0666);
 }
 

@@ -1,0 +1,84 @@
+
+################################################################
+To get the current commit hash:
+
+$ git rev-parse  HEAD
+c0faccd37f707ddf183f55e7d61cb4b72536a479
+
+
+
+################################################################
+To build from scratch
+
+$ sh bootstrap
+$ ./configure --with-addon           # calc is added-on builtin
+$ make
+
+
+################################################################
+To get hardened executable change:
+
+Change compile flags from
+    CFLAGS = -Wall -g -O2
+to
+    CFLAGS = -Wall -g -O2       -fPIE  -fstack-protector
+
+Change link flags from
+    LDFLAGS =
+to
+    LDFLAGS = -pie -Wl,-z,now,-z,relro
+
+################################################################
+
+
+
+
+################################################################
+TODO: erase later
+
+Change calc assignment from
+    calc var '2 + 3'
+to
+    calc 'var = 2 + 3'
+
+----------------------------------------------------------------
+In calc_decl.h
+
+struct CalcLexData {
+    ....
+	char m_Indent[256];
+};
+
+
+----------------------------------------------------------------
+Lexer fills lex.m_VarName with var name or with '\0'
+Only one var allowed in expression, lexer asserts m_VarName[0]==0
+before filling the name.
+
+----------------------------------------------------------------
+In calc.y
+
+%nonassoc '='
+%left LET_OROR
+
+top: assignment
+		{   assert(lex->m_VarName[0] != '\0');
+			lexData->m_CalcResult = $1;
+		}
+	| expr
+		{   assert(lex->m_VarName[0] == '\0');
+			lexData->m_CalcResult = $1;
+		}
+	;
+assignment:
+	CALC_VAR '=' expr
+		{   assert(lex->m_VarName[0] != '\0');
+			$$ = $3;
+		}
+	;
+
+----------------------------------------------------------------
+In addon.c
+Before calling LetParser, set lex.m_VarName[0] to '\0'
+Perform the assignment if lex.m_VarName[0] != '\0'
+

@@ -1,0 +1,473 @@
+Retrieved from: http://www.linuxmisc.com/12-unix-shell/072a8463e8da76d1.htm
+First time announced on    Sat, 21 Aug 1993 04:56:41 GMT 
+
+
+(the news software at Texas A&M is down right now, so I am posting 
+from an old account at Princeton. Please reply to by...@archone.tamu.edu) 
+I'm announcing the availability of my own implementation of rc, the 
+AT&T plan 9 and Unix v10 shell in use at Bell Labs. 
+I'm releasing "version 0.9", which means that rc has seen a lot of 
+testing by a few people, but that now it's time to freeze any 
+development completely and let a larger number of users shake the 
+remaining bugs out. When this happens, I will (with hope, in the near 
+future) release "version 1.0". 
+What is rc? 
+        rc is a small shell, similar to the Bourne shell. It has 
+        powerful variable manipulation primitives, however, which makes 
+        it a very useful shell language. It is *not* another 
+        bash/ksh/tcsh which tries to do everything but fetch your 
+        slippers. You can use it interactively (as I have been doing 
+        for the last several months) or you can use it to write 
+        fast-starting and easy-to-read shell scripts; rc's syntax is 
+        based on C, much more so than the so-called C-shell. 
+Where can I get rc? 
+        The shell is available by anonymous ftp from archone.tamu.edu, 
+        in ~ftp/pub/rc. I also honor personal email requests for an 
+        email copy. 
+How do I find out more about rc? 
+        I've enclosed here an introduction to rc which comes with the 
+        rc source distribution. It is an outline of its main features; 
+        some experience with Unix shells is assumed. 
+        You can also read about AT&T's rc in the Unix Research 10th 
+        edition manuals. These are available in bookstores in two 
+        volumes, published by Saunders College Publishing. 
+Enjoy. 
+Byron Rakitzis. 
+----------- 
+                     AN INTRODUCTION TO RC 
+                        Byron Rakitzis 
+                   (by...@archone.tamu.edu) 
+rc is the AT&T plan 9 shell. I have taken a copy of the published 
+manual pages (UNIX research system, 10th ed.) and developed my own 
+public implementation from the description of rc in these documents. 
+What follows is a short introduction to the features of rc, in order to 
+underscore the differences between this shell and the standard sh and 
+csh. 
+rc is a shell similar in spirit to sh: on my Sun-4, rc compiles to a 
+72k stripped, statically linked executable; this is even smaller than 
+the Bourne shell. rc's power lies not in the fact that it has a large 
+number of features (it does not) but in that it is small, fast and 
+predictable. What features it does have are very general and powerful. 
+rc's parsing is performed by a yacc-generated parser, so the precise 
+syntax of rc is no mystery to its users, as in the case of sh and csh. 
+VARIABLES: 
+The area in which rc differs most (apart from syntactically) from the 
+other shells is in the way variables are implemented. Internally, 
+variables are linked lists of words. Thus: 
+        a=(this is a list of words) 
+assignes a 6-element list to $a. The parentheses are necessary for 
+grouping, but they are stripped during parsing; this definition of a is 
+no different from: 
+        a=(this (is a) (list) of words) 
+Quoting in rc is performed using a single quoting character: the single 
+quote ('). There is no backslash-quoting, and no double quoting. To 
+type a special character, include it in quotes. To type a ' inside 
+quotes, type it twice: 
+        ; echo 'How''s it going?' 
+        How's it going? 
+Backslash is special only at the end of the line, for traditional 
+backslash-continuation. So, type: 
+        ; tex foo \bye 
+not 
+        ; tex foo \\bye 
+A quoted string is treated as a single word in rc. Thus: 
+        ; a=(this is a list of words) 
+        ; echo $#a 
+        6 
+        ; a='this is a list of words??' 
+        ; echo $#a 
+        1 
+Lists (and the variables that represent them) may be concatenated with 
+the '^' operator. Concatenation behaves according to these rules:  if 
+two lists have the same number of elements, then they are joined 
+pairwise. Otherwise if one of the lists has one element, the 
+concatenation is distributive. Any other combination is an error: 
+        ; echo (one two three)^.c 
+        one.c two.c three.c 
+        ; echo (one two three)^(.a .b .c) 
+        one.a two.b three.c 
+Sometimes the ^ operation can be gotten for free, for example, by 
+juxtaposing two variables together, or by juxtaposing a variable with a 
+word: 
+        ; opts=(O g c) 
+        ; files=(alloca malloc talloc) 
+        ; cc -$opts $files.c 
+results in the execution of the command 
+        cc -O -g -c alloca.c malloc.c talloc.c 
+(the full (quirky) semantics of this free concatenation are described 
+in the Unix v10 manuals. Suffice it to say that most of the time it 
+does the job right. This is one of the (few) unclean parts of rc) 
+An uninitialized variable has the value of the null list, (). Note that 
+this is different from the *string* ''. The first is represented 
+internally by a null pointer, the second by a pointer to a null string. 
+So: 
+        ; a=() 
+        ; echo $#a 
+        0 
+        ; a='' 
+        ; echo $#a 
+        1 
+Variables are exported into the environment by default; in fact, there 
+is no way to create a variable private to rc. This obviates the need 
+for "setenv" and "export" keywords and makes variable handling simpler 
+and cleaner. [The jury is still out on this; this may or may not be a 
+good thing. On a Sun, it seems to be the right thing, given that the 
+environment can be of arbitrary size.] 
+Variables may be subscripted also: $foo(2) refers to the second element 
+of foo.  Subscripts are lists of words, so $foo(2 2 2 1 1 1) refers to 
+a six element list made up of three foo(2)'s and three foo(1)'s. 
+Variables can be "defererenced" with more than just one level of 
+indirection: 
+        ; a=foo 
+        ; b=a 
+        ; echo $$b 
+        foo 
+My rc also offers an extra feature for manipulating variables: it is an 
+operator ($^) which provides a one-word list comprised of the elements 
+of a variable space-separated. Thus: 
+        ; echo 'foo'$^path^'bar' 
+        foo. /u/byron/bin/sh /u/byron/bin/sun4 /usr/arch/bin /usr/ucb /binbar 
+this operator was provided since the only way to do this in "classic" 
+rc is to type the non-obvious command: 
+        ; ifs=() echo 'foo'^`{echo -n $path}^'bar' 
+The above example raises a point about variables; as in the Bourne 
+shell, a variable may be made local to a command simply by preceding 
+the command with an assignment. This notion has been extended in rc to 
+allow an arbitrary number of local assignments on the same line. Thus: 
+        a=foo b=bar c=baz { # these are local 
+                ... 
+                etc. 
+        } 
+FUNCTIONS: 
+rc also offers shell functions, to replace csh aliases and sh shell 
+functions.  rc functions take the form: 
+        fn foo { definition } 
+where definition is a sequence of rc commands. $* is set to the 
+argument list of the function for the duration of the command. As an 
+example, a function I usually set up is: 
+        ; fn l { ls -FC $* } 
+Shell functions are better than aliases in a number of ways: for one, 
+the definition may be an arbitrary rc script; parsing is performed up 
+to the closing brace. The definition need not fit all on one line. The 
+definition of the shell function is also exported into the 
+environment.  Thus functions (aliases) can be preserved in subshells 
+without the costly re-interpreting of a .cshrc-like file. 
+Functions may be deleted by supplying no definition: 
+        ; fn l 
+deletes the above definition. 
+(A note: commands inside functions need semicolons after them ONLY if 
+they are grouped many-per-line. It's just like interactive rc; this is 
+a difference from sh where the ; are mandatory. Thus: 
+        fn foo { 
+                echo one 
+                echo two 
+                echo three 
+        } 
+is perfectly valid.) 
+An addition to att's rc is the "return" keyword, which returns from a 
+function with a given status. Thus: 
+        fn foo { 
+                if (! test -f bar) 
+                        return 1 
+                ... 
+                etc. 
+        } 
+CONTROL FLOW: 
+rc's syntax is very clean and simple. Grouping is performed with 
+bracing, and a brace-delemited command will always work where a single 
+command suffices. 
+        if (command) 
+                command 
+        else 
+                command 
+        while (command) 
+                command 
+        switch (word) { 
+                case pattern 
+                        command 
+                case pattern 
+                        command 
+                ... 
+        } 
+        for (word [in words]) 
+                command 
+        ! command 
+        command && command 
+        command || command 
+Let's start with if: if behaves in the usual way, except when it comes 
+to the treatment of else. The problem is this: rc parses no differently 
+when it's reading a file or when it's reading a terminal. Therefore, 
+there is no way after reading 
+        if (grep foo bar) { 
+                echo zoo 
+                echo goo 
+                foo 
+        } 
+to tell if there is going to be an "else" keyword after the '}'. The 
+"solution" ATT used is to have a special "if not" command which looks 
+back at the last "if" to see if it succeeded or not. If it did not 
+succeed, then the body of the "if not" command is executed. That 
+solution is clumsy, and has been changed in this incarnation of rc. 
+"if" now has an optional "else" clause, with the proviso that else must 
+immediately follow a close-brace: 
+        if (foo) { 
+                ... 
+                ... 
+        } else { 
+                ... 
+                ... 
+        } 
+while works like C's while: 
+        while (test) command 
+or 
+        while (test) 
+                command 
+or 
+        while (test) { 
+                command 
+                ... 
+        } 
+and so on. 
+switch behaves as follows: the word in parentheses is looked for in the 
+patterns specified in each of the case statements. The first match that 
+succeeds will cause the body of that case statement to be executed; 
+after that the switch statement terminates. There is no falling-through 
+case statements as in C: 
+        switch ($foo) { 
+                case goo 
+                        one 
+                case f* g* 
+                        two 
+                case * 
+                        three 
+        } 
+In the above example, if $foo has the value 'goo', 'one' is executed. 
+If $foo begins with an 'f' or a 'g', then 'two' is executed, otherwise 
+'three' is executed. 
+A note: if $foo has more than one element, then it is a sufficient 
+condition for matching purposes if one of the elements matches the 
+pattern. Thus, 'goo' matches the list '(foo goo zoo)'. 
+for works like sh "for", only the syntax is C-like. So: 
+        for (i in one two three) 
+                echo $i 
+prints "one\n two\n three\n". If you leave out the "in foo", "in $*" is 
+implied. So to parse the arguments to a shell script: 
+        for (i) 
+                switch($i) { 
+                case -l 
+                        foo 
+                ... 
+                } 
+The "break" keyword breaks out of the innermost "for" or "while", 
+similarly to C. Since case statements do *not* fall through, "break" 
+does *not* break out of a switch statement. 
+! negates the exit status of its argument. Useful in if and while 
+statements.  Like the C operator. || and && behave like || and && in 
+sh: 
+        foo && bar 
+executes bar if and only if foo is successful. 
+        foo || bar 
+executes bar if and only if foo fails. 
+JOB CONTROL: 
+As in sh, job control is primitive. Terminating a command with & starts 
+it asynchronously.  The pid of the job is printed the value of this job 
+is assigned to $apid. 
+Some changes over csh: & and ; are terminators in rc syntax, so: 
+        ; long command; echo finished & 
+does not have the desired effect; in order to do this, type: 
+        ; {long command; echo finished} & 
+in the first case, 'long command' is performed before 'echo finished &' 
+is interpreted (the semicolon terminates the command). 
+Jobs may be placed in subshells using the @ operator: 
+        ; @{cd ..; echo this command is being performed in ..; foo} 
+performs the command in a subshell. Note that @ is almost never used in 
+rc, since most of the time a set of braces will implicitly define a 
+subshell, for example, in the command: 
+        tar fc - foo | {cd /elsewhere; tar fx -} 
+REDIRECTIONS AND PIPES, ETC.: 
+redirections and pipes are as usual (< and >, << and >>) but some 
+features have been added/changed: 
+        foo |[2] bar 
+has the effect of piping file descriptor 2 (stderr) from foo to bar. 
+Similarly: 
+        foo > bar >[2] zar 
+has the effect of placing standard out in bar and standard error in 
+zar. 
+File descriptors can be copied also: 
+        echo 'this is appearing on standard error' >[1=2] 
+and pipes may pipe arbitrary file descriptors on both sides: 
+        foo |[8=12] bar 
+has the obvious effect. 
+To put both stdout and stderr in the same file, use 
+        foo >bar >[2=1] 
+*not* 
+        foo >[2=1] >bar 
+(this is the same redirection weirdness that sh has) 
+Backquote is a unary operator in rc: 
+        echo `date 
+prints the output of date. To execute a complex command (longer than 
+one word), include it in braces: 
+        echo `{cat /etc/motd} 
+$ifs is used to split the output of ` into words. $ifs defaults to 
+space-tab-newline.  Thus: 
+        `{echo one two three} 
+returns a three-element list if $ifs is set to its default value. 
+One advantage of the fact that backquote is unary is that quoting of 
+backquotes inside backquotes is no longer necessary: 
+        ls `{foo | grep `{bar zar}} 
+There is also a new kind of redirection in rc: it allows one to specify 
+a command as an argument to another command. Thus: 
+        wc <{cat /usr/dict/words} 
+is functionally equivalent to 
+        cat /usr/dict/words | wc 
+It works by opening a FIFO in /tmp (for systems that have FIFO's) or 
+opening the appropriate file descriptors in /dev/fd (for systems 
+that have /dev/fd) and passing that fifo or fd as an argument to the 
+command. 
+This form of redirection is perhaps most commonly used with "diff" to 
+compare the output of two programs: 
+        diff <{foo} <{bar} 
+Note that diff is reading from pipes, not files, so it must not 
+lseek() on its input; some diffs do this, so the above example will 
+not work. (This is not rc's fault; it is a feature of UNIX pipes) 
+cmp generally does not. 
+My favorite use of this redirection so far has been to find which 
+C files do *not* contain a particular instance of '#include "foo.h"': 
+        diff <{ls *.c} <{grep -l '#include "foo.h"' *.c} 
+RC VARIABLES 
+here are the variables rc uses to guide its execution: 
+$prompt holds the prompt to print. $prompt(1) and $prompt(2) are the rc 
+eqivalent of PS1 and PS2 in sh. 
+$home is the home directory of the user. This is aliased to $HOME, so 
+assigning a value to one directly assigns the value to the other. 
+$path is a list of path elements to search. it defaults to (. /bin 
+/usr/bin) or something similar (/usr/ucb is there on berkeley 
+machines). This value is aliased to PATH so typing in 
+        path=(. /bin) 
+will have the effect of assigning 
+        PATH=.:/bin 
+as well. 
+$cdpath is a list of directories to search in order to change 
+directories. 
+$pid is the pid of the shell. 
+$apid is the pid of the last job started with &. 
+$ifs defines the field splitting characters for backquote 
+substitution. 
+$status is the exit status of the last command executed. This is used 
+to guide the execution of rc in if, while, && and || as well. If the 
+last command ended with a signal, $status is set to the lowercase 
+unix-header-file name for that signal. For example, a segmentation 
+violation will assign "sigsegv" to $status. A core dump will append 
+"+core" to $status. In addition, in a pipeline $status is set to a list 
+of the exit statuses of all the pipeline components: 
+        ; ls | wc 
+        50      50      365 
+        ; echo $status 
+        0 0 
+$history defines a file for rc to append each command before executing 
+it. This is the ATT-sanctioned way of doing history.  It has its 
+merits; you can run grep or other unix commands on your history file, 
+for example. Eventually rc will be bundled with some standalone 
+"history" programs to facilitate full history. 
+BUILTINS 
+rc has the following builtins: 
+echo: performs a basic echo; echo -n is supported. 
+cd: changes direcrory to the argument supplied. If the path cd takes is 
+found by searching cdpath, then this path is printed. 
+break: breaks from the innermost for or while loop 
+return: returns from a function with the supplied status, or $status 
+if none is given. 
+limit: similar in spirit to csh limit, but the implementation is a 
+little cruder. limit works as csh limit, but the limit name must be 
+typed in full. To restore a resource to "unlimited", type "limit 
+<resource> unlimited", as in: 
+        limit memoryuse unlimited 
+umask: prints (without arguments) or sets (with an octal argument) 
+the file creation mask in octal. 
+exec: replaces rc with the specified command. 
+exit: does the obvious. exit with an argument exits with that exit 
+status. 
+shift: deletes the specified number of words from $*. Defaults to 1. 
+builtin: executes the specified builtin. Useful if a builtin has been 
+redefined as a function. For example: 
+        fn cd { 
+                builtin cd $* && prompt=`newprompt 
+        } 
+wait: waits for the specified pid, otherwise for all child processes 
+belonging to rc. 
+whatis: prints the definition of the supplied arguments. This can be 
+the definition of a variable, a function, or the pathname of an 
+executable. Supercedes 'which' in utility. 
+eval: re-interprets its arguments as a space-separated list of words. 
+For example: 
+        a=b 
+        eval $a '=' 1 
+has the effect of assigning '1' to $b. 
+".": like sh "."; the filename supplied is interpreted in the current 
+shell. 
+"~": "~" is not a builtin, but it is built in to rc; it is a keyword which 
+replaces the some of the functionality of /bin/test. It works as 
+follows: 
+        ~ subject pattern [patterns ... ] 
+This sets $status to true if and only if the subject is matched by one 
+of the patterns. For example, an idiom for checking to see if an rc 
+variable is set is: 
+        if (! ~ $#foo 0) 
+which may be read 'if the count of $foo's value does not match '0', 
+then..' Note that rc does not have any datatypes other than the list; 
+$#foo supplies the word count of $foo as a single-element list. 
+Note that the above example is equivalent to 
+        if (! ~ $foo ()) # the parentheses () denote a null list 
+SIGNALS: 
+rc can be told to catch certain signals and to invoke a shell function 
+on them. This is accomplished by writing a shell function by the name 
+of that signal in lower case. A typical use might be: 
+        fn sigint sigterm sigquit { 
+                echo 'interrupted; cleaning up and exiting' >[1=2] 
+                rm /tmp/foo.$pid.* 
+                exit 1 
+        } 
+Setting a handler to the value {} causes that signal to be ignored. 
+Deleting the definition of a signal causes the handler to return to its 
+default value. This scheme has an advantage over sh "trap" in that syntax 
+errors are caught at parse time, not execution time. 
+GLOBBING AND RELATED ISSUES: 
+rc's globbing mechanism is a little different than usual. For example: 
+        ; a='*' 
+        ; echo $a 
+        * 
+For a metacharacter to work (*, ? and [ are the usual shell 
+metacharacters) then it must appear literally and unquoted. This is a 
+consequence of the fact that rc input is scanned only once, at the very 
+beginning. All subsequent interpretation (for example, in backquotes or 
+variable substitutions) comes from the parse tree. In order to get rc 
+to explicitly re-scan its arguments, use eval; that's what it's there 
+for. 
+A note on metacharacters: [a-z] denotes the usual character class 
+matching, but because '^' is the concatenation operator in rc, 
+character classes must be negated with a different character. ~ is 
+used, so 
+        echo [~a-z] 
+matches all files of one character not consisting of a lowercase 
+letter. 
+OPTIONS 
+-l      source $home/.rcrc before normal execution. Having argv[0][0] set 
+        to - also causes .rcrc to be sourced. 
+-e      exit on nonzero exit status. 
+-i      start an interactive shell; print $prompt(1) before every command 
+        is read, and don't exit on interrupts SIGQUIT and SIGINT 
+-v      echo input on file descriptor 2 
+-x      echo commands before they are executed 
+-d      do not catch SIGQUIT for debugging purposes, so that SIGQUIT will 
+        cause a core dump. 
+-c      use the following string as the command(s) to execute. Use the 
+        remaining arguments to set $*. 
+FURTHER READING 
+I refer the reader to the Unix v10 manuals, available in many 
+bookstores. They are published in two volumes by Sanders College 
+Publishing, and they make for good reading in their own right. In those 
+volumes you can find a man page for rc, and a paper on rc. Any 
+differences between Tom Duff's rc (*as described in those papers*) and 
+mine should be documented in the file FEEPERS. 
+----------- 
+

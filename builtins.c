@@ -13,6 +13,8 @@
 #include <sys/stat.h>
 #include <setjmp.h>
 #include <errno.h>
+#include <limits.h>
+#include <wait.h>
 
 #include "input.h"
 #include "jbwrap.h"
@@ -20,12 +22,16 @@
 #include "sigmsgs.h"
 
 #if RC_ADDON
-#include "addon.c"
+#include "addon.h"
+/*
+ * Linked in
+ *#include "addon.c"
+ */
 #endif
 
-static void b_break(char **), b_cd(char **), b_continue(char **), b_eval(char **), b_flag(char **),
-	b_exit(char **), b_newpgrp(char **), b_return(char **), b_shift(char **), b_umask(char **),
-	b_wait(char **), b_whatis(char **);
+static void b_break(char **), b_cd(char **), b_continue(char **), b_eval(char **), b_false(char **),
+	b_flag(char **), b_exit(char **), b_newpgrp(char **), b_return(char **), b_shift(char **),
+	b_true(char **), b_umask(char **), b_wait(char **), b_whatis(char **);
 
 #if HAVE_SETRLIMIT
 static void b_limit(char **);
@@ -35,43 +41,78 @@ static void b_limit(char **);
 static void b_echo(char **);
 #endif
 
-static struct {
+static struct BuiltinMap {
 	builtin_t *p;
 	char *name;
 } builtins[] = {
-	{ b_break,	"break" },
-	{ b_builtin,	"builtin" },
-	{ b_cd,		"cd" },
-	{ b_continue,	"continue" },
+	{ b_dot,        "." },
+	{ b_break,      "break" },
+	{ b_builtin,    "builtin" },
+#ifdef RC_ADDON
+	{ b_calc,       "calc" },
+#endif
+	{ b_cd,         "cd" },
+	{ b_continue,   "continue" },
 #if RC_ECHO
-	{ b_echo,	"echo" },
+	{ b_echo,       "echo" },
 #endif
-	{ b_eval,	"eval" },
-	{ b_exec,	"exec" },
-	{ b_exit,	"exit" },
-	{ b_flag,	"flag" },
+	{ b_eval,       "eval" },
+	{ b_exec,       "exec" },
+	{ b_exit,       "exit" },
+	{ b_false,      "false" },
+	{ b_flag,       "flag" },
+#ifdef RC_ADDON
+	{ b_kill,       "kill" },
+#endif
 #if HAVE_SETRLIMIT
-	{ b_limit,	"limit" },
+	{ b_limit,      "limit" },
 #endif
-	{ b_newpgrp,	"newpgrp" },
-	{ b_return,	"return" },
-	{ b_shift,	"shift" },
-	{ b_umask,	"umask" },
-	{ b_wait,	"wait" },
-	{ b_whatis,	"whatis" },
-	{ b_dot,	"." },
+	{ b_newpgrp,    "newpgrp" },
+	{ b_return,     "return" },
+	{ b_shift,      "shift" },
+	{ b_true,       "true" },
+	{ b_umask,      "umask" },
+	{ b_wait,       "wait" },
+	{ b_whatis,     "whatis" },
 #ifdef ADDONS
 	ADDONS
 #endif
 };
 
-extern builtin_t *isbuiltin(char *s) {
-    int i;
-    for (i = 0; i < arraysize(builtins); i++)
-	if (streq(builtins[i].name, s))
-	    return builtins[i].p;
-    return NULL;
+typedef struct BuiltinMap BuiltinMap;
+
+extern bool q_builtins_ordered(void) {
+	const int N = arraysize(builtins);
+	int i, j;
+
+	for (i = 0, j = 1; j < N; ++i, ++j) {
+		if (strcmp_fast(builtins[i].name, builtins[j].name) >= 0) {
+			fprint(2, "Builtin '%s' at %d is listed before builtin '%s' at %d, but is larger\n",
+			       builtins[i].name, i, builtins[j].name, j);
+			return FALSE;
+		}
+	}
+	return TRUE;
 }
+
+extern builtin_t *isbuiltin(const char *s) {
+	const BuiltinMap *pi = &builtins[0], *pj = &builtins[arraysize(builtins)];
+
+	while (pi < pj) {
+		const BuiltinMap *const pm = pi + (pj - pi) / 2;
+		const int c = strcmp_fast(pm->name, s);
+		if (c > 0) {
+			pj = pm;
+		} else if (c < 0) {
+			pi = pm + 1;
+		} else {
+			return pm->p;
+		}
+	}
+
+	return NULL;
+}
+
 
 /* funcall() is the wrapper used to invoke shell functions. pushes $*, and "return" returns here. */
 
@@ -123,56 +164,71 @@ static void b_echo(char **av) {
 }
 #endif
 
+static void update_cwd_var(void) {
+	char b[PATH_MAX + 1];
+	List val;
+	const char *ret = getcwd(b, arraysize(b) - 1);
+	if (ret) {
+		val.w = nprint("%s", b);
+		val.n = NULL;
+		varassign("pwd", &val, FALSE);
+	}
+}
+
+
 /* cd. traverse $cdpath if the directory given is not an absolute pathname */
 
 static void b_cd(char **av) {
-    List *s, nil;
-    char *path = NULL;
-    size_t t, pathlen = 0;
-    if (*++av == NULL) {
-	s = varlookup("home");
-	*av = (s == NULL) ? "/" : s->w;
-    } else if (av[1] != NULL) {
-	arg_count("cd");
-	return;
-    }
-    if (isabsolute(*av) || streq(*av, ".") || streq(*av, "..")) { /* absolute pathname? */
-	if (chdir(*av) < 0) {
-	    set(FALSE);
-	    uerror(*av);
-	} else
-	    set(TRUE);
-    } else {
-	s = varlookup("cdpath");
-	if (s == NULL) {
-	    s = &nil;
-	    nil.w = "";
-	    nil.n = NULL;
-	}
-	do {
-	    if (s != &nil && *s->w != '\0') {
-		t = strlen(*av) + strlen(s->w) + 2;
-		if (t > pathlen)
-		    path = nalloc(pathlen = t);
-		strcpy(path, s->w);
-		if (!streq(s->w, "/")) /* "//" is special to POSIX */
-		    strcat(path, "/");
-		strcat(path, *av);
-	    } else {
-		pathlen = 0;
-		path = *av;
-	    }
-	    if (chdir(path) >= 0) {
-		set(TRUE);
-		if (interactive && *s->w != '\0' && !streq(s->w, "."))
-		    fprint(1, "%s\n", path);
+	List *s, nil;
+	char *path = NULL;
+	size_t t, pathlen = 0;
+	if (*++av == NULL) {
+		s = varlookup("home");
+		*av = (s == NULL) ? "/" : s->w;
+	} else if (av[1] != NULL) {
+		arg_count("cd");
 		return;
-	    }
-	    s = s->n;
-	} while (s != NULL);
-	fprint(2, "couldn't cd to %s\n", *av);
-	set(FALSE);
-    }
+	}
+	if (isabsolute(*av) || streq(*av, ".") || streq(*av, "..")) { /* absolute pathname? */
+		if (chdir(*av) < 0) {
+			set(FALSE);
+			uerror(*av);
+		} else {
+			update_cwd_var();
+			set(TRUE);
+		}
+	} else {
+		s = varlookup("cdpath");
+		if (s == NULL) {
+			s = &nil;
+			nil.w = "";
+			nil.n = NULL;
+		}
+		do {
+			if (s != &nil && *s->w != '\0') {
+				t = strlen(*av) + strlen(s->w) + 2;
+				if (t > pathlen || path == NULL)
+					path = nalloc(pathlen = t);
+				strcpy(path, s->w);
+				if (!streq(s->w, "/")) /* "//" is special to POSIX */
+					strcat(path, "/");
+				strcat(path, *av);
+			} else {
+				pathlen = 0;
+				path = *av;
+			}
+			if (chdir(path) >= 0) {
+				update_cwd_var();
+				set(TRUE);
+				if (interactive && *s->w != '\0' && !streq(s->w, "."))
+					fprint(1, "%s\n", path);
+				return;
+			}
+			s = s->n;
+		} while (s != NULL);
+		fprint(2, "couldn't cd to %s\n", *av);
+		set(FALSE);
+	}
 }
 
 static void b_umask(char **av) {
@@ -237,7 +293,9 @@ static void b_flag(char **av) {
 		case 'l':
 			  if (mode != 2) goto flag_immutable;
 			  flagp = &dashell; break;
-		case 'n': flagp = &dashen; break;
+		case 'n':
+			  if (mode != 2) goto flag_immutable;
+			  flagp = &dashen; break;
 		case 'o':
 			  if (mode != 2) goto flag_immutable;
 			  flagp = &dashoh; break;
@@ -258,12 +316,12 @@ static void b_flag(char **av) {
 			set(TRUE);
 		}
 	} else {
-		fprint(2, RC "unknown flag");
+		fprint(2, RC "unknown flag '%c'\n", f);
 		set(FALSE);
 	}
 	return;
 flag_immutable:
-	fprint(2, RC "flag immutable\n");
+	fprint(2, RC "flag '%c' immutable\n", f);
 	set(FALSE);
 	return;
 flag_usage:
@@ -364,7 +422,7 @@ static void b_whatis(char **av) {
 	int i, ac, c;
 	List *s;
 	Node *n;
-	char *e;
+	const char *e;
 	for (rc_optind = ac = 0; av[ac] != NULL; ac++)
 		; /* count the arguments for getopt */
 	ess = eff = vee = pee = bee = FALSE;
@@ -625,6 +683,22 @@ static void b_limit(char **av) {
 	}
 }
 #endif
+
+static void b_true(char **av) {
+	if (av[1] != NULL) {
+		arg_count("true");
+		return;
+	}
+	set(TRUE);
+}
+
+static void b_false(char **av) {
+	if (av[1] != NULL) {
+		arg_count("false");
+		return;
+	}
+	set(FALSE);
+}
 
 extern char *compl_builtin(const char *text, int state) {
 	return compl_name(text, state, &builtins[0].name, arraysize(builtins), &builtins[1].name - &builtins[0].name);
