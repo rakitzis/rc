@@ -993,25 +993,25 @@ submatch 'echo =bar; whatis -v echo' 'echo=bar' 'unquoted equals 4'
 
 #############################################################################
 fn testCondExit { shouldExitShell=$1 script=$2 errMsg=() X=() {
-    shift 2
-    errMsg=$*
-    #whatis shouldExitShell script errMsg
-    X=${ $rc -ec $script^'; echo YYY' }
-    if ($shouldExitShell) {
-	if (~ $X YYY) {
-	    fail '"rc -e"' $errMsg
+	shift 2
+	errMsg=$*
+	#whatis shouldExitShell script errMsg
+	X=${ $rc -ec $script^'; echo YYY' }
+	if ($shouldExitShell) {
+		if (~ $X YYY) {
+			fail '"rc -e"' $errMsg
+		}
+	} else {
+		if (! ~ $X YYY) {
+			fail '"rc -e"' $errMsg
+		}
 	}
-    } else {
-	if (! ~ $X YYY) {
-	    fail '"rc -e"' $errMsg
-	}
-    }
 }}
 
 testCondExit false 'while(false){false}'  (exits when the command in the while condition fails the first time)
 
 testCondExit false 'b=true; while($b){b=false}' (exits when condition in the while statement
-						 fails in the second iteration)
+												 fails in the second iteration)
 
 testCondExit false 'if (false){true}'     (exits when the command in the if condition fails)
 
@@ -1036,8 +1036,8 @@ B=``($nl){ $rc -c '>[2=1] mkdir / | tr a-z A-Z' }
 
 #############################################################################
 for (flag in -c -ec) {
-    cmd = ($rc $flag  'false|false')
-    $cmd && fail '<'$^cmd'>' should fail
+	cmd = ($rc $flag  'false|false')
+	$cmd && fail '<'$^cmd'>' should fail
 }
 
 # test for github issue #40
