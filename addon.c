@@ -54,11 +54,11 @@ void b_kill(char **av) {
 			int s;
 			for (s = 0; signals[s].name; ++s) {
 				if (0 == strcasecmp(sigStr, signals[s].name)) {
-					/* -kill */
+					/* -sigkill */
 					sig = signals[s].signum;
 					break;
 				} else if (0 == strcasecmp(sigStr, signals[s].name + 3)) {
-					/* -sigkill */
+					/* -kill */
 					sig = signals[s].signum;
 					break;
 				}
