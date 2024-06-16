@@ -1,4 +1,4 @@
-# line editing library: null, edit, editline, readline, vrl
+# line editing library: null, edit, editline, readline, vrl, bestline
 EDIT = null
 
 srcdir = .
