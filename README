@@ -37,8 +37,8 @@ second command to:
 	# make PREFIX="/your/dir" install
 
 The EDIT make macro controls which line-editing library to use: null,
-edit, editline, readline, vrl. For example, to make rc use the readline
-library, you have to build it with the following command:
+edit, editline, readline, vrl, bestline. For example, to make rc use the
+readline library, you have to build it with the following command:
 
 	$ make EDIT=readline
 

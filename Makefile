@@ -1,4 +1,4 @@
-# line editing library: null, edit, editline, readline, vrl
+# line editing library: null, edit, editline, readline, vrl, bestline
 EDIT = null
 
 srcdir = .
@@ -86,6 +86,20 @@ check: trip
 
 trip: rc tripping
 	./rc -p <"$(srcdir)/trip.rc"
+
+acutest.h:; wget --compression=gzip https://raw.githubusercontent.com/mity/acutest/master/include/acutest.h
+
+test-bestline.o: test-bestline.c edit-bestline.c acutest.h
+
+test-bestline: test-bestline.o $(filter-out main.o edit-null.o ,$(OBJS))
+	$(CC) $(_LDFLAGS) $(_CFLAGS) -o $@ $^ -lbestline $(LDLIBS)
+
+run-test-bestline: test-bestline
+	mkdir -p /tmp/rc/fakebin
+	touch /tmp/rc/hello /tmp/rc/world '/tmp/rc/world wide'
+	touch /tmp/rc/fakebin/vim /tmp/rc/fakebin/emacs /tmp/rc/fakebin/ed
+	chmod +x /tmp/rc/fakebin/vim /tmp/rc/fakebin/emacs /tmp/rc/fakebin/ed
+	./test-bestline
 
 clean:
 	rm -f *.o $(BINS) rc
