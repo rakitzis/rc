@@ -96,7 +96,7 @@ test-bestline: test-bestline.o $(filter-out main.o edit-null.o ,$(OBJS))
 
 run-test-bestline: test-bestline
 	mkdir -p /tmp/rc/fakebin
-	touch /tmp/rc/hello /tmp/rc/world '/tmp/rc/world wide'
+	touch /tmp/rc/hello /tmp/rc/world '/tmp/rc/world wide' "/tmp/rc/it's rc"
 	touch /tmp/rc/fakebin/vim /tmp/rc/fakebin/emacs /tmp/rc/fakebin/ed
 	chmod +x /tmp/rc/fakebin/vim /tmp/rc/fakebin/emacs /tmp/rc/fakebin/ed
 	./test-bestline
