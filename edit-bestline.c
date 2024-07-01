@@ -299,11 +299,10 @@ char *edit_alloc(void *cookie, size_t *count) {
 	c->buffer = bestline(prompt);
 	if (c->buffer) {
 		*count = strlen(c->buffer);
-		if (*count) {
+		if (*count)
 			bestlineHistoryAdd(c->buffer);
-			c->buffer[*count] = '\n';
-			++*count;
-		}
+		c->buffer[*count] = '\n';
+		++*count; /* include the \n */
 	}
 	return c->buffer;
 }
