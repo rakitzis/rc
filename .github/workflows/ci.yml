@@ -1,0 +1,15 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  test_matrix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - run: make
+    - run: make check
+    # run: run-test-bestline  (disabled, needs work)
