@@ -1,0 +1,5 @@
+replace     spaces
+        %%% 
+
+EOF
+replace the spaces

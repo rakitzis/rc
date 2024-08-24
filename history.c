@@ -248,6 +248,8 @@ again:	s = last;
 	for (t = s; *t != '\0'; ++t)
 		if (*t == me) {
 			char *u = t - 1;
+			if (u < s || *u == '/')
+				goto again;
 			while (u >= s && (*u == ' ' || *u == '\t'))
 				--u;
 			if (u < s)
@@ -256,7 +258,6 @@ again:	s = last;
 			case '`': case '@':
 			case '(': case ')':
 			case '{': case '|':
-			case '/':
 				goto again;
 			default:
 				break;

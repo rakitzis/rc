@@ -82,10 +82,13 @@ version.h: Makefile .git/index
 	@echo "CC $@"
 	$(CC) $(_CPPFLAGS) $(_CFLAGS) -o $@ $<
 
-check: trip
+check: trip testhist
 
 trip: rc tripping
 	./rc -p <"$(srcdir)/trip.rc"
+
+testhist: history
+	cd "$(srcdir)/test-history" && make
 
 acutest.h:; wget --compression=gzip https://raw.githubusercontent.com/mity/acutest/master/include/acutest.h
 
