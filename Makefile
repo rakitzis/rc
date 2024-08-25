@@ -106,3 +106,7 @@ install: all
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
 	cp rc.1 $(DESTDIR)$(MANPREFIX)/man1/
 	chmod 644 $(DESTDIR)$(MANPREFIX)/man1/rc.1
+	if [ -f history ]; then \
+		cp history.1 $(DESTDIR)$(MANPREFIX)/man1/ && \
+		chmod 644 $(DESTDIR)$(MANPREFIX)/man1/history.1; \
+	fi
