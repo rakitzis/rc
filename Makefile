@@ -82,13 +82,16 @@ version.h: Makefile .git/index
 	@echo "CC $@"
 	$(CC) $(_CPPFLAGS) $(_CFLAGS) -o $@ $<
 
-check: trip testhist
+check: trip testhist valgrind
 
 trip: rc tripping
 	./rc -p <"$(srcdir)/trip.rc"
 
 testhist: history
 	cd "$(srcdir)/test-history" && make
+
+valgrind: rc
+	valgrind -v --leak-check=full --show-leak-kinds=all ./rc  -p < trip.rc
 
 acutest.h:; wget --compression=gzip https://raw.githubusercontent.com/mity/acutest/master/include/acutest.h
 
