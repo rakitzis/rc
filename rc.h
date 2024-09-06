@@ -175,7 +175,7 @@ enum {
 /* main.c */
 extern Rq *redirq;
 extern bool dashdee, dashee, dasheye, dashell, dashen;
-extern bool dashpee, dashoh, dashess, dashvee, dashex;
+extern bool dashpee, dashoh, dashess, dashvee, dashewe, dashex;
 extern bool interactive;
 extern char *dashsee[];
 extern pid_t rc_pid;
@@ -240,6 +240,7 @@ extern Htab *fp, *vp;
 extern void *lookup(char *, Htab *);
 extern rc_Function *get_fn_place(char *);
 extern List *varlookup(char *);
+extern List *varlookupNonStrict(char *);
 extern Node *fnlookup(char *);
 extern Variable *get_var_place(char *, bool);
 extern bool varassign_string(char *);
