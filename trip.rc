@@ -358,6 +358,10 @@ if (~ x [y])
 	fail rangematch out of range
 if (~ x x?)
 	fail too many characters in pattern
+if (~ . .[~.])
+	fail matched nul terminator
+if (~ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab a*a*a*a*a*a*a*a)
+	fail this should finish in linear time
 
 sh -c 'test -f /////$tmpdir//////a?c.'^$pid || fail glob with many slashes
 if (!~ /////$tmpdir//////a*.$pid /////$tmpdir//////a?c.$pid)
