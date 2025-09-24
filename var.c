@@ -1,5 +1,5 @@
 /* var.c: provide "public" functions for adding and removing variables from the symbol table */
-
+#include <stdio.h>
 #include "rc.h"
 
 #include "input.h"
@@ -52,6 +52,13 @@ extern bool varassign_string(char *extdef) {
 	return TRUE;
 }
 
+char* get_message(char *format, char *msg) {
+    size_t needed = snprintf(NULL, 0, format, msg);
+    char  *buffer = malloc(needed+1);
+    sprintf(buffer, format, msg);
+    return buffer;
+}
+
 /*
    Return a List based on a name lookup. If the list is in external (string) form,
    convert it to internal (List) form. Treat $n (n is an integer) specially as $*(n).
@@ -59,7 +66,7 @@ extern bool varassign_string(char *extdef) {
    associated with $status)
 */
 
-extern List *varlookup(char *name) {
+List *varlookupAux(char *name, bool strict) {
 	Variable *look;
 	List *ret, *l;
 	int sub;
@@ -79,8 +86,11 @@ extern List *varlookup(char *name) {
 		return ret;
 	}
 	look = lookup_var(name);
-	if (look == NULL)
-		return NULL; /* not found */
+	if (look == NULL) {
+	       if (strict && dashewe)
+		 rc_error(get_message("Undefined variable '%s'\n", name));
+	       return NULL; /* not found */
+	}
 	if (look->def != NULL)
 		return look->def;
 	if (look->extdef == NULL)
@@ -88,9 +98,16 @@ extern List *varlookup(char *name) {
 	ret = parse_var(look->extdef);
 	if (ret == NULL) {
 		look->extdef = NULL;
+	       if (dashewe) rc_error(get_message("undefined variable '%s'\n", name));
 		return NULL;
 	}
 	return look->def = ret;
+}
+extern List *varlookup(char *name) {
+  return varlookupAux(name, TRUE);
+}
+extern List *varlookupNonStrict(char *name) {
+  return varlookupAux(name, FALSE);
 }
 
 /* lookup a variable in external (string) form, converting if necessary. Used by makeenv() */

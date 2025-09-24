@@ -71,9 +71,9 @@ static void history() {
 	List *hist;
 	size_t a;
 
-	if (!interactive || (hist = varlookup("history")) == NULL)
+	if (!interactive || lookup_var("history") == NULL)
 		return;
-
+        hist = varlookup("history");
 	for (a = 0; a < chars_in; a++) {
 		char c = inbuf[a];
 

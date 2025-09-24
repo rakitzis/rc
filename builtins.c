@@ -247,6 +247,7 @@ static void b_flag(char **av) {
 		case 's':
 			  if (mode != 2) goto flag_immutable;
 			  flagp = &dashess; break;
+		case 'u': flagp = &dashewe; break;
 		case 'v': flagp = &dashvee; break;
 		case 'x': flagp = &dashex; break;
 	}

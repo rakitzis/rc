@@ -429,14 +429,19 @@ extern List *glom(Node *n) {
 			rc_error("multi-word variable name");
 		if (*v->w == '\0')
 			rc_error("zero-length variable name");
+		if (n->type == nCount) {
+		  /*
+		     Allow programmer to get length of undefined variables for idiom: if( ~ $#variable 0) { . . . }
+		  */
+		  v = (*v->w == '*' && v->w[1] == '\0') ? varlookupNonStrict(v->w)->n : varlookupNonStrict(v->w);
+		  return count(v);
+		} 
 		v = (*v->w == '*' && v->w[1] == '\0') ? varlookup(v->w)->n : varlookup(v->w);
 		switch (n->type) {
 		default:
 			panic("unexpected node in glom");
 			exit(1);
 			/* NOTREACHED */
-		case nCount:
-			return count(v);
 		case nFlat:
 			return flatten(v);
 		case nVar:

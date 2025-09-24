@@ -166,7 +166,7 @@
 rc \- shell
 .SH SYNOPSIS
 .B rc
-.RB [ \-deiIlnopsvx ]
+.RB [ \-deiIlnopsuvx ]
 .RB [ \-c
 .IR command ]
 .RI [ arguments ]
@@ -322,6 +322,11 @@ This flag causes
 to read from standard input.
 Any arguments are placed in
 .Cr $* .
+.TP
+.Cr \-u
+This flag causes
+.I rc
+to raise an error if a an undefined variable is used, rather than evaluating it to ().
 .TP
 .Cr \-v
 This flag causes
