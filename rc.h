@@ -47,9 +47,14 @@ typedef enum ecodes {
 	eError, eBreak, eReturn, eVarstack, eArena, eFifo, eFd, eContinue
 } ecodes;
 
+#if __STDC_VERSION__ >= 202311L
+#define FALSE false
+#define TRUE true
+#else
 typedef enum bool {
 	FALSE, TRUE
 } bool;
+#endif
 
 typedef enum redirtype {
 	rFrom, rCreate, rAppend, rHeredoc, rHerestring
