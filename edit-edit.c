@@ -19,6 +19,9 @@ void *edit_begin(int fd) {
 	FILE *f;
 	HistEvent he;
 	struct cookie *c;
+	List *hist;
+	char line[512];
+	FILE *hf;
 
 	c = ealloc(sizeof *c);
 	if (fd == 0)
@@ -32,6 +35,20 @@ void *edit_begin(int fd) {
 	c->hist = history_init();
 	history(c->hist, &he, H_SETSIZE, 20);
 	el_set(c->el, EL_HIST, history, c->hist);
+
+	hist = varlookup("history");
+	if(hist) {
+		hf = fopen(hist->w, "r");
+		if(!hf) return c;
+		if(fseek(hf, -5120, SEEK_END) < 0)
+			rewind(hf);
+		else
+			fgets(line, sizeof line, hf);
+
+		while(fgets(line, sizeof line, hf))
+			history(c->hist, &he, H_ENTER, line);
+		fclose(hf);
+	}
 
 	return c;
 }
